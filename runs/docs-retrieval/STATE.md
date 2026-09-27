@@ -60,6 +60,7 @@ The 690k above is docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
 Spent is the harness's `subagent_tokens` for Scope Review (55,125; peak context, per RUN_ECONOMICS §1), not the 100k estimate.
 The installed guard checks spent ≥ budget only; spent + estimate is checked by hand before each spawn.
+Every stage handoff must tell the role: keep Status to one of the four SLICE_STATE values, keep the Budget / Spent / Next stage lines in their exact format, and put reasons and per-slice figures in a note beneath (pack v9 rule; installed pack is v6 + 677c1e1). Reinstall v9+ only after the slice lands.
 
 ## Failure budget
 
