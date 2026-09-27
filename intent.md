@@ -41,7 +41,7 @@ steps, which depend entirely on this one returning the right sources.
       its own test questions is grading its own homework: the verifier-wrote-it
       failure this product exists to prevent.
 - [ ] On that set, a correct source appears in the top 5 for **at least 80%**
-      of answerable questions, and at least 4 of the 5 unanswerable ones return
+      of answerable questions, and at least 80% of the unanswerable ones return
       "no confident match". The score is printed by a command and checked in
       CI.
 - [ ] The repo's **first CI workflow** (GitHub Actions) runs install,
