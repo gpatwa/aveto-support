@@ -21,7 +21,9 @@ const allow = (extra) => {
 };
 
 try {
-  const runsDir = join(process.cwd(), "runs");
+  // Anchor on the project root, not the session's cwd: a session that has cd'd
+  // into a subdirectory would otherwise find no runs/ and silently allow.
+  const runsDir = join(process.env.CLAUDE_PROJECT_DIR || process.cwd(), "runs");
   if (!existsSync(runsDir)) allow(); // not a slice-running repo
 
   // Accept "600k", "600,000", "0.6M".
