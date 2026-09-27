@@ -11,7 +11,7 @@
 #   - Committed BEFORE retrieval is tuned; git history must show it first.
 #   - Thresholds are fixed before the run: a correct source in the top 5 for
 #     at least 80% of answerable questions; "no confident match" for at least
-#     4 of the 5+ unanswerable ones.
+#     80% of unanswerable ones (5 of these 6).
 #
 # How it was drafted:
 #   - Every `sources` path was checked to contain the answer at the pinned
