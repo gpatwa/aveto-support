@@ -84,8 +84,10 @@ applies from the first slice, even though no model runs yet:
 - Any model call — classification by model, drafting, checking.
 - **RAGAS or any model-judged evaluation.** Nothing is generated yet, so there
   is nothing for faithfulness scoring to measure. Revisit at the drafting
-  slice, deliberately: RAGAS is Python while this app is TypeScript, and every
-  model-judged score is a metered call.
+  slice, deliberately. RAGAS is Python, like this app, so the language is no
+  longer an objection; what remains is that every model-judged score is a
+  metered call, and that a model judging the checker model needs its own
+  answer to "who checks the checker".
 - A web UI, sign-in, a database, GitHub integration, Azure.
 
 ## Stakes
