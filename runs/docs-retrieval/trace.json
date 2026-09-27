@@ -1,0 +1,27 @@
+{
+  "schema": "agentic-sdlc/trace@2",
+  "slice": "docs-retrieval",
+  "tier": 2,
+  "overlay": false,
+  "landed": false,
+  "started": "2026-09-27T02:29:54Z",
+  "operator": "Gopal Patwa",
+  "leastPrivilegeEnforced": true,
+  "leastPrivilegeNote": "Run from a worktree of aveto-support; role subagents load from this repo's .claude/agents/ with their tools: frontmatter and write-scope hooks.",
+  "telemetrySource": "self-reported",
+  "approvals": [],
+  "stages": [],
+  "evalSet": {
+    "path": "evals/retrieval.toml",
+    "commit": "a4e5275",
+    "author": "owner",
+    "answerable": 24,
+    "unanswerable": 6
+  },
+  "intentCommit": "a3803ca",
+  "planConfirmation": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-27T20:59:31Z",
+    "verbatim": "plan is approved"
+  }
+}
