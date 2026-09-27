@@ -1,0 +1,209 @@
+# Retrieval evaluation set — slice 1.
+#
+# Drafted by Claude; reviewed and committed by the owner, 2026-09-26, before
+# any retrieval code exists. From here it belongs to the owner and QA — the
+# engineer who builds retrieval must not edit it.
+#
+# The rules this set exists to enforce (intent.md, "Done means"):
+#   - Written and labelled by the owner or QA, NEVER by the engineer who builds
+#     retrieval. An implementer who writes its own test questions is grading
+#     its own homework.
+#   - Committed BEFORE retrieval is tuned; git history must show it first.
+#   - Thresholds are fixed before the run: a correct source in the top 5 for
+#     at least 80% of answerable questions; "no confident match" for at least
+#     4 of the 5+ unanswerable ones.
+#
+# How it was drafted:
+#   - Every `sources` path was checked to contain the answer at the pinned
+#     commit 3a83b669a8b53dfdff869a1bbe361bdb156e3a13 of
+#     gpatwa/agentic-sdlc-playbook. `where` names the passage.
+#   - Questions are phrased the way a user would ask, NOT copied from headings,
+#     so keyword overlap alone does not score them.
+#   - A question counts as answered if ANY listed source is in the top 5.
+#   - Two unanswerable questions are hard negatives: their keywords ("price",
+#     "Windows") appear in the docs in an unrelated sense. They test that
+#     "no confident match" works, not just that unrelated words miss.
+
+pinned_commit = "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+
+# ── Answerable ──────────────────────────────────────────────────────────────
+
+[[question]]
+id = "a01"
+question = "How do I add Aveto to a project I already have?"
+sources = ["docs/GETTING_STARTED.md"]
+where = "the install.mjs command"
+
+[[question]]
+id = "a02"
+question = "What files does my own repo need before the agents can work on it?"
+sources = ["README.md"]
+where = "the .agentic/ folder listing"
+
+[[question]]
+id = "a03"
+question = "Once it's installed, how do I actually ask it to build something?"
+sources = ["docs/GETTING_STARTED.md", "execution/pack/commands/agentic-slice.md"]
+where = "/agentic-slice"
+
+[[question]]
+id = "a04"
+question = "My run stopped halfway because I hit my usage limit. Do I have to start again from scratch?"
+sources = ["execution/pack/protocols/RUN_ECONOMICS.md", "execution/pack/commands/agentic-resume.md"]
+where = "§6 stage resume — continue, never restart"
+
+[[question]]
+id = "a05"
+question = "What should I write down before starting a new feature?"
+sources = ["templates/INTENT_TEMPLATE.md"]
+where = "the intent template sections"
+
+[[question]]
+id = "a06"
+question = "Do I have to go through market research and a PRD for a small, clear feature?"
+sources = ["docs/AGENTIC_SDLC.md", "agents/engineering-manager.md"]
+where = "the short path under 'When to compress stages'"
+
+[[question]]
+id = "a07"
+question = "Which things will the agents never do without asking me first?"
+sources = ["docs/HUMAN_APPROVAL_RULES.md"]
+where = "'Always require approval'"
+
+[[question]]
+id = "a08"
+question = "What happens if a stage keeps failing over and over?"
+sources = ["execution/pack/protocols/FAILURE_LOOP.md"]
+where = "bounded retries, then escalate"
+
+[[question]]
+id = "a09"
+question = "How does it stop a run from burning through too many tokens?"
+sources = ["execution/pack/protocols/RUN_ECONOMICS.md"]
+where = "§2 budget check before every spawn"
+
+[[question]]
+id = "a10"
+question = "Can I make the reviews lighter for low-risk changes and stricter for risky ones?"
+sources = ["execution/pack/protocols/RUN_ECONOMICS.md"]
+where = "§3 depth tiers: smoke / standard / adversarial"
+
+[[question]]
+id = "a11"
+question = "How can I see how many tokens each stage really used?"
+sources = ["docs/GETTING_STARTED.md"]
+where = "usage.mjs under 'After it lands'"
+
+[[question]]
+id = "a12"
+question = "Which roles run on the bigger, more expensive model?"
+sources = ["execution/pack/protocols/MODEL_ROUTING.md"]
+where = "Layer 1 static per-role defaults"
+
+[[question]]
+id = "a13"
+question = "How does QA know the feature is actually what I asked for, not just that the tests pass?"
+sources = ["agents/qa-evidence.md", "templates/QA_EVIDENCE_TEMPLATE.md"]
+where = "verifies each 'Done means' line verbatim"
+
+[[question]]
+id = "a14"
+question = "Can I use this with Cursor or Codex instead of Claude Code?"
+sources = ["execution/pack/AGENTS.md", "execution/ADAPTERS.md"]
+where = "AGENTS.md as the tool-agnostic source of truth"
+
+[[question]]
+id = "a15"
+question = "Can it deploy to AWS?"
+sources = ["agents/cloud-deployment.md"]
+where = "Azure is the first adapter; AWS is a named future one"
+
+[[question]]
+id = "a16"
+question = "How should we write down why we picked one database over another?"
+sources = ["templates/ADR_TEMPLATE.md"]
+where = "the ADR template"
+
+[[question]]
+id = "a17"
+question = "What's the difference between the SRE agent and the on-call agent?"
+sources = ["agents/on-call-engineer.md"]
+where = "SRE prepares; On-Call acts"
+
+[[question]]
+id = "a18"
+question = "Will the support agent reply to my customers by itself?"
+sources = ["agents/customer-support.md"]
+where = "draft — never send"
+
+[[question]]
+id = "a19"
+question = "Which kinds of release get the most checks before going out?"
+sources = ["docs/RELEASE_GATES.md"]
+where = "Tier 3: external-effect change"
+
+[[question]]
+id = "a20"
+question = "Does it follow any security guidance written specifically for AI agents?"
+sources = ["docs/STANDARDS_WATCH.md"]
+where = "OWASP Top 10 for Agentic Applications"
+
+[[question]]
+id = "a21"
+question = "What has actually been tested on real projects, and what hasn't?"
+sources = ["docs/VALIDATION_MATRIX.md"]
+where = "the validation matrix"
+
+[[question]]
+id = "a22"
+question = "When I build an AI feature, do I have to call the model straight away?"
+sources = ["project-packs/ai-agent-product.md"]
+where = "deterministic-first, LLM as adapter"
+
+[[question]]
+id = "a23"
+question = "Can the documentation agent change my code by mistake?"
+sources = ["agents/tech-writer.md"]
+where = "the write-scope guard permits docs paths only"
+
+[[question]]
+id = "a24"
+question = "Why isn't there a project manager agent?"
+sources = ["docs/AGENT_ROLES.md"]
+where = "'Roles you will not see here'"
+
+# ── Unanswerable: the docs do not say ───────────────────────────────────────
+# Each was checked to be absent at the pinned commit. The expected result is
+# "no confident match", never the least-bad passage.
+
+[[question]]
+id = "u01"
+question = "What is the monthly licence price for a team of ten?"
+answerable = false
+hard_negative = "\"pricing\" appears in the FinOps and Market Researcher briefs, about a product's pricing — not Aveto's"
+
+[[question]]
+id = "u02"
+question = "Does Aveto run on Windows?"
+answerable = false
+hard_negative = "\"window\" appears as a usage window and time window — never the operating system"
+
+[[question]]
+id = "u03"
+question = "Can I use it with GitLab merge requests?"
+answerable = false
+
+[[question]]
+id = "u04"
+question = "Is there a VS Code extension I can install?"
+answerable = false
+
+[[question]]
+id = "u05"
+question = "How do I reset my Aveto account password?"
+answerable = false
+
+[[question]]
+id = "u06"
+question = "Can approvals come through Slack instead of GitHub?"
+answerable = false
