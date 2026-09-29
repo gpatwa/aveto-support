@@ -154,6 +154,16 @@
       "toolCalls": 10,
       "retry": 0,
       "outcome": "fixture 13 cases; golden test passes"
+    },
+    {
+      "stage": "QA held-out scoring (resumed)",
+      "role": "qa-evidence",
+      "model": "sonnet-5-5",
+      "effort": "high (declared)",
+      "tokens": 11427,
+      "toolCalls": 7,
+      "retry": 0,
+      "outcome": "held-out FAIL 5/17, 5/6; dev 10/24, 4/6"
     }
   ],
   "evalSet": {
@@ -181,10 +191,28 @@
       "unanswerable": "6/6",
       "ungatedRecall5": "14/24",
       "file": "runs/docs-retrieval/eval-run-1.txt"
+    },
+    {
+      "n": 2,
+      "set": "held-out",
+      "answerable": "5/17",
+      "unanswerable": "5/6",
+      "ungatedRecall5": "8/17",
+      "file": "runs/docs-retrieval/eval-run-2-heldout.txt",
+      "gate": "FAIL"
+    },
+    {
+      "n": 3,
+      "set": "dev (diagnostic)",
+      "answerable": "10/24",
+      "unanswerable": "4/6",
+      "ungatedRecall5": "17/24",
+      "file": "runs/docs-retrieval/eval-run-3-dev-diagnostic.txt"
     }
   ],
   "escalations": [
-    "runs/docs-retrieval/ESCALATION-1.md"
+    "runs/docs-retrieval/ESCALATION-1.md",
+    "runs/docs-retrieval/ESCALATION-2.md"
   ],
   "retryDecision": {
     "by": "Gopal Patwa",
