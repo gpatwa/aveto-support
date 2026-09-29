@@ -44,6 +44,13 @@
       "approver": "Gopal Patwa",
       "when": "2026-09-29T15:26:12Z",
       "record": "runs/docs-retrieval/APPROVAL_RECORD-5.md"
+    },
+    {
+      "action": "reference-embedding comparison (sentence-transformers + torch, model.safetensors)",
+      "rule": "5",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T16:14:41Z",
+      "record": "runs/docs-retrieval/APPROVAL_RECORD-6.md"
     }
   ],
   "stages": [
