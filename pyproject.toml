@@ -1,0 +1,26 @@
+[project]
+name = "aveto-support"
+version = "0.1.0"
+description = "Aveto support agent: retrieval over pinned documentation (no model)."
+requires-python = ">=3.12,<3.13"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest", "mypy", "ruff"]
+
+[tool.uv]
+package = false
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+files = ["aveto_support", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-m 'not network'"
+markers = ["network: hits the pinned GitHub archive (approved rule-5 fetch)"]
+
+[tool.ruff]
+target-version = "py312"

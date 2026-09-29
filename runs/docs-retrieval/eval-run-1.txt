@@ -1,0 +1,35 @@
+eval: evals/retrieval.toml  index: gpatwa/agentic-sdlc-playbook @ 3a83b669…  threshold: 1.000
+a01  MISS  expected docs/GETTING_STARTED.md; got no confident match (below-threshold, coverage 0.47)
+a02  MISS  expected README.md; got agents/engineering-manager.md, templates/AGENT_HANDOFF_TEMPLATE.md, execution/pack/CLAUDE.md, execution/pack/protocols/HANDOFF_CHECK.md, execution/pack/AGENTS.md
+a03  MISS  expected docs/GETTING_STARTED.md | execution/pack/commands/agentic-slice.md; got no confident match (below-threshold, coverage 0.55)
+a04  MISS  expected execution/pack/protocols/RUN_ECONOMICS.md | execution/pack/commands/agentic-resume.md; got no confident match (below-threshold, coverage 0.39)
+a05  MISS  expected templates/INTENT_TEMPLATE.md; got no confident match (below-threshold, coverage 0.66)
+a06  MISS  expected docs/AGENTIC_SDLC.md | agents/engineering-manager.md; got no confident match (below-threshold, coverage 0.57)
+a07  MISS  expected docs/HUMAN_APPROVAL_RULES.md; got no confident match (below-threshold, coverage 0.64)
+a08  MISS  expected execution/pack/protocols/FAILURE_LOOP.md; got no confident match (below-threshold, coverage 0.46)
+a09  MISS  expected execution/pack/protocols/RUN_ECONOMICS.md; got no confident match (below-threshold, coverage 0.61)
+a10  MISS  expected execution/pack/protocols/RUN_ECONOMICS.md; got no confident match (below-threshold, coverage 0.29)
+a11  MISS  expected docs/GETTING_STARTED.md; got no confident match (below-threshold, coverage 0.44)
+a12  MISS  expected execution/pack/protocols/MODEL_ROUTING.md; got no confident match (below-threshold, coverage 0.61)
+a13  MISS  expected agents/qa-evidence.md | templates/QA_EVIDENCE_TEMPLATE.md; got no confident match (below-threshold, coverage 0.52)
+a14  MISS  expected execution/pack/AGENTS.md | execution/ADAPTERS.md; got no confident match (below-threshold, coverage 0.63)
+a15  HIT   agents/cloud-deployment.md (rank 1)
+a16  MISS  expected templates/ADR_TEMPLATE.md; got no confident match (below-threshold, coverage 0.33)
+a17  MISS  expected agents/on-call-engineer.md; got no confident match (below-threshold, coverage 0.52)
+a18  HIT   agents/customer-support.md (rank 1)
+a19  MISS  expected docs/RELEASE_GATES.md; got no confident match (below-threshold, coverage 0.26)
+a20  MISS  expected docs/STANDARDS_WATCH.md; got no confident match (below-threshold, coverage 0.27)
+a21  MISS  expected docs/VALIDATION_MATRIX.md; got no confident match (below-threshold, coverage 0.82)
+a22  MISS  expected project-packs/ai-agent-product.md; got no confident match (below-threshold, coverage 0.45)
+a23  MISS  expected agents/tech-writer.md; got no confident match (below-threshold, coverage 0.39)
+a24  MISS  expected docs/AGENT_ROLES.md; got agents/product-manager.md, agents/engineering-manager.md, agents/compliance-reviewer.md, prompts/product-brief.md, agents/security-privacy.md
+u01  HIT   no confident match (below-threshold, coverage 0.39)
+u02  HIT   no confident match (below-threshold, coverage 0.60)
+u03  HIT   no confident match (below-threshold, coverage 0.37)
+u04  HIT   no confident match (below-threshold, coverage 0.60)
+u05  HIT   no confident match (below-threshold, coverage 0.36)
+u06  HIT   no confident match (below-threshold, coverage 0.26)
+answerable:   2/24 (8.3%)  required >= 80%  FAIL
+unanswerable: 6/6 (100.0%)  required >= 80%  PASS
+diagnostic:   ungated recall@5 14/24 (not a gate)
+eval: FAIL

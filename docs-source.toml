@@ -1,0 +1,5 @@
+# The documentation this agent answers from. Point it at your own docs:
+# change repo and commit, then re-run ingest.
+repo   = "gpatwa/agentic-sdlc-playbook"                 # GitHub "owner/name"
+commit = "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"     # full 40-hex SHA; branches/tags rejected
+exclude = []                                            # repo-relative path prefixes to skip

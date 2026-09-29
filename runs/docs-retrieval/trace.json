@@ -52,6 +52,17 @@
       "toolCalls": 44,
       "retry": 0,
       "outcome": "tech spec, ADR 0001/0002, ARCHITECTURE.md, INV-4/5"
+    },
+    {
+      "stage": "Implementation",
+      "role": "backend-architect",
+      "model": "sonnet",
+      "effort": "medium",
+      "wallSeconds": 376,
+      "tokens": 107180,
+      "toolCalls": 28,
+      "retry": 0,
+      "outcome": "built; eval run 1 FAIL 2/24 (ungated 14/24); escalated"
     }
   ],
   "evalSet": {
@@ -71,5 +82,17 @@
     "by": "Gopal Patwa",
     "when": "2026-09-29T00:02:48Z",
     "choice": "Accept split + \u226580% in core"
-  }
+  },
+  "evalRuns": [
+    {
+      "n": 1,
+      "answerable": "2/24",
+      "unanswerable": "6/6",
+      "ungatedRecall5": "14/24",
+      "file": "runs/docs-retrieval/eval-run-1.txt"
+    }
+  ],
+  "escalations": [
+    "runs/docs-retrieval/ESCALATION-1.md"
+  ]
 }
