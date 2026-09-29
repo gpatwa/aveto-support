@@ -123,3 +123,16 @@ bytes, and a 302 from huggingface.co to us.aws.cdn.hf.co. Not independently
 verified: the sha256 of vocab.txt/config.json/tokenizer_config.json (reported by
 the playbook session only) and the ONNX graph's input names (needs the 133 MB
 download, which needs approval).
+
+## EM re-scope ruling — 2026-09-29T03:53:07Z
+
+The EM (not the owner's choice ratified) rules the embed-v3 work **must split**:
+- **docs-retrieval-core** stays lexical v2, Tier 2, ≈812k of 820k, no retry headroom.
+- **docs-retrieval-embed** = embed-v3, Tier 3, ≈645k on its own budget (Architect 40k
+  + Implementation 195k + QA 160k + Security 130k + Release Gate 120k, +60k re-run reserve).
+- Splitting costs ≈390k more than one slice and, if v2 misses, the owner writes a
+  second held-out set. Keeping one slice: ≈1,067–1,127k (247–307k over 820k).
+- 19 Implementation files accepted (embed.py its own module); the 2 QA/owner files
+  (golden tokenizer fixture, frozen off-topic list) count toward the diff but
+  Implementation must not author or edit them.
+No gated approval is requested yet. Details: 01-scope.md, latest dated amendment.

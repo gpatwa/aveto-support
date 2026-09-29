@@ -310,6 +310,210 @@ module before the full suite; (3) `uv.lock` is regenerated from
 spec allows; (4) the README, LOCAL_COMMANDS and CURRENT_MVP_STATUS edits
 match the commands actually run (no drift between docs and CLI).
 
+## Amendment 2026-09-29 (2) — re-scope for embed-v3
+
+Trigger: the owner chose "Pursue embed-v3 in this slice" (ESCALATION-1.md,
+2026-09-29T03:46:06Z) after eval run 1 missed. That choice granted no gated
+approval and asked for a scope review, not a waiver. Inputs: the Architect's
+"Retrieval — variant embed-v3" (§1–§7) in `02-tech-spec.md`. Read-only for
+me: ESCALATION-1.md, STATE.md. Token figures below are **EM estimates**
+built from the stage estimates in this file and the spec's §6 ("one
+build-stage estimate plus about half again"), not harness numbers. Spent
+(422k) is STATE.md's harness-derived figure. The Orchestrator prices the
+final numbers, and I raise no budget line.
+
+### 1. File count
+
+- **Implementation's 19: accepted, in whichever slice builds embed-v3.**
+  Nothing changes from my first ruling except one new source file. Of the
+  19, 18 are the already-accepted files (edited, not new) and 1 is new
+  (`aveto_support/embed.py`). I accept `embed.py` as its own module: it is
+  the model adapter boundary, Security can read the model loader in
+  isolation, and folding it into `search.py` (18 files) would mix ranking,
+  fusion and ONNX/WordPiece code in one module, a worse boundary to save
+  one file. Rule cited: EM scope-discipline, ">10 files for a non-refactor
+  change" applies, and is judged by its purpose as before. It is met
+  narrowly: 6 logic files (`__main__`, `ingest`, `index`, `search`,
+  `evaluate`, `embed`), each with tests in an existing test file. This
+  acceptance is conditional on the split ruling in §2. It would not hold
+  if embed-v3 were stacked on the other logic changes of a shared slice.
+- **The 2 QA/owner files count toward the slice's diff (21 total) but are
+  not Implementation's, and Implementation must not author or edit
+  either.**
+  - `tests/fixtures/wordpiece_golden.json` is QA-authored evidence. It
+    belongs in the diff because a committed test needs it, but it is the
+    oracle for Implementation's tokenizer. If Implementation wrote it, the
+    tokenizer would be testing itself. It is generated outside the repo by
+    QA, committed by QA.
+  - `evals/calibration-offtopic.toml` is calibration data for the
+    confidence threshold, so it is a tuning input. It is written by the
+    **owner** (preferred) or QA, frozen with its sha256 (recorded in
+    STATE.md and pinned in `docs-source.toml`) **before** Implementation
+    starts. It must not be derived from any question in
+    `evals/retrieval.toml` or the held-out set. Neither the Architect nor
+    Implementation reads the held-out set.
+- **QA check:** Implementation's own diff is exactly the 19 files. The
+  slice diff is exactly those 19 plus the 2, and nothing else in the
+  product tree. A 20th Implementation file, or Implementation touching the
+  2 files, is a re-scope back to the EM.
+
+### 2. One slice or two: SPLIT REQUIRED
+
+**Ruling: split. `docs-retrieval-core` stays lexical; embed-v3 becomes its
+own slice, `docs-retrieval-embed`.** The owner may override this and keep
+one slice (Option K below), but not on my recommendation. Reasons, each
+tied to a rule:
+
+1. **RUN_ECONOMICS §2 (>6 stages or ~600k means too big).** Keeping it
+   projects to ≈1,067k–1,127k total for core (from 422k spent). That is
+   the same signal that forced the first split, at a larger multiple.
+2. **Mixed kinds of risk in one pass (EM brief: a slice must be verifiable
+   in one head).** One slice would carry a new dependency, a model in the
+   retrieval path, a safety-control change (INV-5) and an intent
+   amendment, on top of lexical ranking, download code and calibration.
+   A QA finding could not be attributed to the lexical or the embedding
+   half.
+3. **The tier changes mid-slice.** Core has been Tier 2 throughout. The
+   embed work is expected Tier 3. One slice cannot have two release tiers;
+   splitting keeps the Tier 2 work landing on the Tier 2 gate.
+4. **The slice's premise.** Core's intent is "no model". embed-v3 rewrites
+   five intent lines. That belongs in a slice whose own intent says so,
+   not in this slice under its old name. This matches the Architect's own
+   recommendation (§6).
+5. **Success criteria observable.** Embedding is separate evidence: the
+   lexical ceiling is a baseline the embed slice needs.
+
+**The split, with a sequence:**
+
+`docs-retrieval-core` (Tier 2, lexical v2) → `docs-retrieval-embed`
+(Tier 3, embed-v3) → `docs-retrieval-ci`. CI depends on the slice that
+actually meets the item 8 bar, so `ci` waits for whichever slice does; it
+also has to absorb the embed slice's +2–6 min and the `pytest -m model`
+step. I do not re-plan `ci` here.
+
+**Owner decision needed: sequencing of core, with numbers.**
+
+| | Option S (split, recommended) | Option K (keep in one slice, owner's choice) |
+|---|---|---|
+| Core to its Release Gate | build v2 ≈60k (ESCALATION-1's rework figure), QA 130k, Security 100k, Release Gate 100k = **≈390k**, so 422k + 390k = **≈812k** vs 820k: fits, **8k margin, no retry headroom** | not applicable (core is the embed slice) |
+| embed to its Release Gate | separate slice, **≈645k** (§4) | Architect apply 40k + Impl 195k + QA 160k + Sec 130k + Release 120k = **645k** on top of 422k = **≈1,067k** (≈1,127k with a 60k re-run reserve) vs 820k: **over by ≈247k–307k** |
+| Total from today | ≈390k + ≈645k = **≈1,035k** (≈1,095k with reserve), from a fresh embed budget | ≈645k–705k (K spends nothing on a v2 rebuild) |
+| Extra cost of splitting | ≈330k of duplicated QA/Security/Release Gate plus ≈60k v2 rebuild, **≈390k**; K is cheaper | — |
+| Tier | core Tier 2 lands independently | whole slice moves 2 to 3 |
+| Held-out set | scored **once** on v2 (Architect's pass chance ≈15%). If v2 misses, that set is spent as gate evidence for embed, so **the owner writes a second fresh set** for embed | scored once, on embed-v3 (pass chance ≈30–35%) |
+
+The honest trade: the split is ≈390k dearer and burns a held-out set on a
+variant with ≈15% odds, but each half is independently verifiable, Tier 2
+work is not held hostage to a Tier 3 gate, and the owner gets the lexical
+ceiling as a measured baseline. Option K is cheaper and faster to the
+ranking result, but it needs the budget raised by ≈247k–307k (owner
+decides; I do not raise it) and a Tier 3 Release Gate for a slice whose
+first 40% is Tier 2 work. **If the owner chooses K, §1 (files) holds, §3
+and §5 apply to core, and QA must attribute findings per module.**
+
+### 3. Release tier and gates (my recommendation; the Release Manager confirms)
+
+- **`docs-retrieval-core` (v2, lexical): Tier 2**, unchanged.
+- **`docs-retrieval-embed`, or the whole slice under Option K: Tier 3
+  (recommended).** Grounds, as in the spec §3: a first model in a
+  previously deterministic path (`ai-agent-product` pack), a changed safety
+  control (INV-5, rule 4), a third-party supply-chain input (a 133 MB binary
+  graph from Hugging Face, hash-pinned), and the first two runtime
+  dependencies. The `RELEASE_GATES.md` Tier 3 examples are about
+  send/post/deploy, and none of those happen here. The tier rests on
+  "touches a third-party integration" and the safety-control change,
+  not on an external effect. That is why the Release Manager, not I, decides.
+- **Gates that apply** (RELEASE_GATES.md): all Tier 2 gates (typecheck,
+  targeted and full tests, build, one commit per task, no new lint
+  warnings; QA's safety-invariant checklist; Security's gates; release
+  checklist; rollback plan), plus the Tier 3 rows:
+  - *Explicit human approval per HUMAN_APPROVAL_RULES:* Requests A, B and C
+    (§5), recorded before the work each gates.
+  - *Dry-run on a fixture before live:* the offline suite with
+    `FakeEmbedder` and a fake model cache, and the `model`-marked tests on
+    the cached files, must pass **before** any live download test or
+    live eval.
+  - *Audit event coverage manually verified:* no audit event exists in this
+    slice. Mark n/a with that reason and have Security confirm that the
+    download and the hash-mismatch path log no secret, question or passage
+    text.
+  - *Post-launch monitoring plan:* smoke-depth. It covers the CI download
+    success, the hash-mismatch path, and the CI runtime, so it feeds
+    `docs-retrieval-ci`.
+- **Extra gates named by this re-scope** (in addition to those rows):
+  the Freeze-first ordering in the spec is binding (build, run all
+  offline/network/model tests, STOP, record the frozen SHA, owner commits
+  the held-out set, QA scores once, no code change between). QA also runs
+  `uv tree` and checks the dependency tree against the spec's limit
+  (more than about 12 packages, or any new top-level dependency, stops
+  Implementation for the owner), verifies the cached files' sha256 against
+  the pins, and shows `retrieve` and `eval` make no connection with the
+  network-blocked run.
+
+### 4. Budget: stage-by-stage estimate for embed-v3 to its Release Gate
+
+Estimates (EM), standard depth except Security and Release Gate, which
+I raise to Tier 3 depth as marked. Not harness figures.
+
+| Stage | Role | Est. | Note |
+|-------|------|------|------|
+| Architect apply | software-architect | 40k | apply INV-4/5 once approved, ADR 0003, ARCHITECTURE.md, intent/PROJECT_CONTEXT alignment notes |
+| Implementation | backend-architect | 195k | 130k build estimate ×1.5 (spec §6); 6 logic files, ≈15 new tests |
+| QA Evidence | qa-evidence | 160k | 130k plus golden fixture, `uv tree`, hash checks, two eval sets, two-run sha |
+| Security Review | security-privacy | 130k | Tier 3 depth: supply chain, ONNX parse, egress allowlist, licences |
+| Release Gate | release-manager | 120k | Tier 3 rows |
+| **To Release Gate** | | **645k** | |
+| Re-run reserve | one QA re-run or one fix cycle | +60k | not in the 645k; use only on a named failure |
+
+Against **820k** (the current core budget, 422k spent, 398k remaining):
+
+- **Option K:** 422k + 645k = **1,067k**, or **1,127k** with the reserve.
+  Over 820k by **247k**, or **307k**.
+- **Option S, core:** 422k + 390k = **812k**: within 820k, 8k to spare,
+  no retry headroom. A second failure in core stops at the failure loop
+  (FAILURE_LOOP.md), not at a budget raise.
+- **Option S, embed:** ≈645k (≈705k with the reserve) as its own budget,
+  which is about 45k–105k above the ~600k signal. That is tolerated
+  because it is one coherent unit: 5 stages, one purpose. It is not a
+  reason to split further.
+
+I have raised no budget line. Either an 820k → ≈1,130k raise (K) or a new
+slice budget (S) is the owner's explicit decision.
+
+### 5. What stays STOPPED until the owner approves each item
+
+Nothing below is done, installed, downloaded or edited until its own
+recorded yes. In order:
+
+1. **Choice of S or K, and the budget** for it (§4): the owner. Blocks all
+   embed spawns. Under S, v2 Implementation for core may start now (no
+   gated action; 422k + 60k fits 820k).
+2. **Intent amendment** (five lines listed in spec §3; the owner owns
+   `intent.md` on `main`). Blocks Implementation and QA's Done-means
+   verification. Without it QA must fail embed-v3 on the "no model
+   anywhere" line.
+3. **Request C, rule 4, INV-4/INV-5 wording.** Blocks: any edit to
+   `.agentic/SAFETY_INVARIANTS.md`, and B and A by dependency (if C is
+   denied, INV-5 forbids the HF egress).
+4. **Request B, rule 5, weights download in ingest and CI.** Blocks: any
+   download of `model.onnx` / `vocab.txt`, including QA's one-off download
+   to generate the golden fixture, the live-download tests, and CI.
+5. **Request A, rule 5, a model in the retrieval path.** Blocks: adding
+   `onnxruntime`/`numpy` to `pyproject.toml`, running `uv lock`, and writing
+   `embed.py`.
+6. **Freeze the off-topic list** (owner or QA) with its sha256 in
+   STATE.md, before Implementation.
+7. **Release Manager confirms the tier** before Implementation.
+8. After Implementation's STOP: record the frozen SHA, then the owner
+   commits the held-out set, then QA scores once. No eval before that.
+
+Still gated from the earlier rounds and unchanged: `docs-retrieval-ci` waits
+for the slice that meets the bar.
+
+**Open questions for the owner:** S or K, and the budget that follows;
+who writes the off-topic list; whether a second held-out set will be
+written if v2 misses under S.
+
 ## Escalation path
 
 If the Architect hits a blocker (e.g. the eval set's format under-specifies something `retrieve`'s output
