@@ -8,7 +8,7 @@
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T07:26:19Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T07:45:37Z
 
 ## Stages
 
@@ -56,8 +56,8 @@ Approval 1 APPROVED by Gopal Patwa, 2026-09-29T00:02:48Z (APPROVAL_RECORD-1.md),
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 1130k tokens  ·  **Depth:** standard
-- **Spent:** 571k (51%)  ·  **Remaining:** 559k
-- **Next stage:** Implementation of embed-v3 (backend-architect, build) est. 195k → **PROCEED** (571k + 195k = 766k ≤ 1130k; checked by hand)
+- **Spent:** 727k (64%)  ·  **Remaining:** 403k
+- **Next stage:** QA: generate the tokenizer golden fixture (qa-evidence, build) est. 40k → **STOP-AND-ASK** — the reference tokenizer package is not covered by Approvals 2–4 (owner question pending). Projection to Release Gate: 727k + 40k + QA 160k + Security 130k + Release Gate 120k = 1,177k, ≈47k over 1,130k.
 
 Budget set to 1,130k by the owner ("Set 1,130k", 2026-09-29T05:28:14Z) for one slice with embed-v3 (EM projection ≈1,067–1,127k, incl. 60k re-run reserve). Earlier: raised from 690k to 820k on the owner's choice of option A in ESCALATION-1.md ("A, and I'll write the fresh questions"), covering one retry (≈818k projected); this is the owner's decision, not a fit-to-spend. The 690k was docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
@@ -68,6 +68,8 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 ### Frozen inputs
 
 - **evals/calibration-offtopic.toml** — 59 QA-authored questions, frozen 2026-09-29T05:32:03Z at commit `fa3673ad75278003516a570639a39cdc616444e2`, **sha256 `9045189567b083c83c02336a4f70990c8a8e3ce3e49d5917642fbad6e293627c`**. Not read by the Architect or the engineer; loaded by path only. Overlap with the owner's held-out set is unchecked (not in the repo) and is the owner's to check. QA agent run (44,781 tokens; models seen in transcript: 26 "model":"claude-sonnet-5-5"; frontmatter sonnet/high).
+
+- **Method commit (implementation, embed-v3):** `c9b64e7bf55da02a925e5a0be8ca37a4a9dc189a`, committed 2026-09-29T07:45:37Z. This is the method to freeze. The golden fixture and its generator are test-only additions after it; if the fixture forces any change to `aveto_support/`, the method changes and the freeze is re-recorded before the owner writes the held-out set. Off-topic list still sha256 `9045189567b083c83c02336a4f70990c8a8e3ce3e49d5917642fbad6e293627c`. Index sha256 (three byte-identical ingests) `1f6b2194db040446aa09ba6021d30a80df4361bcbc1e9c2958292c97d0cbe5c9`. No eval has been run on any set.
 
 ## Failure budget
 
@@ -93,7 +95,8 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 | Architecture embed-v3 fact-fill (resumed) | opus-5-5 | high (declared) | — | — | 4:49 | +50,042 | +39 | 1 |
 | Architecture ADR 0003 + ARCHITECTURE.md (resumed) | opus-5-5 | high (declared) | — | — | 1:30 | +16,517 | +11 | 1 |
 | QA Evidence: frozen off-topic list (qa-evidence) | sonnet-5-5 | high (declared) | — | — | 2:30 | 44,781 | 15 | 0 |
-| **Total** | | | | | | 571,325 | 235 | |
+| Implementation of embed-v3 (resumed; cumulative peak 262,939, was 107,180) | sonnet-5-5 | medium (declared) | — | — | 18:14 | +155,759 | +41 | 1 |
+| **Total** | | | | | | 727,084 | 276 | |
 
 Measured usage (2026-09-29T07:17:38Z, `usage.mjs . --slice docs-retrieval`, harness-logged models; no role marked `*`, so tool restrictions bound): 5/5 stages measured, 156 requests, cache hit 92.3%. **Processed 19.46M tokens (cost-weighted 4.73M)**, of which software-architect 15.60M (84 requests, opus-5-5, peak context 128k), backend-architect 2.14M, engineering-manager 1.26M, qa-evidence 0.45M. The report's peak-context total is 363k; the Tokens column above (571k) is the sum of the harness's per-spawn `subagent_tokens`, kept as the more conservative figure for the budget. **The budget is in peak-context units; what the slice actually consumed from usage limits is the processed figure, roughly 34× larger.** Models above are copied from the report; effort is not in the log, so it is the declared frontmatter value.
 
@@ -101,4 +104,4 @@ Correction (2026-09-29T05:28:36Z): the Architecture rows above were first record
 
 ## Next action
 
-Orchestrator commits the embed-v3 implementation (18 changed files plus 04-implementation.md; `aveto_support/__init__.py` unchanged) and records that commit SHA as the frozen method SHA. QA then generates tests/fixtures/wordpiece_golden.json (the only expected failing test, `test_wordpiece_matches_golden`, until it lands) and re-runs the QA checks. No `eval` has been run on any set. The owner commits the held-out set only after the freeze; run once via --eval-file.
+Implementation done and committed (method commit above). Owner decides: may QA generate tests/fixtures/wordpiece_golden.json using a one-off, throwaway install of the HF `tokenizers` package (not added to pyproject/uv.lock)? Then QA generates it; record the frozen SHA; owner commits the held-out set; run once via --eval-file. Budget: projected ≈47k over 1,130k at the Release Gate; decide at Security or earlier.

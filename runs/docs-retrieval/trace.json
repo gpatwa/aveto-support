@@ -126,6 +126,17 @@
       "toolCalls": 11,
       "retry": 1,
       "outcome": "ADR 0003 accepted/impl pending; ARCHITECTURE.md updated"
+    },
+    {
+      "stage": "Implementation of embed-v3 (resumed)",
+      "role": "backend-architect",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "wallSeconds": 1094,
+      "tokens": 155759,
+      "toolCalls": 41,
+      "retry": 1,
+      "outcome": "built; 118 tests pass; 1 expected fail (golden fixture); no eval run"
     }
   ],
   "evalSet": {
@@ -210,5 +221,6 @@
       "engineering-manager": 1262000,
       "qa-evidence": 454000
     }
-  }
+  },
+  "methodCommit": "c9b64e7bf55da02a925e5a0be8ca37a4a9dc189a"
 }
