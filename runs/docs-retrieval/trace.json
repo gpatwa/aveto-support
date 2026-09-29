@@ -171,6 +171,16 @@
       "toolCalls": 7,
       "retry": 0,
       "outcome": "held-out FAIL 5/17, 5/6; dev 10/24, 4/6"
+    },
+    {
+      "stage": "QA reference-embedding comparison (resumed)",
+      "role": "qa-evidence",
+      "model": "sonnet-5-5",
+      "effort": "high (declared)",
+      "tokens": 30234,
+      "toolCalls": 16,
+      "retry": 0,
+      "outcome": "MATCHES: float cos>=0.99999989; int8 explains top-5 differences"
     }
   ],
   "evalSet": {

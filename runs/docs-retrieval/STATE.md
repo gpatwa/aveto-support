@@ -8,7 +8,7 @@
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T16:14:41Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T16:19:00Z
 
 ## Stages
 
@@ -25,7 +25,7 @@
 |-------|-------|--------|----------|------|
 | Architecture | software-architect | done; retry 1 revision (variant v2) written 2026-09-29, pre-registered before run; embed-v3 spec-only variant added 2026-09-29, finished with verified facts after owner chose to pursue it in this slice; approvals 2–4 granted; ADR 0003 written (accepted, implementation pending); docs/ARCHITECTURE.md updated for embed-v3 | runs/docs-retrieval/02-tech-spec.md ("Retrieval — variant v2"); docs/adr/0001-python-fastapi-uv-no-agent-framework.md; docs/adr/0002-lexical-retrieval-calibrated-abstention.md; docs/ARCHITECTURE.md | tech spec ready; 18 files flagged vs ≤10 rule (justified in spec) |
 | Implementation | backend-architect | done — embed-v3 (with v2 lexical) built, uncommitted; golden-fixture test expected-failing until QA lands it; no eval run | runs/docs-retrieval/04-implementation.md | typecheck, lint, 118 default tests, -m model and -m network green except the golden test; ingest x3 byte-identical |
-| QA Evidence | qa-evidence | held-out scored once 2026-09-29: answerable 5/17 FAIL, unanswerable 5/6 PASS; dev diagnostic 10/24 and 4/6 | runs/docs-retrieval/06-qa-heldout-result.md; eval-run-2-heldout.txt; eval-run-3-dev-diagnostic.txt | eval gate FAILED (held-out answerable) |
+| QA Evidence | qa-evidence | held-out scored once 2026-09-29: answerable 5/17 FAIL, unanswerable 5/6 PASS; dev diagnostic 10/24 and 4/6 | runs/docs-retrieval/06-qa-heldout-result.md; eval-run-2-heldout.txt; eval-run-3-dev-diagnostic.txt ; reference-embedding check: product matches reference, no embedding bug (07-qa-reference-embeddings.md) | eval gate FAILED (held-out answerable) |
 | Security Review | security-privacy | pending | — | — |
 | Release Gate | release-manager | pending | — | — |
 
@@ -58,8 +58,8 @@ Approval 1 APPROVED by Gopal Patwa, 2026-09-29T00:02:48Z (APPROVAL_RECORD-1.md),
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 1130k tokens  ·  **Depth:** standard
-- **Spent:** 754k (67%)  ·  **Remaining:** 376k
-- **Next stage:** QA reference-embedding comparison (qa-evidence, build) est. 40k → **PROCEED** (754k + 40k = 794k ≤ 1130k). Then close-out (post-launch-learning) est. 60k.
+- **Spent:** 785k (69%)  ·  **Remaining:** 345k
+- **Next stage:** Close-out for the next slice (post-launch-learning, review) est. 60k → **PROCEED** (785k + 60k = 845k ≤ 1130k)
 
 Budget set to 1,130k by the owner ("Set 1,130k", 2026-09-29T05:28:14Z) for one slice with embed-v3 (EM projection ≈1,067–1,127k, incl. 60k re-run reserve). Earlier: raised from 690k to 820k on the owner's choice of option A in ESCALATION-1.md ("A, and I'll write the fresh questions"), covering one retry (≈818k projected); this is the owner's decision, not a fit-to-spend. The 690k was docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
@@ -107,7 +107,8 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 | Implementation of embed-v3 (resumed; cumulative peak 262,939, was 107,180) | sonnet-5-5 | medium (declared) | — | — | 18:14 | +155,759 | +41 | 1 |
 | QA golden fixture (resumed; cumulative peak 60,704, was 44,781) | sonnet-5-5 | high (declared) | — | — | 1:08 | +15,923 | +10 | 0 |
 | QA held-out scoring (resumed; cumulative peak 72,131, was 60,704) | sonnet-5-5 | high (declared) | — | — | 0:51 | +11,427 | +7 | 0 |
-| **Total** | | | | | | 754,434 | 293 | |
+| QA reference-embedding comparison (resumed; cumulative peak 102,365, was 72,131) | sonnet-5-5 | high (declared) | — | — | 3:41 | +30,234 | +16 | 0 |
+| **Total** | | | | | | 784,668 | 309 | |
 
 Measured usage (2026-09-29T07:17:38Z, `usage.mjs . --slice docs-retrieval`, harness-logged models; no role marked `*`, so tool restrictions bound): 5/5 stages measured, 156 requests, cache hit 92.3%. **Processed 19.46M tokens (cost-weighted 4.73M)**, of which software-architect 15.60M (84 requests, opus-5-5, peak context 128k), backend-architect 2.14M, engineering-manager 1.26M, qa-evidence 0.45M. The report's peak-context total is 363k; the Tokens column above (571k) is the sum of the harness's per-spawn `subagent_tokens`, kept as the more conservative figure for the budget. **The budget is in peak-context units; what the slice actually consumed from usage limits is the processed figure, roughly 34× larger.** Models above are copied from the report; effort is not in the log, so it is the declared frontmatter value.
 
@@ -115,4 +116,4 @@ Correction (2026-09-29T05:28:36Z): the Architecture rows above were first record
 
 ## Next action
 
-QA runs the approved reference-embedding comparison (07-qa-reference-embeddings.md), then post-launch-learning writes the close-out for the next slice (corpus scope; file-level ranking; open question for the owner: does 'no confident match' belong in the check step, rule 4). Then set Status done (closed, gate failed; nothing ships).
+Reference comparison done: MATCHES (07-qa-reference-embeddings.md): no embedding bug; the failure is in the method. post-launch-learning writes the close-out for the next slice (runs/docs-retrieval/08-close-out.md). Then set Status done (closed, gate failed; nothing ships; Security and the Release Gate did not run).
