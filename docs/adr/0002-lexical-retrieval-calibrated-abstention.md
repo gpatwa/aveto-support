@@ -13,6 +13,7 @@
   passages, pre-registration, and "no confident match returns no passages"
   still stand. v2 remains specified as the lexical fallback. The history below
   is unchanged.
+  **Partly superseded by [ADR 0004](0004-file-level-ranking-and-fixed-corpus.md) (proposed, 2026-09-29): "no confident match returns no passages" (retrieval no longer abstains).**
 - **Date:** 2026-09-28 (v1) and 2026-09-29 (v2)
 - **Slice:** `runs/docs-retrieval/` (docs-retrieval-core). The full specification,
   including every parameter, is `runs/docs-retrieval/02-tech-spec.md`, sections

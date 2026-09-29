@@ -3,7 +3,7 @@
 > Architecture Decision Record. Owned by the Architect. Never edited after it is
 > accepted. A changed decision gets a new ADR that supersedes this one.
 
-- **Status:** accepted, implementation pending
+- **Status:** accepted, implementation pending. **Partly superseded by [ADR 0004](0004-file-level-ranking-and-fixed-corpus.md) (proposed, 2026-09-29): passage-level ranking and dense confidence as a gate.** The text below is unchanged.
 - **Date:** 2026-09-29
 - **Slice:** `runs/docs-retrieval/` (docs-retrieval-core). The full specification,
   with every parameter and every fact labelled VERIFIED, REPORTED or
