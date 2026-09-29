@@ -136,3 +136,13 @@ The EM (not the owner's choice ratified) rules the embed-v3 work **must split**:
   (golden tokenizer fixture, frozen off-topic list) count toward the diff but
   Implementation must not author or edit them.
 No gated approval is requested yet. Details: 01-scope.md, latest dated amendment.
+
+## Owner choice — 2026-09-29T05:25:45Z
+
+Prompted with the EM's ruling that embed-v3 must split, the owner selected,
+verbatim: "Keep one slice with embed-v3". **This knowingly overrides the EM's scope
+ruling** (01-scope.md). It grants no gated approval and sets no budget number.
+Projection for one slice: ≈1,067–1,127k vs the 820k budget (247–307k over).
+Pending, each asked individually: APPROVAL_REQUEST-2 (rule 5, model), -3 (rule 5,
+weights download), -4 (rule 4, INV-5/INV-4 wording), and a budget number.
+Intent amendments: see INTENT_AMENDMENT_PROPOSAL.md.

@@ -8,7 +8,7 @@
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T03:53:07Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T05:25:45Z
 
 ## Stages
 
@@ -47,6 +47,9 @@ Approval 1 APPROVED by Gopal Patwa, 2026-09-29T00:02:48Z (APPROVAL_RECORD-1.md),
 | Action | Rule | Requested | Decision | Approver | When (UTC) | Record |
 |--------|------|-----------|----------|----------|-----------|--------|
 | Read-only fetch of pinned playbook docs in ingest + CI | 5 | yes | APPROVED | Gopal Patwa | 2026-09-29T00:02:48Z | runs/docs-retrieval/APPROVAL_RECORD-1.md |
+| Local embedding model in retrieval (embed-v3) + onnxruntime/numpy | 5 | yes | PENDING | — | — | runs/docs-retrieval/APPROVAL_REQUEST-2.md |
+| Weights download (huggingface.co + *.hf.co, sha256-pinned) in ingest and CI | 5 | yes | PENDING | — | — | runs/docs-retrieval/APPROVAL_REQUEST-3.md |
+| Amend INV-5 and INV-4 wording | 4 | yes | PENDING | — | — | runs/docs-retrieval/APPROVAL_REQUEST-4.md |
 
 ## Budget
 
@@ -54,7 +57,7 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 820k tokens  ·  **Depth:** standard
 - **Spent:** 510k (62%)  ·  **Remaining:** 310k
-- **Next stage:** Implementation (build) est. 100k → **STOP-AND-ASK** — EM ruled the embed-v3 work must split (docs-retrieval-embed); owner must choose split vs one slice (≈1,067–1,127k vs 820k); see 01-scope.md and ESCALATION-1.md
+- **Next stage:** Implementation (build) est. 195k → **STOP-AND-ASK** — owner kept embed-v3 in one slice (1,067–1,127k projected vs 820k); Requests 2, 3, 4 and the budget number are pending
 
 Budget raised from 690k to 820k on the owner's choice of option A in ESCALATION-1.md ("A, and I'll write the fresh questions"), covering one retry (≈818k projected); this is the owner's decision, not a fit-to-spend. The 690k was docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
@@ -87,4 +90,4 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 
 ## Next action
 
-Owner decides (01-scope.md, latest dated amendment): accept the EM's split (core = lexical v2 Tier 2 ≈812k of 820k; docs-retrieval-embed = embed-v3 Tier 3 ≈645k on its own budget, approvals asked there), keep one slice (≈1,067–1,127k, 247–307k over 820k), or stop. No gated approval is requested yet.
+Owner answers Requests 2, 3, 4 (each separately) and the budget number; amends intent.md on main (see INTENT_AMENDMENT_PROPOSAL.md). If all approved: Implementation of embed-v3 (freeze-first, STOP before any eval run). If any is denied: drop embed-v3, implement lexical v2.
