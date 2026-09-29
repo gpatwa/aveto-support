@@ -8,7 +8,7 @@
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T07:15:57Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T07:17:38Z
 
 ## Stages
 
@@ -84,13 +84,18 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 
 | Stage | Model | Effort | Start (UTC) | End (UTC) | Wall | Tokens | Tool calls | Retry # |
 |-------|-------|--------|-------------|-----------|------|--------|------------|---------|
-| Scope Review | sonnet | medium | 2026-09-27T20:59:31Z | 2026-09-27T21:03:39Z | 4:08 | 55,125 | 18 | 0 |
-| Scope amendment + file-count ruling (EM, resumed once) | sonnet | medium | — | — | — | 33,715 | 20 | 0 |
-| Architecture (resumed once for INV-4/5) | opus | high | — | — | 13:36 | 131,797 | 44 | 0 |
-| Implementation | sonnet | medium | — | — | 6:16 | 107,180 | 28 | 0 |
-| Architecture v2 revision (retry 1; same resumed agent, cumulative) | opus | high | — | — | 6:24 | +54,624 | +35 | 1 |
-| Architecture embed-v3 spec-only design (same resumed agent, cumulative) | opus | high | — | — | 5:40 | +39,162 | +14 | 1 |
-| **Total** | | | | | | 421,603 | 172 | |
+| Scope Review (engineering-manager) | sonnet-5 | medium (declared) | 2026-09-27T20:59:31Z | 2026-09-27T21:03:39Z | 4:08 | 55,125 | 18 | 0 |
+| EM: scope amendment, file-count ruling, embed-v3 re-scope (resumed twice; cumulative) | sonnet-5-5 | medium (declared) | — | — | — | 72,097 | 31 | 0 |
+| Architecture (software-architect) + INV-4/5 follow-up | opus-5-5 | high (declared) | — | — | 13:36 | 131,797 | 44 | 0 |
+| Implementation (backend-architect) | sonnet-5-5 | medium (declared) | — | — | 6:16 | 107,180 | 28 | 0 |
+| Architecture v2 revision (resumed, retry 1) | opus-5-5 | high (declared) | — | — | 6:24 | +54,624 | +35 | 1 |
+| Architecture embed-v3 spec-only design (resumed) | opus-5-5 | high (declared) | — | — | 5:40 | +39,162 | +14 | 1 |
+| Architecture embed-v3 fact-fill (resumed) | opus-5-5 | high (declared) | — | — | 4:49 | +50,042 | +39 | 1 |
+| Architecture ADR 0003 + ARCHITECTURE.md (resumed) | opus-5-5 | high (declared) | — | — | 1:30 | +16,517 | +11 | 1 |
+| QA Evidence: frozen off-topic list (qa-evidence) | sonnet-5-5 | high (declared) | — | — | 2:30 | 44,781 | 15 | 0 |
+| **Total** | | | | | | 571,325 | 235 | |
+
+Measured usage (2026-09-29T07:17:38Z, `usage.mjs . --slice docs-retrieval`, harness-logged models; no role marked `*`, so tool restrictions bound): 5/5 stages measured, 156 requests, cache hit 92.3%. **Processed 19.46M tokens (cost-weighted 4.73M)**, of which software-architect 15.60M (84 requests, opus-5-5, peak context 128k), backend-architect 2.14M, engineering-manager 1.26M, qa-evidence 0.45M. The report's peak-context total is 363k; the Tokens column above (571k) is the sum of the harness's per-spawn `subagent_tokens`, kept as the more conservative figure for the budget. **The budget is in peak-context units; what the slice actually consumed from usage limits is the processed figure, roughly 34× larger.** Models above are copied from the report; effort is not in the log, so it is the declared frontmatter value.
 
 Correction (2026-09-29T05:28:36Z): the Architecture rows above were first recorded as sonnet/medium from memory. The role's frontmatter is `model: opus, effort: high` and its harness transcript has 202 turns, all claude-opus-5-5 (reported by the playbook session and re-checked here against .claude/agents/software-architect.md and the subagent transcript). Token figures are unaffected (harness-reported). Exact ids seen in transcripts: Scope Review claude-sonnet-5; later Engineering Manager and Implementation runs claude-sonnet-5-5. Effort is the declared frontmatter value; it is not measurable from the transcript. After the slice, `node <playbook>/execution/usage.mjs --write` should replace these self-reported figures.
 

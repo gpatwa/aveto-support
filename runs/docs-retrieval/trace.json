@@ -43,7 +43,7 @@
     {
       "stage": "Scope Review",
       "role": "engineering-manager",
-      "model": "sonnet",
+      "model": "sonnet-5",
       "effort": "medium",
       "start": "2026-09-27T20:59:31Z",
       "end": "2026-09-27T21:03:39Z",
@@ -56,7 +56,7 @@
     {
       "stage": "Scope amendment + file-count ruling",
       "role": "engineering-manager",
-      "model": "sonnet",
+      "model": "sonnet-5-5",
       "effort": "medium",
       "tokens": 33715,
       "toolCalls": 20,
@@ -66,7 +66,7 @@
     {
       "stage": "Architecture",
       "role": "software-architect",
-      "model": "opus",
+      "model": "opus-5-5",
       "effort": "high",
       "wallSeconds": 816,
       "tokens": 131797,
@@ -77,8 +77,8 @@
     {
       "stage": "Implementation",
       "role": "backend-architect",
-      "model": "sonnet",
-      "effort": "medium",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
       "wallSeconds": 376,
       "tokens": 107180,
       "toolCalls": 28,
@@ -88,7 +88,7 @@
     {
       "stage": "Architecture v2 revision (retry 1)",
       "role": "software-architect",
-      "model": "opus",
+      "model": "opus-5-5",
       "effort": "high",
       "wallSeconds": 384,
       "tokens": 54624,
@@ -99,7 +99,7 @@
     {
       "stage": "Architecture embed-v3 spec-only design",
       "role": "software-architect",
-      "model": "opus",
+      "model": "opus-5-5",
       "effort": "high",
       "wallSeconds": 340,
       "tokens": 39162,
@@ -110,7 +110,7 @@
     {
       "stage": "QA off-topic calibration list",
       "role": "qa-evidence",
-      "model": "sonnet (frontmatter; transcript: 26 \"model\":\"claude-sonnet-5-5\")",
+      "model": "sonnet-5-5",
       "effort": "high (declared)",
       "tokens": 44781,
       "toolCalls": 15,
@@ -120,7 +120,7 @@
     {
       "stage": "Architecture: ADR 0003 + ARCHITECTURE.md (resumed)",
       "role": "software-architect",
-      "model": "opus",
+      "model": "opus-5-5",
       "effort": "high",
       "tokens": 16517,
       "toolCalls": 11,
@@ -195,6 +195,20 @@
       "sha256": "9045189567b083c83c02336a4f70990c8a8e3ce3e49d5917642fbad6e293627c",
       "commit": "fa3673ad75278003516a570639a39cdc616444e2",
       "questions": 59
+    }
+  },
+  "usageMeasured": {
+    "when": "2026-09-29T07:17:38Z",
+    "requests": 156,
+    "processedTokens": 19460000,
+    "inEquivalentTokens": 4730000,
+    "peakContextSum": 363000,
+    "cacheHit": 0.923,
+    "byRole": {
+      "software-architect": 15600000,
+      "backend-architect": 2140000,
+      "engineering-manager": 1262000,
+      "qa-evidence": 454000
     }
   }
 }
