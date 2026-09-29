@@ -53,12 +53,12 @@ Approval 1 APPROVED by Gopal Patwa, 2026-09-29T00:02:48Z (APPROVAL_RECORD-1.md),
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 820k tokens  ·  **Depth:** standard
-- **Spent:** 472k (58%)  ·  **Remaining:** 348k
+- **Spent:** 510k (62%)  ·  **Remaining:** 310k
 - **Next stage:** Implementation (build) est. 100k → **STOP-AND-ASK** — EM ruled the embed-v3 work must split (docs-retrieval-embed); owner must choose split vs one slice (≈1,067–1,127k vs 820k); see 01-scope.md and ESCALATION-1.md
 
 Budget raised from 690k to 820k on the owner's choice of option A in ESCALATION-1.md ("A, and I'll write the fresh questions"), covering one retry (≈818k projected); this is the owner's decision, not a fit-to-spend. The 690k was docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
-Spent is the harness's `subagent_tokens` (peak context, per RUN_ECONOMICS §1; a resumed agent's figure is cumulative, not additive): Scope Review 55,125 + EM (amendment, then file-count ruling) 33,715 + Architecture (incl. INV-4/5 follow-up) 131,797 + Implementation 107,180 = 327,817; after the v2 revision the Architect's cumulative figure is 186,421 (was 131,797), so total 382,441; after the embed-v3 design the Architect's cumulative figure is 225,583, total 421,603; after the embed-v3 fact-fill the Architect's cumulative figure is 275,625, so total ≈471,645 (EM's two later resumed runs not yet reported by the harness).
+Spent is the harness's `subagent_tokens` (peak context, per RUN_ECONOMICS §1; a resumed agent's figure is cumulative, not additive): Scope Review 55,125 + EM (amendment, then file-count ruling) 33,715 + Architecture (incl. INV-4/5 follow-up) 131,797 + Implementation 107,180 = 327,817; after the v2 revision the Architect's cumulative figure is 186,421 (was 131,797), so total 382,441; after the embed-v3 design the Architect's cumulative figure is 225,583, total 421,603; after the embed-v3 fact-fill the Architect's cumulative figure is 275,625, so total ≈471,645; the EM's cumulative figure is then 72,097 (was 33,715), so total 510,027.
 The installed guard checks spent ≥ budget only; spent + estimate is checked by hand before each spawn.
 Every stage handoff must tell the role: keep Status to one of the four SLICE_STATE values, keep the Budget / Spent / Next stage lines in their exact format, and put reasons and per-slice figures in a note beneath (pack v9 rule; installed pack is v6 + 677c1e1). Reinstall v9+ only after the slice lands.
 
