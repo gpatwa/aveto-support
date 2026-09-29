@@ -23,6 +23,13 @@
       "approver": "Gopal Patwa",
       "when": "2026-09-29T16:54:46Z",
       "record": "runs/docs-retrieval-2/APPROVAL_RECORD-2.md"
+    },
+    {
+      "action": "INV-4 Enforced-by note: remove retired test name",
+      "rule": "4",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T17:49:13Z",
+      "record": "runs/docs-retrieval-2/APPROVAL_RECORD-3.md"
     }
   ],
   "stages": [
@@ -65,6 +72,16 @@
       "toolCalls": 6,
       "retry": 0,
       "outcome": "stale Stage paragraph fixed; 2 other stale lines flagged, not changed"
+    },
+    {
+      "stage": "Architecture: INV-4 note edit (resumed)",
+      "role": "software-architect",
+      "model": "opus-5-5",
+      "effort": "high (declared)",
+      "tokens": 5233,
+      "toolCalls": 8,
+      "retry": 0,
+      "outcome": "approved one-line INV-4 note edit applied"
     }
   ],
   "planConfirmation": {

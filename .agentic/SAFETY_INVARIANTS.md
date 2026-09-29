@@ -33,8 +33,7 @@
   confident match" with no passages. It never returns generated or reworded
   text. **A model may be used only to rank passages and to decide confidence. It
   never produces, selects fragments of, or alters the text returned.**
-  *(Enforced by `test_not_confident_returns_no_hits`,
-  `test_result_invariant_enforced`,
+  *(Enforced by `test_result_invariant_enforced`,
   `test_retrieved_text_is_verbatim_slice_of_file`, and a new
   `test_hybrid_hits_are_verbatim_passages`.)*
 

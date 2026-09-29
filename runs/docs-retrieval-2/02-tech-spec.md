@@ -243,7 +243,9 @@ Tests whose expected order depended on the removed passage/file blend (`test_bm2
 
 **Implementation hand-checks (no eval):** real `ingest` twice → same sha256; `files indexed` equals intake's 123; the index contains no path starting `docs/BACKLOG.md`, `docs/ARCHITECTURE.md`, `docs/PLATFORM_EVAL.md`, `runs/`, `site/`; two or three `retrieve` runs on the Implementer's own questions (not from any eval file) show the output shape. Then the full regression after the last commit: `uv sync --locked && uv run mypy && uv run ruff check && uv run pytest`, and `uv run pytest -m model`.
 
-## Proposed INV change (owner first)
+## Proposed INV change (owner first) — APPROVED and APPLIED
+
+> Approved by the owner 2026-09-29T17:49:13Z (`runs/docs-retrieval-2/APPROVAL_RECORD-3.md`) and applied exactly as below to `.agentic/SAFETY_INVARIANTS.md`; nothing else in that file changed.
 
 INV-4's **text does not need to change**: it is a disjunction, and always returning verbatim passages with provenance satisfies its first branch; "a model may be used only to rank passages and to decide confidence" still permits what the model does. Only the **annotation** goes stale, because it names a retired test. Proposed exact edit to `.agentic/SAFETY_INVARIANTS.md` (not made; the Orchestrator asks the owner):
 
