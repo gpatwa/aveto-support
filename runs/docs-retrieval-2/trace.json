@@ -45,6 +45,16 @@
       "toolCalls": 49,
       "retry": 0,
       "outcome": "02-tech-spec.md; ADR 0004; file-rrf-v1 pre-registered"
+    },
+    {
+      "stage": "Implementation",
+      "role": "backend-architect",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 116263,
+      "toolCalls": 34,
+      "retry": 0,
+      "outcome": "built; 122 tests pass; 11 files; no eval run"
     }
   ],
   "planConfirmation": {
@@ -58,5 +68,9 @@
     "B": "docs-retrieval-2-proof",
     "budgetA": 460000,
     "budgetB": 430000
+  },
+  "frozen": {
+    "methodCommit": "b3f3fc41f2382283678e638b55ff44b32876034c",
+    "when": "2026-09-29T17:18:23Z"
   }
 }
