@@ -98,3 +98,11 @@ Pre-registered in 02-tech-spec.md ("Retrieval — variant v2"), 18 files still.
 Architect's prediction: ungated recall@5 ≈ 17/24 (range 15–20); ≈15% chance of
 passing both bars. It recommends option B (record the ceiling, then an
 embeddings decision) rather than a third lexical variant if v2 misses.
+
+## Owner choice — 2026-09-29T01:32:19Z
+
+"Design an embeddings variant first" (verbatim option label). Spec-only: the
+Architect writes an embeddings variant with approval-ready facts; nothing is
+implemented, added or approved by this. Budget: per-spawn check passes (482k ≤
+820k); the later stages project ≈910k vs 820k, so the owner is asked again before
+Implementation. This choice is not read as approval of that overspend.

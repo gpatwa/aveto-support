@@ -4,11 +4,11 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
 - **Current stage:** Scope Review done — split into `docs-retrieval-core` and `docs-retrieval-ci`; next is Architecture (docs-retrieval-core)
-- **Status:** blocked-on-approval
+- **Status:** in-progress
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T01:31:40Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T01:32:19Z
 
 ## Stages
 
@@ -54,7 +54,7 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 820k tokens  ·  **Depth:** standard
 - **Spent:** 382k (47%)  ·  **Remaining:** 438k
-- **Next stage:** Implementation of the frozen method (docs-retrieval-core, build) est. 100k → **STOP-AND-ASK** — owner must choose what to freeze (v2 lexical vs an embeddings variant); embeddings need their own approvals; see ESCALATION-1.md
+- **Next stage:** Architecture, embeddings variant (spec-only, retry-1 continuation, review) est. 100k → **PROCEED** (382k + 100k = 482k ≤ 820k). Later stages project to ≈910k, over 820k: ask the owner before Implementation.
 
 Budget raised from 690k to 820k on the owner's choice of option A in ESCALATION-1.md ("A, and I'll write the fresh questions"), covering one retry (≈818k projected); this is the owner's decision, not a fit-to-spend. The 690k was docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
@@ -86,4 +86,4 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 
 ## Next action
 
-Owner chooses what to freeze: (a) v2 lexical, implement then STOP before any eval run, record the SHA, owner commits the held-out set after it, run once (gate = held-out ≥80%); (b) design an embeddings variant first (needs rule 5 + rule 4/INV-5 + intent amendment approvals before any implementation); (c) stop core and record the finding.
+Architect writes a SPEC-ONLY embeddings variant (embed-v3) with concrete approval-ready facts. No code, no dependency added, nothing approved. Then the Orchestrator writes the specific approval requests (rule 5; INV-5 = rule 4; intent 'no model' amendment) and asks the owner, plus the budget decision.
