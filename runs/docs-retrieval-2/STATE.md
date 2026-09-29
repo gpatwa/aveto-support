@@ -8,7 +8,7 @@
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 6be205c (resolved from the main checkout; the relative path does not resolve from a worktree)
-- **Started:** 2026-09-29T16:52:18Z  ·  **Updated:** 2026-09-29T17:18:23Z
+- **Started:** 2026-09-29T16:52:18Z  ·  **Updated:** 2026-09-29T17:19:08Z
 
 ## Stages
 
@@ -37,8 +37,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 460k tokens  ·  **Depth:** standard
-- **Spent:** 291k (63%)  ·  **Remaining:** 169k
-- **Next stage:** Doc fix C1 (product-manager, design) est. 20k → **PROCEED** (291k + 20k = 311k ≤ 460k)
+- **Spent:** 306k (67%)  ·  **Remaining:** 154k
+- **Next stage:** none in slice A; slice B `docs-retrieval-2-proof` starts after the owner commits the third held-out set (QA Evidence est. 130k in slice B's own budget)
 
 Scope Review split the slice at the freeze (01-scope.md §1). **This slice A** (`docs-retrieval-2`: Scope Review, Architecture, Implementation, then the freeze) is 330k of estimates + 130k headroom = **460k**. **Slice B** (`docs-retrieval-2-proof`: the owner's held-out set, QA, Security, Release Gate, Post-Launch) is 430k with no separate headroom of its own, created after the freeze is recorded. 460k + 430k = 890k, the budget the owner confirmed. The original plan was Σ 760k over 7 stages, over the ~600k signal in RUN_ECONOMICS §2. Budget units are peak context per spawn (harness `subagent_tokens`); what a slice consumes from usage limits is the processed figure, typically 10–50× larger (slice 1: 19.5M processed vs 854k here). Resuming one agent many times (slice 1's Architect) is what inflates it: prefer one thin, fresh spawn per stage. The pack-v10 hook checks spent + the Next stage estimate above; keep that line current before every spawn.
 
@@ -60,10 +60,11 @@ Scope Review split the slice at the freeze (01-scope.md §1). **This slice A** (
 | Scope Review (engineering-manager) | sonnet-5-5 | medium (declared) | 2026-09-29T16:54:46Z | — | 2:32 | 51,899 | 21 | 0 |
 | Architecture (software-architect; fresh single spawn) | opus-5-5 | high (declared) | — | — | 7:53 | 122,905 | 49 | 0 |
 | Implementation (backend-architect) | sonnet-5-5 | medium (declared) | — | — | 9:12 | 116,263 | 34 | 0 |
-| **Total** | | | | | | 291,067 | 104 | |
+| Doc fix C1 (product-manager) | sonnet-5-5 | medium (declared) | — | — | 0:13 | 15,429 | 6 | 0 |
+| **Total** | | | | | | 306,496 | 110 | |
 
 Model comes from `usage.mjs` (the harness log) after each stage; effort is the declared frontmatter value.
 
 ## Next action
 
-Method frozen at b3f3fc41f2382283678e638b55ff44b32876034c. Remaining slice A items: doc fix C1 (`.agentic/PROJECT_CONTEXT.md`, product-manager) and the owner's answer on the INV-4 annotation edit (tech spec, 'Proposed INV change'). Then the owner writes and commits the third held-out set (>= 15 answerable) after the freeze, and the Orchestrator creates slice B `docs-retrieval-2-proof` (430k) and marks this slice done.
+Method frozen at b3f3fc41f2382283678e638b55ff44b32876034c. Doc fix C1 done (`.agentic/PROJECT_CONTEXT.md` Stage paragraph rewritten by product-manager; other stale lines listed for the owner, not changed). Remaining slice A item: the owner's answer on the INV-4 annotation edit (tech spec, 'Proposed INV change'). Then the owner writes and commits the third held-out set (>= 15 answerable) after the freeze, and the Orchestrator creates slice B `docs-retrieval-2-proof` (430k) and marks this slice done.

@@ -63,8 +63,18 @@ required.
 
 ## Stage
 
-Greenfield. Nothing built yet. First slice: retrieval only, no model
-(`intent.md`).
+The first slice (`docs-retrieval`) built the retrieval step (ingest,
+provenance, a deterministic index, and a local embedding model fused with
+keyword search) but did not pass its held-out gate (answerable 5 of 17, bar
+14), so nothing shipped. It is closed; the code stays on the branch.
+
+The second slice (`docs-retrieval-2`, in progress) keeps that machinery and
+changes the method: a fixed user-documentation corpus and file-level ranking,
+gated on a fresh held-out set. `retrieve` returns its top 5 files and its top
+score; deciding "the docs don't answer this" moves to the future check step.
+
+No generative model is used anywhere. One small local embedding model
+(BAAI/bge-small-en-v1.5, ONNX, approved by the owner) only helps rank passages.
 
 ## Decisions already made (by the owner, 2026-09-26)
 

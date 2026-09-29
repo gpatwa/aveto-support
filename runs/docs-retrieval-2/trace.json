@@ -55,6 +55,16 @@
       "toolCalls": 34,
       "retry": 0,
       "outcome": "built; 122 tests pass; 11 files; no eval run"
+    },
+    {
+      "stage": "Doc fix C1 (PROJECT_CONTEXT Stage paragraph)",
+      "role": "product-manager",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 15429,
+      "toolCalls": 6,
+      "retry": 0,
+      "outcome": "stale Stage paragraph fixed; 2 other stale lines flagged, not changed"
     }
   ],
   "planConfirmation": {
