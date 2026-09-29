@@ -1,0 +1,39 @@
+{
+  "schema": "agentic-sdlc/trace@2",
+  "slice": "docs-retrieval-2-proof",
+  "tier": 2,
+  "overlay": false,
+  "landed": false,
+  "started": "2026-09-29T20:58:53Z",
+  "operator": "Gopal Patwa",
+  "leastPrivilegeEnforced": true,
+  "leastPrivilegeNote": "Run from a worktree of aveto-support; role subagents load from this repo's .claude/agents/ with their tools frontmatter and write-scope hooks.",
+  "telemetrySource": "self-reported",
+  "approvals": [
+    {
+      "action": "drop the unanswerable half of the gate (slice A)",
+      "rule": "4",
+      "record": "runs/docs-retrieval-2/APPROVAL_RECORD-1.md"
+    },
+    {
+      "action": "retrieval always returns its top 5 files (slice A)",
+      "rule": "4",
+      "record": "runs/docs-retrieval-2/APPROVAL_RECORD-2.md"
+    },
+    {
+      "action": "INV-4 note edit (slice A)",
+      "rule": "4",
+      "record": "runs/docs-retrieval-2/APPROVAL_RECORD-3.md"
+    }
+  ],
+  "frozen": {
+    "methodCommit": "b3f3fc41f2382283678e638b55ff44b32876034c"
+  },
+  "heldOut3": {
+    "commit": "74c5a2d",
+    "answerable": 16,
+    "unanswerable": 4,
+    "gate": "13 of 16"
+  },
+  "stages": []
+}
