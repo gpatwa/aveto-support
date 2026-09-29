@@ -83,3 +83,11 @@ Not fired: 1 (nothing sent or posted), 2 (nothing destroyed), 3 (no deploy), 5 (
 ## Risk to state plainly (from slice 1's own artefacts, not a new run)
 
 Slice 1's held-out result put a correct file in the top 5 for only 8 of 17 questions ignoring abstention (47%). Corpus scope removes 3 of 126 files, and only 2 of the 17 held-out answers were confidently wrong (both included broad docs). So corpus scope alone is unlikely to close a gap from about 47% to 80%; the outcome depends mostly on file-level ranking. The intent argues both changes on general grounds and forbids choosing by score, and the plan follows it. If the gate is missed, the failure loop applies and the next question is the reranker (Decision 3 says so). This is a risk note, not a prediction.
+
+## Owner confirmation — 2026-09-29T16:54:46Z
+
+Prompted separately, the owner (Gopal Patwa) selected, verbatim:
+- Plan: **"Confirm all, inferred lines too"** — Decisions 1–3 stand, and the three lines marked (inferred) are **kept** as confirmed constraints: retrieval stops abstaining; the third held-out set is isolated like slice 1's; the off-topic calibration becomes unused by retrieval.
+- Approval Request 1 (rule 4): **"Approve"** (APPROVAL_RECORD-1.md).
+- Approval Request 2 (rule 4): **"Approve: always return the top 5 files"** (APPROVAL_RECORD-2.md).
+- Stakes: **"Don't tick it; stay on the short path"**. Plan, tier (2 proposed) and stage list stand.
