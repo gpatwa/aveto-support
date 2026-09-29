@@ -21,3 +21,22 @@ Five lines the Architect lists as contradicted (verbatim in runs/docs-retrieval/
 5. Done means: "byte-identical output" → keep, on the same machine and Python (Architect's determinism section).
 
 Not needed unless approved: none of these amendments is meaningful if any request is denied.
+
+## To finalise (added 2026-09-29T07:15:57Z)
+
+The owner's amended `intent.md` in the main checkout is **uncommitted** and its banner
+says "DRAFT, not yet confirmed". The Orchestrator will not start Implementation on it
+until it is confirmed and committed on `main`. Owner's answer on the open question,
+verbatim: "Don't tick it; stay on the short path".
+
+Suggested replacements (owner's own edit; the Orchestrator does not touch intent.md):
+
+1. In the banner, replace "**Amended by the owner, 2026-09-29 — DRAFT, not yet confirmed.**"
+   with "**Amended and confirmed by the owner, 2026-09-29.**" and drop the sentence
+   "Drafted by Claude; the owner reviews every changed line." once you have reviewed them.
+2. Under "Open questions", replace the bullet with:
+   "None. The one question the amendment raised — whether changing INV-5 ticks
+   'Changes a safety control' — was answered by the owner on 2026-09-29: no; the slice
+   stays on the short path. Rule 4 approval for the wording is recorded in
+   `runs/docs-retrieval/APPROVAL_RECORD-4.md`."
+3. Commit `intent.md` on `main`, then tell the Orchestrator.

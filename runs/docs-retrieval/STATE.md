@@ -8,7 +8,7 @@
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T05:33:57Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T07:15:57Z
 
 ## Stages
 
@@ -96,4 +96,4 @@ Correction (2026-09-29T05:28:36Z): the Architecture rows above were first record
 
 ## Next action
 
-ADR 0003 written. BLOCKED before Implementation on the owner amending intent.md on main (INTENT_AMENDMENT_PROPOSAL.md). Then: merge main and re-copy the intent into runs/docs-retrieval/intent.md; backend-architect implements embed-v3 and STOPS before any eval run; QA generates tests/fixtures/wordpiece_golden.json; record the frozen commit SHA; owner commits the held-out set; run once via --eval-file.
+Still BLOCKED before Implementation: the owner's amended intent.md is only an uncommitted draft in the main checkout (banner: DRAFT, not yet confirmed). Owner answered the open Stakes question (verbatim "Don't tick it; stay on the short path"). Owner to remove the draft banner, resolve the Open questions bullet, and commit intent.md on main (suggested text: INTENT_AMENDMENT_PROPOSAL.md, "To finalise"). Then: merge main, re-copy the intent to runs/docs-retrieval/intent.md, backend-architect implements embed-v3 and STOPS before any eval run; QA generates tests/fixtures/wordpiece_golden.json; record the frozen commit SHA; owner commits the held-out set; run once via --eval-file.
