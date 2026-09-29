@@ -4,11 +4,11 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
 - **Current stage:** Scope Review done — split into `docs-retrieval-core` and `docs-retrieval-ci`; next is Architecture (docs-retrieval-core)
-- **Status:** blocked-on-approval
+- **Status:** in-progress
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-27T21:04:32Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T00:02:48Z
 
 ## Stages
 
@@ -23,8 +23,8 @@
 
 | Stage | Owner | Status | Artefact | Gate |
 |-------|-------|--------|----------|------|
-| Architecture | software-architect | pending — awaits owner acceptance of the split | — | — |
-| Implementation | backend-architect | pending — blocked on Approval-1 | — | — |
+| Architecture | software-architect | pending | — | — |
+| Implementation | backend-architect | pending | — | — |
 | QA Evidence | qa-evidence | pending | — | — |
 | Security Review | security-privacy | pending | — | — |
 | Release Gate | release-manager | pending | — | — |
@@ -33,7 +33,7 @@
 
 | Stage | Owner | Status | Artefact | Gate |
 |-------|-------|--------|----------|------|
-| Implementation | backend-architect | pending — blocked on docs-retrieval-core + Approval-1 | — | — |
+| Implementation | backend-architect | pending — blocked on docs-retrieval-core's Release Gate | — | — |
 | QA Evidence | qa-evidence | pending | — | — |
 | Security Review | security-privacy | pending | — | — |
 | Release Gate | release-manager | pending | — | — |
@@ -42,11 +42,11 @@
 ## Approvals
 
 Plan confirmation (not a rule approval): Gopal Patwa, 2026-09-27T20:59:31Z, verbatim: "plan is approved".
-Approval 1 is PENDING and gates **Implementation**, per the confirmed plan; Scope Review and Architecture do not depend on it.
+Approval 1 APPROVED by Gopal Patwa, 2026-09-29T00:02:48Z (APPROVAL_RECORD-1.md), verbatim "Approve". Split accepted with the ≥80% bar moved into core (verbatim "Accept split + ≥80% in core (Recommended)").
 
 | Action | Rule | Requested | Decision | Approver | When (UTC) | Record |
 |--------|------|-----------|----------|----------|-----------|--------|
-| Read-only fetch of pinned playbook docs in ingest + CI | 5 | yes | PENDING | — | — | runs/docs-retrieval/APPROVAL_REQUEST-1.md |
+| Read-only fetch of pinned playbook docs in ingest + CI | 5 | yes | APPROVED | Gopal Patwa | 2026-09-29T00:02:48Z | runs/docs-retrieval/APPROVAL_RECORD-1.md |
 
 ## Budget
 
@@ -54,9 +54,9 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 690k tokens  ·  **Depth:** standard
 - **Spent:** 55k (8%)  ·  **Remaining:** 635k
-- **Next stage:** Architecture (docs-retrieval-core, review) est. 100k → **STOP-AND-ASK** — the owner has not yet accepted the split (plan: a split returns to the owner before anything else runs)
+- **Next stage:** Architecture (docs-retrieval-core, review) est. 100k → **PROCEED** after the EM's scope amendment (55k + ~30k amend + 100k ≤ 690k; checked by hand)
 
-The 690k above is docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), pending owner acceptance of the split in `01-scope.md`.
+The 690k above is docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
 Spent is the harness's `subagent_tokens` for Scope Review (55,125; peak context, per RUN_ECONOMICS §1), not the 100k estimate.
 The installed guard checks spent ≥ budget only; spent + estimate is checked by hand before each spawn.
@@ -82,4 +82,4 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 
 ## Next action
 
-Owner decides: (1) accept or amend the split in 01-scope.md (incl. where the ≥80% bar is enforced), (2) answer APPROVAL_REQUEST-1. Then spawn software-architect for docs-retrieval-core Architecture.
+EM amends 01-scope.md: docs-retrieval-core owns meeting the ≥80% bar (QA runs the score at stage 9); docs-retrieval-ci owns enforcing it and item 9. Then spawn software-architect for docs-retrieval-core Architecture.
