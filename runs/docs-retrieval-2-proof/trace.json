@@ -35,5 +35,40 @@
     "unanswerable": 4,
     "gate": "13 of 16"
   },
-  "stages": []
+  "stages": [
+    {
+      "stage": "QA Evidence (fresh single spawn)",
+      "role": "qa-evidence",
+      "model": "sonnet-5-5",
+      "effort": "high (declared)",
+      "tokens": 26879,
+      "toolCalls": 11,
+      "retry": 0,
+      "outcome": "held-out-3 FAIL 11/16; diagnostics 12/17 and 19/24"
+    }
+  ],
+  "evalRuns": [
+    {
+      "n": 1,
+      "set": "held-out-3 (gate)",
+      "answerable": "11/16",
+      "gate": "FAIL",
+      "file": "runs/docs-retrieval-2-proof/eval-run-1-heldout3.txt"
+    },
+    {
+      "n": 2,
+      "set": "held-out-2 (diagnostic)",
+      "answerable": "12/17",
+      "file": "runs/docs-retrieval-2-proof/eval-run-2-heldout2-diagnostic.txt"
+    },
+    {
+      "n": 3,
+      "set": "dev (diagnostic)",
+      "answerable": "19/24",
+      "file": "runs/docs-retrieval-2-proof/eval-run-3-dev-diagnostic.txt"
+    }
+  ],
+  "escalations": [
+    "runs/docs-retrieval-2-proof/ESCALATION-1.md"
+  ]
 }
