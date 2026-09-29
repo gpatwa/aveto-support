@@ -66,8 +66,8 @@
     {
       "stage": "Architecture",
       "role": "software-architect",
-      "model": "sonnet",
-      "effort": "medium",
+      "model": "opus",
+      "effort": "high",
       "wallSeconds": 816,
       "tokens": 131797,
       "toolCalls": 44,
@@ -88,8 +88,8 @@
     {
       "stage": "Architecture v2 revision (retry 1)",
       "role": "software-architect",
-      "model": "sonnet",
-      "effort": "medium",
+      "model": "opus",
+      "effort": "high",
       "wallSeconds": 384,
       "tokens": 54624,
       "toolCalls": 35,
@@ -99,8 +99,8 @@
     {
       "stage": "Architecture embed-v3 spec-only design",
       "role": "software-architect",
-      "model": "sonnet",
-      "effort": "medium",
+      "model": "opus",
+      "effort": "high",
       "wallSeconds": 340,
       "tokens": 39162,
       "toolCalls": 14,
@@ -162,5 +162,11 @@
     "when": "2026-09-29T05:28:14Z",
     "verbatim": "Set 1,130k",
     "tokens": 1130000
-  }
+  },
+  "corrections": [
+    {
+      "when": "2026-09-29T05:28:36Z",
+      "what": "3 software-architect stage entries corrected from sonnet/medium to opus/high (frontmatter + harness transcript); tokens unchanged"
+    }
+  ]
 }

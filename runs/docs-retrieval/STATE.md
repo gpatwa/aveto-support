@@ -82,11 +82,13 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 |-------|-------|--------|-------------|-----------|------|--------|------------|---------|
 | Scope Review | sonnet | medium | 2026-09-27T20:59:31Z | 2026-09-27T21:03:39Z | 4:08 | 55,125 | 18 | 0 |
 | Scope amendment + file-count ruling (EM, resumed once) | sonnet | medium | — | — | — | 33,715 | 20 | 0 |
-| Architecture (resumed once for INV-4/5) | sonnet | medium | — | — | 13:36 | 131,797 | 44 | 0 |
+| Architecture (resumed once for INV-4/5) | opus | high | — | — | 13:36 | 131,797 | 44 | 0 |
 | Implementation | sonnet | medium | — | — | 6:16 | 107,180 | 28 | 0 |
-| Architecture v2 revision (retry 1; same resumed agent, cumulative) | sonnet | medium | — | — | 6:24 | +54,624 | +35 | 1 |
-| Architecture embed-v3 spec-only design (same resumed agent, cumulative) | sonnet | medium | — | — | 5:40 | +39,162 | +14 | 1 |
+| Architecture v2 revision (retry 1; same resumed agent, cumulative) | opus | high | — | — | 6:24 | +54,624 | +35 | 1 |
+| Architecture embed-v3 spec-only design (same resumed agent, cumulative) | opus | high | — | — | 5:40 | +39,162 | +14 | 1 |
 | **Total** | | | | | | 421,603 | 172 | |
+
+Correction (2026-09-29T05:28:36Z): the Architecture rows above were first recorded as sonnet/medium from memory. The role's frontmatter is `model: opus, effort: high` and its harness transcript has 202 turns, all claude-opus-5-5 (reported by the playbook session and re-checked here against .claude/agents/software-architect.md and the subagent transcript). Token figures are unaffected (harness-reported). Exact ids seen in transcripts: Scope Review claude-sonnet-5; later Engineering Manager and Implementation runs claude-sonnet-5-5. Effort is the declared frontmatter value; it is not measurable from the transcript. After the slice, `node <playbook>/execution/usage.mjs --write` should replace these self-reported figures.
 
 ## Next action
 
