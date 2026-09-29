@@ -1,0 +1,171 @@
+# Retrieval evaluation set — HELD-OUT gate for docs-retrieval-core.
+#
+# Written after the method was frozen (c9b64e7; last state commit d78de50).
+# This set is the gate: a correct source in the top 5 for at least 80% of
+# answerable questions, and "no confident match" for at least 80% of
+# unanswerable ones. evals/retrieval.toml is the development set and gates
+# nothing (intent.md, amended 2026-09-29).
+#
+# Provenance — stated plainly, because it is the weak point:
+#   - Drafted by Claude in the playbook session, 2026-09-29, for the owner to
+#     review line by line and commit. The owner's commit is what makes it the
+#     gate.
+#   - The drafter also drafted the development set, and has read eval run 1's
+#     results and the v2 / embed-v3 specs. It has NOT run retrieval, the eval
+#     command, or the index on any of these questions, and no retrieval output
+#     informed them. No role that designed or built retrieval has seen them.
+#   - Every question is on a topic the development set does not cover. One
+#     source file is shared with it: agents/engineering-manager.md (h14 here,
+#     a06 there), for a different section (context-window guardrails, not
+#     the short path).
+#
+# How it was drafted (same rules as the development set):
+#   - Every `sources` path was checked to contain the answer at the pinned
+#     commit 3a83b669a8b53dfdff869a1bbe361bdb156e3a13. `where` names the passage.
+#   - Phrased the way a user would ask, not copied from headings.
+#   - A question counts as answered if ANY listed source is in the top 5.
+#   - Two unanswerable questions are hard negatives: "SLA" and "subscription"
+#     appear in the docs in an unrelated sense. Every unanswerable question was
+#     checked to be absent at the pinned commit.
+
+pinned_commit = "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+
+# ── Answerable ──────────────────────────────────────────────────────────────
+
+[[question]]
+id = "h01"
+question = "If my session closes halfway through, where does the run keep track of how far it got?"
+sources = ["execution/pack/protocols/SLICE_STATE.md"]
+where = "any fresh session reads it to resume a slice cold"
+
+[[question]]
+id = "h02"
+question = "How does one agent make sure it has given the next one everything it needs?"
+sources = ["execution/pack/protocols/HANDOFF_CHECK.md", "templates/AGENT_HANDOFF_TEMPLATE.md"]
+where = "the handoff check on the outgoing handoff"
+
+[[question]]
+id = "h03"
+question = "Who keeps an eye on how much the product costs to run?"
+sources = ["agents/finops.md"]
+where = "unit economics, budgets and kill-switches"
+
+[[question]]
+id = "h04"
+question = "Is there a complete example of one feature going through the whole process?"
+sources = ["examples/README.md", "examples/saved-items-bulk-delete/README.md"]
+where = "worked examples, one real slice end to end"
+
+[[question]]
+id = "h05"
+question = "How can I see where a run is at without reading all its files?"
+sources = ["execution/pack/commands/agentic-status.md"]
+where = "report slice status: stage, pending approvals, open failures"
+
+[[question]]
+id = "h06"
+question = "After an outage, what should we write up so it doesn't happen again?"
+sources = ["templates/INCIDENT_REVIEW_TEMPLATE.md"]
+where = "blameless incident review"
+
+[[question]]
+id = "h07"
+question = "How do I know a test for a bug fix would actually have caught the bug?"
+sources = ["skills/tdd-fail-first/SKILL.md"]
+where = "confirm the test fails on the unfixed code"
+
+[[question]]
+id = "h08"
+question = "I'm building a tool that clicks through websites for people. Is there guidance for that kind of product?"
+sources = ["project-packs/browser-automation-product.md"]
+where = "project pack for a product that drives a real browser"
+
+[[question]]
+id = "h09"
+question = "When I say yes to something the agents asked about, how is that written down?"
+sources = ["execution/pack/protocols/APPROVAL_PROTOCOL.md"]
+where = "the human approval interrupt and its record"
+
+[[question]]
+id = "h10"
+question = "Once something is deployed, who checks that it really works for users?"
+sources = ["agents/production-verification.md"]
+where = "is the live system actually working, right after a deploy"
+
+[[question]]
+id = "h11"
+question = "Who makes sure we handle people's personal data and where it's stored properly?"
+sources = ["agents/data-governance.md"]
+where = "PII, residency and retention; GDPR"
+
+[[question]]
+id = "h12"
+question = "I want to try two versions of a page and see which one does better. How should I set that up?"
+sources = ["templates/EXPERIMENT_SPEC_TEMPLATE.md", "agents/data-analyst.md"]
+where = "hypothesis, primary metric, sample size and duration"
+
+[[question]]
+id = "h13"
+question = "Are there targets for how fast and how reliably the process itself should run?"
+sources = ["execution/pack/protocols/PIPELINE_SLOS.md"]
+where = "pipeline SLOs measured from the Trace tables"
+
+[[question]]
+id = "h14"
+question = "How does it stop an agent from losing track on a really big task?"
+sources = ["agents/engineering-manager.md"]
+where = "context-window guardrails"
+
+[[question]]
+id = "h15"
+question = "When a feature changes, how do the docs get updated to match?"
+sources = ["templates/DOC_DELTA_TEMPLATE.md"]
+where = "the doc delta for a slice"
+
+[[question]]
+id = "h16"
+question = "Where do we think through how an attacker might abuse a new feature?"
+sources = ["templates/THREAT_MODEL_TEMPLATE.md"]
+where = "lightweight STRIDE threat model"
+
+[[question]]
+id = "h17"
+question = "Which agent builds the screens and buttons people click on?"
+sources = ["agents/frontend-developer.md"]
+where = "the Frontend Developer agent"
+
+# ── Unanswerable: the docs do not say ───────────────────────────────────────
+# Each was checked to be absent at the pinned commit. The expected result is
+# "no confident match", never the least-bad passage.
+
+[[question]]
+id = "hu01"
+question = "Can I run Aveto on a Raspberry Pi?"
+answerable = false
+
+[[question]]
+id = "hu02"
+question = "Does it create tickets in Jira?"
+answerable = false
+
+[[question]]
+id = "hu03"
+question = "Is there a phone app for approving runs on the go?"
+answerable = false
+
+[[question]]
+id = "hu04"
+question = "Can the agents write all their documents in Spanish?"
+answerable = false
+
+[[question]]
+id = "hu05"
+question = "What response-time SLA do you promise for paid support?"
+answerable = false
+hard_negative = "\"SLA\" appears in the SRE brief and incident and vendor templates, about a product's own SLAs — never Aveto support"
+
+[[question]]
+id = "hu06"
+question = "How do I cancel my Aveto subscription?"
+answerable = false
+hard_negative = "\"subscription\" appears as the Claude Code subscription and an Azure subscription — never an Aveto plan"
