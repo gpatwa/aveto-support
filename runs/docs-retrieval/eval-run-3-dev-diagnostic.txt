@@ -1,0 +1,36 @@
+eval: evals/retrieval.toml  index: gpatwa/agentic-sdlc-playbook @ 3a83b669…  threshold: 0.702
+a01  MISS  expected docs/GETTING_STARTED.md; got README.md, execution/pack/AGENTS.md, docs/DEPLOYMENT.md, docs/AGENTIC_SDLC.md
+a02  MISS  expected README.md; got docs/GETTING_STARTED.md, templates/AGENT_HANDOFF_TEMPLATE.md, execution/pack/CLAUDE.md, docs/HUMAN_APPROVAL_RULES.md, execution/README.md
+a03  HIT   docs/GETTING_STARTED.md (rank 1)
+a04  HIT   execution/pack/protocols/RUN_ECONOMICS.md (rank 1)
+a05  MISS  expected templates/INTENT_TEMPLATE.md; got no confident match (below-threshold, similarity 0.69)
+a06  MISS  expected docs/AGENTIC_SDLC.md | agents/engineering-manager.md; got agents/market-researcher.md, prompts/market-research.md, prompts/ux-audit.md
+a07  MISS  expected docs/HUMAN_APPROVAL_RULES.md; got no confident match (below-threshold, similarity 0.65)
+a08  HIT   execution/pack/protocols/FAILURE_LOOP.md (rank 1)
+a09  HIT   execution/pack/protocols/RUN_ECONOMICS.md (rank 5)
+a10  MISS  expected execution/pack/protocols/RUN_ECONOMICS.md; got no confident match (below-threshold, similarity 0.66)
+a11  HIT   docs/GETTING_STARTED.md (rank 3)
+a12  MISS  expected execution/pack/protocols/MODEL_ROUTING.md; got no confident match (below-threshold, similarity 0.63)
+a13  MISS  expected agents/qa-evidence.md | templates/QA_EVIDENCE_TEMPLATE.md; got no confident match (below-threshold, similarity 0.70)
+a14  MISS  expected execution/pack/AGENTS.md | execution/ADAPTERS.md; got no confident match (below-threshold, similarity 0.70)
+a15  HIT   agents/cloud-deployment.md (rank 1)
+a16  MISS  expected templates/ADR_TEMPLATE.md; got no confident match (below-threshold, similarity 0.67)
+a17  HIT   agents/on-call-engineer.md (rank 1)
+a18  HIT   agents/customer-support.md (rank 1)
+a19  MISS  expected docs/RELEASE_GATES.md; got no confident match (below-threshold, similarity 0.66)
+a20  HIT   docs/STANDARDS_WATCH.md (rank 2)
+a21  MISS  expected docs/VALIDATION_MATRIX.md; got no confident match (below-threshold, similarity 0.70)
+a22  MISS  expected project-packs/ai-agent-product.md; got agents/ai-engineer.md, agents/ai-governance.md, prompts/ml-training.md, templates/AI_RISK_ASSESSMENT_TEMPLATE.md
+a23  HIT   agents/tech-writer.md (rank 2)
+a24  MISS  expected docs/AGENT_ROLES.md; got no confident match (below-threshold, similarity 0.68)
+u01  HIT   no confident match (below-threshold, similarity 0.55)
+u02  MISS  returned 5 passages; top execution/pack/AGENTS.md (similarity 0.72)
+u03  HIT   no confident match (below-threshold, similarity 0.70)
+u04  HIT   no confident match (below-threshold, similarity 0.66)
+u05  HIT   no confident match (below-threshold, similarity 0.63)
+u06  MISS  returned 5 passages; top execution/pack/protocols/APPROVAL_PROTOCOL.md (similarity 0.70)
+answerable:   10/24 (41.7%)  required >= 80%  FAIL
+unanswerable: 4/6 (66.7%)  required >= 80%  FAIL
+diagnostic:   ungated recall@5 17/24 (not a gate)
+eval: FAIL
+exit code: 1
