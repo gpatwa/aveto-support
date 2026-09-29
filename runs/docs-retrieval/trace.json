@@ -31,6 +31,17 @@
       "toolCalls": 18,
       "retry": 0,
       "outcome": "split proposed"
+    },
+    {
+      "stage": "Scope amendment",
+      "role": "engineering-manager",
+      "model": "sonnet",
+      "effort": "medium",
+      "wallSeconds": 37,
+      "tokens": 27268,
+      "toolCalls": 13,
+      "retry": 0,
+      "outcome": "\u226580% bar moved into core"
     }
   ],
   "evalSet": {

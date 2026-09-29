@@ -21,11 +21,12 @@ Done-means items split cleanly along a real dependency edge, not an
 arbitrary token cut.
 
 - **`docs-retrieval-core`** — ingest, retrieve, the eval score command,
-  the stack ADR, and the usage README. This is the retrieval engine: one
-  coherent unit of behaviour, testable entirely offline once a docs
-  snapshot exists.
+  **meeting the ≥80% eval bar (Done-means item 8)**, the stack ADR, and the
+  usage README. This is the retrieval engine: one coherent unit of
+  behaviour, verified against the owner's eval set.
 - **`docs-retrieval-ci`** — the GitHub Actions workflow that runs install,
-  type-check, tests and the eval score on every push/PR. This depends on
+  type-check, tests and the eval score on every push/PR, and **enforces**
+  the item 8 bar as a required check. This depends on
   `docs-retrieval-core` existing (there is nothing to wire into CI
   otherwise) and is a distinct kind of risk: it is the piece that touches
   the build/test/commit path and is what actually fires
@@ -33,9 +34,9 @@ arbitrary token cut.
 
 Splitting this way also separates two different verification concerns
 cleanly, which is its own justification independent of the token count:
-core retrieval logic (QA verifies precision/recall against the owner's
-eval set) vs. CI plumbing (QA verifies the workflow gates correctly on a
-red score). Bundling both into one Implementation → QA → Security →
+core retrieval logic (QA runs the score command and verifies the ≥80% bar
+is met on the owner's eval set) vs. CI plumbing (QA verifies the workflow
+gates correctly on a red score). Bundling both into one Implementation → QA → Security →
 Release pass would have made a QA finding in one hard to disentangle from
 the other.
 
@@ -60,12 +61,19 @@ its Release Gate) inherits this decision rather than re-litigating it.
 | 4 | Security Review | security-privacy | review | 100k | standard |
 | 5 | Release Gate | release-manager | review | 100k | standard |
 
+Stage 3 (QA Evidence) runs the eval score command on
+`evals/retrieval.toml` and records the result: a correct source in the top
+5 for ≥80% of answerable questions (≥20 of 24) and ≥80% of unanswerable
+ones returning "no confident match" (≥5 of 6). Stage 5's Release Gate
+fails if the score is below either threshold.
+
 Σ = 560k, 5 stages. Under both RUN_ECONOMICS §2 signals. Budget with one
 build stage of headroom = **690k**.
 
 **Owns these Done-means items** (numbering per `00-slice-plan.md` §"Success
 criteria"): **1, 2, 3, 4, 5, 6 (verify only — met at intake), 7 (verify
-only — met at intake), 10, 11.**
+only — met at intake), 8 (meeting the bar; `ci` owns enforcing it), 10,
+11.**
 
 ### `docs-retrieval-ci`
 
@@ -89,12 +97,15 @@ with the EM brief's "internal refactor" compression pattern (Architect
 stub only; here the stub is folded into `core`'s tech spec rather than
 repeated).
 
-**Owns these Done-means items:** **8, 9.** (`core` builds and locally
-verifies the score command that item 8 needs; `docs-retrieval-ci` is what
-actually closes item 8, by making the score a required CI check — the
-same command, gated instead of just printed.)
+**Owns these Done-means items:** **8 (enforcement only), 9.** Item 8 is
+split plainly: `core` owns *meeting* the ≥80% bar (builds the score
+command and passes both thresholds at its own QA/Release Gate);
+`docs-retrieval-ci` owns *enforcing* it (makes the same command a required
+check on every push/PR so a score below threshold fails the build). The
+bar is already met by `core`; `ci` only gates it.
 
-**No Done-means item is owned by both slices, and none is dropped.** Item
+**No Done-means item is owned by both slices (item 8's two parts are
+divided as above), and none is dropped.** Item
 1 ("clean checkout installs, type-checks, passes tests") is built by
 `core` and re-checked (not re-owned) by `ci`'s QA stage as a regression
 guard — adding the workflow must not break the local commands it wraps.
@@ -132,64 +143,36 @@ the entire point of that slice.
 
 ## Approval points
 
-`APPROVAL_REQUEST-1.md` (rule 5: "adding a network call to the
-build/test/commit path") is **PENDING**. Per the confirmed plan and
-`STATE.md`, it gates **Implementation**, not Scope Review or Architecture.
-Concretely, that means:
+**Approval-1 (rule 5: "adding a network call to the build/test/commit
+path") is APPROVED** — see `runs/docs-retrieval/APPROVAL_RECORD-1.md`
+(Gopal Patwa, 2026-09-29T00:02:48Z). The owner also accepted the split and
+its combined budget, with the ≥80% eval bar moved into `core`.
 
-- **`docs-retrieval-core` Architecture may proceed now** (this handoff)
-  regardless of the answer — but the tech spec must design for both
-  outcomes, because the answer changes the ingest module's default I/O
-  path, not just a downstream wiring choice.
-- **`docs-retrieval-core` Implementation is blocked until Approval-1 is
-  answered.** The approval request explicitly names "the ingest command,
-  run locally" as one of the two triggering points, alongside CI — so
-  writing `ingest`'s network-fetch path counts, not just wiring it into
-  CI. Do not start Implementation on the strength of this handoff alone.
-- **`docs-retrieval-ci` Implementation is blocked on the same approval**
-  (it is the workflow itself that runs ingest automatically on every
-  push).
-
-**How each answer changes scope:**
-
-- **Approved (live fetch allowed):** `ingest` fetches
+- **Live fetch is allowed in `ingest` and in CI.** `ingest` fetches
   `gpatwa/agentic-sdlc-playbook` at `3a83b669a8b53dfdff869a1bbe361bdb156e3a13`
-  live from GitHub, in both local runs and in `docs-retrieval-ci`'s
-  workflow. `docs-retrieval-core`'s own test suite may exercise this fetch
-  directly (or via a recorded-fixture/VCR-style test double — Architect's
-  call, recorded in the tech spec) since network access is the approved,
-  intended behaviour. Simpler design; CI availability is coupled to
-  GitHub's.
-- **Denied:** per APPROVAL_REQUEST-1's own "what is reversible if
-  denied" — vendor a snapshot of the pinned commit's markdown into the
-  repo as fixture data. `docs-retrieval-core`'s tests and
-  `docs-retrieval-ci`'s workflow both run offline against that snapshot.
-  `ingest` still supports fetching a live repo+commit (the intent's
-  "source is configurable" constraint requires this as a capability), but
-  it is exercised as a manual, human-run command outside the automated
-  test/CI path, not invoked by anything that runs on every push. This adds
-  one committed fixture file to `docs-retrieval-core`'s file count and one
-  "keep the snapshot in sync with the pin" note to
-  `docs/ARCHITECTURE.md`; it does not change any Done-means item's
-  wording (item 10, "the only network access is fetching the pinned
-  docs," stays true either way — the manual command is still that fetch).
+  live from GitHub, in local runs and in `docs-retrieval-ci`'s workflow.
+  `docs-retrieval-core`'s tests may exercise this fetch directly or via a
+  recorded-fixture test double (Architect's call, recorded in the tech
+  spec). The approval covers only the read-only fetch of that pinned repo;
+  any other network access still needs a new approval.
+- **The vendored-snapshot fallback is no longer needed.** Do not vendor a
+  snapshot. `ingest` still takes a configurable repo + pinned commit (the
+  intent's "source is configurable" constraint).
+- **No slice is blocked on approval.** `docs-retrieval-core` Architecture
+  may proceed now, and Implementation is unblocked for both slices (ci
+  remains sequenced after core's Release Gate).
 
-**Needs the owner, before `docs-retrieval-core` Implementation can start:**
-1. Answer APPROVAL_REQUEST-1 (fetch vs. vendored snapshot).
-2. Confirm accepting the split's higher combined budget (1,220k across
-   both slices, vs. the original single-slice 890k) — or say if the
-   single-slice overrun is preferred instead. Recorded here as a decision
-   the EM surfaces per RUN_ECONOMICS §2 ("stop and ask the human with the
-   numbers"), not one the EM makes silently.
+**Needs the owner:** nothing outstanding. The split and its combined
+1,220k budget are accepted.
 
 ## What `docs-retrieval-core`'s Architecture stage must also decide
 
 Beyond the normal tech-spec content:
 
-- Which of the two Approval-1 outcomes the design supports as default,
-  and how the other is still reachable (config flag, not a second code
-  path) — write this so Implementation does not block a second time once
-  the owner answers.
+- How the eval score command reports the two thresholds (answerable
+  top-5 hits out of 24, unanswerable "no confident match" out of 6) and
+  its exit code, so QA can run it at stage 3 and the Release Gate can fail
+  on a miss in `core`, and so `ci` can later gate on it unchanged.
 - How `docs-retrieval-ci` will later invoke `ingest`/`retrieve`/the score
   command (CLI entry points, exit codes, where the score is printed so CI
   can parse/threshold it) — record this in `docs/ARCHITECTURE.md` even
@@ -227,8 +210,8 @@ No commands exist yet (greenfield); the Architect defines them in
 
 ## Acceptance criteria (from intent "Done means", split by slice)
 
-`docs-retrieval-core` (items 1, 2, 3, 4, 5, 10, 11 to build; 6, 7 to
-verify unchanged since intake):
+`docs-retrieval-core` (items 1, 2, 3, 4, 5, 10, 11 to build; 8 to meet;
+6, 7 to verify unchanged since intake):
 
 1. A clean checkout installs, type-checks and passes tests via
    `.agentic/LOCAL_COMMANDS.md`.
@@ -245,20 +228,22 @@ verify unchanged since intake):
    from `a4e5275` except by the owner.
 7. **Met at intake** — the eval set landed (`a4e5275`) before any
    retrieval code. QA re-verifies via git history.
-10. No model is called anywhere; the only network access is fetching the
-    pinned docs (see "Approval points" for how this is satisfied under
-    either Approval-1 outcome).
+8. **Met here.** On `evals/retrieval.toml`, a correct source is in the
+   top 5 for ≥80% of answerable questions (≥20 of 24) and ≥80% of
+   unanswerable questions return "no confident match" (≥5 of 6). The
+   score is printed by a command built in `core`; QA runs it at stage 3
+   and `core`'s Release Gate fails if either threshold is missed.
+10. No model is called anywhere; the only network access is the approved
+    read-only fetch of the pinned docs (Approval-1, APPROVED).
 11. `docs/adr/0001` records the stack decision; `docs/ARCHITECTURE.md` is
     started; the README explains how to run `ingest` and `retrieve`
     against your own docs.
 
-`docs-retrieval-ci` (items 8, 9):
+`docs-retrieval-ci` (item 8 enforcement, item 9):
 
-8. On the owner's eval set, a correct source is in the top 5 for ≥80% of
-   answerable questions (≥20 of 24) and ≥80% of unanswerable questions
-   return "no confident match" (≥5 of 6). The score is printed by a
-   command (built in `core`) **and checked in CI** (built here) — a score
-   below threshold fails the build.
+8. **Enforcement only.** The bar in item 8 is already met by `core`; here
+   the same score command becomes a required check on every push and pull
+   request, so a score below either threshold fails the build.
 9. The repo's first GitHub Actions workflow runs install, type-check,
    tests and the eval score on every push and pull request.
 
@@ -287,15 +272,12 @@ would target.
 
 ## Open questions for the next agent
 
-- [ ] Fetch vs. vendored snapshot (APPROVAL_REQUEST-1) — owner, before
-      Implementation starts on either slice.
-- [ ] Accept the split's combined 1,220k budget vs. the original
-      single-slice 890k estimate — owner, alongside the approval answer.
+None outstanding. Approval-1 is approved (live fetch) and the split with
+its combined 1,220k budget is accepted (APPROVAL_RECORD-1.md).
 
 ## Escalation path
 
-If the Architect hits a blocker other than the two open questions above
-(e.g. the eval set's format under-specifies something `retrieve`'s output
+If the Architect hits a blocker (e.g. the eval set's format under-specifies something `retrieve`'s output
 contract needs), record it in the Architecture stage's own artefact and
 escalate to the EM for a possible re-scope, per the EM brief's
 "Escalation" responsibility — do not silently expand this slice's file or
