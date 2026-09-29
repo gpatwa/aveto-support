@@ -8,6 +8,11 @@
 
 - **Status:** proposed, **revised once (v2, 2026-09-29)**. See "Revision 1" at
   the end. The Decision below describes v1 as it was first proposed.
+  **Ranking and confidence are superseded by
+  [ADR 0003](0003-hybrid-embedding-retrieval.md) (2026-09-29).** Heading-based
+  passages, pre-registration, and "no confident match returns no passages"
+  still stand. v2 remains specified as the lexical fallback. The history below
+  is unchanged.
 - **Date:** 2026-09-28 (v1) and 2026-09-29 (v2)
 - **Slice:** `runs/docs-retrieval/` (docs-retrieval-core). The full specification,
   including every parameter, is `runs/docs-retrieval/02-tech-spec.md`, sections

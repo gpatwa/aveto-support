@@ -862,6 +862,20 @@ The owner's fresh set is the only unbiased measurement of v2.
 
 ## Retrieval — variant embed-v3 (SPEC ONLY: owner chose to pursue it in this slice; NO gated approval recorded; not implemented)
 
+> **Update 2026-09-29: approvals granted.**
+> - APPROVAL_RECORD-2, -3 and -4 (rules 5, 5 and 4) were each given separately
+>   by the owner.
+> - The INV-4 and INV-5 text from §3 has been applied byte for byte to
+>   `.agentic/SAFETY_INVARIANTS.md` by the Orchestrator.
+> - `docs/adr/0003-hybrid-embedding-retrieval.md` is written, with status
+>   accepted and implementation pending.
+> - The off-topic list `evals/calibration-offtopic.toml` is frozen at commit
+>   `fa3673ad…`, with sha256
+>   `9045189567b083c83c02336a4f70990c8a8e3ce3e49d5917642fbad6e293627c`.
+>   `docs-source.toml` pins that value as `offtopic_sha256`.
+>
+> The "SPEC ONLY / no approval" wording below is historical.
+
 > **Status (updated 2026-09-29).** The owner chose "Pursue embed-v3 in this
 > slice". **That choice grants no gated approval.** Nothing in this section may
 > be built, installed or downloaded, and `.agentic/SAFETY_INVARIANTS.md` may not

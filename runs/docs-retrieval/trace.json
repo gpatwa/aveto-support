@@ -116,6 +116,16 @@
       "toolCalls": 15,
       "retry": 0,
       "outcome": "59 questions; frozen"
+    },
+    {
+      "stage": "Architecture: ADR 0003 + ARCHITECTURE.md (resumed)",
+      "role": "software-architect",
+      "model": "opus",
+      "effort": "high",
+      "tokens": 16517,
+      "toolCalls": 11,
+      "retry": 1,
+      "outcome": "ADR 0003 accepted/impl pending; ARCHITECTURE.md updated"
     }
   ],
   "evalSet": {
