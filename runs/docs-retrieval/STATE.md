@@ -8,7 +8,7 @@
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T15:26:12Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T15:28:06Z
 
 ## Stages
 
@@ -57,8 +57,8 @@ Approval 1 APPROVED by Gopal Patwa, 2026-09-29T00:02:48Z (APPROVAL_RECORD-1.md),
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 1130k tokens  ·  **Depth:** standard
-- **Spent:** 727k (64%)  ·  **Remaining:** 403k
-- **Next stage:** QA: generate the tokenizer golden fixture (qa-evidence, build) est. 40k → **PROCEED** (727k + 40k = 767k ≤ 1130k). Projection to Release Gate ≈1,177k, ≈47k over 1,130k: owner to be asked at or before Security.
+- **Spent:** 743k (66%)  ·  **Remaining:** 387k
+- **Next stage:** Held-out scoring (qa-evidence, build) est. 160k → **WAITING on the owner's held-out set** (not yet committed). Projection to Release Gate: 743k + 160k + Security 130k + Release Gate 120k = 1,153k, ≈23k over 1,130k: ask the owner at or before Security.
 
 Budget set to 1,130k by the owner ("Set 1,130k", 2026-09-29T05:28:14Z) for one slice with embed-v3 (EM projection ≈1,067–1,127k, incl. 60k re-run reserve). Earlier: raised from 690k to 820k on the owner's choice of option A in ESCALATION-1.md ("A, and I'll write the fresh questions"), covering one retry (≈818k projected); this is the owner's decision, not a fit-to-spend. The 690k was docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
@@ -71,6 +71,13 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 - **evals/calibration-offtopic.toml** — 59 QA-authored questions, frozen 2026-09-29T05:32:03Z at commit `fa3673ad75278003516a570639a39cdc616444e2`, **sha256 `9045189567b083c83c02336a4f70990c8a8e3ce3e49d5917642fbad6e293627c`**. Not read by the Architect or the engineer; loaded by path only. Overlap with the owner's held-out set is unchecked (not in the repo) and is the owner's to check. QA agent run (44,781 tokens; models seen in transcript: 26 "model":"claude-sonnet-5-5"; frontmatter sonnet/high).
 
 - **Method commit (implementation, embed-v3):** `c9b64e7bf55da02a925e5a0be8ca37a4a9dc189a`, committed 2026-09-29T07:45:37Z. This is the method to freeze. The golden fixture and its generator are test-only additions after it; if the fixture forces any change to `aveto_support/`, the method changes and the freeze is re-recorded before the owner writes the held-out set. Off-topic list still sha256 `9045189567b083c83c02336a4f70990c8a8e3ce3e49d5917642fbad6e293627c`. Index sha256 (three byte-identical ingests) `1f6b2194db040446aa09ba6021d30a80df4361bcbc1e9c2958292c97d0cbe5c9`. No eval has been run on any set.
+
+### METHOD FROZEN — 2026-09-29T15:28:06Z
+
+- **Frozen method commit:** `c9b64e7bf55da02a925e5a0be8ca37a4a9dc189a` (embed-v3 implementation). Verified **unchanged** through the fixture commit `593bb35110da0b0b5ae3e10817a277f6ca01a81e`: `git diff c9b64e7 -- aveto_support pyproject.toml uv.lock docs-source.toml tests/*.py evals` is empty.
+- Golden tokenizer fixture landed in `593bb35110da0b0b5ae3e10817a277f6ca01a81e` (test-only; `tokenizers==0.22.2` one-off, not a dependency; 13 cases; mutation-checked by the Orchestrator: one perturbed id fails the test, restored fixture passes).
+- Off-topic list sha256 `9045189567b083c83c02336a4f70990c8a8e3ce3e49d5917642fbad6e293627c` (frozen `fa3673a`); index sha256 `1f6b2194db040446aa09ba6021d30a80df4361bcbc1e9c2958292c97d0cbe5c9`.
+- **No eval has been run on any set since eval run 1** (the lexical v1 run, 2/24). From this point the owner may commit the held-out set. **No change to `aveto_support/`, `pyproject.toml`, `uv.lock`, `docs-source.toml` or the off-topic list between the held-out commit and the scoring run.**
 
 ## Failure budget
 
@@ -97,7 +104,8 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 | Architecture ADR 0003 + ARCHITECTURE.md (resumed) | opus-5-5 | high (declared) | — | — | 1:30 | +16,517 | +11 | 1 |
 | QA Evidence: frozen off-topic list (qa-evidence) | sonnet-5-5 | high (declared) | — | — | 2:30 | 44,781 | 15 | 0 |
 | Implementation of embed-v3 (resumed; cumulative peak 262,939, was 107,180) | sonnet-5-5 | medium (declared) | — | — | 18:14 | +155,759 | +41 | 1 |
-| **Total** | | | | | | 727,084 | 276 | |
+| QA golden fixture (resumed; cumulative peak 60,704, was 44,781) | sonnet-5-5 | high (declared) | — | — | 1:08 | +15,923 | +10 | 0 |
+| **Total** | | | | | | 743,007 | 286 | |
 
 Measured usage (2026-09-29T07:17:38Z, `usage.mjs . --slice docs-retrieval`, harness-logged models; no role marked `*`, so tool restrictions bound): 5/5 stages measured, 156 requests, cache hit 92.3%. **Processed 19.46M tokens (cost-weighted 4.73M)**, of which software-architect 15.60M (84 requests, opus-5-5, peak context 128k), backend-architect 2.14M, engineering-manager 1.26M, qa-evidence 0.45M. The report's peak-context total is 363k; the Tokens column above (571k) is the sum of the harness's per-spawn `subagent_tokens`, kept as the more conservative figure for the budget. **The budget is in peak-context units; what the slice actually consumed from usage limits is the processed figure, roughly 34× larger.** Models above are copied from the report; effort is not in the log, so it is the declared frontmatter value.
 
@@ -105,4 +113,4 @@ Correction (2026-09-29T05:28:36Z): the Architecture rows above were first record
 
 ## Next action
 
-QA generates tests/fixtures/wordpiece_golden.json (+ generator) in a throwaway env under Approval 5, then reports whether the implementation's tokenizer matches. If it does: record the frozen SHA, owner commits the held-out set, run once via --eval-file. If it does not: that is a method bug, fix goes to the Implementation and the freeze is re-recorded before the held-out set.
+Method frozen at c9b64e7 (fixture commit 593bb35110da0b0b5ae3e10817a277f6ca01a81e). Owner writes and commits the held-out set (>=15 answerable and 5 unanswerable, same format as evals/retrieval.toml; suggested path evals/retrieval-heldout.toml; not read by any role that builds retrieval) AFTER this commit. Then merge main, verify no method file changed, and QA scores once: `uv run python -m aveto_support eval --eval-file evals/retrieval-heldout.toml`, plus the dev set at the same SHA as a diagnostic (not a gate).

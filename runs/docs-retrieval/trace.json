@@ -144,6 +144,16 @@
       "toolCalls": 41,
       "retry": 1,
       "outcome": "built; 118 tests pass; 1 expected fail (golden fixture); no eval run"
+    },
+    {
+      "stage": "QA golden fixture (resumed)",
+      "role": "qa-evidence",
+      "model": "sonnet-5-5",
+      "effort": "high (declared)",
+      "tokens": 15923,
+      "toolCalls": 10,
+      "retry": 0,
+      "outcome": "fixture 13 cases; golden test passes"
     }
   ],
   "evalSet": {
@@ -229,5 +239,10 @@
       "qa-evidence": 454000
     }
   },
-  "methodCommit": "c9b64e7bf55da02a925e5a0be8ca37a4a9dc189a"
+  "methodCommit": "c9b64e7bf55da02a925e5a0be8ca37a4a9dc189a",
+  "frozen": {
+    "methodCommit": "c9b64e7bf55da02a925e5a0be8ca37a4a9dc189a",
+    "fixtureCommit": "593bb35110da0b0b5ae3e10817a277f6ca01a81e",
+    "when": "2026-09-29T15:28:06Z"
+  }
 }
