@@ -8,7 +8,7 @@
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T07:45:37Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T15:26:12Z
 
 ## Stages
 
@@ -50,6 +50,7 @@ Approval 1 APPROVED by Gopal Patwa, 2026-09-29T00:02:48Z (APPROVAL_RECORD-1.md),
 | Local embedding model in retrieval (embed-v3) + onnxruntime/numpy | 5 | yes | APPROVED | Gopal Patwa | 2026-09-29T05:28:14Z | runs/docs-retrieval/APPROVAL_RECORD-2.md |
 | Weights download (huggingface.co + *.hf.co, sha256-pinned) in ingest and CI | 5 | yes | APPROVED | Gopal Patwa | 2026-09-29T05:28:14Z | runs/docs-retrieval/APPROVAL_RECORD-3.md |
 | Amend INV-5 and INV-4 wording | 4 | yes | APPROVED | Gopal Patwa | 2026-09-29T05:28:14Z | runs/docs-retrieval/APPROVAL_RECORD-4.md |
+| One-off throwaway `tokenizers` install (PyPI, pinned, outside the project) to generate the golden fixture | 5 (scope beyond Approvals 2–4) | yes | APPROVED | Gopal Patwa | 2026-09-29T15:26:12Z | runs/docs-retrieval/APPROVAL_RECORD-5.md |
 
 ## Budget
 
@@ -57,7 +58,7 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 1130k tokens  ·  **Depth:** standard
 - **Spent:** 727k (64%)  ·  **Remaining:** 403k
-- **Next stage:** QA: generate the tokenizer golden fixture (qa-evidence, build) est. 40k → **STOP-AND-ASK** — the reference tokenizer package is not covered by Approvals 2–4 (owner question pending). Projection to Release Gate: 727k + 40k + QA 160k + Security 130k + Release Gate 120k = 1,177k, ≈47k over 1,130k.
+- **Next stage:** QA: generate the tokenizer golden fixture (qa-evidence, build) est. 40k → **PROCEED** (727k + 40k = 767k ≤ 1130k). Projection to Release Gate ≈1,177k, ≈47k over 1,130k: owner to be asked at or before Security.
 
 Budget set to 1,130k by the owner ("Set 1,130k", 2026-09-29T05:28:14Z) for one slice with embed-v3 (EM projection ≈1,067–1,127k, incl. 60k re-run reserve). Earlier: raised from 690k to 820k on the owner's choice of option A in ESCALATION-1.md ("A, and I'll write the fresh questions"), covering one retry (≈818k projected); this is the owner's decision, not a fit-to-spend. The 690k was docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
@@ -104,4 +105,4 @@ Correction (2026-09-29T05:28:36Z): the Architecture rows above were first record
 
 ## Next action
 
-Implementation done and committed (method commit above). Owner decides: may QA generate tests/fixtures/wordpiece_golden.json using a one-off, throwaway install of the HF `tokenizers` package (not added to pyproject/uv.lock)? Then QA generates it; record the frozen SHA; owner commits the held-out set; run once via --eval-file. Budget: projected ≈47k over 1,130k at the Release Gate; decide at Security or earlier.
+QA generates tests/fixtures/wordpiece_golden.json (+ generator) in a throwaway env under Approval 5, then reports whether the implementation's tokenizer matches. If it does: record the frozen SHA, owner commits the held-out set, run once via --eval-file. If it does not: that is a method bug, fix goes to the Implementation and the freeze is re-recorded before the held-out set.

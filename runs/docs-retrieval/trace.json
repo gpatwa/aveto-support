@@ -37,6 +37,13 @@
       "approver": "Gopal Patwa",
       "when": "2026-09-29T05:28:14Z",
       "record": "runs/docs-retrieval/APPROVAL_RECORD-4.md"
+    },
+    {
+      "action": "one-off tokenizers install for golden fixture",
+      "rule": "5",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T15:26:12Z",
+      "record": "runs/docs-retrieval/APPROVAL_RECORD-5.md"
     }
   ],
   "stages": [
