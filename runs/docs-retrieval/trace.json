@@ -63,6 +63,17 @@
       "toolCalls": 28,
       "retry": 0,
       "outcome": "built; eval run 1 FAIL 2/24 (ungated 14/24); escalated"
+    },
+    {
+      "stage": "Architecture v2 revision (retry 1)",
+      "role": "software-architect",
+      "model": "sonnet",
+      "effort": "medium",
+      "wallSeconds": 384,
+      "tokens": 54624,
+      "toolCalls": 35,
+      "retry": 1,
+      "outcome": "lexical v2 pre-registered; predicted 17/24 ungated, ~15% pass"
     }
   ],
   "evalSet": {
@@ -100,5 +111,12 @@
     "when": "2026-09-29T00:41:49Z",
     "verbatim": "A, and I'll write the fresh questions",
     "budgetRaisedTo": "820k"
+  },
+  "heldOutDecision": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-29T01:31:40Z",
+    "verbatim": "Freeze first; held-out set is the gate (Recommended)",
+    "embeddingsAnswer": "Allow a local embedding model",
+    "embeddingsApproved": false
   }
 }

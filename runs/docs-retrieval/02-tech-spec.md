@@ -1,7 +1,11 @@
 # Tech Spec — docs-retrieval-core
 
 > Owner: Software Architect Agent
-> Status: ready for implementation
+> Status: ready for implementation. **Revised for retry 1 (2026-09-29).** The
+> retrieval method is now **variant v2** (`ranking-v2` + `corroboration-v1`),
+> pre-registered in "Retrieval — variant v2" before it has been run. The v1 text
+> is kept and marked superseded. Everything outside retrieval scoring and its
+> tests is unchanged.
 > Source: short path, so there is no feature spec or UX spec. Requirements come from
 > `runs/docs-retrieval/intent.md` ("Done means", "Must not break", "Constraints") and
 > the owner-accepted scope in `runs/docs-retrieval/01-scope.md`.
@@ -405,6 +409,14 @@ impossible to score or search with an index the current code did not produce.
 
 ## Retrieval
 
+> **SUPERSEDED IN PART by "Retrieval — variant v2" below (retry 1, 2026-09-29).**
+> This v1 text is kept as the record of what eval run 1 measured. v2 replaces
+> the stemmer, adds file-level evidence to the ranking, and replaces the
+> coverage signal with corroboration. The tokenizer's casefold, split and
+> stopwords, the passage bag, k1, b, the weights, top_k, per_file_cap, the
+> null-query generator, the seed, count, lengths and quantile, and the
+> "no hits when not confident" rule all carry over unchanged.
+
 Everything in this section is **fixed now, before any code runs against the eval
 set**. The values are textbook defaults or follow from general principle. None was
 chosen by looking at a retrieval result. See "Overfitting protocol".
@@ -581,6 +593,267 @@ The heading line for a preamble passage reads `Heading: (top of file)`. Excerpt
 lines are the passage's own text with no edits beyond truncation. `…` marks a
 cut-off line.
 
+## Retrieval — variant v2 (retry 1; pre-registered 2026-09-29, before it is run)
+
+This is retry 1 of 2, per `FAILURE_LOOP.md` and `ESCALATION-1.md` "Resolution"
+(owner option A). It is written before any code implements it and before any
+eval run of it. Every value below is fixed here. Implementation re-implements
+this section and changes nothing else.
+
+### Disclosure: what the Architect has now seen
+
+- I have read `runs/docs-retrieval/eval-run-1.txt` in full. That includes which
+  questions missed (22 of 24 answerable were withheld; a02 and a24 returned
+  confident but wrong sets), the expected files for each, the per-question
+  coverage values (answerable 0.26–0.82, unanswerable 0.26–0.60) and the
+  aggregate: ungated recall@5 of 14/24, and τ = 1.000.
+- I read the implemented `aveto_support/search.py` and `index.py` to confirm
+  they match the v1 spec. They do.
+- I did **not** look up any missed question in the corpus, inspect the index for
+  specific files, or simulate v2 on any eval question. The changes below are
+  argued from retrieval principles and from how this corpus is built: 126 files,
+  910 heading passages, and one shared process vocabulary.
+- **The original 30 questions are no longer unseen evidence** (Overfitting
+  protocol §7). A v2 score on them is a measurement *after* looking. The owner's
+  fresh held-out set, which the Architect has not seen, will not look for and
+  cannot see, is the evidence that counts (see "What a good result on a fresh
+  set looks like").
+
+### Diagnosis: why τ came out at 1.000
+
+**The flaw is in the coverage formula, and calibration exposed it.** The
+calibration code did what v1 specified.
+
+1. **Coverage is presence-only and saturates.** It is a ratio of matched to
+   total idf mass, so *any* query whose words all appear in one passage scores
+   exactly 1.0, however common those words are. This corpus is one team's
+   process documentation, so words like agent, stage, slice, run, approval and
+   gate recur across most files. Null queries drew words uniformly from each
+   passage's vocabulary, so many of them were made of such shared words, and
+   some passage contained all of them. More than 10% of the 2000 nulls sat at
+   the 1.0 ceiling, so the 90th percentile *was* the ceiling. A threshold at the
+   ceiling carries no information: only a perfect match passes.
+2. **The signal's main ingredient could not be calibrated.** v1's strongest
+   abstention mechanism was that words absent from the docs keep maximal idf in
+   the denominator. The null queries are built from words *in* the docs, so they
+   never contain an absent word, and calibration never saw the mechanism it was
+   meant to set a threshold for. Signal and calibration were mismatched by
+   construction.
+3. **The absent-word penalty does not separate the classes.** People phrasing
+   answerable questions use everyday words the docs do not use, so the penalty
+   lands on answerable questions as heavily as on unanswerable ones. That is
+   visible in eval run 1's overlapping coverage ranges (disclosed above). It is
+   also the general, well-known vocabulary-mismatch problem of lexical
+   retrieval.
+
+Fixing only the null generator (for example drawing only rare words) would
+lower τ. But it would set that lower τ on a signal whose two classes overlap, so
+it would trade withheld answerable questions for leaked unanswerable ones
+without separating them. That is why v2 changes the **signal** and keeps the
+null generator as it was.
+
+**Ranking is the binding constraint, and it has two general causes in this
+corpus.** An ungated recall of 14/24 means ranking alone cannot pass the bar.
+
+- **Passages are small and topics are spread across a file.** 910 passages from
+  126 files is about 7 heading sections per file. A question about a file's
+  topic ("how does X work") shares words with the file as a whole, spread
+  across several sections, while some unrelated short section may contain one
+  rare query word. Passage-only BM25, with length normalisation favouring short
+  sections, rewards the latter. In IR terms this is the case for combining
+  passage-level and document-level evidence (Callan, SIGIR 1994, "Passage-level
+  evidence in document retrieval").
+- **Plural-only stemming leaves most morphology unmatched.** Users ask with
+  verbs and inflections (failing, stopped, installed, writing), while docs
+  often use other forms of the same word (failure, stop, install, written).
+  Harman's S-stemmer folds only plurals. Stronger stemming is the standard
+  lexical answer to inflectional mismatch for short queries. v1 rejected it to
+  protect hard negatives, but eval run 1 shows abstention was not where the
+  slice failed.
+
+### Change 1: stemmer `porter-1980` (replaces `harman-s`)
+
+`tokenize` keeps v1's casefold, split and NLTK stopwords (removed **before**
+stemming). It then applies **Porter's original algorithm** (M.F. Porter, "An
+algorithm for suffix stripping", *Program* 14(3), 1980): steps 1a, 1b (with its
+cleanup), 1c, 2, 3, 4, 5a and 5b exactly as published, with the published
+measure *m* and the conditions `*S`, `*v*`, `*d` and `*o`. This is **not** NLTK's
+or Snowball's variant. It is written in plain Python inside `search.py`, in
+about 120 lines, with no dependency. Tokens of length ≤ 2 are not stemmed.
+
+Why Porter rather than Porter2 (Snowball English): the 1980 algorithm is frozen
+and specified in one short paper, so "implemented as published" can be checked.
+Porter2 is still maintained and has changed over time.
+
+### Change 2: ranking `ranking-v2` (file-level evidence added to passage BM25)
+
+For each passage p in file f, and query terms q (unique, sorted):
+
+- **P(p)** is v1's passage BM25 over the passage bag: body, plus the heading
+  trail ×2, plus the path ×1, with passage-level idf over N = passage count,
+  k1 = 1.2, b = 0.75. It is unchanged apart from the stemmer.
+- **F(f)** is BM25 of the same query over **file bags**, with idf computed over
+  the file count and the same k1 and b. Length normalisation uses file lengths
+  and the average file length. A file bag is the tokens of every indexed
+  passage's `text` in that file (heading lines included once, as they appear in
+  the text) plus the path tokens × `path_weight` (1), added **once per file**.
+- **Candidates** are passages with P(p) > 0. A passage that shares no word with
+  the question is never returned, however well its file matches. This keeps
+  INV-4: a returned passage always contains question evidence.
+- **Combined score** `s(p) = λ · P(p)/P* + (1 − λ) · F(f)/F*`, where P* is the
+  largest P and F* the largest F among candidates and their files for this
+  query, and **λ = 0.5**. Dividing by the per-query maximum puts both terms on
+  [0, 1]. Equal weight is the neutral prior when neither level is known to
+  dominate. It was not searched for.
+- Order by `(−s, path, line_start)`, then apply v1's per-file cap of 2 and
+  top_k of 5, both unchanged.
+
+The effect: a section ranks high when it matches the question itself *and*
+sits in a file that is about the question. The per-file cap still makes the top
+5 span at least 3 files.
+
+### Change 3: confidence `corroboration-v1` (replaces coverage)
+
+For the rank-1 passage p (by combined score), with **passage-level** idf and
+M = the set of query terms present in p's bag:
+
+`corroboration(q, p) = Σ_{t∈M} idf(t) − max_{t∈M} idf(t)`, and it is 0 when M
+is empty. Sums run over sorted M.
+
+The principle: a single shared word is what a coincidence looks like, whether it
+is a hard negative (a keyword used in an unrelated sense), a random null, or
+one rare word in an unrelated section. Evidence that a passage is *about* the
+question is **several** of the question's words meeting in one passage,
+weighted by how specific they are. Corroboration measures exactly the evidence
+*beyond* the single strongest word.
+
+Properties v1 lacked:
+
+- **It does not saturate.** It has no denominator and no ceiling. More, and
+  more specific, co-occurring words mean more evidence, so a percentile of null
+  values cannot pin to a ceiling.
+- **It is neutral to absent words.** A word that appears nowhere in the docs
+  adds 0 and subtracts 0. The null queries contain only in-corpus words, so the
+  signal and its calibration now measure the same thing. v1's mismatch is gone.
+- **It still refuses a lone keyword.** A question whose only link to a passage
+  is one word gets 0, which is below any positive τ.
+
+### Calibration: `cross-file-null-v2`
+
+The generator is **identical** to v1: seed 20260926, 2000 queries, lengths
+{2, 3, 4, 5}, distinct files, one word drawn uniformly from each passage's
+sorted distinct body tokens, and the **90th percentile**, nearest-rank. Only the
+measured value changes: each null query's value is the corroboration of its
+rank-1 passage under ranking-v2 (0.0 if nothing matches). τ is `round(p90, 6)`,
+a non-negative number with no fixed upper bound. The quantile keeps v1's
+rationale (half the owner's tolerated 20%). Changing it now would be turning a
+knob after seeing the test.
+
+- **Small corpus** (fewer than 5 eligible files): τ = `1000000.0`, which no
+  question reaches. It still fails closed, and JSON has no `inf`.
+- **Degenerate calibration**: if the p90 value is 0.0 (at least 90% of nulls
+  have no corroboration at all), τ is the smallest positive null value, or
+  1000000.0 if there is none. Otherwise every query with any corroboration
+  would pass, and "confident" must mean strictly more than a lone keyword. The
+  rule is fixed here and is generic to any corpus.
+
+The rule is `confident ⇔ corroboration(q, rank-1) ≥ τ`. v1's ordered checks
+still apply: no-searchable-words, then no-passage-matched, then below-threshold.
+A result that is not confident still has **no hits** (INV-4 unchanged).
+
+### Deltas to other sections (v2)
+
+- **Index file format.** Bump `schema` to `"aveto-support/index@2"`, and change
+  `params` to `{"tokenizer": "v2", "stopwords": "nltk-english-179", "stemmer":
+  "porter-1980", "ranking": "ranking-v2", "file_lambda": 0.5, "k1": 1.2, "b":
+  0.75, "heading_weight": 2, "path_weight": 1, "top_k": 5, "per_file_cap": 2,
+  "confidence": "corroboration-v1"}` and `calibration.method` to
+  `"cross-file-null-v2"`. `load_index` rejects v1 indexes (schema mismatch). All
+  determinism rules are unchanged, and file bags are built over files sorted by
+  path.
+- **Data model.** Rename `RetrievalResult.coverage` to `confidence` (a
+  non-negative float, the corroboration of the rank-1 candidate). `Hit.score` is
+  the combined score s(p). `RetrievalParams` gains `ranking`, `file_lambda` and
+  `confidence`.
+- **Output.** Retrieve prints `Confidence: <corroboration, 2 dp> (threshold
+  <τ, 2 dp>)`. The not-confident reason reads `Reason: below-threshold (best
+  corroboration 1.73, threshold 2.41)`. The eval per-question lines say
+  `corroboration` where v1 said `coverage`. The header line prints the threshold
+  to 3 dp. The literal first line `no confident match`, the summary lines, the
+  exit codes and the ingest report layout are unchanged. The ingest threshold
+  line reads `(cross-file-null-v2, p90 of 2000 null queries, seed 20260926)`.
+- **Service surface.** `Searcher.coverage` is replaced by
+  `Searcher.corroboration(terms, passage) -> float`. `Searcher.rank` returns
+  candidates ordered by the combined score. `search.calibrate` returns a value
+  ≥ 0 (not bounded to [0, 1]). No new public functions.
+- **Evidence.** The first v2 run is committed verbatim as
+  `runs/docs-retrieval/eval-run-2.txt` before any further change (Overfitting
+  protocol §3).
+
+### General ideas considered and rejected for v2
+
+| Idea | Why not |
+|------|---------|
+| Synonym, spelling or paraphrase tables | Forbidden (§5), and it cannot generalise: any table would be written from the only questions in the repo |
+| Pseudo-relevance feedback (RM3/Rocchio query expansion) | It amplifies first-pass errors. With about 58% first-pass recall, expansion would often be built from the wrong files. It also adds three parameters (feedback depth, term count, weight) with no principled values for this corpus |
+| Lowering the quantile or hand-setting τ | That turns a knob after seeing the test, and it cannot help, because ranking is the binding constraint |
+| Per-file cap of 1 (five distinct files) | It would be chosen because the eval scores files, not because it serves a reader. Keeping v1's cap of 2 |
+| Raising heading or path weights | There is no new principled value. Any choice would be a guess steered by run 1 |
+| Merging small sections or a minimum passage size | It coarsens citations. File-level evidence addresses the same small-passage problem without changing provenance |
+| Corpus-frequency stoplist (drop words in >X% of passages) | idf already down-weights them, and X would be a new knob |
+| Proximity or phrase scoring | Little gain for short questions, and more parameters |
+| Keeping coverage, fixing only the null generator | The diagnosis above shows the classes overlap on coverage, so a better τ on a non-separating signal does not help |
+| Embeddings (local model or API) | Out of scope: a new dependency or a model call. That is the owner's decision if v2 misses (see "Finding") |
+
+### Prediction, recorded before the run
+
+- **Ungated recall@5 on the original 30: 17/24 expected, with an honest range of
+  15–20/24.** The chance of it reaching ≥ 20 is about 25%. Both changes attack
+  real, general causes (small passages, and morphology), but neither touches
+  the dominant one: questions phrased in words the docs never use.
+- **Gated result.** Answerable will be at or below the ungated number, perhaps
+  1–4 lower, because corroboration withholds questions whose only link to the
+  right passage is one word. Unanswerable is expected at 4–6 of 6. Losing the
+  absent-word penalty removes v1's strongest guard, and some unanswerable
+  questions will contain two common in-corpus words together.
+- **Probability that v2 passes both bars on the original 30: about 15%.**
+
+### Finding for the owner (stated before the run, as the escalation rule asks)
+
+**Plain lexical retrieval is unlikely to reach 80% on questions phrased the way
+this eval set phrases them.** The eval set was deliberately written in user
+language, not the docs' language. That is the right test, and it is exactly the
+vocabulary-mismatch case lexical methods are known to handle poorly. v2 fixes
+two general weaknesses of v1 and a real calibration defect. It is still bounded
+by words shared between question and doc.
+
+If v2 misses, I recommend **not** spending retry 2 on a third lexical variant.
+Each further lexical change is fitted more closely to these 30 questions and
+tells the owner less. The decision the owner then faces is the one in
+`ESCALATION-1.md` option B: record the lexical ceiling, and decide separately
+whether to add embeddings (a new dependency or a model call, under rules 5
+and 6).
+
+### What a good result on the fresh held-out set looks like
+
+The owner's fresh set is the only unbiased measurement of v2.
+
+- **Generalises:** the fresh-set ungated recall@5 and both gated rates fall
+  within about 10 percentage points of v2's score on the original 30, and the
+  gated rates are ≥ 80% answerable and ≥ 80% unanswerable.
+- **Overfitted, or does not generalise:** the fresh set scores more than 15
+  points below the original 30. Either v2 was shaped by run 1 more than intended,
+  or the method holds only for questions close to the docs' wording.
+- **Sample-size caution:** with about 20 answerable questions, one question is 5
+  points, and a 95% interval around 80% is roughly ±18 points. A pass on a
+  20-question fresh set is weak evidence, and a single-question difference is
+  noise. For a firmer read, the fresh set should use the same rules as
+  `evals/retrieval.toml` (user phrasing, at least 5 unanswerable questions, and
+  at least 2 hard negatives), and its TOML format, including `pinned_commit =
+  "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"`, which the eval pre-flight
+  requires. QA runs it with the same `eval --eval-file <path>` command, which
+  needs no code change.
+
 ## Overfitting protocol — how the 30 questions stay a test, not a training set
 
 Thirty questions are easy to overfit. Anyone can reach 30/30 with a synonym table
@@ -626,6 +899,8 @@ question. This protocol keeps the eval set as held-out evidence.
    changes even once, the Release Gate artefact should say so. The spec
    recommends, but this slice does not require, that the owner write a small
    fresh set of questions later to confirm the result generalises.
+   **Triggered 2026-09-29.** Run 1 missed and v2 was written after it was seen.
+   The owner is writing the fresh set (`ESCALATION-1.md`).
 
 ## Eval command
 
@@ -978,10 +1253,25 @@ used only by the `eval` command and by one structural sanity test.
 
 ### `tests/test_search.py`
 - `test_tokenize_casefold_split_stopwords`
-- `test_s_stemmer_rules`: `queries→query`, `windows→window`, `aliases→aliase`,
-  and `glass`, `status` and `bus` unchanged (`bus` is too short to stem)
+- ~~`test_s_stemmer_rules`~~ (v1, superseded). **v2:** `test_porter_end_to_end`,
+  checking the pairs from Porter's paper and plain inflections:
+  `caresses→caress`, `ponies→poni`, `cats→cat`, `feed→feed`,
+  `plastered→plaster`, `motoring→motor`, `hopping→hop`, `falling→fall`,
+  `failing→fail`, `filing→file`, `happy→happi`, `sky→sky`, `stopped→stop`,
+  `running→run`, `tokens→token`, `windows→window`
+- **v2:** `test_porter_step_examples`, checking one published example per step
+  (1a, 1b, 1c, 2, 3, 4, 5a, 5b) against the per-step helpers, with the values
+  taken from the paper's own tables
+- **v2:** `test_short_tokens_not_stemmed` (length ≤ 2)
 - `test_stopwords_removed_before_stemming` (`does` never reaches the stemmer)
 - `test_bm25_prefers_passage_with_rarer_term`, `test_heading_and_path_count`
+- **v2:** `test_file_evidence_lifts_passage_in_on_topic_file`. On a synthetic
+  corpus, two passages have equal passage scores, and the one whose file matches
+  more of the question ranks first
+- **v2:** `test_passage_without_query_terms_never_returned` (its file matches,
+  but P = 0)
+- **v2:** `test_combined_score_normalised` (the top candidate's two normalised
+  parts are each ≤ 1, and λ = 0.5 comes from `RetrievalParams`)
 - `test_rank_tie_break_is_path_then_line`
 - `test_per_file_cap_two`, `test_at_most_five_hits`
 - `test_no_searchable_words` (empty, and only stopwords)
@@ -991,10 +1281,19 @@ used only by the `eval` command and by one structural sanity test.
   permalink format with `?plain=1#Lx-Ly`)
 - `test_result_invariant_enforced` (constructing `confident=False` with hits
   raises)
-- `test_oov_term_lowers_coverage` (the grounded-or-silent property, shown on a
-  synthetic corpus)
-- `test_calibrate_deterministic` (the same passages give the same τ, twice),
-  `test_calibrate_in_unit_interval`, `test_calibrate_small_corpus_returns_one`
+- ~~`test_oov_term_lowers_coverage`~~ (v1, superseded). **v2:**
+  `test_single_shared_word_has_zero_corroboration`,
+  `test_corroboration_sums_beyond_strongest_term`,
+  `test_absent_word_is_neutral_to_corroboration` and
+  `test_lone_keyword_question_is_not_confident` (the hard-negative property, on
+  a synthetic corpus)
+- `test_calibrate_deterministic` (the same passages give the same τ, twice).
+  ~~`test_calibrate_in_unit_interval`~~ becomes **v2**
+  `test_calibrate_non_negative`. ~~`test_calibrate_small_corpus_returns_one`~~
+  becomes **v2** `test_calibrate_small_corpus_returns_sentinel` (1000000.0).
+  **v2:** `test_calibrate_zero_p90_uses_smallest_positive`
+- `tests/test_index.py`: `test_load_rejects_wrong_schema` now also covers
+  "a v1 (`index@1`) file is rejected"
 
 ### `tests/test_evaluate.py`
 - `test_load_eval_set_parses_both_kinds`, `test_malformed_eval_file`
@@ -1029,7 +1328,14 @@ used only by the `eval` command and by one structural sanity test.
    on GitHub (Done-means 4). Also one clearly off-topic question, which must give
    `no confident match` (Done-means 5).
 4. `eval`: record the full output and the exit code. Pass requires ≥20/24 and
-   ≥5/6 (Done-means 8). Report how many `eval-run-*.txt` files exist; that is the
+   ≥5/6 (Done-means 8). **v2:** QA runs the eval on the committed
+   `evals/retrieval.toml` **and** on the owner's fresh held-out set
+   (`eval --eval-file <fresh path>`, supplied only to QA). QA verifies the fresh
+   file's sha256 against the one the owner recorded before the revision
+   (`ESCALATION-1.md`), and reports both scores side by side against the "good
+   result" criteria in "Retrieval — variant v2". The fresh set is evidence and is
+   not added to the Release Gate threshold unless the owner says so. Report how
+   many `eval-run-*.txt` files exist; that is the
    number of looks at the test set.
 5. `git log --follow -- evals/retrieval.toml` and
    `git diff a4e5275 -- evals/retrieval.toml`: the only changes are the owner's
@@ -1129,6 +1435,15 @@ The overrun is flagged here and justified, not split.**
   turns the miss into a bounded Architect retry and then an owner decision. It is
   never quietly tuned. Accepted, because the intent's whole premise is to find
   out whether plain code is good enough before a model is involved.
+  **Realised in eval run 1** (14/24 ungated, 2/24 gated). v2 is retry 1, and
+  the finding and prediction are in "Retrieval — variant v2".
+- **v2 drops the absent-word penalty** (a deliberate trade, see "Diagnosis").
+  Unanswerable questions made of two common in-corpus words can now pass as
+  confident. Expected unanswerable result: 4–6 of 6. *Accepted,* because v1's
+  penalty withheld answerable and unanswerable questions alike and so protected
+  nothing.
+- **The 30 questions are no longer unseen.** Any v2 score on them is
+  post-hoc. *Mitigated* by the owner's fresh held-out set, which only QA reads.
 - **Hard negatives are lexically indistinguishable in the limit.** "Windows" as
   an OS and "window" as a time window are the same token after stemming. Coverage
   can reject such a question only when its *other* specific words fail to
@@ -1176,3 +1491,24 @@ Artefacts to produce:
   from two runs, eval run 1's summary block, and any deviation from this spec
   with its reason. Any change to a pre-registered value is a deviation that
   requires the Architect; it is never absorbed.
+
+### Hand off for retry 1 (variant v2)
+
+Next agent: **Backend Architect**. Re-implement "Retrieval — variant v2" and its
+"Deltas to other sections". Nothing else changes.
+
+- **The file list is unchanged: the same 18 files, and no 19th.** Porter goes
+  inside `aveto_support/search.py`. The code changes touch `search.py`,
+  `index.py` (params, schema, calibration constants), `evaluate.py` and
+  `__main__.py` (the output label `coverage` becomes `confidence`/`corroboration`),
+  `tests/test_search.py`, `tests/test_index.py` and `tests/test_evaluate.py`
+  (output strings). Update `.agentic/CURRENT_MVP_STATUS.md` only if it names the
+  v1 method. README, LOCAL_COMMANDS and the CLI commands are unchanged.
+- Order of work: implement, make every unit test pass (none of which uses an
+  eval question), ingest twice with the sha256 values equal, then run `eval`
+  **once**. Commit its output verbatim as `runs/docs-retrieval/eval-run-2.txt`
+  before any further change.
+- If run 2 misses either bar, stop and hand back. Do not adjust anything. The
+  Architect's recommendation is in "Finding for the owner".
+- `evals/retrieval.toml` and the owner's fresh set: do not edit either. Do not
+  look for the fresh set.

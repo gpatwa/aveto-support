@@ -4,7 +4,9 @@
 > is updated each slice rather than appended to. The history of *why* lives in
 > [`docs/adr/`](adr/). Per-slice detail lives in `runs/<slice-id>/`.
 >
-> **Current as of:** docs-retrieval-core (specified; being implemented).
+> **Current as of:** docs-retrieval-core, retrieval **variant v2** (specified for
+> retry 1 and being re-implemented; v1 missed the eval bar, see ADR 0002
+> "Revision 1").
 > Tech spec: `runs/docs-retrieval/02-tech-spec.md`.
 
 ## What exists
@@ -28,7 +30,7 @@ question ─► [1 classify] ─►│ [2 retrieve] ─► RetrievalResult (≤5
 | CLI | `aveto_support/__main__.py` | `ingest`, `retrieve` and `eval` subcommands, and the exit codes. It has no logic of its own |
 | Ingest | `aveto_support/ingest.py` | Reads `docs-source.toml` and fetches the pinned GitHub archive. **This is the only network code.** It reads `.md` files in memory, verifies the archive is for the pinned commit, and orchestrates index building |
 | Index | `aveto_support/index.py` | Splits markdown into heading passages with exact line ranges, and serialises and loads the canonical JSON index |
-| Search | `aveto_support/search.py` | Tokenizer, BM25 ranking, the coverage-based confidence signal, corpus calibration of the threshold, and `retrieve()` |
+| Search | `aveto_support/search.py` | Tokenizer (NLTK stopwords, Porter 1980 stemmer), ranking-v2 (passage BM25 combined equally with file BM25), the corroboration confidence signal, corpus calibration of the threshold, and `retrieve()` |
 | Evaluate | `aveto_support/evaluate.py` | Scores retrieval against `evals/retrieval.toml`, which is owner-authored and read-only, using integer ≥80% thresholds |
 
 Configuration lives in `docs-source.toml` (the repo and its full 40-hex commit).
@@ -48,7 +50,7 @@ flowchart LR
   end
   write --> idx[(index/docs-index.json<br/>generated file, not a DB)]
   idx --> retrieve
-  q[question] --> retrieve[retrieve<br/>BM25 + coverage ≥ τ ?]
+  q[question] --> retrieve[retrieve<br/>passage+file BM25 · corroboration ≥ τ ?]
   retrieve -->|confident| hits[≤5 passages<br/>path · heading · lines · permalink]
   retrieve -->|not confident| none[no confident match<br/>no passages shown]
   idx --> evalc[eval]
@@ -62,10 +64,13 @@ flowchart LR
    headings in code fences and front matter). It calibrates the confidence
    threshold τ from the corpus, then writes the index atomically. Running it
    twice on the same commit gives byte-identical output, with the sha256 printed.
-2. **`retrieve`** ranks passages with BM25, where each passage also counts its
-   heading trail twice and its file path once, and a file contributes at most 2
-   of the top 5. Confidence is the idf-weighted share of the question's words
-   that the top passage contains. At or above τ it returns up to 5 passages,
+2. **`retrieve`** scores each passage that shares at least one word with the
+   question. The score is half passage BM25 and half file BM25, each normalised
+   to the best candidate; the passage counts its heading trail twice and its
+   file path once. A file contributes at most 2 of the top 5. Confidence is
+   **corroboration**: the idf mass of the question's words that the top passage
+   contains, minus the single strongest one, so a lone shared keyword scores 0.
+   At or above τ it returns up to 5 passages,
    each with path, heading, line range and a permalink. Below τ it returns
    exactly `no confident match` and **no** passages.
 3. **`eval`** runs every question in `evals/retrieval.toml` through `retrieve`.

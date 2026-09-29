@@ -6,11 +6,12 @@
 > a bounded, versioned method change after a failed gate). Once accepted, a change
 > needs a new ADR that supersedes it.
 
-- **Status:** proposed
-- **Date:** 2026-09-28
+- **Status:** proposed, **revised once (v2, 2026-09-29)**. See "Revision 1" at
+  the end. The Decision below describes v1 as it was first proposed.
+- **Date:** 2026-09-28 (v1) and 2026-09-29 (v2)
 - **Slice:** `runs/docs-retrieval/` (docs-retrieval-core). The full specification,
-  including every parameter, is `runs/docs-retrieval/02-tech-spec.md`, section
-  "Retrieval".
+  including every parameter, is `runs/docs-retrieval/02-tech-spec.md`, sections
+  "Retrieval" (v1) and "Retrieval — variant v2".
 
 ## Context
 
@@ -88,3 +89,48 @@ Aveto's.
   slice's checker reports that confident retrievals often lack the answer. Any of
   these would motivate an embeddings ADR. That ADR carries its own dependency
   cost, and a model call if one is involved.
+
+## Revision 1 — v2 (2026-09-29, retry 1, written before it was run)
+
+**What happened.** v1 was implemented as specified. Eval run 1 scored 2/24
+answerable (gated) and 6/6 unanswerable. Its ungated recall@5 was 14/24, and τ
+calibrated to 1.000. Ranking alone could not reach 20/24, and the threshold
+withheld almost everything.
+
+**Why τ was 1.0. The coverage formula was at fault, and calibration exposed
+it.** Coverage is presence-only and saturates at 1.0. In a corpus with one
+shared process vocabulary, more than 10% of cross-file null questions were fully
+contained in some passage, so the 90th percentile was the ceiling. Coverage's
+main abstention ingredient, the penalty for words absent from the docs, could not
+be calibrated by nulls made only of in-corpus words. It also penalised
+answerable questions phrased in user language as much as unanswerable ones.
+
+**Decision changes. v1 bullets superseded where they conflict:**
+
+- The stemmer changes from Harman S to **Porter (1980)**, as published, in plain
+  code. It folds inflections (failing/fail, stopped/stop), not just plurals.
+- Ranking changes to **ranking-v2**: `0.5 · passage BM25 / max + 0.5 · file
+  BM25 / max`. This combines passage-level and document-level evidence (Callan
+  1994), because topics are spread across a file's heading sections. Only
+  passages sharing at least one question word are candidates.
+- Confidence changes to **corroboration**: the idf mass of the question words
+  the top passage contains, *minus the single strongest one*. A lone shared
+  keyword scores 0. Absent words are neutral. The value does not saturate.
+- Calibration keeps the same null generator (seed, count, lengths, p90), applied
+  to the new signal. It has fail-closed sentinels for small or degenerate
+  corpora.
+
+**Alternatives rejected for v2:** synonym tables, pseudo-relevance feedback,
+retuning the quantile, a per-file cap of 1, larger field weights, merging
+sections, a frequency stoplist, proximity scoring, and embeddings (out of scope).
+The reasons are in the tech spec.
+
+**Consequence to state plainly.** Recorded before the run: the Architect expects
+v2 to improve ranking, with ungated recall around 17/24 (range 15–20). It
+expects about a 15% chance of meeting both 80% bars on the original questions.
+It no longer relies on the absent-word penalty, so unanswerable accuracy may drop
+to 4–6 of 6. **Lexical retrieval is probably bounded below 80% on user-phrased
+questions.** If v2 misses, the next decision is embeddings, the owner's call
+under rules 5 and 6, recorded in a new ADR. It is not a third lexical variant.
+The original 30 questions are no longer unseen. The owner's fresh held-out set
+is the evidence for or against v2.

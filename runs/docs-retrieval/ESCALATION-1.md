@@ -67,3 +67,34 @@ Owner (Gopal Patwa) chose **A**. Verbatim: "A, and I'll write the fresh question
   so the record shows it existed before the revision was tuned.
 - `eval-run-1.txt` stays as committed. The original 30 questions are no longer
   unseen evidence (spec, Overfitting protocol §7).
+
+## Owner answers — 2026-09-29T01:31:40Z
+
+Prompted with options, the owner (Gopal Patwa) selected, verbatim:
+
+1. **How fresh questions are used:** "Freeze first; held-out set is the gate (Recommended)".
+   Order: revise → implement → **STOP before any eval run** → record that commit
+   SHA as the frozen method → owner writes and commits the fresh set (e.g.
+   `evals/retrieval-heldout.toml`) after that SHA → run once. **Gate = ≥80% on
+   the held-out set**; `evals/retrieval.toml` becomes a dev-set diagnostic. No
+   change to the method between the owner's commit and the run. The eval command
+   already takes `--eval-file`, so no code change is needed to score it.
+   *This amends Done-means item 8 in the intent. The owner owns `intent.md` and
+   should amend that line on `main`; the slice copy stays a byte-identical copy
+   until then.*
+2. **Embeddings:** "Allow a local embedding model". **This is not an approval of
+   any specific dependency.** A concrete model, its weights source and its
+   download are a new dependency and network call in the build path (rule 5),
+   would break INV-5 as written (only network egress = the pinned GitHub fetch;
+   changing it is a safety-control change, rule 4), and contradicts the intent's
+   "no model is called anywhere" (Done-means, Out of scope). Each needs its own
+   explicit approval before implementation.
+
+## Architect's v2 (retry 1), for the record
+
+Lexical only: Porter stemmer, 0.5 × passage BM25 + 0.5 × file BM25, and a
+"corroboration" confidence rule; the τ=1.0 was a flaw in the coverage formula.
+Pre-registered in 02-tech-spec.md ("Retrieval — variant v2"), 18 files still.
+Architect's prediction: ungated recall@5 ≈ 17/24 (range 15–20); ≈15% chance of
+passing both bars. It recommends option B (record the ceiling, then an
+embeddings decision) rather than a third lexical variant if v2 misses.
