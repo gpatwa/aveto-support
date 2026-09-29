@@ -8,7 +8,7 @@
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T05:28:14Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T05:32:03Z
 
 ## Stages
 
@@ -56,14 +56,18 @@ Approval 1 APPROVED by Gopal Patwa, 2026-09-29T00:02:48Z (APPROVAL_RECORD-1.md),
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 1130k tokens  ·  **Depth:** standard
-- **Spent:** 510k (45%)  ·  **Remaining:** 620k
-- **Next stage:** QA, write the frozen off-topic calibration list (evals/calibration-offtopic.toml; build) est. 40k → **PROCEED** (510k + 40k = 550k ≤ 1130k); then Implementation est. 195k
+- **Spent:** 555k (49%)  ·  **Remaining:** 575k
+- **Next stage:** Implementation of embed-v3 (backend-architect, build) est. 195k → **STOP-AND-ASK** — owner has not yet amended intent.md (spec order step 1); 555k + 195k = 750k ≤ 1130k otherwise fine
 
 Budget set to 1,130k by the owner ("Set 1,130k", 2026-09-29T05:28:14Z) for one slice with embed-v3 (EM projection ≈1,067–1,127k, incl. 60k re-run reserve). Earlier: raised from 690k to 820k on the owner's choice of option A in ESCALATION-1.md ("A, and I'll write the fresh questions"), covering one retry (≈818k projected); this is the owner's decision, not a fit-to-spend. The 690k was docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
-Spent is the harness's `subagent_tokens` (peak context, per RUN_ECONOMICS §1; a resumed agent's figure is cumulative, not additive): Scope Review 55,125 + EM (amendment, then file-count ruling) 33,715 + Architecture (incl. INV-4/5 follow-up) 131,797 + Implementation 107,180 = 327,817; after the v2 revision the Architect's cumulative figure is 186,421 (was 131,797), so total 382,441; after the embed-v3 design the Architect's cumulative figure is 225,583, total 421,603; after the embed-v3 fact-fill the Architect's cumulative figure is 275,625, so total ≈471,645; the EM's cumulative figure is then 72,097 (was 33,715), so total 510,027.
+Spent is the harness's `subagent_tokens` (peak context, per RUN_ECONOMICS §1; a resumed agent's figure is cumulative, not additive): Scope Review 55,125 + EM (amendment, then file-count ruling) 33,715 + Architecture (incl. INV-4/5 follow-up) 131,797 + Implementation 107,180 = 327,817; after the v2 revision the Architect's cumulative figure is 186,421 (was 131,797), so total 382,441; after the embed-v3 design the Architect's cumulative figure is 225,583, total 421,603; after the embed-v3 fact-fill the Architect's cumulative figure is 275,625, so total ≈471,645; the EM's cumulative figure is then 72,097 (was 33,715), so total 510,027. QA off-topic list 44,781 → 554,808.
 The installed guard checks spent ≥ budget only; spent + estimate is checked by hand before each spawn.
 Every stage handoff must tell the role: keep Status to one of the four SLICE_STATE values, keep the Budget / Spent / Next stage lines in their exact format, and put reasons and per-slice figures in a note beneath (pack v9 rule; installed pack is v6 + 677c1e1). Reinstall v9+ only after the slice lands.
+
+### Frozen inputs
+
+- **evals/calibration-offtopic.toml** — 59 QA-authored questions, frozen 2026-09-29T05:32:03Z at commit `fa3673ad75278003516a570639a39cdc616444e2`, **sha256 `9045189567b083c83c02336a4f70990c8a8e3ce3e49d5917642fbad6e293627c`**. Not read by the Architect or the engineer; loaded by path only. Overlap with the owner's held-out set is unchecked (not in the repo) and is the owner's to check. QA agent run (44,781 tokens; models seen in transcript: 26 "model":"claude-sonnet-5-5"; frontmatter sonnet/high).
 
 ## Failure budget
 
@@ -92,4 +96,4 @@ Correction (2026-09-29T05:28:36Z): the Architecture rows above were first record
 
 ## Next action
 
-Approvals 2, 3, 4 approved and the budget set to 1,130k. 1) QA writes evals/calibration-offtopic.toml (50+ fluent off-topic questions; frozen with its sha256 in STATE.md before Implementation). 2) backend-architect implements embed-v3 per 02-tech-spec.md, then STOP before any eval run. 3) QA generates tests/fixtures/wordpiece_golden.json. 4) Record the frozen commit SHA; owner commits the held-out set after it; run once via --eval-file. Owner still to amend intent.md on main (INTENT_AMENDMENT_PROPOSAL.md) before QA/Release Gate.
+Off-topic list frozen (sha256 above). BLOCKED before Implementation on the owner amending intent.md on main (INTENT_AMENDMENT_PROPOSAL.md; spec order step 1), then Architect applies ADR 0003, then backend-architect implements embed-v3 and STOPS before any eval run; QA generates tests/fixtures/wordpiece_golden.json; record the frozen commit SHA; owner commits the held-out set; run once via --eval-file.

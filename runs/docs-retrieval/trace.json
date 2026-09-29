@@ -106,6 +106,16 @@
       "toolCalls": 14,
       "retry": 1,
       "outcome": "embed-v3 spec; architect recommends against; owner chose to pursue"
+    },
+    {
+      "stage": "QA off-topic calibration list",
+      "role": "qa-evidence",
+      "model": "sonnet (frontmatter; transcript: 26 \"model\":\"claude-sonnet-5-5\")",
+      "effort": "high (declared)",
+      "tokens": 44781,
+      "toolCalls": 15,
+      "retry": 0,
+      "outcome": "59 questions; frozen"
     }
   ],
   "evalSet": {
@@ -168,5 +178,13 @@
       "when": "2026-09-29T05:28:36Z",
       "what": "3 software-architect stage entries corrected from sonnet/medium to opus/high (frontmatter + harness transcript); tokens unchanged"
     }
-  ]
+  ],
+  "frozenInputs": {
+    "offtopic": {
+      "path": "evals/calibration-offtopic.toml",
+      "sha256": "9045189567b083c83c02336a4f70990c8a8e3ce3e49d5917642fbad6e293627c",
+      "commit": "fa3673ad75278003516a570639a39cdc616444e2",
+      "questions": 59
+    }
+  }
 }
