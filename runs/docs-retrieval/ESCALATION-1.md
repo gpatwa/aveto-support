@@ -146,3 +146,10 @@ Projection for one slice: ≈1,067–1,127k vs the 820k budget (247–307k over)
 Pending, each asked individually: APPROVAL_REQUEST-2 (rule 5, model), -3 (rule 5,
 weights download), -4 (rule 4, INV-5/INV-4 wording), and a budget number.
 Intent amendments: see INTENT_AMENDMENT_PROPOSAL.md.
+
+## Approvals 2, 3, 4 and budget — 2026-09-29T05:28:14Z
+
+Owner (Gopal Patwa), each asked separately, verbatim: Request 2 "Approve"; Request 3
+"Approve"; Request 4 "Approve exact wording"; Budget "Set 1,130k". Records:
+APPROVAL_RECORD-2/3/4.md. The approved INV-4/INV-5 wording was applied to
+.agentic/SAFETY_INVARIANTS.md by extracting it byte-for-byte from the spec.

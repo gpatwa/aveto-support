@@ -28,18 +28,31 @@
 
 ## Retrieval and network
 
-- **INV-4** — Retrieval returns only verbatim passages from the configured source
-  at its pinned commit, each with path, heading and line range, or "no confident
-  match" with no passages. It never returns generated or reworded text.
-  *(Architect, docs-retrieval-core, `runs/docs-retrieval/02-tech-spec.md`.
-  Enforced by `tests/test_search.py::test_not_confident_returns_no_hits`,
-  `test_result_invariant_enforced` and
-  `tests/test_index.py::test_retrieved_text_is_verbatim_slice_of_file`.)*
-- **INV-5** — The product's only network egress is the HTTPS archive fetch of the
-  configured GitHub repo at a full 40-hex commit. Redirects go only to
-  `github.com` / `codeload.github.com`, and no credentials are sent.
-  *(Architect, docs-retrieval-core. Rule-5 approval:
-  `runs/docs-retrieval/APPROVAL_RECORD-1.md`. Enforced by
-  `tests/test_ingest.py::test_redirect_to_other_host_refused`,
-  `test_short_sha_rejected`, `test_default_network_is_blocked` and the autouse
-  network block in `tests/conftest.py`.)*
+- **INV-4** — Retrieval returns only verbatim passages from the configured
+  source at its pinned commit, each with path, heading and line range, or "no
+  confident match" with no passages. It never returns generated or reworded
+  text. **A model may be used only to rank passages and to decide confidence. It
+  never produces, selects fragments of, or alters the text returned.**
+  *(Enforced by `test_not_confident_returns_no_hits`,
+  `test_result_invariant_enforced`,
+  `test_retrieved_text_is_verbatim_slice_of_file`, and a new
+  `test_hybrid_hits_are_verbatim_passages`.)*
+
+- **INV-5** — The product's network egress is limited to two read-only HTTPS
+  GET downloads, both made only by `ingest`:
+  (a) the archive of the configured GitHub repo at a full 40-hex commit, with
+  redirects only to `github.com` / `codeload.github.com`; and
+  (b) the pinned files of the configured embedding model, requested from
+  `huggingface.co` at a full 40-hex revision, with redirects only to hosts under
+  `hf.co` (for example `us.aws.cdn.hf.co`).
+  Every model file is checked against its committed sha256 **before it is
+  used**. On a mismatch the file is deleted and ingest fails. Trust rests on the
+  hash, never on the host. No credentials are sent. **No question, passage or
+  user text ever leaves the machine.** `retrieve`, `eval` and the default test
+  suite make no network calls.
+  *(Enforced by `test_redirect_to_other_host_refused`,
+  `test_hf_redirect_outside_hf_co_refused`, `test_short_sha_rejected`,
+  `test_model_revision_must_be_40_hex`,
+  `test_model_hash_mismatch_rejected_and_deleted`,
+  `test_cached_file_rehashed_before_use`,
+  `test_retrieve_is_offline_with_cached_model`, and the autouse network block.)*

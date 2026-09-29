@@ -16,6 +16,27 @@
       "approver": "Gopal Patwa",
       "when": "2026-09-29T00:02:48Z",
       "record": "runs/docs-retrieval/APPROVAL_RECORD-1.md"
+    },
+    {
+      "action": "model",
+      "rule": "5",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T05:28:14Z",
+      "record": "runs/docs-retrieval/APPROVAL_RECORD-2.md"
+    },
+    {
+      "action": "weights download",
+      "rule": "5",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T05:28:14Z",
+      "record": "runs/docs-retrieval/APPROVAL_RECORD-3.md"
+    },
+    {
+      "action": "INV-4/INV-5 wording",
+      "rule": "4",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T05:28:14Z",
+      "record": "runs/docs-retrieval/APPROVAL_RECORD-4.md"
     }
   ],
   "stages": [
@@ -135,5 +156,11 @@
     "when": "2026-09-29T03:46:06Z",
     "verbatim": "Pursue embed-v3 in this slice",
     "approvalsGranted": []
+  },
+  "budgetSet": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-29T05:28:14Z",
+    "verbatim": "Set 1,130k",
+    "tokens": 1130000
   }
 }
