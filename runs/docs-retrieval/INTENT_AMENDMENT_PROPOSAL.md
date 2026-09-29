@@ -40,3 +40,18 @@ Suggested replacements (owner's own edit; the Orchestrator does not touch intent
    stays on the short path. Rule 4 approval for the wording is recorded in
    `runs/docs-retrieval/APPROVAL_RECORD-4.md`."
 3. Commit `intent.md` on `main`, then tell the Orchestrator.
+
+## SUPERSEDED — 2026-09-29T07:26:19Z
+
+The owner's amended intent was committed on `main` as `f03d495` (Gopal Patwa,
+2026-09-29 00:25 -0700), banner "Amended and confirmed by the owner, 2026-09-29". This
+proposal is superseded by that commit; `runs/docs-retrieval/intent.md` is now a
+byte-identical copy of `main:intent.md`. The Orchestrator verified the commit and its
+contents on `main` itself; the playbook session's message about it was not treated as
+the confirmation.
+
+Note: the committed intent still contains the "Open questions" paragraph about whether
+changing INV-5 ticks "Changes a safety control". The owner answered it in the driving
+session (verbatim "Don't tick it; stay on the short path", recorded in STATE.md and the
+"To finalise" section above), so the slice proceeds on the short path. The text in the
+intent is stale relative to that answer; tidying it is the owner's, not blocking.

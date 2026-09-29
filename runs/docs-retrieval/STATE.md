@@ -4,11 +4,11 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
 - **Current stage:** Scope Review done — split into `docs-retrieval-core` and `docs-retrieval-ci`; next is Architecture (docs-retrieval-core)
-- **Status:** blocked-on-approval
+- **Status:** in-progress
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T07:17:38Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T07:26:19Z
 
 ## Stages
 
@@ -33,7 +33,7 @@
 
 | Stage | Owner | Status | Artefact | Gate |
 |-------|-------|--------|----------|------|
-| Implementation | backend-architect | pending — blocked on docs-retrieval-core's Release Gate | — | — |
+| Implementation | backend-architect | in-progress — blocked on docs-retrieval-core's Release Gate | — | — |
 | QA Evidence | qa-evidence | pending | — | — |
 | Security Review | security-privacy | pending | — | — |
 | Release Gate | release-manager | pending | — | — |
@@ -57,7 +57,7 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 1130k tokens  ·  **Depth:** standard
 - **Spent:** 571k (51%)  ·  **Remaining:** 559k
-- **Next stage:** Implementation of embed-v3 (backend-architect, build) est. 195k → **STOP-AND-ASK** — waiting on the owner to amend intent.md on main (spec order step 1); otherwise 571k + 195k = 766k ≤ 1130k
+- **Next stage:** Implementation of embed-v3 (backend-architect, build) est. 195k → **PROCEED** (571k + 195k = 766k ≤ 1130k; checked by hand)
 
 Budget set to 1,130k by the owner ("Set 1,130k", 2026-09-29T05:28:14Z) for one slice with embed-v3 (EM projection ≈1,067–1,127k, incl. 60k re-run reserve). Earlier: raised from 690k to 820k on the owner's choice of option A in ESCALATION-1.md ("A, and I'll write the fresh questions"), covering one retry (≈818k projected); this is the owner's decision, not a fit-to-spend. The 690k was docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
@@ -101,4 +101,4 @@ Correction (2026-09-29T05:28:36Z): the Architecture rows above were first record
 
 ## Next action
 
-Still BLOCKED before Implementation: the owner's amended intent.md is only an uncommitted draft in the main checkout (banner: DRAFT, not yet confirmed). Owner answered the open Stakes question (verbatim "Don't tick it; stay on the short path"). Owner to remove the draft banner, resolve the Open questions bullet, and commit intent.md on main (suggested text: INTENT_AMENDMENT_PROPOSAL.md, "To finalise"). Then: merge main, re-copy the intent to runs/docs-retrieval/intent.md, backend-architect implements embed-v3 and STOPS before any eval run; QA generates tests/fixtures/wordpiece_golden.json; record the frozen commit SHA; owner commits the held-out set; run once via --eval-file.
+Intent confirmed and committed on main (f03d495), merged and copied unchanged (2026-09-29T07:26:19Z). backend-architect implements embed-v3 per 02-tech-spec.md and STOPS before any eval run (including the dev set); then QA generates tests/fixtures/wordpiece_golden.json; record the frozen commit SHA; owner commits the held-out set; run once via --eval-file.
