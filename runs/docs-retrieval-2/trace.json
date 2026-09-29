@@ -25,11 +25,28 @@
       "record": "runs/docs-retrieval-2/APPROVAL_RECORD-2.md"
     }
   ],
-  "stages": [],
+  "stages": [
+    {
+      "stage": "Scope Review",
+      "role": "engineering-manager",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 51899,
+      "toolCalls": 21,
+      "retry": 0,
+      "outcome": "split at the freeze: A docs-retrieval-2 (460k), B docs-retrieval-2-proof (430k)"
+    }
+  ],
   "planConfirmation": {
     "by": "Gopal Patwa",
     "when": "2026-09-29T16:54:46Z",
     "verbatim": "Confirm all, inferred lines too",
     "stakes": "Don't tick it; stay on the short path"
+  },
+  "split": {
+    "A": "docs-retrieval-2",
+    "B": "docs-retrieval-2-proof",
+    "budgetA": 460000,
+    "budgetB": 430000
   }
 }
