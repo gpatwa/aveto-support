@@ -25,3 +25,21 @@
   the one that wrote it; a claim the sources do not support is removed or the
   question is escalated — never posted as-is.
   *(README, step 4. Applies once drafting exists.)*
+
+## Retrieval and network
+
+- **INV-4** — Retrieval returns only verbatim passages from the configured source
+  at its pinned commit, each with path, heading and line range, or "no confident
+  match" with no passages. It never returns generated or reworded text.
+  *(Architect, docs-retrieval-core, `runs/docs-retrieval/02-tech-spec.md`.
+  Enforced by `tests/test_search.py::test_not_confident_returns_no_hits`,
+  `test_result_invariant_enforced` and
+  `tests/test_index.py::test_retrieved_text_is_verbatim_slice_of_file`.)*
+- **INV-5** — The product's only network egress is the HTTPS archive fetch of the
+  configured GitHub repo at a full 40-hex commit. Redirects go only to
+  `github.com` / `codeload.github.com`, and no credentials are sent.
+  *(Architect, docs-retrieval-core. Rule-5 approval:
+  `runs/docs-retrieval/APPROVAL_RECORD-1.md`. Enforced by
+  `tests/test_ingest.py::test_redirect_to_other_host_refused`,
+  `test_short_sha_rejected`, `test_default_network_is_blocked` and the autouse
+  network block in `tests/conftest.py`.)*

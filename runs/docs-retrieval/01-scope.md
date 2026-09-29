@@ -275,6 +275,41 @@ would target.
 None outstanding. Approval-1 is approved (live fetch) and the split with
 its combined 1,220k budget is accepted (APPROVAL_RECORD-1.md).
 
+## Amendment 2026-09-29 — file-count ruling for docs-retrieval-core
+
+Rule: EM scope-discipline, "touches more than 10 files for a non-refactor
+change." The Architect's tech spec (`02-tech-spec.md`, "Files touched")
+lists 18 files and flags the overrun.
+
+**Ruling: ACCEPTED at 18 files. Not waived silently; the rule is applied
+by its purpose.** The rule exists so one implementation pass stays
+verifiable in one head. Here that holds:
+- Only 5 files carry logic (`__main__`, `ingest`, `index`, `search`,
+  `evaluate`; ~600–800 lines total), each one concern with one matching
+  test file. `__init__.py` is a one-line marker.
+- The rest is not reviewed as logic: 1 generated lockfile, 3 greenfield
+  scaffolding files any first Python slice needs, 3 docs required by
+  Done-means 1 and 11.
+- A further split would separate code from its tests, or ingest from the
+  retrieve/eval it feeds, leaving neither half checkable against item 8.
+  The 10-file rule and the ≤6-stage rule are both already satisfied by the
+  split into core and ci; splitting again would add another QA/Security/
+  Release pass (~300k+) for no verification benefit.
+- Merging `index.py` into `ingest.py` (17 files) is rejected as the
+  Architect argued: a worse module boundary to save one file.
+
+**Implementation must change nothing** in the file list, and must not add
+files beyond the 18 (plus `runs/docs-retrieval/eval-run-*.txt` artefacts).
+Any 19th file is a re-scope back to the EM, not an Implementation call.
+
+**QA should check because of the overrun:** (1) the diff touches exactly
+the 18 listed files and nothing else in the product tree; (2) each logic
+module has its own test file and the targeted-tests-first run passes per
+module before the full suite; (3) `uv.lock` is regenerated from
+`pyproject.toml`, not hand-edited, and no dependency exists beyond what the
+spec allows; (4) the README, LOCAL_COMMANDS and CURRENT_MVP_STATUS edits
+match the commands actually run (no drift between docs and CLI).
+
 ## Escalation path
 
 If the Architect hits a blocker (e.g. the eval set's format under-specifies something `retrieve`'s output

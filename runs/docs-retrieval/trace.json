@@ -33,15 +33,25 @@
       "outcome": "split proposed"
     },
     {
-      "stage": "Scope amendment",
+      "stage": "Scope amendment + file-count ruling",
       "role": "engineering-manager",
       "model": "sonnet",
       "effort": "medium",
-      "wallSeconds": 37,
-      "tokens": 27268,
-      "toolCalls": 13,
+      "tokens": 33715,
+      "toolCalls": 20,
       "retry": 0,
-      "outcome": "\u226580% bar moved into core"
+      "outcome": "\u226580% bar into core; 18 files accepted"
+    },
+    {
+      "stage": "Architecture",
+      "role": "software-architect",
+      "model": "sonnet",
+      "effort": "medium",
+      "wallSeconds": 816,
+      "tokens": 131797,
+      "toolCalls": 44,
+      "retry": 0,
+      "outcome": "tech spec, ADR 0001/0002, ARCHITECTURE.md, INV-4/5"
     }
   ],
   "evalSet": {

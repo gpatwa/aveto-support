@@ -8,7 +8,7 @@
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T00:03:48Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T00:19:07Z
 
 ## Stages
 
@@ -23,8 +23,8 @@
 
 | Stage | Owner | Status | Artefact | Gate |
 |-------|-------|--------|----------|------|
-| Architecture | software-architect | in-progress | — | — |
-| Implementation | backend-architect | pending | — | — |
+| Architecture | software-architect | done | runs/docs-retrieval/02-tech-spec.md; docs/adr/0001-python-fastapi-uv-no-agent-framework.md; docs/adr/0002-lexical-retrieval-calibrated-abstention.md; docs/ARCHITECTURE.md | tech spec ready; 18 files flagged vs ≤10 rule (justified in spec) |
+| Implementation | backend-architect | in-progress | — | — |
 | QA Evidence | qa-evidence | pending | — | — |
 | Security Review | security-privacy | pending | — | — |
 | Release Gate | release-manager | pending | — | — |
@@ -53,12 +53,12 @@ Approval 1 APPROVED by Gopal Patwa, 2026-09-29T00:02:48Z (APPROVAL_RECORD-1.md),
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 690k tokens  ·  **Depth:** standard
-- **Spent:** 82k (12%)  ·  **Remaining:** 608k
-- **Next stage:** Architecture (docs-retrieval-core, review) est. 100k → **PROCEED** (82k + 100k = 182k ≤ 690k)
+- **Spent:** 221k (32%)  ·  **Remaining:** 469k
+- **Next stage:** Implementation (docs-retrieval-core, build) est. 130k → **PROCEED** (221k + 130k = 351k ≤ 690k)
 
 The 690k above is docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
-Spent is the harness's `subagent_tokens` (peak context, per RUN_ECONOMICS §1): Scope Review 55,125 + scope amendment 27,268 = 82,393.
+Spent is the harness's `subagent_tokens` (peak context, per RUN_ECONOMICS §1; a resumed agent's figure is cumulative, not additive): Scope Review 55,125 + EM (amendment, then file-count ruling) 33,715 + Architecture (incl. INV-4/5 follow-up) 131,797 = 220,637.
 The installed guard checks spent ≥ budget only; spent + estimate is checked by hand before each spawn.
 Every stage handoff must tell the role: keep Status to one of the four SLICE_STATE values, keep the Budget / Spent / Next stage lines in their exact format, and put reasons and per-slice figures in a note beneath (pack v9 rule; installed pack is v6 + 677c1e1). Reinstall v9+ only after the slice lands.
 
@@ -78,9 +78,10 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 | Stage | Model | Effort | Start (UTC) | End (UTC) | Wall | Tokens | Tool calls | Retry # |
 |-------|-------|--------|-------------|-----------|------|--------|------------|---------|
 | Scope Review | sonnet | medium | 2026-09-27T20:59:31Z | 2026-09-27T21:03:39Z | 4:08 | 55,125 | 18 | 0 |
-| Scope amendment | sonnet | medium | — | — | 0:37 | 27,268 | 13 | 0 |
-| **Total** | | | | | | 82,393 | 31 | |
+| Scope amendment + file-count ruling (EM, resumed once) | sonnet | medium | — | — | — | 33,715 | 20 | 0 |
+| Architecture (resumed once for INV-4/5) | sonnet | medium | — | — | 13:36 | 131,797 | 44 | 0 |
+| **Total** | | | | | | 220,637 | 95 | |
 
 ## Next action
 
-software-architect writes the tech spec for docs-retrieval-core (runs/docs-retrieval/02-tech-spec.md), then Implementation.
+backend-architect implements docs-retrieval-core exactly as 02-tech-spec.md specifies (18 files, EM-accepted). Then QA Evidence.
