@@ -54,3 +54,25 @@ overlaps a calibration question's subject, so it is not fully independent.
 - **C. Change the bar** (for example top-10, or a lower percentage). That weakens a gate:
   approval rule 4, the owner's decision only, and only as a deliberate intent amendment,
   not as a response to this result. Not recommended.
+
+## Resolution — 2026-09-29T16:06:36Z
+
+The playbook session proposed (as its own proposal, not an approval): stop core here, keep
+the code on the branch, leave docs-retrieval-ci unstarted; before closing, QA compares a
+handful of embeddings with a reference implementation in a throwaway environment; write a
+close-out for the next slice (corpus scope, file-level ranking, and — as an open question
+for the owner's next intent under rule 4, not decided here — whether "no confident match"
+belongs in the check step).
+
+Owner (Gopal Patwa), prompted with three options, selected verbatim: **"Confirm the
+proposal as written"**. Resolution: **A. Stop docs-retrieval-core; nothing ships.**
+
+**The reference comparison is not yet approved.** The Orchestrator told the owner it needs
+its own explicit yes before anything is installed (a PyTorch-based reference means a new
+install and, for the original weights, a new download beyond Approvals 2–5). A specific
+request follows; nothing is installed until it is answered.
+
+Notes for the close-out (evidence, not conclusions): on the held-out run only 2 of 17
+answers were confidently wrong (both from broad docs: BACKLOG, ARCHITECTURE, GETTING_STARTED),
+and most misses were abstentions, so "most wrong answers came from broad internal files"
+is a hypothesis for the next slice, not a finding.

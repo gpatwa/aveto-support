@@ -272,5 +272,11 @@
     "methodCommit": "c9b64e7bf55da02a925e5a0be8ca37a4a9dc189a",
     "fixtureCommit": "593bb35110da0b0b5ae3e10817a277f6ca01a81e",
     "when": "2026-09-29T15:28:06Z"
+  },
+  "escalation2Resolution": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-29T16:06:36Z",
+    "verbatim": "Confirm the proposal as written",
+    "outcome": "A: stop core; nothing ships"
   }
 }

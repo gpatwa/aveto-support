@@ -4,11 +4,11 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
 - **Current stage:** Scope Review done — split into `docs-retrieval-core` and `docs-retrieval-ci`; next is Architecture (docs-retrieval-core)
-- **Status:** blocked-on-failure
+- **Status:** blocked-on-approval
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T15:52:39Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T16:06:36Z
 
 ## Stages
 
@@ -58,7 +58,7 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 1130k tokens  ·  **Depth:** standard
 - **Spent:** 754k (67%)  ·  **Remaining:** 376k
-- **Next stage:** Security Review (security-privacy, review) est. 130k → **STOP-AND-ASK** — held-out gate failed (5/17 vs ≥14); see ESCALATION-2.md. A gate that fails sends the slice back, never forward; Security and the Release Gate do not run.
+- **Next stage:** QA reference-embedding comparison (qa-evidence, build) est. 40k → **STOP-AND-ASK** — owner resolved ESCALATION-2 as A ("Confirm the proposal as written"); the reference comparison needs its own specific approval before any install; then the close-out (tech-writer) est. 40k. No Security or Release Gate (gate failed).
 
 Budget set to 1,130k by the owner ("Set 1,130k", 2026-09-29T05:28:14Z) for one slice with embed-v3 (EM projection ≈1,067–1,127k, incl. 60k re-run reserve). Earlier: raised from 690k to 820k on the owner's choice of option A in ESCALATION-1.md ("A, and I'll write the fresh questions"), covering one retry (≈818k projected); this is the owner's decision, not a fit-to-spend. The 690k was docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
@@ -114,4 +114,4 @@ Correction (2026-09-29T05:28:36Z): the Architecture rows above were first record
 
 ## Next action
 
-Owner decides (ESCALATION-2.md): A) stop core and record the finding (recommended), B) spend the last retry (needs a third fresh held-out set and ≈180k more budget), or C) change the bar (rule 4, owner only, not recommended). Nothing runs until answered.
+ESCALATION-2 resolved as A (2026-09-29T16:06:36Z): stop docs-retrieval-core, nothing ships, code stays on the branch, docs-retrieval-ci unstarted. Pending: the owner's specific approval for the reference-embedding comparison, then QA runs it, then a close-out for the next slice (corpus scope; file-level ranking; open question for the owner: does 'no confident match' belong in the check step, rule 4). Then set Status done (closed, gate failed).
