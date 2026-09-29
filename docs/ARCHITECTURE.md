@@ -145,3 +145,8 @@ code** and does not parse the numbers, so the threshold lives only in
 - [ADR 0002](adr/0002-lexical-retrieval-calibrated-abstention.md): BM25 over
   heading passages, with a corpus-calibrated "no confident match". *Proposed
   until the Release Gate.*
+- *Pending, not decided:* a hybrid embeddings variant (`embed-v3`, local
+  `BAAI/bge-small-en-v1.5` via ONNX Runtime). It is designed in
+  `runs/docs-retrieval/02-tech-spec.md` for the owner to approve or reject. It
+  would change INV-5 and the intent's "no model" lines. None of it is built or
+  installed. If approved, it gets ADR 0003.

@@ -74,6 +74,17 @@
       "toolCalls": 35,
       "retry": 1,
       "outcome": "lexical v2 pre-registered; predicted 17/24 ungated, ~15% pass"
+    },
+    {
+      "stage": "Architecture embed-v3 spec-only design",
+      "role": "software-architect",
+      "model": "sonnet",
+      "effort": "medium",
+      "wallSeconds": 340,
+      "tokens": 39162,
+      "toolCalls": 14,
+      "retry": 1,
+      "outcome": "embed-v3 spec; architect recommends against; owner chose to pursue"
     }
   ],
   "evalSet": {
@@ -118,5 +129,11 @@
     "verbatim": "Freeze first; held-out set is the gate (Recommended)",
     "embeddingsAnswer": "Allow a local embedding model",
     "embeddingsApproved": false
+  },
+  "embedV3Decision": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-29T03:46:06Z",
+    "verbatim": "Pursue embed-v3 in this slice",
+    "approvalsGranted": []
   }
 }

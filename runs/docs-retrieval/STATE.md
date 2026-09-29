@@ -8,7 +8,7 @@
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T01:32:19Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T03:46:06Z
 
 ## Stages
 
@@ -23,7 +23,7 @@
 
 | Stage | Owner | Status | Artefact | Gate |
 |-------|-------|--------|----------|------|
-| Architecture | software-architect | done; retry 1 revision (variant v2) written 2026-09-29, pre-registered before run | runs/docs-retrieval/02-tech-spec.md ("Retrieval — variant v2"); docs/adr/0001-python-fastapi-uv-no-agent-framework.md; docs/adr/0002-lexical-retrieval-calibrated-abstention.md; docs/ARCHITECTURE.md | tech spec ready; 18 files flagged vs ≤10 rule (justified in spec) |
+| Architecture | software-architect | done; retry 1 revision (variant v2) written 2026-09-29, pre-registered before run; embed-v3 spec-only variant added 2026-09-29 (not approved, not implemented) | runs/docs-retrieval/02-tech-spec.md ("Retrieval — variant v2"); docs/adr/0001-python-fastapi-uv-no-agent-framework.md; docs/adr/0002-lexical-retrieval-calibrated-abstention.md; docs/ARCHITECTURE.md | tech spec ready; 18 files flagged vs ≤10 rule (justified in spec) |
 | Implementation | backend-architect | blocked-on-failure — built and green; eval run 1 missed the bar (answerable 2/24, unanswerable 6/6) | runs/docs-retrieval/eval-run-1.txt | eval gate FAILED; retry 1 of 2 goes to Architect |
 | QA Evidence | qa-evidence | pending | — | — |
 | Security Review | security-privacy | pending | — | — |
@@ -53,12 +53,12 @@ Approval 1 APPROVED by Gopal Patwa, 2026-09-29T00:02:48Z (APPROVAL_RECORD-1.md),
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 820k tokens  ·  **Depth:** standard
-- **Spent:** 382k (47%)  ·  **Remaining:** 438k
-- **Next stage:** Architecture, embeddings variant (spec-only, retry-1 continuation, review) est. 100k → **PROCEED** (382k + 100k = 482k ≤ 820k). Later stages project to ≈910k, over 820k: ask the owner before Implementation.
+- **Spent:** 422k (51%)  ·  **Remaining:** 398k
+- **Next stage:** Architecture, embed-v3 fact-fill (review) est. 50k → **PROCEED** (422k + 50k = 472k ≤ 820k). Projection to Release Gate with embed-v3 ≈ 950k+, over 820k: owner asked at the approvals round.
 
 Budget raised from 690k to 820k on the owner's choice of option A in ESCALATION-1.md ("A, and I'll write the fresh questions"), covering one retry (≈818k projected); this is the owner's decision, not a fit-to-spend. The 690k was docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
-Spent is the harness's `subagent_tokens` (peak context, per RUN_ECONOMICS §1; a resumed agent's figure is cumulative, not additive): Scope Review 55,125 + EM (amendment, then file-count ruling) 33,715 + Architecture (incl. INV-4/5 follow-up) 131,797 + Implementation 107,180 = 327,817; after the v2 revision the Architect's cumulative figure is 186,421 (was 131,797), so total 382,441.
+Spent is the harness's `subagent_tokens` (peak context, per RUN_ECONOMICS §1; a resumed agent's figure is cumulative, not additive): Scope Review 55,125 + EM (amendment, then file-count ruling) 33,715 + Architecture (incl. INV-4/5 follow-up) 131,797 + Implementation 107,180 = 327,817; after the v2 revision the Architect's cumulative figure is 186,421 (was 131,797), so total 382,441; after the embed-v3 design the Architect's cumulative figure is 225,583, total 421,603.
 The installed guard checks spent ≥ budget only; spent + estimate is checked by hand before each spawn.
 Every stage handoff must tell the role: keep Status to one of the four SLICE_STATE values, keep the Budget / Spent / Next stage lines in their exact format, and put reasons and per-slice figures in a note beneath (pack v9 rule; installed pack is v6 + 677c1e1). Reinstall v9+ only after the slice lands.
 
@@ -82,8 +82,9 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 | Architecture (resumed once for INV-4/5) | sonnet | medium | — | — | 13:36 | 131,797 | 44 | 0 |
 | Implementation | sonnet | medium | — | — | 6:16 | 107,180 | 28 | 0 |
 | Architecture v2 revision (retry 1; same resumed agent, cumulative) | sonnet | medium | — | — | 6:24 | +54,624 | +35 | 1 |
-| **Total** | | | | | | 382,441 | 158 | |
+| Architecture embed-v3 spec-only design (same resumed agent, cumulative) | sonnet | medium | — | — | 5:40 | +39,162 | +14 | 1 |
+| **Total** | | | | | | 421,603 | 172 | |
 
 ## Next action
 
-Architect writes a SPEC-ONLY embeddings variant (embed-v3) with concrete approval-ready facts. No code, no dependency added, nothing approved. Then the Orchestrator writes the specific approval requests (rule 5; INV-5 = rule 4; intent 'no model' amendment) and asks the owner, plus the budget decision.
+Owner chose to pursue embed-v3 in this slice. Architect fills verified facts and finalises approval-ready text; EM re-scopes the 19th file; then the Orchestrator asks the owner each gated item separately (rule 5 model in retrieval path; rule 5 weights download; rule 4 INV-4/INV-5 wording) plus the budget. Nothing is installed or downloaded before those yeses.

@@ -106,3 +106,20 @@ Architect writes an embeddings variant with approval-ready facts; nothing is
 implemented, added or approved by this. Budget: per-spawn check passes (482k ≤
 820k); the later stages project ≈910k vs 820k, so the owner is asked again before
 Implementation. This choice is not read as approval of that overspend.
+
+## Owner choice — 2026-09-29T03:46:06Z
+
+Prompted with the Architect's recommendation against it, the owner selected,
+verbatim: "Pursue embed-v3 in this slice". **This grants no gated approval.**
+Each of these still needs its own explicit yes before anything is installed or
+downloaded: rule 5 (a model in the retrieval path), rule 5 (weights download in
+ingest and CI), rule 4 (INV-4/INV-5 wording), and the budget increase.
+
+Facts re-checked by the Orchestrator on 2026-09-29T03:46:06Z against Hugging Face metadata
+(read-only API and HEAD request; no file downloaded): revision
+5c38ec7c405ec4b44b94cc5a9bb96e735b38267a, licence MIT, onnx/model.onnx
+133,093,490 bytes sha256 828e1496…cf35, vocab.txt 231,508 bytes, config.json 743
+bytes, and a 302 from huggingface.co to us.aws.cdn.hf.co. Not independently
+verified: the sha256 of vocab.txt/config.json/tokenizer_config.json (reported by
+the playbook session only) and the ONNX graph's input names (needs the 133 MB
+download, which needs approval).

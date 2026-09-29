@@ -6,6 +6,12 @@
 > pre-registered in "Retrieval — variant v2" before it has been run. The v1 text
 > is kept and marked superseded. Everything outside retrieval scoring and its
 > tests is unchanged.
+> **Added 2026-09-29: "Retrieval — variant embed-v3".** This is a SPEC-ONLY
+> hybrid embeddings design for the owner to approve or reject. It is not
+> approved and not to be implemented. v2 remains the variant that gets built
+> unless every embed-v3 approval is recorded. Freeze-first ordering applies:
+> implement, stop before any eval, record the frozen SHA, and then the owner's
+> fresh set gates.
 > Source: short path, so there is no feature spec or UX spec. Requirements come from
 > `runs/docs-retrieval/intent.md` ("Done means", "Must not break", "Constraints") and
 > the owner-accepted scope in `runs/docs-retrieval/01-scope.md`.
@@ -853,6 +859,497 @@ The owner's fresh set is the only unbiased measurement of v2.
   "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"`, which the eval pre-flight
   requires. QA runs it with the same `eval --eval-file <path>` command, which
   needs no code change.
+
+## Retrieval — variant embed-v3 (SPEC ONLY: not approved, not implemented)
+
+> **Status: a design for the owner to approve or reject.** Nothing in this
+> section may be built, installed or downloaded until every approval in "Draft
+> approval requests" below is recorded. No dependency, weights file, config
+> value or code exists for it. Variant v2 above stays in the spec unchanged, and
+> **v2 is what gets built if embed-v3 is not approved.**
+>
+> Written 2026-09-29, after `eval-run-1.txt` (disclosed in v2) and before any
+> run of v2 or embed-v3. **Ordering (owner's freeze-first choice):** whichever
+> variant is chosen is implemented, and then **Implementation stops before any
+> eval run.** The frozen commit SHA is recorded in STATE.md. Only then does the
+> owner commit the fresh held-out set. That set gates the ≥80% bar, and
+> `evals/retrieval.toml` becomes a **dev-set diagnostic** (reported, not
+> gating). The Architect has not seen the fresh set and will not look for it.
+>
+> **Facts I could not verify.** This stage has no network tool. Every exact
+> revision hash, file hash, file list and byte size marked **[VERIFY]** must be
+> read from the Hugging Face API (or `uv lock` / `uv tree` for packages) and
+> filled in before the owner decides. I have not invented them. The benchmark
+> figures are as published on the model cards and the MTEB leaderboard, from
+> memory; they are good enough to rank candidates, but should be re-checked.
+
+### 1. Design
+
+**Recommended model: `BAAI/bge-small-en-v1.5`.** A 33.4M-parameter BERT-small
+encoder: 12 layers, hidden size 384, 384-dimensional embeddings, 512-token input
+limit, CLS pooling with L2 normalisation, and MIT licence. It was chosen on
+general grounds:
+
+- **Retrieval quality for its size.** Its published MTEB retrieval (BEIR)
+  average nDCG@10 is about 51.7, among the best of the ~30M-parameter English
+  encoders.
+- **Size and speed.** Its size (~134 MB fp32) runs on CPU without a GPU.
+- **Licence.** Permissive (MIT).
+- **Plain architecture.** It is a standard BERT, so it needs no
+  `trust_remote_code` and runs as a plain ONNX graph.
+- **Revision pinning.** It is widely used, and the Hugging Face repo supports
+  pinning a revision by full commit SHA.
+
+No eval question was used to choose it.
+
+**Alternative: `sentence-transformers/all-MiniLM-L6-v2`.** 22.7M parameters, 6
+layers, 384 dimensions, Apache-2.0. It is smaller (~90 MB) and about twice as
+fast on CPU, and it is the most widely deployed small encoder. It is clearly
+weaker at retrieval (MTEB retrieval about 41.9) and was trained on inputs of 128
+to 256 tokens, which is short for heading sections. Pick it only if the owner
+weighs footprint and speed above quality.
+
+Rejected candidates:
+
+| Candidate | Why not |
+|-----------|---------|
+| `nomic-embed-text-v1.5` | Needs `trust_remote_code`, which runs repository Python at load. That is a supply-chain risk |
+| `intfloat/e5-small-v2`, `thenlper/gte-small`, `Snowflake/snowflake-arctic-embed-s` | Comparable size. bge-small is as good or better on published retrieval, and choosing between near-ties is not worth an extra comparison |
+| model2vec static embeddings | numpy only and very fast, but much weaker retrieval |
+| Any embeddings **API** (Voyage, OpenAI, Cohere and others) | Question and doc text would leave the machine. That fires rule 6, needs a key, and contradicts "no API key in this slice" |
+
+**Runtime: ONNX Runtime + numpy. Not PyTorch or sentence-transformers.**
+
+- The model runs from the repo's ONNX export (`onnx/model.onnx` **[VERIFY
+  that it exists at the pinned revision]**) with `onnxruntime` on the CPU
+  execution provider.
+- Tokenization is **plain-Python BERT WordPiece** in about 100 lines. It reads
+  `vocab.txt` from the same pinned revision and uses the published BERT basic
+  tokenizer: clean control characters, split CJK characters, lowercase, strip
+  accents, split on punctuation, then greedy longest-match WordPiece with `##`
+  continuations and `[UNK]`. So the `tokenizers` package (which pulls in
+  `huggingface_hub` and its tree) is not a runtime dependency.
+- The download uses stdlib `urllib` with a host allowlist, the same pattern as
+  the GitHub fetch. There is no `huggingface_hub`.
+- PyTorch lost because a CPU wheel is roughly 200 MB, and the default PyPI
+  Linux wheel pulls in CUDA libraries of several GB.
+- A pure-numpy forward pass over safetensors was also considered. It would
+  shrink the dependency set to numpy alone. It lost because re-implementing
+  BERT (GELU variant, LayerNorm epsilon, position ids) is a correctness risk,
+  and the ONNX graph *is* the reference computation.
+- If `onnx/model.onnx` is **not** at the pinned BAAI revision, a third-party
+  ONNX export (for example `Xenova/…`) means a different publisher, which
+  changes the supply-chain facts. The owner must be told before approving.
+
+**How text is embedded:**
+
+- **Passage input:** `" > ".join(heading_path) + "\n" + body` (the verbatim
+  passage text after the heading line), with no prefix. It is truncated to 512
+  WordPiece tokens including `[CLS]` and `[SEP]`. The ingest report adds
+  `passages truncated for embedding: n`, and the dropped tail stays searchable
+  by BM25.
+- **Query input:** bge v1.5's published retrieval instruction, `"Represent this
+  sentence for searching relevant passages: "`, followed by the question.
+- **Vector:** the output at `[CLS]` (the model's pooling), then L2-normalised,
+  then **quantised to int8**: `q = clamp(round(x · 127), −127, 127)`. Similarity
+  is the dot product of dequantised vectors (`q / 127`), a cosine up to
+  quantisation error. int8 quantisation costs about 1% of retrieval quality in
+  published results, and it makes the index smaller and more stable (see
+  Determinism).
+- **Batch size 1**, so padding never changes a result.
+
+**Ranking `hybrid-v3`:** a hybrid that keeps BM25.
+
+- **Lexical list:** v2's `ranking-v2` combined score, unchanged, over its
+  candidates (passages with P > 0).
+- **Dense list:** every passage ordered by dense similarity, ties broken by
+  `(path, line_start)`.
+- **Fusion:** Reciprocal Rank Fusion (Cormack, Clarke and Büttcher, SIGIR 2009),
+  `rrf(p) = Σ_lists 1 / (60 + rank_list(p))`, over the union of the **top 100**
+  of each list. k = 60 is the published default. RRF needs no score
+  normalisation and has one parameter.
+- Order by `(−rrf, path, line_start)`, then per-file cap 2 and top_k 5, both
+  unchanged.
+- Why hybrid rather than dense-only: dense retrieval handles paraphrase, which
+  is v1/v2's failure mode. BM25 handles exact terms (file names, commands like
+  `install.mjs`, flags). Hybrids reliably beat either alone in published
+  retrieval results. BM25 also stays as the fully deterministic fallback path.
+
+**Confidence `dense-null-v3`, the "no confident match" rule:**
+
+- The signal is the **dense similarity of the single best passage in the
+  corpus** (dense rank 1), not the fused rank 1. The question it answers is
+  "does anything in the docs mean roughly this?", which is closer to "the docs
+  answer this" than word overlap is.
+- **Calibration** reuses v1/v2's cross-file null generator unchanged: seed
+  20260926, 2000 queries, lengths {2, 3, 4, 5}, and one word from a passage in
+  each of L distinct files. The words are joined with spaces and given the query
+  prefix. τ_dense is the nearest-rank p90 of their dense-rank-1 similarity,
+  rounded to 6 dp. The sentinels are unchanged (fewer than 5 files gives
+  τ = 1000000.0).
+- Rule: `confident ⇔ dense_top1 ≥ τ_dense`. The v1/v2 ordered checks apply
+  (no-searchable-words means no WordPiece tokens beyond the prefix), and a
+  result that is not confident has **no hits** (INV-4).
+- v2's lexical corroboration is **reported, not gated**. It is printed as a
+  second number, so the owner can see where the two signals disagree.
+- **This is the weakest part of the design, stated plainly.** Word-salad null
+  queries are less fluent than real questions, and encoders give fluent,
+  on-domain questions higher similarity to *something* in a docs corpus. So
+  τ_dense calibrated on word salads is probably **too low**. Unanswerable
+  questions phrased fluently about software ("does it run on Windows?") may
+  clear it. No corpus-only null that I know of models fluent off-topic questions
+  without hand-written templates, and hand-written templates would be a
+  question set written by the builder.
+- Calibrating τ on the dev set is also rejected. Now that the fresh set gates,
+  `evals/retrieval.toml` (a dev set) could legitimately set τ. But it has only
+  6 negatives, which is too few for a stable threshold, and an adopter pointing
+  the template at their own docs has no dev set. The owner may overrule this;
+  it would be a pre-registered rule such as "τ = midpoint of the dev set's
+  lowest-answerable and highest-unanswerable similarity", fixed before the
+  freeze.
+
+**Index format `aveto-support/index@3`:**
+
+- `params` gains an `embedding` block: `{"model": "BAAI/bge-small-en-v1.5",
+  "revision": "<40-hex [VERIFY]>", "onnx_sha256": "<[VERIFY]>", "vocab_sha256":
+  "<[VERIFY]>", "dim": 384, "pooling": "cls", "normalize": true,
+  "max_tokens": 512, "query_prefix": "Represent this sentence for searching
+  relevant passages: ", "quantization": "int8-127", "fusion": "rrf",
+  "rrf_k": 60, "fusion_depth": 100, "confidence": "dense-null-v3"}`.
+- `calibration` records `method: "cross-file-null-v3"` and `threshold` (τ_dense).
+- Each passage gains `"embedding": "<base64 of 384 int8 bytes>"`, which adds
+  about 512 characters per passage (~0.5 MB for 910 passages).
+- It is still **one generated JSON file** and not a database. `load_index`
+  rejects index@2.
+- The model pin (revision plus per-file sha256) lives in a new `[embedding]`
+  table in the committed `docs-source.toml`, so it is configurable like the docs
+  source and needs no new file.
+- The weights cache is the repo-local `models/<model-id>/<revision>/`, which is
+  gitignored.
+
+**Adapter boundary (this is where the pack's pattern first becomes real).**
+`Embedder` is a `Protocol` with `embed_passage` and `embed_query`, each returning
+bytes of 384 int8 values:
+
+- `OnnxEmbedder` is the real one. It loads only files whose sha256 matches the
+  pin.
+- `PlaceholderEmbedder` is the default everywhere a model has not been
+  explicitly loaded. It raises `"embedding model is not configured in this
+  build."`.
+- `FakeEmbedder` exists in tests only. It gives deterministic hashed
+  bag-of-words vectors, so every unit test runs with no model, no network and no
+  key.
+- `retrieve` and `eval` construct `OnnxEmbedder` from the local cache. If the
+  cache is missing they exit 2 with "run ingest", and they **never download**.
+
+### 2. Approval-ready facts
+
+| Fact | Value | Status |
+|------|-------|--------|
+| **New runtime dependencies** | `onnxruntime` (MIT) and `numpy` (BSD-3-Clause). This is the first time the product has any runtime dependency. `onnxruntime` 1.2x also declares `coloredlogs` (with `humanfriendly`), `flatbuffers`, `packaging`, `protobuf` and `sympy` (with `mpmath`). That is about 9 packages in total | **[VERIFY with `uv tree` after a dry `uv lock`]**. The declared deps vary by onnxruntime version |
+| **Transitive install size** | Roughly 150–250 MB installed: onnxruntime ~50–60 MB, numpy ~35–40 MB, sympy + mpmath ~70 MB, protobuf ~5 MB, the rest small. Wheels download at about 45–60 MB | Estimate. **[VERIFY]** from the uv cache after lock |
+| **New dev-only dependency (proposed)** | `tokenizers` (Apache-2.0), used only by one network-marked parity test that checks the plain-Python WordPiece token ids against the reference tokenizer on fixed strings. It brings `huggingface_hub` and its tree (about 8 packages). It is never imported by `aveto_support/`. Omitting it is possible, at the cost of not detecting a tokenizer parity bug | The owner's call, listed separately in the approval request |
+| **Weights source host** | `huggingface.co`, repo `BAAI/bge-small-en-v1.5`, fetched as `https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/<revision>/<file>`. LFS files redirect to Hugging Face CDN or Xet storage hosts (for example `cdn-lfs.huggingface.co`, `cdn-lfs-us-1.hf.co`, `cas-bridge.xethub.hf.co`) | **[VERIFY]** the exact redirect hosts by observing one download, and list them in the allowlist |
+| **Pinned revision** | A full 40-hex commit SHA of the model repo | **[VERIFY]** from `https://huggingface.co/api/models/BAAI/bge-small-en-v1.5`. Not invented here |
+| **Files and hashes** | `onnx/model.onnx` (~133 MB fp32), `vocab.txt` (~232 KB) and `config.json` (~1 KB), each with a sha256 committed in `docs-source.toml`. For LFS files the sha256 equals the LFS oid shown by the HF API | **[VERIFY]** existence, sizes and hashes at the pinned revision |
+| **Download size, cache** | About 134 MB once per machine, cached in the repo-local `models/BAAI--bge-small-en-v1.5/<revision>/` (gitignored). Ingest skips the download when every cached file matches its pinned sha256 | Estimate |
+| **Code licence** | onnxruntime MIT, numpy BSD-3-Clause, sympy BSD-3-Clause, protobuf BSD-3-Clause, and our own code. All permissive | **[VERIFY]** per package at lock |
+| **Weights licence** | MIT, per the model card. Note for the owner: the model was trained on public datasets, some with research-only terms (for example MS MARCO). The MIT licence on the weights is the publisher's grant, and whether training-data terms matter is a legal judgement for the owner, not an engineering one | **[VERIFY]** the card at the pinned revision |
+| **Offline after download?** | **Yes.** After ingest has verified the cached files, `retrieve`, `eval` and tests never open a connection. The autouse network block stays in force for every test that is not network-marked. An `ingest` whose cache is complete and verified makes only the GitHub fetch | Design property, tested |
+| **Does question or user text leave the machine?** | **No, never.** Questions are embedded locally. The only outbound requests are two GETs: the GitHub archive URL (repo + commit) and the HF resolve URLs (repo + revision + file name). Neither contains a question, a passage or any user data. HF sees ordinary download metadata (IP, User-Agent), as GitHub already does | Design property. Security verifies |
+| **Supply-chain format** | `model.onnx` is a protobuf graph and `vocab.txt` is plain text. **No pickle, and no `trust_remote_code`**: nothing executes code from the model repo. The `.bin` / PyTorch pickle files are never downloaded | Design property |
+| **Revision verification** | The integrity control is the **committed sha256 per file**. It is checked after download and at every load, and a mismatch is `FetchError` (exit 3) at ingest or `IndexFormatError` (exit 2) at retrieve. The host allowlist is the egress control, not the integrity control. The revision SHA pins what we asked for, and the sha256 proves what we got | Design property, tested |
+| **CI cost** | The model download is ~134 MB per run unless cached. With `actions/cache` keyed on the revision plus the file hashes, a restore is about 5–15 s. Embedding ~910 passages single-threaded on a GitHub-hosted runner is roughly 1–4 min, 2000 short null queries roughly 0.5–1 min, and 30 eval questions a few seconds. Installing the new deps adds about 20–40 s with the uv cache. **Total: about +2–6 min per CI run** against a v2 run of well under a minute | Estimates. The `docs-retrieval-ci` slice measures them |
+| **Ongoing cost** | No tokens and no API bill. The model runs locally | — |
+
+### 3. What it changes in the safety and intent record
+
+**`.agentic/SAFETY_INVARIANTS.md` is NOT edited here.** A changed safety
+control needs the owner's explicit approval (rule 4). These are drafts for that
+approval.
+
+**INV-5.** The words that change are "**only network egress is the HTTPS archive
+fetch of the configured GitHub repo**" and "**Redirects go only to `github.com` /
+`codeload.github.com`**". Draft amended text:
+
+> **INV-5** — The product's network egress is limited to two read-only HTTPS
+> downloads, both in `ingest`: (a) the archive of the configured GitHub repo at
+> a full 40-hex commit, and (b) the files of the configured embedding model from
+> `huggingface.co` at a full 40-hex revision, each verified against a committed
+> sha256 before use. Redirects go only to the listed GitHub and Hugging Face
+> hosts. No credentials are sent, and no question, passage or user text is ever
+> sent. `retrieve`, `eval` and the default test suite make no network calls.
+> *(Enforced by `test_redirect_to_other_host_refused`,
+> `test_hf_redirect_to_other_host_refused`, `test_short_sha_rejected`,
+> `test_model_hash_mismatch_rejected`, `test_retrieve_is_offline_with_cached_model`,
+> and the autouse network block.)*
+
+**INV-4.** None of its words has to change. Retrieval still returns only
+verbatim passages or "no confident match" with none, and the model only
+*ranks*. Proposed **added** sentence, which strengthens it:
+
+> A model may be used to rank passages. It never produces, selects fragments
+> of, or alters the text returned.
+
+The enforcing tests are unchanged.
+
+**The `ai-agent-product` floor's `generationMode`.** No text is generated, so
+`generation_mode` stays `"deterministic"`. Proposed: add
+`ranking_mode: "lexical" | "hybrid:<model>@<revision>"` to `RetrievalResult`
+and to the output, so the model's role is always visible and nobody mistakes
+"deterministic generation" for "no model involved". The owner may prefer to set
+`generation_mode` itself to a non-deterministic value. That is the owner's call,
+and it changes no behaviour.
+
+**Intent lines it contradicts** (`runs/docs-retrieval/intent.md`, owner-confirmed).
+The owner would amend each deliberately:
+
+| Intent line (verbatim) | Contradiction |
+|------------------------|---------------|
+| What I want: "**No model is involved** — this is the retrieval step (step 2 of the design in the README) on its own" | An embedding model is involved in ranking and confidence |
+| Done means: "**No model is called anywhere, and the only network access is fetching the pinned docs.**" | Both halves: a local model is called, and a second download (the weights) is added |
+| Constraints: "This slice uses no model, so only the language, structure and test setup are exercised." | Same |
+| Out of scope: "**Any model call** — classification by model, drafting, checking." | Its examples do not name embeddings, but "Any model call" covers a local encoder |
+| Done means: "Running ingest twice on the same commit produces **byte-identical output**." | It holds on the same machine by design (see Determinism). It is at risk only if the fallback relaxation is needed |
+
+The same stance appears in two more places the owner may want to align:
+
+- `.agentic/PROJECT_CONTEXT.md`, "2. **Retrieve** the relevant passages —
+  plain code."
+- `README.md`, "Retrieve the relevant docs — plain code."
+
+**Release tier.** `project-packs/ai-agent-product.md` makes "wiring a real LLM
+client behind a placeholder for the first time" **Tier 3**. A local, non-generative
+encoder is not an LLM, but it is the first model in the path. I expect the
+Release Manager to treat it as **Tier 3** by analogy, and the owner should
+budget for that. The current tier is 2.
+
+**ADR.** If approved, embed-v3 gets `docs/adr/0003-hybrid-embedding-retrieval.md`,
+which supersedes the ranking and confidence parts of 0002. ADR 0001 is
+unaffected, because its "Anthropic SDK direct" decision concerns generative
+calls.
+
+### 4. Determinism
+
+**Target: byte-identical index on same-machine re-runs, as in Done-means 3,
+unchanged.** How:
+
+1. **Fixed execution.** ONNX Runtime CPU provider,
+   `intra_op_num_threads = 1`, `inter_op_num_threads = 1`,
+   `execution_mode = ORT_SEQUENTIAL`, and a fixed
+   `graph_optimization_level = ORT_ENABLE_BASIC`. numpy BLAS is pinned to one
+   thread (`OMP_NUM_THREADS`, `OPENBLAS_NUM_THREADS` and `MKL_NUM_THREADS` set
+   to 1 by the CLI before numpy is imported). Single-threaded inference with the
+   same library version, same model file and same CPU is bitwise repeatable in
+   practice, because the reduction order is fixed.
+2. **Batch size 1.** There is no padding, so tensor shapes depend only on the
+   input.
+3. **int8 quantisation of stored vectors.** It absorbs last-bit float noise. A
+   stored value can differ only if a float lands within about 1e-7 of a rounding
+   boundary (`x·127` exactly at *.5*), which is vanishingly rare, and even then
+   the similarity moves by at most 1/127 in one dimension.
+4. **Calibration.** Same seed and sorted iteration as v2. τ is computed from
+   dequantised int8 similarities and rounded to 6 dp.
+5. **Pinned versions.** The lockfile pins onnxruntime and numpy, and
+   `docs-source.toml` pins the model by revision and sha256. `params.embedding`
+   records them, and `load_index` rejects a mismatch.
+
+**Not guaranteed across machines.** MLAS kernels pick AVX2, AVX-512 or NEON code
+paths by CPU, so a Mac and a Linux CI runner may produce slightly different
+floats. With int8, most vectors will still match exactly, but not all. The CI
+slice compares within one runner, as it already does for v2.
+
+**If same-machine byte identity fails anyway** (QA's two-run sha256 check is
+the test):
+
+- **First fallback:** store embeddings at lower precision (int8 with a coarser
+  scale, for example round(x·63)). This needs no owner decision if the check
+  passes afterwards.
+- **Second fallback, needing the owner to amend Done-means 3:** "byte-identical
+  for `source`, `params`, `counts`, `skipped` and `passages[*]` except
+  `embedding`; each embedding equal within ±1 int8 step; τ equal within 1e-4."
+  Ingest would print both a full sha256 and a sha256 of the embedding-free
+  canonical form.
+- I would **not** move embeddings into a second file to dodge the check. That
+  hides the drift rather than bounding it.
+
+### 5. Files and test plan
+
+**The file list is unchanged: exactly 18.** No 19th file is needed.
+
+- Model download and verification go in `aveto_support/ingest.py`, next to the
+  GitHub fetch, so all network code stays in one module.
+- `Embedder`, `OnnxEmbedder`, `PlaceholderEmbedder`, WordPiece, RRF and dense
+  calibration go in `aveto_support/search.py`.
+- The model pin goes in `docs-source.toml`, and `models/` goes in `.gitignore`.
+- `pyproject.toml` and `uv.lock` gain the two runtime deps (plus `tokenizers`
+  as dev-only if approved).
+- README, LOCAL_COMMANDS and CURRENT_MVP_STATUS get the model note.
+- The CLI commands are unchanged, and `ingest` downloads the model when the
+  cache is missing.
+
+**A 19th file is recommended but optional.** `search.py` would grow to roughly
+500 lines and mix lexical ranking with model inference. Splitting
+`Embedder`, `OnnxEmbedder`, `PlaceholderEmbedder` and WordPiece into
+**`aveto_support/embed.py`** gives the adapter boundary its own module, as the
+pack's pattern intends, and a module the Security review can read in isolation.
+That is a 19th file and **needs an EM re-scope**. I recommend it if embed-v3 is
+approved. It stays out if the owner and EM prefer to hold at 18.
+
+**Test plan changes** (in addition to v2's, all offline unless marked):
+
+- `test_search.py`:
+  - `test_placeholder_embedder_raises`
+  - `test_fake_embedder_deterministic`
+  - `test_rrf_fusion_math` (hand-computed ranks, k = 60)
+  - `test_hybrid_candidates_union_of_lists`
+  - `test_per_file_cap_applies_after_fusion`
+  - `test_int8_quantise_roundtrip`
+  - `test_dense_calibration_deterministic` (FakeEmbedder)
+  - `test_not_confident_returns_no_hits` (unchanged; INV-4)
+  - `test_wordpiece_basic_rules` (lowercase, accent strip, punctuation split,
+    `##` continuation, `[UNK]`, and 512 truncation with `[CLS]`/`[SEP]`, all on
+    a tiny synthetic vocab)
+- `test_ingest.py`:
+  - `test_model_hash_mismatch_rejected`
+  - `test_hf_redirect_to_other_host_refused`
+  - `test_model_revision_must_be_40_hex`
+  - `test_cached_model_skips_download`
+  - `test_retrieve_is_offline_with_cached_model` (network blocked, fake cache
+    with FakeEmbedder)
+- `test_index.py`:
+  - `test_load_rejects_index_v2`
+  - `test_embedding_params_mismatch_rejected`
+- **Network-marked:**
+  - `test_live_model_download_verifies_hashes`
+  - `test_onnx_embedding_is_repeatable`: two runs give bitwise-equal int8
+    vectors, which directly tests Determinism point 1
+  - `test_wordpiece_parity_with_reference` (only if `tokenizers` is approved)
+  - `test_live_ingest_byte_identical` (unchanged, now including embeddings)
+- **QA stage additions:**
+  - `uv tree` output (the actual dependency list)
+  - the cached files' sha256 against the pins
+  - a packet capture or `lsof`-level check, or at minimum the network-blocked
+    test run, showing `retrieve` and `eval` make no connection
+  - the two-run sha256 check
+  - both eval sets' scores (fresh set gating, dev set diagnostic)
+
+### 6. Honest comparison: v2 versus embed-v3
+
+These predictions are recorded before either variant is built or run. They are
+judgement, not measurement. "Fresh" means the owner's held-out set, assumed to be
+phrased like `evals/retrieval.toml`.
+
+| | **v2 (lexical)** | **embed-v3 (hybrid)** |
+|---|---|---|
+| Ungated recall@5 | about 17/24 (range 15–20). On a fresh ~20-question set, about 70% (range 55–85%) | about 20/24 (range 17–23). Fresh, about 80% (range 65–92%) |
+| Unanswerable abstention | 4–6 of 6 | 3–6 of 6. τ calibrated on word salads is likely too permissive for fluent off-topic questions |
+| **Chance of passing both ≥80% bars on the fresh set** | **about 15%** (10–25%) | **about 30%** (20–45%). Ranking probably clears; abstention is the likely failure |
+| New runtime dependencies | none | 2 direct (onnxruntime, numpy), about 9 in total, about 150–250 MB |
+| Downloads | GitHub archive | + ~134 MB of weights from Hugging Face |
+| Approvals needed | none new | 3 requests, plus 1 note and 1 optional, see §7: a model in the path (rule 5), the HF download (rule 5), the INV-5 change (rule 4), the intent amendment (owner), and optionally the dev dep |
+| Release tier | 2 | probably 3 (Release Manager) |
+| CI time | under 1 min | +2–6 min, with cache |
+| Determinism | exact, float math only | same-machine exact by design, with a fallback that needs an owner amendment |
+| Security surface | one egress, no parsing of untrusted binaries | two egresses, and parsing a 134 MB ONNX graph (protobuf, no code execution, hash-pinned) |
+| Build effort | one more Implementation pass | a larger pass: WordPiece, ONNX runner, download and verify, RRF, dense calibration, and about 15 new tests. Probably one build-stage estimate plus about half again. The Orchestrator prices it |
+
+**Recommendation, stated plainly: do not add embeddings to *this* slice.**
+Freeze v2, run the fresh set once, and record the result. If v2 misses, which
+is likely, open a **new slice** for hybrid retrieval with this embed-v3 section
+as its starting design and its own intent, approvals and tier.
+
+My reasons:
+
+1. **The slice's premise.** Its intent is to find out whether plain code is good
+   enough before a model is involved. Adding a model rewrites four intent lines
+   and a safety invariant mid-slice, which turns it into a different slice under
+   the old one's name.
+2. **Low pass chance.** embed-v3 roughly doubles the pass chance, but only to
+   about 30%, because abstention, not ranking, becomes the binding problem. A
+   sense-aware "the docs don't answer this" judgement is the job of the later
+   classifier and checker models, which this design can already feed.
+3. **Separate evidence.** A clean v2 result on the fresh set is valuable
+   evidence on its own. It is the measured lexical ceiling, and the embeddings
+   slice needs it as its baseline.
+4. **Tier change.** A Tier 3 change deserves its own Release Gate, not a tier
+   change halfway through this one.
+
+**When I would recommend the opposite:** if the owner's priority is shipping
+≥80% *ranking* soon, and they accept abstention as the known weak point, then
+embed-v3 in this slice is the faster route. In that case approve all of §7,
+accept the 19th file (`embed.py`), and move this slice to Tier 3 before
+Implementation.
+
+### 7. Draft approval requests (for the Orchestrator to file; drafts only)
+
+Each is a separate, smallest-possible request per `HUMAN_APPROVAL_RULES.md`
+"How to ask". None is approved by this text. The **[VERIFY]** facts from §2 must
+be filled in before any request is put to the owner.
+
+**Request A: rule 5, "Inviting a model into a previously deterministic path".**
+
+> **What:** Add a local embedding model, `BAAI/bge-small-en-v1.5` at revision
+> `<40-hex [VERIFY]>`, run on CPU with `onnxruntime` + `numpy` (new runtime
+> dependencies, about 9 packages and about 150–250 MB installed [VERIFY]), to rank
+> passages and decide "no confident match" in `retrieve`, as specified in
+> 02-tech-spec.md "variant embed-v3".
+> **Why this rule:** retrieval is plain code today, and this puts a neural model
+> in that path. There is no API, no key and no token spend. The model runs
+> locally, and no question text leaves the machine.
+> **If denied:** nothing changes. Variant v2 (lexical, no model) is built and
+> frozen as specified.
+> **Scope:** this model, this revision, CPU-local inference only. A different
+> model, revision or any hosted API is a new request.
+
+**Request B: rule 5, "Adding a network call to the build / test / commit path".**
+
+> **What:** Let `ingest` (locally and in CI) download three files, `onnx/model.onnx`,
+> `vocab.txt` and `config.json`, from `huggingface.co/BAAI/bge-small-en-v1.5` at
+> revision `<[VERIFY]>`. That is about 134 MB, verified against committed sha256
+> values `<[VERIFY]>`, cached in gitignored `models/`, with redirects allowed only
+> to `<HF CDN hosts [VERIFY]>`.
+> **Why this rule:** it is a second network call in the build/test path.
+> APPROVAL_RECORD-1 covers only the GitHub archive.
+> **If denied:** Request A cannot be used, and v2 is built.
+> **Scope:** this host, this repo and revision, these files, read-only GET, no
+> credentials.
+
+**Request C: rule 4, "Changes to safety controls".**
+
+> **What:** Replace INV-5 in `.agentic/SAFETY_INVARIANTS.md` with the amended
+> text in 02-tech-spec.md "embed-v3 §3". That text permits the pinned,
+> hash-verified Hugging Face download as a second egress, keeps "no
+> credentials" and "no question text ever sent", and adds that
+> `retrieve`/`eval` make no network calls. Also add one strengthening sentence to
+> INV-4 ("a model may rank passages; it never produces, selects fragments of, or
+> alters the text returned").
+> **Why this rule:** INV-5 is a safety control, and widening its egress allowance
+> is a change to it, even though it stays tightly bounded.
+> **If denied:** INV-5 stays as it is, which rules out Request B, and so
+> embed-v3.
+> **Scope:** exactly the drafted text.
+
+**Owner decision (not a numbered rule): amend the intent.** Amend the five
+intent lines listed in §3 ("No model is involved…", "No model is called
+anywhere…", "This slice uses no model…", "Out of scope: Any model call…", and,
+only if the determinism fallback is ever needed, Done-means 3). This is not a
+gate rule, but the intent is owner-confirmed and QA verifies Done-means
+verbatim. Without the amendment, QA would correctly fail embed-v3 on
+Done-means 10. The Release Manager also confirms the tier change (2 to 3).
+
+**Optional request D: dev-only dependency `tokenizers`** (not a numbered rule;
+the dependency cost is the owner's call). It is used by one network-marked
+parity test only, it brings `huggingface_hub` and about 8 packages dev-side, and
+it is never shipped in runtime code.
+
+**Rule 6 does not apply, and here is why.** Rule 6 covers routing user or
+customer data to a new processor. Under embed-v3 **no user, customer, question
+or passage data goes to Hugging Face**. The only thing HF receives is a file
+download request, just as GitHub already does. Hugging Face is an artefact
+supplier, handled by Requests A and B and the Security review, not a data
+processor. **It would apply** if embeddings were ever computed by a hosted API.
+That would need a `VENDOR_RISK_TEMPLATE` assessment and a DPA check first.
 
 ## Overfitting protocol — how the 30 questions stay a test, not a training set
 
