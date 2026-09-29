@@ -181,6 +181,36 @@
       "toolCalls": 16,
       "retry": 0,
       "outcome": "MATCHES: float cos>=0.99999989; int8 explains top-5 differences"
+    },
+    {
+      "stage": "Architecture embed-v3 fact-fill (resumed)",
+      "role": "software-architect",
+      "model": "opus-5-5",
+      "effort": "high (declared)",
+      "tokens": 50042,
+      "toolCalls": 39,
+      "retry": 1,
+      "outcome": "embed-v3 facts verified/labelled; INV wording drafted"
+    },
+    {
+      "stage": "EM embed-v3 re-scope (resumed)",
+      "role": "engineering-manager",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 38382,
+      "toolCalls": 11,
+      "retry": 1,
+      "outcome": "split required; owner overrode"
+    },
+    {
+      "stage": "Close-out (post-launch-learning)",
+      "role": "post-launch-learning",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 69266,
+      "toolCalls": 27,
+      "retry": 0,
+      "outcome": "08-close-out.md"
     }
   ],
   "evalSet": {
@@ -295,5 +325,6 @@
     "when": "2026-09-29T16:06:36Z",
     "verbatim": "Confirm the proposal as written",
     "outcome": "A: stop core; nothing ships"
-  }
+  },
+  "outcome": "closed: held-out gate failed (5/17 answerable); nothing shipped; Security and Release Gate did not run"
 }

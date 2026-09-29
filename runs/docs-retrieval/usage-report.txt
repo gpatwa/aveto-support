@@ -1,0 +1,13 @@
+
+docs-retrieval  —  5/5 stages measured, 233 requests, cache hit 93.5%
+  role                    model                 reqs  processed  in-equiv  peak ctx   ratio
+  engineering-manager     sonnet-5                12       503k      121k       55k   9x
+  engineering-manager     sonnet-5-5              19       759k      335k       27k   28x
+  software-architect      opus-5-5                84     15.60M     3.83M      128k   121x
+  backend-architect       sonnet-5-5              68     10.55M     1.49M      107k   98x
+  qa-evidence             sonnet-5-5              50      3.09M      635k       45k   69x
+  TOTAL                                          233     30.50M     6.42M      363k
+
+model = as logged by the harness for each request — copy it into STATE.md's Trace, never from memory
+* = spawned as a generic agent (role from its description), so the role's tool restrictions did not bind
+processed = every token each request sent or received · in-equiv = weighted by cost (notional on a subscription) · peak ctx = what trace.json has been recording
