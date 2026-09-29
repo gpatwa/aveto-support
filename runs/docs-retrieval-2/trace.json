@@ -1,0 +1,14 @@
+{
+  "schema": "agentic-sdlc/trace@2",
+  "slice": "docs-retrieval-2",
+  "tier": 2,
+  "overlay": false,
+  "landed": false,
+  "started": "2026-09-29T16:52:18Z",
+  "operator": "Gopal Patwa",
+  "leastPrivilegeEnforced": true,
+  "leastPrivilegeNote": "Run from a worktree of aveto-support; role subagents load from this repo's .claude/agents/ with their tools frontmatter and write-scope hooks.",
+  "telemetrySource": "self-reported",
+  "approvals": [],
+  "stages": []
+}
