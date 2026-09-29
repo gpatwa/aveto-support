@@ -66,7 +66,7 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 
 | Stage | Retries used | Cap | Class | Last failure |
 |-------|--------------|-----|-------|--------------|
-| — | 0 | 2 | — | — |
+| Implementation (eval gate) | 0 (retry 1 of 2 unspent; escalated early) | 2 | gate-violation | eval run 1: answerable 2/24 (need 20); ungated recall@5 14/24. See ESCALATION-1.md |
 
 ## Interruptions
 
