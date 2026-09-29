@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import io
 import json
 import random
@@ -10,13 +11,36 @@ from pathlib import Path
 from urllib.request import Request
 
 import pytest
-from conftest import COMMIT, REPO, FakeOpener, as_opener, make_archive
+from conftest import (
+    COMMIT,
+    EMBEDDING_TOML,
+    MODEL,
+    REPO,
+    REVISION,
+    FakeEmbedder,
+    FakeOpener,
+    as_opener,
+    make_archive,
+)
 
+from aveto_support.__main__ import main
+from aveto_support.embed import ONNX_FILE, VOCAB_FILE, ModelError, OnnxEmbedder
+from aveto_support.index import (
+    EmbeddingParams,
+    Index,
+    RetrievalParams,
+    load_index,
+    write_index,
+)
 from aveto_support.ingest import (
     ConfigError,
     FetchError,
+    IngestReport,
     SourceConfig,
+    _hf_host_allowed,
     _HostRestrictedRedirect,
+    download_model_file,
+    ensure_model_files,
     fetch_archive,
     load_source_config,
     read_markdown,
@@ -24,6 +48,7 @@ from aveto_support.ingest import (
 )
 
 SRC = SourceConfig(REPO, COMMIT)
+FAKE = FakeEmbedder()
 
 DOCS = {
     "README.md": b"# Home\nWelcome to the widget project.\n",
@@ -35,20 +60,35 @@ DOCS = {
 }
 
 
-def _cfg(tmp_path: Path, body: str) -> Path:
+def _cfg(tmp_path: Path, body: str, embedding: str = EMBEDDING_TOML) -> Path:
     path = tmp_path / "src.toml"
-    path.write_text(body)
+    path.write_text(body + "\n" + embedding)
     return path
 
 
+def _base(extra: str = "") -> str:
+    return f'repo = "{REPO}"\ncommit = "{COMMIT}"\n{extra}'
+
+
+def _ingest(cfg: Path, out: Path, opener: FakeOpener, tmp_path: Path) -> IngestReport:
+    return run_ingest(cfg, out, opener=as_opener(opener), models_dir=tmp_path / "models", embedder=FAKE)
+
+
+# --- config ----------------------------------------------------------------
+
+
 def test_load_config_valid(tmp_path: Path) -> None:
-    cfg = load_source_config(_cfg(tmp_path, f'repo = "{REPO}"\ncommit = "{COMMIT}"\nexclude = ["drafts/"]\n'))
-    assert cfg == SourceConfig(REPO, COMMIT, ("drafts/",))
+    cfg = load_source_config(_cfg(tmp_path, _base('exclude = ["drafts/"]')))
+    assert cfg.repo == REPO and cfg.commit == COMMIT and cfg.exclude == ("drafts/",)
+    assert cfg.embedding.model == MODEL and cfg.embedding.revision == REVISION
+    assert cfg.offtopic_path is None and cfg.embedding.offtopic_sha256 is None
 
 
 def test_committed_config_is_valid() -> None:
     cfg = load_source_config(Path(__file__).parent.parent / "docs-source.toml")
-    assert len(cfg.commit) == 40
+    assert len(cfg.commit) == 40 and len(cfg.embedding.revision) == 40
+    assert cfg.embedding.model == "BAAI/bge-small-en-v1.5"
+    assert cfg.offtopic_path is not None and cfg.embedding.offtopic_sha256 is not None
 
 
 def test_short_sha_rejected(tmp_path: Path) -> None:
@@ -69,13 +109,37 @@ def test_bad_repo_rejected(tmp_path: Path) -> None:
 
 def test_unknown_key_rejected(tmp_path: Path) -> None:
     with pytest.raises(ConfigError, match="unknown"):
-        load_source_config(_cfg(tmp_path, f'repo = "{REPO}"\ncommit = "{COMMIT}"\nbranch = "x"\n'))
+        load_source_config(_cfg(tmp_path, _base('branch = "x"\n')))
 
 
 def test_exclude_dotdot_rejected(tmp_path: Path) -> None:
     for bad in ('"../x"', '"/abs"', '"a/../b"'):
         with pytest.raises(ConfigError):
-            load_source_config(_cfg(tmp_path, f'repo = "{REPO}"\ncommit = "{COMMIT}"\nexclude = [{bad}]\n'))
+            load_source_config(_cfg(tmp_path, _base(f"exclude = [{bad}]\n")))
+
+
+def test_model_revision_must_be_40_hex(tmp_path: Path) -> None:
+    for bad in ("main", "b" * 39, "B" * 40, "v1.5"):
+        emb = EMBEDDING_TOML.replace(REVISION, bad)
+        with pytest.raises(ConfigError, match="revision"):
+            load_source_config(_cfg(tmp_path, _base(), emb))
+
+
+def test_embedding_table_validated(tmp_path: Path) -> None:
+    with pytest.raises(ConfigError, match="embedding"):
+        load_source_config(_cfg(tmp_path, _base(), ""))
+    with pytest.raises(ConfigError, match="sha256"):
+        load_source_config(_cfg(tmp_path, _base(), EMBEDDING_TOML.replace("a" * 64, "abc")))
+    with pytest.raises(ConfigError, match="unknown"):
+        load_source_config(_cfg(tmp_path, _base(), EMBEDDING_TOML + 'extra = "x"\n'))
+    with pytest.raises(ConfigError, match="go together"):
+        load_source_config(_cfg(tmp_path, _base(), EMBEDDING_TOML + 'offtopic_path = "x.toml"\n'))
+    bad_path = EMBEDDING_TOML + 'offtopic_path = "../x.toml"\n' + 'offtopic_sha256 = "' + "1" * 64 + '"\n'
+    with pytest.raises(ConfigError, match="repo-relative"):
+        load_source_config(_cfg(tmp_path, _base(), bad_path))
+
+
+# --- reading the archive ---------------------------------------------------
 
 
 def test_read_markdown_keeps_only_md_regular_files() -> None:
@@ -132,6 +196,9 @@ def test_crlf_normalised_line_count_preserved() -> None:
     assert docs[0].text.count("\n") == 5
 
 
+# --- network: redirects, status, size --------------------------------------
+
+
 def test_redirect_to_other_host_refused() -> None:
     handler = _HostRestrictedRedirect()
     req = Request("https://github.com/acme/docs/archive/x.tar.gz")
@@ -146,6 +213,32 @@ def test_redirect_to_other_host_refused() -> None:
         req, io.BytesIO(), 302, "Found", HTTPMessage(), "https://codeload.github.com/acme/docs/tar.gz/x"
     )
     assert ok is not None
+    with pytest.raises(FetchError, match="disallowed host"):
+        handler.redirect_request(
+            req, io.BytesIO(), 302, "Found", HTTPMessage(), "https://us.aws.cdn.hf.co/x"
+        )
+
+
+def test_hf_redirect_outside_hf_co_refused() -> None:
+    handler = _HostRestrictedRedirect(_hf_host_allowed)
+    req = Request(f"https://huggingface.co/{MODEL}/resolve/{REVISION}/vocab.txt")
+    for target in (
+        "https://evilhf.co/x",
+        "https://hf.co.evil.example/x",
+        "https://evil.example/hf.co",
+        "http://us.aws.cdn.hf.co/x",
+        "https://github.com/x",
+        "https://huggingface.co.evil.example/x",
+    ):
+        with pytest.raises(FetchError, match="disallowed host"):
+            handler.redirect_request(req, io.BytesIO(), 302, "Found", HTTPMessage(), target)
+
+
+def test_hf_redirect_to_cdn_allowed() -> None:
+    handler = _HostRestrictedRedirect(_hf_host_allowed)
+    req = Request(f"https://huggingface.co/{MODEL}/resolve/{REVISION}/vocab.txt")
+    for target in ("https://us.aws.cdn.hf.co/repos/xx/file?sig=1", "https://huggingface.co/other/path"):
+        assert handler.redirect_request(req, io.BytesIO(), 302, "Found", HTTPMessage(), target) is not None
 
 
 def test_fetch_requests_only_the_archive_url_without_credentials() -> None:
@@ -172,75 +265,248 @@ def test_size_cap_enforced() -> None:
     assert fetch_archive(SRC, opener=as_opener(FakeOpener(b"x" * 10)), max_bytes=10)
 
 
-def test_default_network_is_blocked() -> None:
+def test_default_network_is_blocked(tmp_path: Path) -> None:
     with pytest.raises(RuntimeError, match="network disabled"):
         fetch_archive(SRC)
+    with pytest.raises(RuntimeError, match="network disabled"):
+        download_model_file(EmbeddingParams(), "vocab.txt", tmp_path / "x", "0" * 64)
 
 
-def _setup_ingest(tmp_path: Path, files: dict[str, bytes]) -> tuple[Path, FakeOpener]:
-    cfg = _cfg(tmp_path, f'repo = "{REPO}"\ncommit = "{COMMIT}"\n')
-    return cfg, FakeOpener(make_archive(files))
+# --- the pinned model download ---------------------------------------------
+
+ONNX_BYTES = b"pretend onnx graph"
+VOCAB_BYTES = b"[PAD]\n[UNK]\n"
+
+
+def _params() -> EmbeddingParams:
+    return EmbeddingParams(
+        model=MODEL,
+        revision=REVISION,
+        onnx_sha256=hashlib.sha256(ONNX_BYTES).hexdigest(),
+        vocab_sha256=hashlib.sha256(VOCAB_BYTES).hexdigest(),
+    )
+
+
+def _model_opener() -> FakeOpener:
+    return FakeOpener(routes={"/onnx/model.onnx": ONNX_BYTES, "/vocab.txt": VOCAB_BYTES})
+
+
+def _cached(models: Path, params: EmbeddingParams) -> Path:
+    base = models / MODEL.replace("/", "--") / REVISION
+    (base / "onnx").mkdir(parents=True)
+    (base / ONNX_FILE).write_bytes(ONNX_BYTES)
+    (base / VOCAB_FILE).write_bytes(VOCAB_BYTES)
+    return base
+
+
+def test_model_download_requests_pinned_urls_and_caches(tmp_path: Path) -> None:
+    opener = _model_opener()
+    status = ensure_model_files(_params(), tmp_path / "models", opener=as_opener(opener))
+    assert status == "downloaded"
+    assert sorted(opener.urls) == sorted(
+        [
+            f"https://huggingface.co/{MODEL}/resolve/{REVISION}/onnx/model.onnx",
+            f"https://huggingface.co/{MODEL}/resolve/{REVISION}/vocab.txt",
+        ]
+    )
+    base = tmp_path / "models" / MODEL.replace("/", "--") / REVISION
+    assert (base / ONNX_FILE).read_bytes() == ONNX_BYTES
+    assert (base / VOCAB_FILE).read_bytes() == VOCAB_BYTES
+
+
+def test_model_hash_mismatch_rejected_and_deleted(tmp_path: Path) -> None:
+    params = _params()
+    bad = FakeOpener(routes={"/onnx/model.onnx": b"tampered", "/vocab.txt": VOCAB_BYTES})
+    models = tmp_path / "models"
+    with pytest.raises(FetchError, match="pinned sha256"):
+        ensure_model_files(params, models, opener=as_opener(bad))
+    leftovers = [p for p in models.rglob("*") if p.is_file()]
+    assert leftovers == []  # nothing kept, not even a partial file
+
+
+def test_download_size_cap_and_status(tmp_path: Path) -> None:
+    dest = tmp_path / "m" / "f.bin"
+    with pytest.raises(FetchError, match="size cap"):
+        download_model_file(_params(), "vocab.txt", dest, "0" * 64,
+                            opener=as_opener(FakeOpener(b"x" * 11)), max_bytes=10)
+    with pytest.raises(FetchError, match="status"):
+        download_model_file(_params(), "vocab.txt", dest, "0" * 64, opener=as_opener(FakeOpener(status=503)))
+    assert not dest.exists() and list(dest.parent.iterdir()) == []
+
+
+def test_cached_model_skips_download(tmp_path: Path) -> None:
+    params = _params()
+    _cached(tmp_path / "models", params)
+    opener = FakeOpener(error=RuntimeError("must not be called"))
+    assert ensure_model_files(params, tmp_path / "models", opener=as_opener(opener)) == "cached"
+    assert opener.urls == []
+
+
+def test_cached_file_rehashed_before_use(tmp_path: Path) -> None:
+    params = _params()
+    base = _cached(tmp_path / "models", params)
+    (base / ONNX_FILE).write_bytes(b"corrupted after download")
+    # retrieve/eval path: re-hash before any ONNX session or vocab read; delete on mismatch
+    with pytest.raises(ModelError, match="does not match"):
+        OnnxEmbedder.load(tmp_path / "models", params)
+    assert not (base / ONNX_FILE).exists()
+    # ingest path: a mismatched cached file is replaced by a fresh, verified download
+    (base / ONNX_FILE).parent.mkdir(exist_ok=True)
+    (base / ONNX_FILE).write_bytes(b"corrupted again")
+    opener = _model_opener()
+    assert ensure_model_files(params, tmp_path / "models", opener=as_opener(opener)) == "downloaded"
+    assert (base / ONNX_FILE).read_bytes() == ONNX_BYTES
+    assert opener.urls == [f"https://huggingface.co/{MODEL}/resolve/{REVISION}/onnx/model.onnx"]
+
+
+# --- ingest ----------------------------------------------------------------
 
 
 def test_ingest_is_byte_identical(tmp_path: Path) -> None:
-    cfg, opener = _setup_ingest(tmp_path, DOCS)
-    r1 = run_ingest(cfg, tmp_path / "one" / "i.json", opener=as_opener(opener))
-    r2 = run_ingest(cfg, tmp_path / "two" / "i.json", opener=as_opener(opener))
+    cfg = _cfg(tmp_path, _base())
+    opener = FakeOpener(make_archive(DOCS))
+    r1 = _ingest(cfg, tmp_path / "one" / "i.json", opener, tmp_path)
+    r2 = _ingest(cfg, tmp_path / "two" / "i.json", opener, tmp_path)
     assert (tmp_path / "one" / "i.json").read_bytes() == (tmp_path / "two" / "i.json").read_bytes()
     assert r1.sha256 == r2.sha256
     assert r1.files_indexed == len(DOCS) and r1.passages > 0
     assert 0.0 <= r1.threshold <= 1.0
+    assert load_index(tmp_path / "one" / "i.json").passages[0].embedding
 
 
 def test_ingest_is_byte_identical_under_member_reordering(tmp_path: Path) -> None:
-    cfg = _cfg(tmp_path, f'repo = "{REPO}"\ncommit = "{COMMIT}"\n')
+    cfg = _cfg(tmp_path, _base())
     names = list(DOCS)
     random.Random(1).shuffle(names)
     shuffled = {n: DOCS[n] for n in names}
     assert names != list(DOCS)
-    r1 = run_ingest(cfg, tmp_path / "a.json", opener=as_opener(FakeOpener(make_archive(DOCS))))
-    r2 = run_ingest(cfg, tmp_path / "b.json", opener=as_opener(FakeOpener(make_archive(shuffled))))
+    r1 = _ingest(cfg, tmp_path / "a.json", FakeOpener(make_archive(DOCS)), tmp_path)
+    r2 = _ingest(cfg, tmp_path / "b.json", FakeOpener(make_archive(shuffled)), tmp_path)
     assert (tmp_path / "a.json").read_bytes() == (tmp_path / "b.json").read_bytes()
     assert r1.sha256 == r2.sha256
 
 
 def test_small_corpus_warns_and_fails_closed(tmp_path: Path) -> None:
-    cfg, opener = _setup_ingest(tmp_path, {"a.md": b"# A\nx y\n"})
-    report = run_ingest(cfg, tmp_path / "i.json", opener=as_opener(opener))
-    assert report.threshold == 1.0
-    assert report.warnings
+    cfg = _cfg(tmp_path, _base())
+    report = _ingest(cfg, tmp_path / "i.json", FakeOpener(make_archive({"a.md": b"# A\nx y\n"})), tmp_path)
+    assert report.threshold == 1_000_000.0
+    assert any("fewer than 5" in w for w in report.warnings)
+
+
+def test_no_offtopic_list_warns_and_uses_salad(tmp_path: Path) -> None:
+    cfg = _cfg(tmp_path, _base())
+    report = _ingest(cfg, tmp_path / "i.json", FakeOpener(make_archive(DOCS)), tmp_path)
+    assert report.tau_offtopic is None and report.threshold == report.tau_salad
+    assert any("off-topic" in w and "too permissive" in w for w in report.warnings)
+
+
+def _offtopic_config(tmp_path: Path, questions: list[str], sha: str | None = None) -> Path:
+    body = 'pinned_commit = "' + COMMIT + '"\n' + "".join(
+        f'[[question]]\nid = "o{i}"\nquestion = "{q}"\n' for i, q in enumerate(questions)
+    )
+    (tmp_path / "offtopic.toml").write_text(body)
+    digest = sha or hashlib.sha256(body.encode()).hexdigest()
+    extra = f'offtopic_path = "offtopic.toml"\nofftopic_sha256 = "{digest}"\n'
+    return _cfg(tmp_path, _base(), EMBEDDING_TOML + extra)
+
+
+def test_offtopic_list_calibrates_and_is_recorded(tmp_path: Path) -> None:
+    questions = ["alpha gizmo details", "widget project menu", "quantum spaceship", "lunar module", "opera"]
+    cfg = _offtopic_config(tmp_path, questions)
+    out = tmp_path / "i.json"
+    report = _ingest(cfg, out, FakeOpener(make_archive(DOCS)), tmp_path)
+    assert report.tau_offtopic is not None
+    assert report.threshold == max(report.tau_salad, report.tau_offtopic)
+    assert any("5 questions" in w for w in report.warnings)
+    doc = json.loads(out.read_text())
+    assert doc["params"]["embedding"]["offtopic_sha256"] == hashlib.sha256(
+        (tmp_path / "offtopic.toml").read_bytes()
+    ).hexdigest()
+    assert doc["calibration"]["tau_offtopic"] == report.tau_offtopic
+    assert doc["calibration"]["method"] == "cross-file-null-v3+offtopic-v1"
+
+
+def test_offtopic_list_hash_mismatch_exit_2(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    cfg = _offtopic_config(tmp_path, ["one", "two"], sha="9" * 64)
+    out = tmp_path / "i.json"
+    code = main(["ingest", "--config", str(cfg), "--out", str(out)], embedder=FAKE, models_dir=tmp_path / "m")
+    assert code == 2 and not out.exists()
+    err = capsys.readouterr().err
+    assert "off-topic list" in err and "pinned sha256" in err
+
+
+def test_failed_ingest_leaves_previous_index(tmp_path: Path) -> None:
+    cfg = _cfg(tmp_path, _base())
+    out = tmp_path / "i.json"
+    _ingest(cfg, out, FakeOpener(make_archive(DOCS)), tmp_path)
+    before = out.read_bytes()
+    with pytest.raises(FetchError):
+        _ingest(cfg, out, FakeOpener(status=503), tmp_path)
+    assert out.read_bytes() == before
 
 
 def test_index_carries_no_timestamps_or_absolute_paths(tmp_path: Path) -> None:
-    cfg, opener = _setup_ingest(tmp_path, DOCS)
-    run_ingest(cfg, tmp_path / "i.json", opener=as_opener(opener))
+    cfg = _cfg(tmp_path, _base())
+    _ingest(cfg, tmp_path / "i.json", FakeOpener(make_archive(DOCS)), tmp_path)
     text = (tmp_path / "i.json").read_text()
     assert str(tmp_path) not in text
     assert set(json.loads(text)) == {"schema", "source", "params", "calibration", "counts", "skipped", "passages"}
 
 
-def test_failed_ingest_leaves_previous_index(tmp_path: Path) -> None:
-    cfg, opener = _setup_ingest(tmp_path, DOCS)
+def test_truncated_passages_are_counted(tmp_path: Path) -> None:
+    cfg = _cfg(tmp_path, _base())
+    long_body = ("word " * 600).encode()
+    files = {**DOCS, "long.md": b"# Long\n" + long_body + b"\n"}
+    report = _ingest(cfg, tmp_path / "i.json", FakeOpener(make_archive(files)), tmp_path)
+    assert report.truncated_for_embedding == 1
+
+
+def test_retrieve_is_offline_with_cached_model(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    # The autouse fixture blocks every socket for this test; a connection would raise RuntimeError.
+    cfg = _cfg(tmp_path, _base())
     out = tmp_path / "i.json"
-    run_ingest(cfg, out, opener=as_opener(opener))
-    before = out.read_bytes()
-    with pytest.raises(FetchError):
-        run_ingest(cfg, out, opener=as_opener(FakeOpener(status=503)))
-    assert out.read_bytes() == before
+    _ingest(cfg, out, FakeOpener(make_archive(DOCS)), tmp_path)
+    question = "Usage Launch the widget from the menu."
+    assert main(["retrieve", "--index", str(out), question], embedder=FAKE) == 0
+    assert "guide/usage.md" in capsys.readouterr().out
+
+
+def test_retrieve_without_cached_model_exits_2_and_never_downloads(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    idx = Index(REPO, COMMIT, 0, (), (), 0.5, RetrievalParams())
+    out = tmp_path / "i.json"
+    write_index(idx, out)
+    assert main(["retrieve", "--index", str(out), "anything"], models_dir=tmp_path / "none") == 2
+    assert "run ingest" in capsys.readouterr().err
 
 
 @pytest.mark.network
-def test_live_fetch_pinned_commit(tmp_path: Path) -> None:
+def test_live_model_download_verifies_hashes(tmp_path: Path) -> None:
     root = Path(__file__).parent.parent
-    out = tmp_path / "live.json"
-    first = run_ingest(root / "docs-source.toml", out)
-    second = run_ingest(root / "docs-source.toml", out)
-    assert first.sha256 == second.sha256
-    assert first.files_indexed > 0 and first.passages > 0
-    import tomllib
+    cfg = load_source_config(root / "docs-source.toml")
+    assert ensure_model_files(cfg.embedding, tmp_path / "models") == "downloaded"
+    base = tmp_path / "models" / cfg.embedding.model.replace("/", "--") / cfg.embedding.revision
+    assert (base / ONNX_FILE).stat().st_size == 133_093_490
+    assert (base / VOCAB_FILE).stat().st_size == 231_508
+    assert ensure_model_files(cfg.embedding, tmp_path / "models") == "cached"
 
-    with (root / "evals" / "retrieval.toml").open("rb") as handle:
-        eval_doc = tomllib.load(handle)
-    indexed = {p["path"] for p in json.loads(out.read_text())["passages"]}
-    wanted = {s for q in eval_doc["question"] for s in q.get("sources", [])}
-    assert wanted <= indexed
+
+@pytest.mark.network
+def test_live_ingest_byte_identical() -> None:
+    root = Path(__file__).parent.parent
+    out = root / "index" / "test-live.json"
+    try:
+        first = run_ingest(root / "docs-source.toml", out, models_dir=root / "models")
+        second = run_ingest(root / "docs-source.toml", out, models_dir=root / "models")
+        assert first.sha256 == second.sha256
+        assert first.files_indexed > 0 and first.passages > 0
+        import tomllib
+
+        with (root / "evals" / "retrieval.toml").open("rb") as handle:
+            eval_doc = tomllib.load(handle)
+        indexed = {p.path for p in load_index(out).passages}
+        wanted = {s for q in eval_doc["question"] for s in q.get("sources", [])}
+        assert wanted <= indexed  # labels and corpus agree on paths; says nothing about ranking
+    finally:
+        out.unlink(missing_ok=True)

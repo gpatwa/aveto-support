@@ -4,8 +4,10 @@ import json
 from pathlib import Path
 
 import pytest
+from conftest import embed_all
 
 from aveto_support.index import (
+    EmbeddingParams,
     Index,
     IndexFormatError,
     Passage,
@@ -98,8 +100,13 @@ def test_retrieved_text_is_verbatim_slice_of_file() -> None:
 
 
 def _index(threshold: float = 0.5) -> Index:
-    passages = tuple(split_passages("a.md", "# Ünï\nbody text\n") + split_passages("b.md", "# B\nmore\n"))
-    return Index("o/r", "a" * 40, 2, (("c.md", "not utf-8"),), passages, threshold, RetrievalParams(), 3)
+    passages = tuple(
+        embed_all(split_passages("a.md", "# Ünï\nbody text\n") + split_passages("b.md", "# B\nmore\n"))
+    )
+    return Index(
+        "o/r", "a" * 40, 2, (("c.md", "not utf-8"),), passages, threshold, RetrievalParams(),
+        3, 0.25, 0.5, 1,
+    )
 
 
 def test_serialize_canonical() -> None:
@@ -159,6 +166,54 @@ def test_load_malformed_passages(tmp_path: Path) -> None:
     out.write_text(json.dumps(doc))
     with pytest.raises(IndexFormatError, match="malformed"):
         load_index(out)
+
+
+def test_load_rejects_index_v2(tmp_path: Path) -> None:
+    out = tmp_path / "i.json"
+    write_index(_index(), out)
+    doc = json.loads(out.read_text())
+    doc["schema"] = "aveto-support/index@2"
+    out.write_text(json.dumps(doc))
+    with pytest.raises(IndexFormatError, match="schema"):
+        load_index(out)
+
+
+def test_embedding_params_mismatch_rejected(tmp_path: Path) -> None:
+    out = tmp_path / "i.json"
+    write_index(_index(), out)
+    for key, value in (("dim", 128), ("rrf_k", 10), ("query_prefix", "x"), ("quantization", "int8-63")):
+        doc = json.loads(out.read_text())
+        doc["params"]["embedding"][key] = value
+        bad = tmp_path / "bad.json"
+        bad.write_text(json.dumps(doc))
+        with pytest.raises(IndexFormatError, match="different retrieval parameters"):
+            load_index(bad)
+
+
+def test_embedding_identity_is_data_and_validated(tmp_path: Path) -> None:
+    other = EmbeddingParams(model="acme/other", revision="d" * 40, onnx_sha256="e" * 64,
+                            vocab_sha256="f" * 64, offtopic_sha256="1" * 64)
+    idx = Index("o/r", "a" * 40, 0, (), (), 0.5, RetrievalParams(embedding=other))
+    out = tmp_path / "i.json"
+    write_index(idx, out)
+    assert load_index(out).params.embedding == other
+    doc = json.loads(out.read_text())
+    doc["params"]["embedding"]["revision"] = "main"
+    out.write_text(json.dumps(doc))
+    with pytest.raises(IndexFormatError, match="malformed"):
+        load_index(out)
+
+
+def test_load_rejects_bad_embedding_bytes(tmp_path: Path) -> None:
+    out = tmp_path / "i.json"
+    write_index(_index(), out)
+    for bad in ("not base64!!", "AAAA", 5):
+        doc = json.loads(out.read_text())
+        doc["passages"][0]["embedding"] = bad
+        target = tmp_path / "bad.json"
+        target.write_text(json.dumps(doc))
+        with pytest.raises(IndexFormatError, match="malformed"):
+            load_index(target)
 
 
 def test_passage_is_frozen() -> None:

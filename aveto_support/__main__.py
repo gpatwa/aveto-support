@@ -3,24 +3,21 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from collections.abc import Sequence
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from aveto_support.evaluate import (
-    EvalFormatError,
-    check_commit,
-    format_report,
-    load_eval_set,
-    score,
-)
-from aveto_support.index import Index, IndexFormatError, load_index
-from aveto_support.ingest import ConfigError, FetchError, run_ingest
-from aveto_support.search import Hit, RetrievalResult, Searcher, retrieve
+if TYPE_CHECKING:
+    from aveto_support.embed import Embedder
+    from aveto_support.index import Index
+    from aveto_support.search import Hit, RetrievalResult
 
 DEFAULT_CONFIG = "docs-source.toml"
 DEFAULT_INDEX = "index/docs-index.json"
 DEFAULT_EVAL = "evals/retrieval.toml"
+DEFAULT_MODELS = "models"
 
 
 def _excerpt(hit: Hit) -> list[str]:
@@ -52,15 +49,18 @@ def format_result(result: RetrievalResult, index: Index) -> str:
     if not result.confident:
         reason: str = result.reason
         if result.reason == "below-threshold":
-            reason += f" (best coverage {result.coverage:.3f}, threshold {result.threshold:.3f})"
+            reason += (
+                f" (best similarity {result.confidence:.3f}, threshold {result.threshold:.3f})"
+            )
         return f"no confident match\n{docs}\nReason: {reason}"
     parts = [
         f"Sources for: {result.question}",
         docs,
         (
-            f"Confidence: {result.coverage:.3f} (threshold {result.threshold:.3f})  "
-            "mode: deterministic, no model"
+            f"Confidence: {result.confidence:.3f} (threshold {result.threshold:.3f})  "
+            f"ranking: {result.ranking_mode}  no text generated"
         ),
+        f"Lexical corroboration (reported, not gated): {result.corroboration:.2f}",
         "",
     ]
     parts.extend(_format_hit(h) for h in result.hits)
@@ -72,37 +72,55 @@ def format_result(result: RetrievalResult, index: Index) -> str:
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="aveto_support")
     sub = parser.add_subparsers(dest="command", required=True)
-    ing = sub.add_parser("ingest", help="fetch the pinned docs and build the index")
+    ing = sub.add_parser("ingest", help="fetch the pinned docs and model, and build the index")
     ing.add_argument("--config", default=DEFAULT_CONFIG)
     ing.add_argument("--out", default=DEFAULT_INDEX)
     ret = sub.add_parser("retrieve", help="find passages for a question")
     ret.add_argument("--index", default=DEFAULT_INDEX)
     ret.add_argument("question", nargs="+")
-    ev = sub.add_parser("eval", help="score retrieval against the eval set")
+    ev = sub.add_parser("eval", help="score retrieval against an eval set")
     ev.add_argument("--index", default=DEFAULT_INDEX)
     ev.add_argument("--eval-file", default=DEFAULT_EVAL)
     return parser
 
 
-def _run(args: argparse.Namespace) -> int:
+def _limit_threads() -> None:
+    """Single-threaded numeric libraries, set before numpy is first imported."""
+    for name in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
+        os.environ[name] = "1"
+
+
+def _dispatch(args: argparse.Namespace, embedder: Embedder | None, models_dir: Path) -> int:
+    from aveto_support.embed import OnnxEmbedder
+    from aveto_support.evaluate import check_commit, format_report, load_eval_set, score
+    from aveto_support.index import load_index
+    from aveto_support.ingest import run_ingest
+    from aveto_support.search import Searcher, retrieve
+
     if args.command == "ingest":
-        report = run_ingest(Path(args.config), Path(args.out))
+        report = run_ingest(
+            Path(args.config), Path(args.out), models_dir=models_dir, embedder=embedder
+        )
         for warning in report.warnings:
             print(f"warning: {warning}", file=sys.stderr)
         print(f"ingested {report.repo} @ {report.commit}")
         print(
             f"files indexed: {report.files_indexed}   passages: {report.passages}   "
             f"skipped files: {len(report.skipped)}   "
-            f"empty sections dropped: {report.empty_sections_dropped}"
+            f"empty sections dropped: {report.empty_sections_dropped}   "
+            f"passages truncated for embedding: {report.truncated_for_embedding}"
         )
+        offtopic = "none" if report.tau_offtopic is None else f"{report.tau_offtopic:.6f}"
         print(
-            f"confidence threshold: {report.threshold:.6f} "
-            "(cross-file-null-v1, p90 of 2000 null queries, seed 20260926)"
+            f"confidence threshold: {report.threshold:.6f} (dense-null-v3: "
+            f"tau_salad {report.tau_salad:.6f}, tau_offtopic {offtopic}; seed 20260926)"
         )
+        print(f"model files: {report.model_status} (sha256 verified before use)")
         print(f"wrote {args.out}  sha256 {report.sha256}")
         return 0
     index = load_index(Path(args.index))
-    searcher = Searcher(index)
+    active = embedder if embedder is not None else OnnxEmbedder.load(models_dir, index.params.embedding)
+    searcher = Searcher(index, active)
     if args.command == "retrieve":
         print(format_result(retrieve(searcher, " ".join(args.question)), index))
         return 0
@@ -113,14 +131,25 @@ def _run(args: argparse.Namespace) -> int:
     return 0 if report_eval.passed else 1
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def main(
+    argv: Sequence[str] | None = None,
+    *,
+    embedder: Embedder | None = None,
+    models_dir: Path = Path(DEFAULT_MODELS),
+) -> int:
     try:
         args = _parser().parse_args(argv)
     except SystemExit as exc:
         return exc.code if isinstance(exc.code, int) else 2
+    _limit_threads()
+    from aveto_support.embed import ModelError
+    from aveto_support.evaluate import EvalFormatError
+    from aveto_support.index import IndexFormatError
+    from aveto_support.ingest import ConfigError, FetchError
+
     try:
-        return _run(args)
-    except (ConfigError, IndexFormatError, EvalFormatError) as exc:
+        return _dispatch(args, embedder, models_dir)
+    except (ConfigError, IndexFormatError, EvalFormatError, ModelError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
     except FetchError as exc:

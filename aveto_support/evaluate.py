@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from aveto_support.index import Index
-from aveto_support.search import Searcher, capped, retrieve, tokenize
+from aveto_support.search import Searcher, analyse, decide
 
 REQUIRED_PERCENT = 80
 
@@ -110,12 +110,11 @@ def score(searcher: Searcher, eval_set: EvalSet) -> EvalReport:
     outcomes: list[QuestionOutcome] = []
     a_hits = a_total = u_hits = u_total = recall = 0
     for q in eval_set.questions:
-        result = retrieve(searcher, q.question)
+        analysis = analyse(searcher, q.question)
+        result = decide(searcher, analysis)
         if q.answerable:
             a_total += 1
-            terms = sorted(set(tokenize(q.question)))
-            top = capped(searcher.rank(terms), searcher.index.params)
-            if any(p.path in q.sources for p, _ in top):
+            if any(p.path in q.sources for p, _ in analysis.top):
                 recall += 1
             matched = [h for h in result.hits if h.passage.path in q.sources]
             if result.confident and matched:
@@ -135,7 +134,7 @@ def score(searcher: Searcher, eval_set: EvalSet) -> EvalReport:
                         True,
                         False,
                         f"expected {' | '.join(q.sources)}; got no confident match "
-                        f"({result.reason}, coverage {result.coverage:.2f})",
+                        f"({result.reason}, similarity {result.confidence:.2f})",
                     )
                 )
         else:
@@ -148,7 +147,7 @@ def score(searcher: Searcher, eval_set: EvalSet) -> EvalReport:
                         q.id,
                         False,
                         True,
-                        f"no confident match ({result.reason}, coverage {result.coverage:.2f}){tag}",
+                        f"no confident match ({result.reason}, similarity {result.confidence:.2f}){tag}",
                     )
                 )
             else:
@@ -158,7 +157,7 @@ def score(searcher: Searcher, eval_set: EvalSet) -> EvalReport:
                         False,
                         False,
                         f"returned {len(result.hits)} passages; top {result.hits[0].passage.path} "
-                        f"(coverage {result.coverage:.2f}){tag}",
+                        f"(similarity {result.confidence:.2f}){tag}",
                     )
                 )
     return EvalReport(

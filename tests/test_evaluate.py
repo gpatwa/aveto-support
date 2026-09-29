@@ -3,7 +3,16 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from conftest import COMMIT, REPO, FakeOpener, as_opener, make_archive
+from conftest import (
+    COMMIT,
+    REPO,
+    FakeEmbedder,
+    FakeOpener,
+    as_opener,
+    config_text,
+    embed_all,
+    make_archive,
+)
 
 from aveto_support.__main__ import main
 from aveto_support.evaluate import (
@@ -32,15 +41,21 @@ DOCS = {
     "farm/hens.md": "# Hens\nHens lay eggs daily.\n",
     "sea/whales.md": "# Whales\nWhales sing under water.\n",
     "sea/crabs.md": "# Crabs\nCrabs scuttle sideways.\n",
+    "zzz/last.md": "# Last\nNothing about animals lives here.\n",
+    **{f"misc/f{i:02d}.md": f"# Filler{i}\nunrelated{i} filler{i} words{i}\n" for i in range(14)},
 }
 
 
-def searcher(threshold: float = 0.5, commit: str = COMMIT) -> Searcher:
+FAKE = FakeEmbedder()
+
+
+def searcher(threshold: float = 0.3, commit: str = COMMIT) -> Searcher:
     passages = []
     for path, text in DOCS.items():
         passages.extend(split_passages(path, text))
     passages.sort(key=lambda p: (p.path, p.line_start))
-    return Searcher(Index(REPO, commit, len(DOCS), (), tuple(passages), threshold, RetrievalParams()))
+    index = Index(REPO, commit, len(DOCS), (), tuple(embed_all(passages)), threshold, RetrievalParams())
+    return Searcher(index, FAKE)
 
 
 def answerable(i: int, question: str, source: str) -> EvalQuestion:
@@ -89,7 +104,7 @@ def test_answerable_no_match_is_miss() -> None:
     report = score(searcher(), EvalSet(COMMIT, (answerable(1, "quantum spaceship", "pets/cats.md"),)))
     assert report.answerable_hits == 0
     assert "no confident match" in report.outcomes[0].detail
-    wrong = score(searcher(), EvalSet(COMMIT, (answerable(1, "cats purr", "farm/cows.md"),)))
+    wrong = score(searcher(), EvalSet(COMMIT, (answerable(1, "cats purr", "zzz/last.md"),)))
     assert wrong.answerable_hits == 0 and "got pets/cats.md" in wrong.outcomes[0].detail
 
 
@@ -97,13 +112,13 @@ def test_unanswerable_hit_on_no_match() -> None:
     es = EvalSet(COMMIT, (unanswerable(1, "quantum spaceship"), unanswerable(2, "cats purr")))
     report = score(searcher(), es)
     assert [o.hit for o in report.outcomes] == [True, False]
-    assert "returned 1 passages" in report.outcomes[1].detail
+    assert "returned" in report.outcomes[1].detail and "passages" in report.outcomes[1].detail
 
 
 def _fake_questions(hits: int, total: int) -> EvalSet:
     """Synthetic set: the first `hits` answerable questions hit, the rest miss."""
     qs = [answerable(i, "cats purr", "pets/cats.md") for i in range(hits)]
-    qs += [answerable(i, "cats purr", "farm/cows.md") for i in range(hits, total)]
+    qs += [answerable(i, "cats purr", "zzz/last.md") for i in range(hits, total)]
     return EvalSet(COMMIT, tuple(qs))
 
 
@@ -144,14 +159,14 @@ def test_commit_mismatch_exit_2(tmp_path: Path, capsys: pytest.CaptureFixture[st
     write_index(searcher().index, idx)
     ev = tmp_path / "e.toml"
     ev.write_text('pinned_commit = "other"\n[[question]]\nid = "u1"\nquestion = "q"\nanswerable = false\n')
-    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)]) == 2
+    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE) == 2
     assert "re-run ingest" in capsys.readouterr().err
     with pytest.raises(EvalFormatError):
         check_commit(searcher().index, EvalSet("other", ()))
 
 
 def test_missing_index_exit_2(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    assert main(["retrieve", "--index", str(tmp_path / "none.json"), "anything"]) == 2
+    assert main(["retrieve", "--index", str(tmp_path / "none.json"), "anything"], embedder=FAKE) == 2
     assert capsys.readouterr().err.startswith("error: ")
 
 
@@ -166,27 +181,27 @@ A_CATS = '[[question]]\nid = "a1"\nquestion = "cats purr"\nsources = ["pets/cats
 
 
 def test_cli_eval_exit_0_on_pass(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    idx, ev = _write(tmp_path, 0.5, A_CATS)
-    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)]) == 0
+    idx, ev = _write(tmp_path, 0.3, A_CATS)
+    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE) == 0
     assert capsys.readouterr().out.rstrip().endswith("eval: PASS")
 
 
 def test_cli_eval_exit_1_on_miss(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    idx, ev = _write(tmp_path, 0.5, A_CATS.replace("pets/cats.md", "farm/cows.md"))
-    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)]) == 1
+    idx, ev = _write(tmp_path, 0.3, A_CATS.replace("pets/cats.md", "zzz/last.md"))
+    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE) == 1
     assert capsys.readouterr().out.rstrip().endswith("eval: FAIL")
 
 
 def test_cli_retrieve_no_match_exit_0(tmp_path: Path) -> None:
-    idx, _ = _write(tmp_path, 0.5, "")
-    assert main(["retrieve", "--index", str(idx), "quantum", "spaceship"]) == 0
+    idx, _ = _write(tmp_path, 0.3, "")
+    assert main(["retrieve", "--index", str(idx), "quantum", "spaceship"], embedder=FAKE) == 0
 
 
 def test_cli_retrieve_prints_no_confident_match_first_line(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    idx, _ = _write(tmp_path, 0.5, "")
-    main(["retrieve", "--index", str(idx), "quantum spaceship"])
+    idx, _ = _write(tmp_path, 0.3, "")
+    main(["retrieve", "--index", str(idx), "quantum spaceship"], embedder=FAKE)
     out = capsys.readouterr().out.split("\n")
     assert out[0] == "no confident match"
     assert "pets" not in "\n".join(out)
@@ -195,8 +210,8 @@ def test_cli_retrieve_prints_no_confident_match_first_line(
 def test_cli_retrieve_confident_output_names_sources(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    idx, _ = _write(tmp_path, 0.5, "")
-    assert main(["retrieve", "--index", str(idx), "Do", "cats", "purr?"]) == 0
+    idx, _ = _write(tmp_path, 0.3, "")
+    assert main(["retrieve", "--index", str(idx), "Do", "cats", "purr?"], embedder=FAKE) == 0
     out = capsys.readouterr().out
     assert "1. pets/cats.md  lines 1-2" in out
     assert "Heading: Cats" in out
@@ -208,7 +223,7 @@ def test_cli_retrieve_confident_output_names_sources(
 def test_cli_ingest_fetch_error_exit_3(tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
                                        capsys: pytest.CaptureFixture[str]) -> None:
     cfg = tmp_path / "s.toml"
-    cfg.write_text(f'repo = "{REPO}"\ncommit = "{COMMIT}"\n')
+    cfg.write_text(config_text())
     import aveto_support.ingest as ingest_mod
 
     def failing(*args: object, **kwargs: object) -> bytes:
@@ -222,10 +237,12 @@ def test_cli_ingest_fetch_error_exit_3(tmp_path: Path, monkeypatch: pytest.Monke
 
 def test_cli_ingest_end_to_end_and_reload(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     cfg = tmp_path / "s.toml"
-    cfg.write_text(f'repo = "{REPO}"\ncommit = "{COMMIT}"\n')
+    cfg.write_text(config_text())
     archive = make_archive({p: t.encode() for p, t in DOCS.items()})
     out = tmp_path / "i.json"
-    report = run_ingest(cfg, out, opener=as_opener(FakeOpener(archive)))
+    report = run_ingest(
+        cfg, out, opener=as_opener(FakeOpener(archive)), models_dir=tmp_path / "m", embedder=FAKE
+    )
     assert load_index(out).files_indexed == report.files_indexed == len(DOCS)
 
 

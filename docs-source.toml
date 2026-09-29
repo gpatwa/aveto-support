@@ -3,3 +3,17 @@
 repo   = "gpatwa/agentic-sdlc-playbook"                 # GitHub "owner/name"
 commit = "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"     # full 40-hex SHA; branches/tags rejected
 exclude = []                                            # repo-relative path prefixes to skip
+
+# The local embedding model that helps rank passages by meaning (ADR 0003). It
+# never writes text. `ingest` downloads exactly these two files from
+# huggingface.co and refuses any file whose sha256 differs from the pin below.
+# To use another model, change every value here and get the change approved.
+[embedding]
+model = "BAAI/bge-small-en-v1.5"
+revision = "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"       # full 40-hex commit
+onnx_sha256 = "828e1496d7fabb79cfa4dcd84fa38625c0d3d21da474a00f08db0f559940cf35"   # onnx/model.onnx
+vocab_sha256 = "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"  # vocab.txt
+# Frozen list of fluent off-topic questions used to calibrate "no confident
+# match". Optional; without it, calibration uses word-salad nulls only.
+offtopic_path = "evals/calibration-offtopic.toml"
+offtopic_sha256 = "9045189567b083c83c02336a4f70990c8a8e3ce3e49d5917642fbad6e293627c"

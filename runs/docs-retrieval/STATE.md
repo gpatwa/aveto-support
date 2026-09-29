@@ -24,7 +24,7 @@
 | Stage | Owner | Status | Artefact | Gate |
 |-------|-------|--------|----------|------|
 | Architecture | software-architect | done; retry 1 revision (variant v2) written 2026-09-29, pre-registered before run; embed-v3 spec-only variant added 2026-09-29, finished with verified facts after owner chose to pursue it in this slice; approvals 2–4 granted; ADR 0003 written (accepted, implementation pending); docs/ARCHITECTURE.md updated for embed-v3 | runs/docs-retrieval/02-tech-spec.md ("Retrieval — variant v2"); docs/adr/0001-python-fastapi-uv-no-agent-framework.md; docs/adr/0002-lexical-retrieval-calibrated-abstention.md; docs/ARCHITECTURE.md | tech spec ready; 18 files flagged vs ≤10 rule (justified in spec) |
-| Implementation | backend-architect | blocked-on-failure — built and green; eval run 1 missed the bar (answerable 2/24, unanswerable 6/6) | runs/docs-retrieval/eval-run-1.txt | eval gate FAILED; retry 1 of 2 goes to Architect |
+| Implementation | backend-architect | done — embed-v3 (with v2 lexical) built, uncommitted; golden-fixture test expected-failing until QA lands it; no eval run | runs/docs-retrieval/04-implementation.md | typecheck, lint, 118 default tests, -m model and -m network green except the golden test; ingest x3 byte-identical |
 | QA Evidence | qa-evidence | pending | — | — |
 | Security Review | security-privacy | pending | — | — |
 | Release Gate | release-manager | pending | — | — |
@@ -101,4 +101,4 @@ Correction (2026-09-29T05:28:36Z): the Architecture rows above were first record
 
 ## Next action
 
-Intent confirmed and committed on main (f03d495), merged and copied unchanged (2026-09-29T07:26:19Z). backend-architect implements embed-v3 per 02-tech-spec.md and STOPS before any eval run (including the dev set); then QA generates tests/fixtures/wordpiece_golden.json; record the frozen commit SHA; owner commits the held-out set; run once via --eval-file.
+Orchestrator commits the embed-v3 implementation (18 changed files plus 04-implementation.md; `aveto_support/__init__.py` unchanged) and records that commit SHA as the frozen method SHA. QA then generates tests/fixtures/wordpiece_golden.json (the only expected failing test, `test_wordpiece_matches_golden`, until it lands) and re-runs the QA checks. No `eval` has been run on any set. The owner commits the held-out set only after the freeze; run once via --eval-file.
