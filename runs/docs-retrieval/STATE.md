@@ -4,11 +4,11 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
 - **Current stage:** Scope Review done — split into `docs-retrieval-core` and `docs-retrieval-ci`; next is Architecture (docs-retrieval-core)
-- **Status:** blocked-on-failure
+- **Status:** in-progress
 - **Least-privilege:** enforced — role subagents are discoverable from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 70c095d (absolute; relative path does not resolve from a worktree)
-- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T00:27:40Z
+- **Started:** 2026-09-27T02:29:54Z  ·  **Updated:** 2026-09-29T00:41:49Z
 
 ## Stages
 
@@ -52,11 +52,11 @@ Approval 1 APPROVED by Gopal Patwa, 2026-09-29T00:02:48Z (APPROVAL_RECORD-1.md),
 
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
-- **Budget:** 690k tokens  ·  **Depth:** standard
-- **Spent:** 328k (48%)  ·  **Remaining:** 362k
-- **Next stage:** QA Evidence (docs-retrieval-core, build) est. 130k → **STOP-AND-ASK** — eval gate failed (2/24 vs ≥20); projected 818k with one retry exceeds 690k; see ESCALATION-1.md
+- **Budget:** 820k tokens  ·  **Depth:** standard
+- **Spent:** 328k (40%)  ·  **Remaining:** 492k
+- **Next stage:** Architecture revision (retry 1 of 2, docs-retrieval-core, review) est. 100k → **PROCEED** (328k + 100k = 428k ≤ 820k)
 
-The 690k above is docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
+Budget raised from 690k to 820k on the owner's choice of option A in ESCALATION-1.md ("A, and I'll write the fresh questions"), covering one retry (≈818k projected); this is the owner's decision, not a fit-to-spend. The 690k was docs-retrieval-core's proposed budget (Σ560k, 5 stages, +130k headroom), accepted by the owner.
 Note: docs-retrieval-ci is proposed at another 690k (Σ560k + 130k). With Scope Review, the split totals 1,220k vs the original single-slice 890k. The owner decides.
 Spent is the harness's `subagent_tokens` (peak context, per RUN_ECONOMICS §1; a resumed agent's figure is cumulative, not additive): Scope Review 55,125 + EM (amendment, then file-count ruling) 33,715 + Architecture (incl. INV-4/5 follow-up) 131,797 + Implementation 107,180 = 327,817.
 The installed guard checks spent ≥ budget only; spent + estimate is checked by hand before each spawn.
@@ -66,7 +66,7 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 
 | Stage | Retries used | Cap | Class | Last failure |
 |-------|--------------|-----|-------|--------------|
-| Implementation (eval gate) | 0 (retry 1 of 2 unspent; escalated early) | 2 | gate-violation | eval run 1: answerable 2/24 (need 20); ungated recall@5 14/24. See ESCALATION-1.md |
+| Implementation (eval gate) | 1 of 2 (Architect ranking revision, started 2026-09-29T00:41:49Z) | 2 | gate-violation | eval run 1: answerable 2/24 (need 20); ungated recall@5 14/24. See ESCALATION-1.md |
 
 ## Interruptions
 
@@ -85,4 +85,4 @@ Every stage handoff must tell the role: keep Status to one of the four SLICE_STA
 
 ## Next action
 
-Owner decides (ESCALATION-1.md): A) spend retry 1 on a ranking revision (budget decision needed), B) stop core and record the finding, or C) lower the bar (rule 4, not recommended). Nothing runs until answered.
+Architect revises the ranking method as a versioned variant in 02-tech-spec.md (general grounds; no question-, word- or file-keyed rules; must not read the owner's fresh set). Then backend-architect re-implements and runs eval once (eval-run-2). Owner supplies the sha256 of the fresh question set now and the file at stage 9.

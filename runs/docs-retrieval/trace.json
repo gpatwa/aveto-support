@@ -94,5 +94,11 @@
   ],
   "escalations": [
     "runs/docs-retrieval/ESCALATION-1.md"
-  ]
+  ],
+  "retryDecision": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-29T00:41:49Z",
+    "verbatim": "A, and I'll write the fresh questions",
+    "budgetRaisedTo": "820k"
+  }
 }
