@@ -1,0 +1,144 @@
+# Retrieval evaluation set — THIRD held-out gate, for docs-retrieval-2-proof.
+#
+# Committed after slice A froze its method (commit recorded in
+# runs/docs-retrieval-2/STATE.md). The gate (intent Decision 1): a correct file
+# in the top 5 for at least 80% of answerable questions — 13 of these 16.
+# Unanswerable questions are a diagnostic only; they do not gate.
+#
+# Provenance, stated plainly:
+#   - Drafted by Claude in the playbook session, 2026-09-29, while slice A was
+#     implementing, and kept outside the repo until the freeze. Reviewed and
+#     committed by the owner.
+#   - The drafter drafted both earlier sets and has read both runs' results
+#     and slice 2's tech spec. It has NOT run retrieval, the index or the eval
+#     command on these questions. No role that designed or built retrieval
+#     has seen them.
+#   - No question repeats a topic from either earlier set, and no source file
+#     below is a source in either earlier set. Every source is inside Decision
+#     2's corpus; none is an excluded file.
+#   - Every `sources` path was checked to contain the answer at the pinned
+#     commit 3a83b669a8b53dfdff869a1bbe361bdb156e3a13. Phrased the way a user
+#     would ask, not copied from headings. Answered if ANY listed source is in
+#     the top 5.
+
+pinned_commit = "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+
+# ── Answerable ──────────────────────────────────────────────────────────────
+
+[[question]]
+id = "t01"
+question = "Who gives the final go or no-go before something is released?"
+sources = ["agents/release-manager.md"]
+where = "confirm every gate passed and every approval was obtained"
+
+[[question]]
+id = "t02"
+question = "I need to change my database tables. What should I plan before doing it?"
+sources = ["templates/MIGRATION_PLAN_TEMPLATE.md"]
+where = "the migration plan"
+
+[[question]]
+id = "t03"
+question = "Where do I describe what a trained model is for and where it shouldn't be used?"
+sources = ["templates/MODEL_CARD_TEMPLATE.md"]
+where = "the model card"
+
+[[question]]
+id = "t04"
+question = "We want to start using an outside service. How do we check whether it's safe to rely on?"
+sources = ["templates/VENDOR_RISK_TEMPLATE.md"]
+where = "vendor risk assessment"
+
+[[question]]
+id = "t05"
+question = "What logging and alerts should a new service have from day one?"
+sources = ["templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md", "agents/sre.md"]
+where = "structured logging, metrics and alerts bootstrap"
+
+[[question]]
+id = "t06"
+question = "Who talks to users to find out how they actually use the product?"
+sources = ["agents/ux-researcher.md"]
+where = "the UX Researcher agent"
+
+[[question]]
+id = "t07"
+question = "When a customer reports a problem, how is the fix written up for them?"
+sources = ["templates/CUSTOMER_ISSUE_RESOLUTION_TEMPLATE.md"]
+where = "customer issue resolution"
+
+[[question]]
+id = "t08"
+question = "Is there one place that lists every run, what's blocked and what shipped?"
+sources = ["execution/pack/protocols/RUN_INVENTORY.md"]
+where = "runs/INDEX.md, the fleet view"
+
+[[question]]
+id = "t09"
+question = "Can the token and timing numbers come from real instrumentation instead of the agents' own reports?"
+sources = ["execution/pack/protocols/TELEMETRY.md"]
+where = "Claude Code emits OpenTelemetry natively"
+
+[[question]]
+id = "t10"
+question = "How is the Aveto website itself published?"
+sources = ["docs/DEPLOYMENT.md"]
+where = "deployment of the public site"
+
+[[question]]
+id = "t11"
+question = "I'm building a consumer app with sign-ups and payments. Which guidance applies?"
+sources = ["project-packs/b2c-saas.md"]
+where = "project pack for B2C SaaS"
+
+[[question]]
+id = "t12"
+question = "Who decides how risky an AI feature is and what rules it has to follow?"
+sources = ["agents/ai-governance.md", "templates/AI_RISK_ASSESSMENT_TEMPLATE.md"]
+where = "assign each AI capability a risk tier and its obligations"
+
+[[question]]
+id = "t13"
+question = "If a release needs sign-off from a change board, what do we fill in?"
+sources = ["templates/CHANGE_REQUEST_TEMPLATE.md"]
+where = "the change request, owned by the Release Manager"
+
+[[question]]
+id = "t14"
+question = "Who keeps a model's training data and retraining in order?"
+sources = ["agents/ml-engineer.md"]
+where = "the lifecycle of trained models"
+
+[[question]]
+id = "t15"
+question = "How is Aveto itself protected against an agent going rogue or being tricked?"
+sources = ["execution/SECURITY.md"]
+where = "the execution pack's own threat model against the OWASP agentic top 10"
+
+[[question]]
+id = "t16"
+question = "What are the everyday working rules the agent team follows?"
+sources = ["docs/OPERATING_MODEL.md"]
+where = "how the team of agents runs day to day"
+
+# ── Unanswerable (diagnostic only; not gated) ───────────────────────────────
+
+[[question]]
+id = "tu01"
+question = "Can I get approval requests in Microsoft Teams?"
+answerable = false
+
+[[question]]
+id = "tu02"
+question = "Is there a free trial?"
+answerable = false
+
+[[question]]
+id = "tu03"
+question = "How do I deploy Aveto on Kubernetes?"
+answerable = false
+
+[[question]]
+id = "tu04"
+question = "Is there a Discord community for Aveto users?"
+answerable = false
