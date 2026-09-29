@@ -119,9 +119,14 @@ vocab_sha256 = "{VOCAB_SHA}"
 """
 
 
-def config_text(extra: str = "", *, embedding: str = EMBEDDING_TOML) -> str:
-    """A docs-source.toml body. `extra` goes before the [embedding] table."""
-    return f'repo = "{REPO}"\ncommit = "{COMMIT}"\n{extra}\n{embedding}'
+INCLUDE_TOML = 'include = ["README.md", "guide/", "notes/"]\n'
+
+
+def config_text(
+    extra: str = "", *, embedding: str = EMBEDDING_TOML, include: str = INCLUDE_TOML
+) -> str:
+    """A docs-source.toml body. `include` and `extra` go before the [embedding] table."""
+    return f'repo = "{REPO}"\ncommit = "{COMMIT}"\n{include}{extra}\n{embedding}'
 
 
 class FakeEmbedder:

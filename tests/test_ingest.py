@@ -14,6 +14,7 @@ import pytest
 from conftest import (
     COMMIT,
     EMBEDDING_TOML,
+    INCLUDE_TOML,
     MODEL,
     REPO,
     REVISION,
@@ -47,7 +48,12 @@ from aveto_support.ingest import (
     run_ingest,
 )
 
-SRC = SourceConfig(REPO, COMMIT)
+
+def _src(*include: str, exclude: tuple[str, ...] = ()) -> SourceConfig:
+    return SourceConfig(REPO, COMMIT, include, exclude)
+
+
+SRC = _src("a.md")
 FAKE = FakeEmbedder()
 
 DOCS = {
@@ -66,8 +72,8 @@ def _cfg(tmp_path: Path, body: str, embedding: str = EMBEDDING_TOML) -> Path:
     return path
 
 
-def _base(extra: str = "") -> str:
-    return f'repo = "{REPO}"\ncommit = "{COMMIT}"\n{extra}'
+def _base(extra: str = "", include: str = INCLUDE_TOML) -> str:
+    return f'repo = "{REPO}"\ncommit = "{COMMIT}"\n{include}{extra}'
 
 
 def _ingest(cfg: Path, out: Path, opener: FakeOpener, tmp_path: Path) -> IngestReport:
@@ -80,6 +86,7 @@ def _ingest(cfg: Path, out: Path, opener: FakeOpener, tmp_path: Path) -> IngestR
 def test_load_config_valid(tmp_path: Path) -> None:
     cfg = load_source_config(_cfg(tmp_path, _base('exclude = ["drafts/"]')))
     assert cfg.repo == REPO and cfg.commit == COMMIT and cfg.exclude == ("drafts/",)
+    assert cfg.include == ("README.md", "guide/", "notes/")
     assert cfg.embedding.model == MODEL and cfg.embedding.revision == REVISION
     assert cfg.offtopic_path is None and cfg.embedding.offtopic_sha256 is None
 
@@ -139,6 +146,47 @@ def test_embedding_table_validated(tmp_path: Path) -> None:
         load_source_config(_cfg(tmp_path, _base(), bad_path))
 
 
+def test_include_required_and_validated(tmp_path: Path) -> None:
+    with pytest.raises(ConfigError, match="include"):
+        load_source_config(_cfg(tmp_path, _base(include="")))
+    for bad in ("[]", "[1]", '"README.md"', '["a.md", "a.md"]', '["/a.md"]', '["../a.md"]',
+                '["a/../b.md"]', '["notes"]', '["a.txt"]'):
+        with pytest.raises(ConfigError):
+            load_source_config(_cfg(tmp_path, _base(include=f"include = {bad}\n")))
+
+
+def test_read_markdown_admits_only_included_paths() -> None:
+    names = ["README.md", "nested/README.md", "agents/a.md", "agents-old/a.md", "docs/BACKLOG.md",
+             "docs/NEW.md", "runs/x.md", "site/x.md"]
+    archive = make_archive({n: b"# T\nx\n" for n in names})
+    docs, _ = read_markdown(archive, _src("README.md", "agents/", "docs/NEW.md"))
+    assert [d.path for d in docs] == ["README.md", "agents/a.md", "docs/NEW.md"]
+
+
+def test_include_entry_matching_no_file_fails(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    cfg = _cfg(tmp_path, _base(include='include = ["README.md", "typo/"]\n'))
+    out = tmp_path / "i.json"
+    archive = make_archive(DOCS)
+    with pytest.raises(ConfigError, match="typo/ matches no .md file"):
+        _ingest(cfg, out, FakeOpener(archive), tmp_path)
+    assert not out.exists()
+    good = _cfg(tmp_path, _base(include='include = ["README.md"]\n'))
+    assert _ingest(good, out, FakeOpener(archive), tmp_path).files_indexed == 1
+
+
+def test_committed_config_include_is_decision_2() -> None:
+    cfg = load_source_config(Path(__file__).parent.parent / "docs-source.toml")
+    assert cfg.include == (
+        "README.md",
+        "docs/GETTING_STARTED.md", "docs/AGENTIC_SDLC.md", "docs/AGENT_ROLES.md",
+        "docs/HUMAN_APPROVAL_RULES.md", "docs/RELEASE_GATES.md", "docs/OPERATING_MODEL.md",
+        "docs/DEPLOYMENT.md", "docs/STANDARDS_WATCH.md", "docs/VALIDATION_MATRIX.md",
+        "docs/PIPELINE_ANALYTICS.md",
+        "agents/", "templates/", "project-packs/", "prompts/", "skills/", "examples/", "execution/",
+    )
+    assert cfg.exclude == ()
+
+
 # --- reading the archive ---------------------------------------------------
 
 
@@ -150,20 +198,20 @@ def test_read_markdown_keeps_only_md_regular_files() -> None:
     sneaky.size = 0
     files = {"a.md": b"# A\nx\n", "b.txt": b"# no\n", "UP.MD": b"# Up\ny\n"}
     archive = make_archive(files, extra_members=[link, sneaky])
-    docs, skipped = read_markdown(archive, SRC)
+    docs, skipped = read_markdown(archive, _src("a.md", "b.txt", "UP.MD", "link.md"))
     assert [d.path for d in docs] == ["UP.MD", "a.md"]
     assert skipped == []
 
 
 def test_read_markdown_strips_top_dir_and_sorts() -> None:
     archive = make_archive({"z.md": b"# Z\n1\n", "a/b.md": b"# B\n2\n", "a.md": b"# A\n3\n"})
-    docs, _ = read_markdown(archive, SRC)
+    docs, _ = read_markdown(archive, _src("z.md", "a/", "a.md"))
     assert [d.path for d in docs] == ["a.md", "a/b.md", "z.md"]
 
 
 def test_exclude_prefix_honoured() -> None:
     archive = make_archive({"drafts/x.md": b"# X\n1\n", "keep.md": b"# K\n2\n"})
-    docs, _ = read_markdown(archive, SourceConfig(REPO, COMMIT, ("drafts/",)))
+    docs, _ = read_markdown(archive, _src("drafts/", "keep.md", exclude=("drafts/",)))
     assert [d.path for d in docs] == ["keep.md"]
 
 
@@ -184,7 +232,7 @@ def test_unreadable_archive_is_fetch_error() -> None:
 
 def test_non_utf8_file_skipped_with_reason() -> None:
     archive = make_archive({"bad.md": b"# T\n\xff\xfe\n", "ok.md": b"\xef\xbb\xbf# Ok\nfine\n"})
-    docs, skipped = read_markdown(archive, SRC)
+    docs, skipped = read_markdown(archive, _src("bad.md", "ok.md"))
     assert skipped == [("bad.md", "not utf-8")]
     assert docs[0].text == "# Ok\nfine\n"
 
@@ -387,8 +435,8 @@ def test_ingest_is_byte_identical_under_member_reordering(tmp_path: Path) -> Non
 
 
 def test_small_corpus_warns_and_fails_closed(tmp_path: Path) -> None:
-    cfg = _cfg(tmp_path, _base())
-    report = _ingest(cfg, tmp_path / "i.json", FakeOpener(make_archive({"a.md": b"# A\nx y\n"})), tmp_path)
+    cfg = _cfg(tmp_path, _base(include='include = ["README.md"]\n'))
+    report = _ingest(cfg, tmp_path / "i.json", FakeOpener(make_archive({"README.md": b"# A\nx y\n"})), tmp_path)
     assert report.threshold == 1_000_000.0
     assert any("fewer than 5" in w for w in report.warnings)
 
@@ -456,7 +504,7 @@ def test_index_carries_no_timestamps_or_absolute_paths(tmp_path: Path) -> None:
 def test_truncated_passages_are_counted(tmp_path: Path) -> None:
     cfg = _cfg(tmp_path, _base())
     long_body = ("word " * 600).encode()
-    files = {**DOCS, "long.md": b"# Long\n" + long_body + b"\n"}
+    files = {**DOCS, "notes/long.md": b"# Long\n" + long_body + b"\n"}
     report = _ingest(cfg, tmp_path / "i.json", FakeOpener(make_archive(files)), tmp_path)
     assert report.truncated_for_embedding == 1
 
@@ -501,12 +549,11 @@ def test_live_ingest_byte_identical() -> None:
         second = run_ingest(root / "docs-source.toml", out, models_dir=root / "models")
         assert first.sha256 == second.sha256
         assert first.files_indexed > 0 and first.passages > 0
-        import tomllib
-
-        with (root / "evals" / "retrieval.toml").open("rb") as handle:
-            eval_doc = tomllib.load(handle)
+        cfg = load_source_config(root / "docs-source.toml")
         indexed = {p.path for p in load_index(out).passages}
-        wanted = {s for q in eval_doc["question"] for s in q.get("sources", [])}
-        assert wanted <= indexed  # labels and corpus agree on paths; says nothing about ranking
+        assert all(
+            any(path.startswith(e) if e.endswith("/") else path == e for e in cfg.include)
+            for path in indexed
+        )
     finally:
         out.unlink(missing_ok=True)

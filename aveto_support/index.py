@@ -77,15 +77,14 @@ class RetrievalParams:
     tokenizer: str = "v2"
     stopwords: str = "nltk-english-179"
     stemmer: str = "porter-1980"
-    ranking: str = "ranking-v2"
-    file_lambda: float = 0.5
+    ranking: str = "file-rrf-v1"
     k1: float = 1.2
     b: float = 0.75
     heading_weight: int = 2
     path_weight: int = 1
     top_k: int = 5
     per_file_cap: int = 2
-    confidence: str = "corroboration-v1"
+    confidence: str = "none"
     embedding: EmbeddingParams = field(default_factory=EmbeddingParams)
 
     def to_dict(self) -> dict[str, Any]:
@@ -94,7 +93,6 @@ class RetrievalParams:
             "stopwords": self.stopwords,
             "stemmer": self.stemmer,
             "ranking": self.ranking,
-            "file_lambda": self.file_lambda,
             "k1": self.k1,
             "b": self.b,
             "heading_weight": self.heading_weight,

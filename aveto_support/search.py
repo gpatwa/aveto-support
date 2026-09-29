@@ -1,5 +1,5 @@
-"""Hybrid retrieval: Porter tokenizer, BM25 ranking-v2, dense similarity, RRF fusion,
-and the calibrated confidence rule. No text is ever generated or altered."""
+"""File-level hybrid retrieval (file-rrf-v1): Porter tokenizer, whole-file BM25, dense MaxP,
+reciprocal rank fusion. No text is ever generated or altered."""
 
 from __future__ import annotations
 
@@ -21,6 +21,7 @@ from aveto_support.index import (
     CALIBRATION_QUERIES,
     CALIBRATION_SEED,
     Index,
+    IndexFormatError,
     Passage,
     RetrievalParams,
 )
@@ -165,40 +166,51 @@ def tokenize(text: str) -> list[str]:
 # --- result types ----------------------------------------------------------
 
 
+class QuestionError(ValueError):
+    """The question has no searchable words."""
+
+
 @dataclass(frozen=True)
-class Hit:
-    rank: int
-    passage: Passage
-    score: float
+class PassageMatch:
+    passage: Passage  # verbatim, unchanged from the index
+    score: float  # within-file RRF
     url: str
+
+
+@dataclass(frozen=True)
+class FileHit:
+    rank: int
+    path: str
+    score: float  # file RRF
+    url: str
+    passages: tuple[PassageMatch, ...]
+
+    def __post_init__(self) -> None:
+        if not self.passages:
+            raise ValueError("a FileHit needs at least one passage")
+        if any(m.passage.path != self.path for m in self.passages):
+            raise ValueError("a FileHit holds a passage from another file")
+        starts = [m.passage.line_start for m in self.passages]
+        if len(set(starts)) != len(starts):
+            raise ValueError("a FileHit repeats a passage")
 
 
 @dataclass(frozen=True)
 class RetrievalResult:
     question: str
-    confident: bool
-    hits: tuple[Hit, ...]
-    confidence: float
-    threshold: float
-    reason: Literal["ok", "no-searchable-words", "no-passage-matched", "below-threshold"]
-    corroboration: float = 0.0
-    ranking_mode: str = "lexical"
+    files: tuple[FileHit, ...]
+    top_score: float
+    reference: float  # index.threshold; diagnostic only
+    ranking_mode: str
     generation_mode: Literal["deterministic"] = "deterministic"
 
     def __post_init__(self) -> None:
-        if not (self.confident == (self.reason == "ok") == (len(self.hits) > 0)):
-            raise ValueError("inconsistent RetrievalResult: confident, reason and hits must agree")
-
-
-@dataclass(frozen=True)
-class Analysis:
-    """Everything retrieval learns about a question, before the confidence rule."""
-
-    question: str
-    searchable: bool
-    top: tuple[tuple[Passage, float], ...]  # fused, capped, in rank order; not confidence-gated
-    dense_top1: float
-    corroboration: float
+        if not self.files:
+            raise ValueError("a RetrievalResult needs at least one file")
+        if [f.rank for f in self.files] != list(range(1, len(self.files) + 1)):
+            raise ValueError("file ranks must be 1..n")
+        if len({f.path for f in self.files}) != len(self.files):
+            raise ValueError("file paths must be distinct")
 
 
 # --- ranking ---------------------------------------------------------------
@@ -285,14 +297,12 @@ class Searcher:
         params = index.params
         self._params = params
         self._passages = index.passages
-        self._pos = {(p.path, p.line_start): i for i, p in enumerate(self._passages)}
         self._bags = [_bag(p, params) for p in self._passages]
         self._passage_corpus = _Corpus(self._bags)
         files: dict[str, list[int]] = {}
         for pid, passage in enumerate(self._passages):
             files.setdefault(passage.path, []).append(pid)
         self._file_names = sorted(files)
-        self._file_index = {name: i for i, name in enumerate(self._file_names)}
         file_bags: list[Counter[str]] = []
         for name in self._file_names:
             bag: Counter[str] = Counter()
@@ -307,32 +317,34 @@ class Searcher:
     def idf(self, term: str) -> float:
         return self._passage_corpus.idf(term)
 
-    def _rank_ids(self, terms: Sequence[str]) -> list[tuple[int, float]]:
-        p = self._params
-        passage_scores = self._passage_corpus.scores(terms, p.k1, p.b)
-        candidates = {pid: s for pid, s in passage_scores.items() if s > 0}
-        if not candidates:
-            return []
-        file_scores = self._file_corpus.scores(terms, p.k1, p.b)
-        file_of = {pid: self._file_index[self._passages[pid].path] for pid in candidates}
-        p_max = max(candidates.values())
-        f_max = max(file_scores.get(f, 0.0) for f in set(file_of.values()))
-        combined: list[tuple[int, float]] = []
-        for pid, ps in candidates.items():
-            fs = file_scores.get(file_of[pid], 0.0)
-            f_part = fs / f_max if f_max > 0 else 0.0
-            combined.append((pid, p.file_lambda * ps / p_max + (1 - p.file_lambda) * f_part))
-        combined.sort(key=lambda item: (-item[1], self._passages[item[0]].path, self._passages[item[0]].line_start))
-        return combined
-
     def rank(self, terms: Sequence[str]) -> list[tuple[Passage, float]]:
-        """Lexical candidates (P > 0) ordered by (-combined score, path, line_start)."""
-        return [(self._passages[pid], s) for pid, s in self._rank_ids(terms)]
+        """Passage BM25 candidates (score > 0) ordered by (-score, path, line_start)."""
+        p = self._params
+        scores = self._passage_corpus.scores(terms, p.k1, p.b)
+        ids = sorted(
+            (pid for pid, sc in scores.items() if sc > 0),
+            key=lambda i: (-scores[i], self._passages[i].path, self._passages[i].line_start),
+        )
+        return [(self._passages[pid], scores[pid]) for pid in ids]
 
-    def corroboration(self, terms: Sequence[str], passage: Passage) -> float:
-        bag = self._bags[self._pos[(passage.path, passage.line_start)]]
-        matched = [self.idf(t) for t in sorted(set(terms)) if t in bag]
-        return sum(matched) - max(matched) if matched else 0.0
+    def file_lexical(self, terms: Sequence[str]) -> list[tuple[str, float]]:
+        """Whole-file BM25 (score > 0) ordered by (-score, path)."""
+        p = self._params
+        scores = self._file_corpus.scores(terms, p.k1, p.b)
+        out = [(self._file_names[i], sc) for i, sc in scores.items() if sc > 0]
+        out.sort(key=lambda item: (-item[1], item[0]))
+        return out
+
+    def file_dense(self, sims: Sequence[float]) -> list[tuple[str, float]]:
+        """Each file scored by its best passage (MaxP), ordered by (-score, path)."""
+        best: dict[str, float] = {}
+        for passage, sim in zip(self._passages, sims, strict=True):
+            if passage.path not in best or sim > best[passage.path]:
+                best[passage.path] = sim
+        return sorted(best.items(), key=lambda item: (-item[1], item[0]))
+
+    def passage_sims(self, query: bytes) -> list[float]:
+        return [int(d) / INT8_UNIT for d in self._dense.dots(query)]
 
     def dense_ranked(self, query: bytes) -> list[tuple[int, float]]:
         dots = self._dense.dots(query)
@@ -342,38 +354,20 @@ class Searcher:
         )
         return [(i, int(dots[i]) / INT8_UNIT) for i in order]
 
-    def fused(self, terms: Sequence[str], query: bytes) -> list[tuple[int, float]]:
-        """Reciprocal Rank Fusion over the top `fusion_depth` of the lexical and dense lists."""
-        emb = self._params.embedding
-        lists = (
-            [pid for pid, _ in self._rank_ids(terms)[: emb.fusion_depth]],
-            [pid for pid, _ in self.dense_ranked(query)[: emb.fusion_depth]],
-        )
-        scores: dict[int, float] = {}
-        for ranked in lists:
-            for rank, pid in enumerate(ranked, start=1):
-                scores[pid] = scores.get(pid, 0.0) + 1.0 / (emb.rrf_k + rank)
-        return sorted(
-            scores.items(),
-            key=lambda item: (-item[1], self._passages[item[0]].path, self._passages[item[0]].line_start),
-        )
+    def passages_of(self, path: str) -> list[Passage]:
+        return [p for p in self._passages if p.path == path]
 
     def passage(self, pid: int) -> Passage:
         return self._passages[pid]
 
 
-def capped(ranked: Sequence[tuple[Passage, float]], params: RetrievalParams) -> list[tuple[Passage, float]]:
-    """Apply the per-file cap and top_k to a ranked list."""
-    kept: list[tuple[Passage, float]] = []
-    per_file: Counter[str] = Counter()
-    for passage, score in ranked:
-        if per_file[passage.path] >= params.per_file_cap:
-            continue
-        per_file[passage.path] += 1
-        kept.append((passage, score))
-        if len(kept) == params.top_k:
-            break
-    return kept
+def rrf[K](lists: Sequence[Sequence[K]], k: int, depth: int) -> dict[K, float]:
+    """Reciprocal Rank Fusion of the top `depth` of each list. Sums in list order."""
+    scores: dict[K, float] = {}
+    for ranked in lists:
+        for rank, key in enumerate(ranked[:depth], start=1):
+            scores[key] = scores.get(key, 0.0) + 1.0 / (k + rank)
+    return scores
 
 
 def _escape_path(path: str) -> str:
@@ -387,49 +381,65 @@ def permalink(repo: str, commit: str, passage: Passage) -> str:
     )
 
 
-def analyse(searcher: Searcher, question: str) -> Analysis:
-    """Rank a question. Runs the embedder on the question, locally."""
-    embedder = searcher.embedder
-    searchable = embedder.token_count(question) > 0
-    if not searchable or not searcher.index.passages:
-        return Analysis(question, searchable, (), 0.0, 0.0)
-    terms = sorted(set(tokenize(question)))
-    query = embedder.embed_query(question)
-    dense = searcher.dense_ranked(query)
-    fused = searcher.fused(terms, query)
-    params = searcher.index.params
-    top = capped([(searcher.passage(pid), score) for pid, score in fused], params)
-    corroboration = searcher.corroboration(terms, top[0][0]) if top and terms else 0.0
-    return Analysis(question, True, tuple(top), dense[0][1], corroboration)
+def file_permalink(repo: str, commit: str, path: str) -> str:
+    return f"https://github.com/{repo}/blob/{commit}/{_escape_path(path)}"
 
 
-def decide(searcher: Searcher, analysis: Analysis) -> RetrievalResult:
-    index = searcher.index
-    emb = index.params.embedding
-    mode = f"hybrid:{emb.model}@{emb.revision}"
-    threshold = index.threshold
-    q = analysis.question
-
-    def refuse(reason: Literal["no-searchable-words", "no-passage-matched", "below-threshold"]) -> RetrievalResult:
-        return RetrievalResult(
-            q, False, (), analysis.dense_top1, threshold, reason, analysis.corroboration, mode
-        )
-
-    if not analysis.searchable:
-        return refuse("no-searchable-words")
-    if not analysis.top:
-        return refuse("no-passage-matched")
-    if analysis.dense_top1 < threshold:
-        return refuse("below-threshold")
-    hits = tuple(
-        Hit(rank, passage, score, permalink(index.repo, index.commit, passage))
-        for rank, (passage, score) in enumerate(analysis.top, start=1)
+def _matches_in_file(
+    searcher: Searcher,
+    path: str,
+    lex_scores: dict[tuple[str, int], float],
+    sims: dict[tuple[str, int], float],
+) -> list[tuple[Passage, float]]:
+    emb = searcher.index.params.embedding
+    passages = searcher.passages_of(path)
+    starts = [p.line_start for p in passages]
+    lex = sorted(
+        (ls for ls in starts if (path, ls) in lex_scores),
+        key=lambda ls: (-lex_scores[(path, ls)], ls),
     )
-    return RetrievalResult(q, True, hits, analysis.dense_top1, threshold, "ok", analysis.corroboration, mode)
+    dense = sorted(starts, key=lambda ls: (-sims[(path, ls)], ls))
+    fused = rrf([lex, dense], emb.rrf_k, emb.fusion_depth)
+    order = sorted(fused, key=lambda ls: (-fused[ls], ls))[: searcher.index.params.per_file_cap]
+    by_start = {p.line_start: p for p in passages}
+    return [(by_start[ls], fused[ls]) for ls in order]
 
 
 def retrieve(searcher: Searcher, question: str) -> RetrievalResult:
-    return decide(searcher, analyse(searcher, question))
+    """Rank files (file-rrf-v1). Runs the embedder on the question, locally. Never abstains."""
+    embedder = searcher.embedder
+    if not question.strip() or embedder.token_count(question) == 0:
+        raise QuestionError("the question has no searchable words")
+    index = searcher.index
+    if not index.passages:
+        raise IndexFormatError("the index has no passages")
+    params = index.params
+    emb = params.embedding
+    terms = sorted(set(tokenize(question)))
+    query = embedder.embed_query(question)
+    sims = searcher.passage_sims(query)
+    lexical = [path for path, _ in searcher.file_lexical(terms)]
+    dense = [path for path, _ in searcher.file_dense(sims)]
+    fused = rrf([lexical, dense], emb.rrf_k, emb.fusion_depth)
+    top = sorted(fused, key=lambda path: (-fused[path], path))[: params.top_k]
+    sims_of = {(p.path, p.line_start): sims[i] for i, p in enumerate(index.passages)}
+    lex_scores = {(p.path, p.line_start): sc for p, sc in searcher.rank(terms)}
+    files: list[FileHit] = []
+    for rank, path in enumerate(top, start=1):
+        matches = tuple(
+            PassageMatch(passage, score, permalink(index.repo, index.commit, passage))
+            for passage, score in _matches_in_file(searcher, path, lex_scores, sims_of)
+        )
+        files.append(
+            FileHit(rank, path, fused[path], file_permalink(index.repo, index.commit, path), matches)
+        )
+    return RetrievalResult(
+        question,
+        tuple(files),
+        max(sims),
+        index.threshold,
+        f"file-rrf-v1:hybrid:{emb.model}@{emb.revision}",
+    )
 
 
 # --- calibration -----------------------------------------------------------

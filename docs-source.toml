@@ -2,6 +2,18 @@
 # change repo and commit, then re-run ingest.
 repo   = "gpatwa/agentic-sdlc-playbook"                 # GitHub "owner/name"
 commit = "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"     # full 40-hex SHA; branches/tags rejected
+# User documentation only (intent Decision 2). Allow-list: a file matching no
+# entry is not indexed. "x.md" = exactly that file; "dir/" = every .md under it.
+# Deliberately absent (maintainer material): docs/BACKLOG.md, docs/ARCHITECTURE.md,
+# docs/PLATFORM_EVAL.md, runs/, site/.
+include = [
+  "README.md",
+  "docs/GETTING_STARTED.md", "docs/AGENTIC_SDLC.md", "docs/AGENT_ROLES.md",
+  "docs/HUMAN_APPROVAL_RULES.md", "docs/RELEASE_GATES.md", "docs/OPERATING_MODEL.md",
+  "docs/DEPLOYMENT.md", "docs/STANDARDS_WATCH.md", "docs/VALIDATION_MATRIX.md",
+  "docs/PIPELINE_ANALYTICS.md",
+  "agents/", "templates/", "project-packs/", "prompts/", "skills/", "examples/", "execution/",
+]
 exclude = []                                            # repo-relative path prefixes to skip
 
 # The local embedding model that helps rank passages by meaning (ADR 0003). It

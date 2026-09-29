@@ -97,22 +97,26 @@ def test_malformed_eval_file(tmp_path: Path) -> None:
 def test_answerable_hit_any_listed_source() -> None:
     q = EvalQuestion("a01", "cats purr", True, ("nothing.md", "pets/cats.md"))
     report = score(searcher(), EvalSet(COMMIT, (q,)))
-    assert report.answerable_hits == 1 and report.outcomes[0].detail == "pets/cats.md (rank 1)"
+    assert report.answerable_hits == 1
+    assert report.outcomes[0].detail.startswith("pets/cats.md (rank 1)  top score ")
 
 
 def test_answerable_no_match_is_miss() -> None:
-    report = score(searcher(), EvalSet(COMMIT, (answerable(1, "quantum spaceship", "pets/cats.md"),)))
-    assert report.answerable_hits == 0
-    assert "no confident match" in report.outcomes[0].detail
     wrong = score(searcher(), EvalSet(COMMIT, (answerable(1, "cats purr", "zzz/last.md"),)))
-    assert wrong.answerable_hits == 0 and "got pets/cats.md" in wrong.outcomes[0].detail
+    assert wrong.answerable_hits == 0
+    assert "expected zzz/last.md; got pets/cats.md" in wrong.outcomes[0].detail
 
 
-def test_unanswerable_hit_on_no_match() -> None:
-    es = EvalSet(COMMIT, (unanswerable(1, "quantum spaceship"), unanswerable(2, "cats purr")))
-    report = score(searcher(), es)
-    assert [o.hit for o in report.outcomes] == [True, False]
-    assert "returned" in report.outcomes[1].detail and "passages" in report.outcomes[1].detail
+def test_unanswerable_is_diagnostic_only() -> None:
+    base = _fake_questions(20, 24)
+    extra = tuple(unanswerable(i, "quantum spaceship") for i in range(9))
+    plain = score(searcher(), base)
+    with_u = score(searcher(), EvalSet(COMMIT, base.questions + extra))
+    assert with_u.unanswerable_total == 9 and with_u.passed == plain.passed
+    assert (with_u.answerable_hits, with_u.answerable_total) == (20, 24)
+    detail = with_u.outcomes[-1].detail
+    assert detail.startswith("top file ") and "top score" in detail
+    assert not with_u.outcomes[-1].answerable and not with_u.outcomes[-1].hit
 
 
 def _fake_questions(hits: int, total: int) -> EvalSet:
@@ -123,42 +127,39 @@ def _fake_questions(hits: int, total: int) -> EvalSet:
 
 
 def test_threshold_integer_boundaries() -> None:
-    assert score(searcher(), _fake_questions(20, 24)).answerable_pass
-    assert not score(searcher(), _fake_questions(19, 24)).answerable_pass
-
-    def unans(hits: int) -> EvalSet:
-        qs = [unanswerable(i, "quantum spaceship") for i in range(hits)]
-        qs += [unanswerable(i, "cats purr") for i in range(hits, 6)]
-        return EvalSet(COMMIT, tuple(qs))
-
-    assert score(searcher(), unans(5)).unanswerable_pass
-    assert not score(searcher(), unans(4)).unanswerable_pass
-
-
-def test_ungated_diagnostic_does_not_affect_exit() -> None:
-    hi = searcher(threshold=1.0)  # withholds everything with < full coverage
-    q = EvalQuestion("a01", "cats purr", True, ("pets/cats.md",))
-    report = score(hi, EvalSet(COMMIT, (q,)))
-    assert report.ungated_recall == 1 and report.answerable_hits in (0, 1)
-    strict = score(searcher(threshold=1.01), EvalSet(COMMIT, (q,)))
-    assert strict.ungated_recall == 1 and strict.answerable_hits == 0 and not strict.passed
+    assert score(searcher(), _fake_questions(12, 15)).passed
+    assert not score(searcher(), _fake_questions(11, 15)).passed
+    assert score(searcher(), _fake_questions(4, 5)).passed
+    assert not score(searcher(), _fake_questions(3, 5)).passed
 
 
 def test_format_report_summary_lines() -> None:
     s = searcher()
-    report = score(s, _fake_questions(20, 24))
+    es = _fake_questions(20, 24)
+    report = score(s, EvalSet(COMMIT, es.questions + (unanswerable(1, "quantum spaceship"),)))
     lines = format_report(report, "e.toml", s.index).split("\n")
-    assert lines[-4].startswith("answerable:   20/24 (83.3%)  required >= 80%  PASS")
-    assert lines[-3].startswith("unanswerable: 0/0")
-    assert lines[-2].startswith("diagnostic:")
-    assert lines[-1] in ("eval: PASS", "eval: FAIL")
+    assert "ranking: file-rrf-v1" in lines[0] and "(diagnostic)" in lines[0]
+    assert lines[-4].startswith("u01  DIAG")
+    assert lines[-3].startswith("answerable:   20/24 (83.3%)  required >= 80%  PASS")
+    assert lines[-2] == "unanswerable: 1 (diagnostic only, not gated)"
+    assert lines[-1] == "eval: PASS"
+
+
+def test_eval_with_no_answerable_question_exit_2(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    idx, ev = _write(tmp_path, 0.3, '[[question]]\nid = "u1"\nquestion = "q"\nanswerable = false\n')
+    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE) == 2
+    assert "at least one answerable" in capsys.readouterr().err
+    with pytest.raises(EvalFormatError):
+        load_eval_set(ev)
 
 
 def test_commit_mismatch_exit_2(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     idx = tmp_path / "i.json"
     write_index(searcher().index, idx)
     ev = tmp_path / "e.toml"
-    ev.write_text('pinned_commit = "other"\n[[question]]\nid = "u1"\nquestion = "q"\nanswerable = false\n')
+    ev.write_text('pinned_commit = "other"\n[[question]]\nid = "a1"\nquestion = "q"\nsources = ["x.md"]\n')
     assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE) == 2
     assert "re-run ingest" in capsys.readouterr().err
     with pytest.raises(EvalFormatError):
@@ -192,31 +193,27 @@ def test_cli_eval_exit_1_on_miss(tmp_path: Path, capsys: pytest.CaptureFixture[s
     assert capsys.readouterr().out.rstrip().endswith("eval: FAIL")
 
 
-def test_cli_retrieve_no_match_exit_0(tmp_path: Path) -> None:
-    idx, _ = _write(tmp_path, 0.3, "")
+def test_cli_retrieve_below_reference_exit_0_with_files(tmp_path: Path) -> None:
+    idx, _ = _write(tmp_path, 0.99, "")
     assert main(["retrieve", "--index", str(idx), "quantum", "spaceship"], embedder=FAKE) == 0
 
 
-def test_cli_retrieve_prints_no_confident_match_first_line(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
-    idx, _ = _write(tmp_path, 0.3, "")
-    main(["retrieve", "--index", str(idx), "quantum spaceship"], embedder=FAKE)
-    out = capsys.readouterr().out.split("\n")
-    assert out[0] == "no confident match"
-    assert "pets" not in "\n".join(out)
-
-
-def test_cli_retrieve_confident_output_names_sources(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
-    idx, _ = _write(tmp_path, 0.3, "")
+def test_cli_retrieve_output_shape(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    idx, _ = _write(tmp_path, 0.99, "")
     assert main(["retrieve", "--index", str(idx), "Do", "cats", "purr?"], embedder=FAKE) == 0
     out = capsys.readouterr().out
-    assert "1. pets/cats.md  lines 1-2" in out
-    assert "Heading: Cats" in out
+    assert "no confident match" not in out.lower()
+    lines = out.split("\n")
+    assert lines[0] == "Sources for: Do cats purr?"
+    assert lines[1] == f"Docs: {REPO} @ {COMMIT}"
+    assert lines[2].startswith("Ranking: file-rrf-v1:hybrid:BAAI/bge-small-en-v1.5@")
+    assert lines[3].startswith("Top score: ") and "ingest reference 0.990" in lines[3]
+    assert "1. pets/cats.md  (score " in out
+    assert f"https://github.com/{REPO}/blob/{COMMIT}/pets/cats.md\n" in out
+    assert "a. lines 1-2  Heading: Cats" in out
     assert "?plain=1#L1-L2" in out
-    assert "   | Cats purr and chase mice." in out
+    assert "      | Cats purr and chase mice." in out
+    assert sum(1 for line in lines if line[:2] in ("1.", "2.", "3.", "4.", "5.")) == 5
     assert out.rstrip().endswith("These are sources, not an answer.")
 
 
@@ -237,7 +234,7 @@ def test_cli_ingest_fetch_error_exit_3(tmp_path: Path, monkeypatch: pytest.Monke
 
 def test_cli_ingest_end_to_end_and_reload(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     cfg = tmp_path / "s.toml"
-    cfg.write_text(config_text())
+    cfg.write_text(config_text(include='include = ["pets/", "farm/", "sea/", "zzz/", "misc/"]\n'))
     archive = make_archive({p: t.encode() for p, t in DOCS.items()})
     out = tmp_path / "i.json"
     report = run_ingest(

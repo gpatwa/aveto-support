@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 from conftest import FakeEmbedder, embed_all
 
+from aveto_support.__main__ import format_result
 from aveto_support.embed import (
     DIM,
     INPUT_NAMES,
@@ -22,16 +23,20 @@ from aveto_support.embed import (
 from aveto_support.index import (
     EmbeddingParams,
     Index,
+    IndexFormatError,
     Passage,
     RetrievalParams,
     split_passages,
 )
 from aveto_support.search import (
-    Hit,
+    FileHit,
+    PassageMatch,
+    QuestionError,
     RetrievalResult,
     Searcher,
     calibrate,
     retrieve,
+    rrf,
     stem,
     tokenize,
 )
@@ -196,17 +201,17 @@ def test_heading_and_path_count() -> None:
     assert s.rank(tokenize("billing"))[0][0].path == "billing/invoices.md"
 
 
-def test_file_level_evidence_lifts_passages_in_a_matching_file() -> None:
+def test_file_bm25_adds_evidence_across_sections() -> None:
     s = build(
         {
-            "deploy.md": "# Deploy\nship release\n# Rollback\nrelease notes\n# Tips\nrelease\n",
-            "misc.md": "# Notes\nrelease ship deploy\n",
+            "spread.md": "# A\nalpha\n# B\nbeta\n# C\ngamma\n",
+            "one.md": "# D\nalpha alpha alpha\n",
             "other.md": "# Other\nnothing here\n",
         }
     )
-    ranked = s.rank(tokenize("deploy ship release"))
-    assert ranked[0][0].path == "deploy.md"
-    assert all(0 < score <= 1.0 + 1e-9 for _, score in ranked)
+    ranked = s.file_lexical(tokenize("alpha beta gamma"))
+    assert [path for path, _ in ranked] == ["spread.md", "one.md"]
+    assert all(score > 0 for _, score in ranked)
 
 
 def test_passage_without_question_words_is_never_a_lexical_candidate() -> None:
@@ -221,16 +226,6 @@ def test_rank_tie_break_is_path_then_line() -> None:
     assert [p.line_start for p, _ in s2.rank(tokenize("shared"))] == [1, 3]
 
 
-def test_corroboration_is_evidence_beyond_the_strongest_word() -> None:
-    s = build({"a.md": "# A\nalpha beta gamma\n", "b.md": "# B\nother stuff\n", "c.md": "# C\nmore stuff\n"})
-    p = s.rank(["alpha"])[0][0]
-    assert s.corroboration(["alpha"], p) == 0.0
-    assert s.corroboration(["nowhereword"], p) == 0.0
-    two = s.corroboration(["alpha", "beta"], p)
-    assert two == pytest.approx(min(s.idf("alpha"), s.idf("beta")))
-    assert s.corroboration(["alpha", "beta", "gamma"], p) > two
-
-
 def _vec(**parts: int) -> bytes:
     values = [0] * DIM
     for key, amount in parts.items():
@@ -238,128 +233,162 @@ def _vec(**parts: int) -> bytes:
     return bytes(v & 0xFF for v in values)
 
 
-def _crafted() -> tuple[Searcher, bytes]:
+class _QueryEmbedder(FakeEmbedder):
+    """Fake embedder whose query vector is fixed by the test."""
+
+    def __init__(self, query: bytes) -> None:
+        self._query = query
+
+    def embed_query(self, question: str) -> bytes:
+        return self._query
+
+
+def _crafted(query: bytes) -> Searcher:
+    import dataclasses
+
     docs = {
         "x.md": "# X\nzeta filler words here more\n",
         "y.md": "# Y\nzeta zeta zeta zeta\n",
         "z.md": "# Z\nunrelated content only\n",
     }
-    ps = passages_of(docs)
     vectors = {"x.md": _vec(e0=127), "y.md": _vec(e0=60, e1=100), "z.md": _vec(e1=127)}
-    import dataclasses
-
-    crafted = [dataclasses.replace(p, embedding=vectors[p.path]) for p in ps]
+    crafted = [dataclasses.replace(p, embedding=vectors[p.path]) for p in passages_of(docs)]
     index = Index("acme/docs", "c" * 40, 3, (), tuple(crafted), 0.0, PARAMS)
-    return Searcher(index, FAKE), _vec(e0=127)
+    return Searcher(index, _QueryEmbedder(query))
 
 
 def test_rrf_fusion_math() -> None:
-    s, query = _crafted()
-    assert [s.passage(i).path for i, _ in s.dense_ranked(query)] == ["x.md", "y.md", "z.md"]
-    assert [p.path for p, _ in s.rank(["zeta"])] == ["y.md", "x.md"]
-    fused = s.fused(["zeta"], query)
-    scores = {s.passage(i).path: score for i, score in fused}
-    assert scores["x.md"] == pytest.approx(1 / 61 + 1 / 62)
-    assert scores["y.md"] == pytest.approx(1 / 61 + 1 / 62)
-    assert scores["z.md"] == pytest.approx(1 / 63)
-    assert [s.passage(i).path for i, _ in fused] == ["x.md", "y.md", "z.md"]
+    fused = rrf([["a", "b", "c"], ["b", "d"]], 60, 100)
+    assert fused == {
+        "a": pytest.approx(1 / 61),
+        "b": pytest.approx(1 / 62 + 1 / 61),
+        "c": pytest.approx(1 / 63),
+        "d": pytest.approx(1 / 62),
+    }
+    assert "c" not in rrf([["a", "b", "c"]], 60, 2)
+    assert rrf([], 60, 100) == {}
 
 
-def test_hybrid_candidates_union_of_lists() -> None:
-    s, query = _crafted()
-    paths = {s.passage(i).path for i, _ in s.fused(["zeta"], query)}
-    assert paths == {"x.md", "y.md", "z.md"}  # z.md is dense-only
-    lexical_only = {s.passage(i).path for i, _ in s.fused(["zeta"], _vec(e5=127))}
-    assert {"x.md", "y.md"} <= lexical_only
+def test_file_dense_is_maxp() -> None:
+    s = build({"a.md": "# A1\none\n# A2\ntwo\n", "b.md": "# B\nthree\n", "c.md": "# C\nfour\n"})
+    assert [p.path for p in s.index.passages] == ["a.md", "a.md", "b.md", "c.md"]
+    assert s.file_dense([0.1, 0.9, 0.5, 0.2]) == [("a.md", 0.9), ("b.md", 0.5), ("c.md", 0.2)]
+    assert s.file_dense([0.9, 0.1, 0.5, 0.2])[0] == ("a.md", 0.9)
+
+
+def test_file_ties_break_by_path() -> None:
+    s = build({"b.md": "# T\nshared words\n", "a.md": "# T\nshared words\n", "c.md": "# X\nother\n"})
+    assert [p for p, _ in s.file_dense([0.5, 0.5, 0.5])] == ["a.md", "b.md", "c.md"]
+    assert [p for p, _ in s.file_lexical(tokenize("shared"))] == ["a.md", "b.md"]
+
+
+def test_file_fusion_uses_both_lists() -> None:
+    r = retrieve(_crafted(_vec(e0=127)), "zeta")
+    assert [f.path for f in r.files] == ["x.md", "y.md", "z.md"]  # z.md is dense-only
+    assert r.files[0].score == pytest.approx(1 / 61 + 1 / 62)
+    assert r.files[1].score == pytest.approx(1 / 61 + 1 / 62)
+    assert r.files[2].score == pytest.approx(1 / 63)
+    assert r.top_score == pytest.approx(1.0)
+    lexical_only = retrieve(_crafted(_vec(e5=127)), "zeta")
+    assert {"x.md", "y.md"} <= {f.path for f in lexical_only.files}
 
 
 def _many_docs() -> dict[str, str]:
-    docs = {f"f{i}.md": "".join(f"# S{j}\nshared token {i}{j}\n" for j in range(4)) for i in range(4)}
+    docs = {f"f{i}.md": "".join(f"# S{j}\nshared token {i}{j}\n" for j in range(4)) for i in range(7)}
     docs["other.md"] = "# O\nunrelated\n"
     return docs
 
 
-def test_per_file_cap_applies_after_fusion() -> None:
+def test_each_file_carries_at_most_two_passages() -> None:
     result = retrieve(build(_many_docs()), "shared")
-    per_file: dict[str, int] = {}
-    for h in result.hits:
-        per_file[h.passage.path] = per_file.get(h.passage.path, 0) + 1
-    assert result.hits and max(per_file.values()) == 2
+    counts = [len(f.passages) for f in result.files]
+    assert max(counts) == 2 and min(counts) >= 1
 
 
-def test_at_most_five_hits() -> None:
+def test_at_most_five_distinct_files() -> None:
     result = retrieve(build(_many_docs()), "shared token")
-    assert len(result.hits) == 5
-    assert [h.rank for h in result.hits] == [1, 2, 3, 4, 5]
+    assert len(result.files) == 5
+    assert [f.rank for f in result.files] == [1, 2, 3, 4, 5]
+    assert len({f.path for f in result.files}) == 5
 
 
-# --- the confidence rule ---------------------------------------------------
+def test_fewer_files_than_top_k_returns_all() -> None:
+    result = retrieve(build({"a.md": "# A\nalpha\n", "b.md": "# B\nbeta\n"}), "alpha")
+    assert sorted(f.path for f in result.files) == ["a.md", "b.md"]
 
 
-def test_no_searchable_words() -> None:
+def test_retrieve_is_deterministic() -> None:
+    s = build(_many_docs())
+    assert retrieve(s, "shared token 12") == retrieve(build(_many_docs()), "shared token 12")
+
+
+# --- retrieval never abstains ----------------------------------------------
+
+
+def test_question_with_no_words_raises() -> None:
     s = build({"a.md": "# A\nsome text\n"})
     for q in ("", "   "):
-        r = retrieve(s, q)
-        assert (r.confident, r.hits, r.reason) == (False, (), "no-searchable-words")
+        with pytest.raises(QuestionError):
+            retrieve(s, q)
 
 
-def test_no_passage_matched_on_empty_index() -> None:
+def test_empty_index_raises() -> None:
     s = Searcher(Index("acme/docs", "c" * 40, 0, (), (), 0.5, PARAMS), FAKE)
-    r = retrieve(s, "anything at all")
-    assert (r.confident, r.hits, r.reason) == (False, (), "no-passage-matched")
+    with pytest.raises(IndexFormatError):
+        retrieve(s, "anything at all")
 
 
-def test_not_confident_returns_no_hits() -> None:
+def test_retrieve_never_abstains() -> None:
     s = build({"a.md": "# A\nalpha beta\n", "b.md": "# B\ngamma delta\n"}, threshold=0.99)
     r = retrieve(s, "alpha gamma")
-    assert r.reason == "below-threshold" and r.hits == () and not r.confident
-    assert 0 < r.confidence < 0.99
+    assert r.files and r.top_score < r.reference == 0.99
+    assert "no confident match" not in format_result(r, s.index).lower()
 
 
-def test_confident_iff_dense_top1_reaches_threshold() -> None:
-    docs = {"a.md": "# A\nalpha beta\n", "b.md": "# B\ngamma delta\n"}
-    sim = retrieve(build(docs), "alpha beta").confidence
-    assert retrieve(build(docs, threshold=sim), "alpha beta").confident
-    assert not retrieve(build(docs, threshold=sim + 1e-6), "alpha beta").confident
-
-
-def test_confident_returns_hits_with_provenance() -> None:
+def test_file_results_carry_provenance() -> None:
     s = build({"docs/a b.md": "# Top\n## Install\nrun the installer\nmore\n", "z.md": "# Z\nzzz\n"}, 0.1)
     r = retrieve(s, "installer")
-    assert r.confident and r.reason == "ok" and r.generation_mode == "deterministic"
-    assert r.ranking_mode.startswith("hybrid:BAAI/bge-small-en-v1.5@")
-    hit = r.hits[0]
-    assert hit.passage.path == "docs/a b.md"
-    assert hit.passage.heading_path == ("Top", "Install")
-    assert (hit.passage.line_start, hit.passage.line_end) == (2, 4)
-    assert hit.url == f"https://github.com/acme/docs/blob/{'c' * 40}/docs/a%20b.md?plain=1#L2-L4"
+    assert r.generation_mode == "deterministic"
+    assert r.ranking_mode.startswith("file-rrf-v1:hybrid:BAAI/bge-small-en-v1.5@")
+    file = r.files[0]
+    assert file.path == "docs/a b.md"
+    assert file.url == f"https://github.com/acme/docs/blob/{'c' * 40}/docs/a%20b.md"
+    m = file.passages[0]
+    assert m.passage.path == "docs/a b.md"
+    assert m.passage.heading_path == ("Top", "Install")
+    assert (m.passage.line_start, m.passage.line_end) == (2, 4)
+    assert m.url == f"https://github.com/acme/docs/blob/{'c' * 40}/docs/a%20b.md?plain=1#L2-L4"
 
 
 def test_hybrid_hits_are_verbatim_passages() -> None:
     docs = {"a.md": "# A\nline  one\n\n  indented\n```\n# code\n```\n## B\nbody\n", "b.md": "# C\nother text\n"}
     lines = {path: text.split("\n") for path, text in docs.items()}
     result = retrieve(build(docs), "line one indented body other text")
-    assert result.confident and result.hits
-    for hit in result.hits:
-        p = hit.passage
-        assert p.text == "\n".join(lines[p.path][p.line_start - 1 : p.line_end])
-
-
-def test_lexical_only_match_can_still_be_returned_by_dense_list() -> None:
-    docs = {"a.md": "# A\nalpha beta\n", "b.md": "# B\ngamma delta\n"}
-    r = retrieve(build(docs), "xyzzy plugh")  # no lexical candidate at all
-    assert r.confident and r.hits and r.corroboration == 0.0
+    assert result.files
+    for file in result.files:
+        for m in file.passages:
+            p = m.passage
+            assert p.path == file.path
+            assert p.text == "\n".join(lines[p.path][p.line_start - 1 : p.line_end])
 
 
 def test_result_invariant_enforced() -> None:
     p = Passage("a.md", "A", ("A",), 1, 2, "# A\nx")
-    hit = Hit(1, p, 1.0, "u")
+    q = Passage("b.md", "B", ("B",), 1, 2, "# B\nx")
+    m = PassageMatch(p, 1.0, "u")
+    ok = FileHit(1, "a.md", 1.0, "u", (m,))
     with pytest.raises(ValueError):
-        RetrievalResult("q", False, (hit,), 0.0, 0.5, "below-threshold")
+        RetrievalResult("q", (), 0.5, 0.5, "mode")  # no files
     with pytest.raises(ValueError):
-        RetrievalResult("q", True, (), 1.0, 0.5, "ok")
+        RetrievalResult("q", (FileHit(2, "a.md", 1.0, "u", (m,)),), 0.5, 0.5, "mode")  # ranks
     with pytest.raises(ValueError):
-        RetrievalResult("q", True, (hit,), 1.0, 0.5, "below-threshold")
+        RetrievalResult("q", (ok, FileHit(2, "a.md", 1.0, "u", (m,))), 0.5, 0.5, "mode")  # path repeats
+    with pytest.raises(ValueError):
+        FileHit(1, "a.md", 1.0, "u", ())  # no passages
+    with pytest.raises(ValueError):
+        FileHit(1, "a.md", 1.0, "u", (PassageMatch(q, 1.0, "u"),))  # passage from another file
+    with pytest.raises(ValueError):
+        FileHit(1, "a.md", 1.0, "u", (m, m))  # repeated passage
 
 
 # --- calibration -----------------------------------------------------------

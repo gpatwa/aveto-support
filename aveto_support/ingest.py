@@ -61,6 +61,7 @@ class FetchError(Exception):
 class SourceConfig:
     repo: str
     commit: str
+    include: tuple[str, ...]
     exclude: tuple[str, ...] = ()
     embedding: EmbeddingParams = field(default_factory=EmbeddingParams)
     offtopic_path: str | None = None
@@ -135,7 +136,7 @@ def load_source_config(path: Path) -> SourceConfig:
         raise ConfigError(f"cannot read {path}: {exc.strerror or exc}") from exc
     except tomllib.TOMLDecodeError as exc:
         raise ConfigError(f"{path} is not valid TOML: {exc}") from exc
-    unknown = sorted(set(raw) - {"repo", "commit", "exclude", "embedding"})
+    unknown = sorted(set(raw) - {"repo", "commit", "include", "exclude", "embedding"})
     if unknown:
         raise ConfigError(f"unknown key(s) in {path}: {', '.join(unknown)}")
     repo = raw.get("repo")
@@ -144,6 +145,20 @@ def load_source_config(path: Path) -> SourceConfig:
     commit = raw.get("commit")
     if not isinstance(commit, str) or not _COMMIT.match(commit):
         raise ConfigError("commit must be a full 40-character lowercase hex SHA (branches, tags and short SHAs are rejected)")
+    include = raw.get("include")
+    if (
+        not isinstance(include, list)
+        or not include
+        or not all(isinstance(e, str) for e in include)
+    ):
+        raise ConfigError("include must be a non-empty list of repo-relative .md files or directories")
+    if len(set(include)) != len(include):
+        raise ConfigError("include has duplicate entries")
+    for entry in include:
+        if entry.startswith("/") or ".." in entry.split("/"):
+            raise ConfigError(f"include entry {entry!r} must be repo-relative with no '..'")
+        if not (entry.endswith((".md", "/"))):
+            raise ConfigError(f"include entry {entry!r} must end in .md (a file) or / (a directory)")
     exclude = raw.get("exclude", [])
     if not isinstance(exclude, list) or not all(isinstance(e, str) for e in exclude):
         raise ConfigError("exclude must be a list of path-prefix strings")
@@ -154,6 +169,7 @@ def load_source_config(path: Path) -> SourceConfig:
     return SourceConfig(
         repo=repo,
         commit=commit,
+        include=tuple(include),
         exclude=tuple(exclude),
         embedding=embedding,
         offtopic_path=offtopic_path,
@@ -348,6 +364,10 @@ def read_markdown(
                     continue
                 if not rel.lower().endswith(".md"):
                     continue
+                if not any(
+                    rel.startswith(e) if e.endswith("/") else rel == e for e in source.include
+                ):
+                    continue
                 if any(rel.startswith(prefix) for prefix in source.exclude):
                     continue
                 handle = tar.extractfile(member)
@@ -379,6 +399,15 @@ def run_ingest(
     offtopic = load_offtopic(source, config_path)
     archive = fetch_archive(source, opener=opener)
     files, skipped = read_markdown(archive, source)
+    for entry in source.include:
+        matched = any(
+            f.path.startswith(entry) if entry.endswith("/") else f.path == entry for f in files
+        )
+        if not matched and not any(
+            s_path.startswith(entry) if entry.endswith("/") else s_path == entry
+            for s_path, _ in skipped
+        ):
+            raise ConfigError(f"include entry {entry} matches no .md file at {source.commit}")
     split: list[Passage] = []
     dropped = 0
     for doc in files:

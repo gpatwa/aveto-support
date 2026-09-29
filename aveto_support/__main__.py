@@ -1,4 +1,4 @@
-"""Command line: ingest | retrieve | eval. Exit codes: 0 ok, 1 eval miss, 2 input, 3 fetch."""
+"""Command line: ingest | retrieve | eval. Exit codes: 0 ok, 1 eval below 80%, 2 input, 3 fetch."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from aveto_support.embed import Embedder
     from aveto_support.index import Index
-    from aveto_support.search import Hit, RetrievalResult
+    from aveto_support.search import FileHit, PassageMatch, RetrievalResult
 
 DEFAULT_CONFIG = "docs-source.toml"
 DEFAULT_INDEX = "index/docs-index.json"
@@ -20,50 +20,43 @@ DEFAULT_EVAL = "evals/retrieval.toml"
 DEFAULT_MODELS = "models"
 
 
-def _excerpt(hit: Hit) -> list[str]:
-    lines = hit.passage.text.split("\n")
-    body = lines[1:] if hit.passage.heading_path else lines
+def _excerpt(match: PassageMatch) -> list[str]:
+    p = match.passage
+    lines = p.text.split("\n")
+    body = lines[1:] if p.heading_path else lines
     out: list[str] = []
     for line in body:
         if line.strip() == "":
             continue
-        out.append("   | " + (line if len(line) <= 160 else line[:159] + "…"))
+        out.append("      | " + (line if len(line) <= 160 else line[:159] + "…"))
         if len(out) == 3:
             break
     return out
 
 
-def _format_hit(hit: Hit) -> str:
-    p = hit.passage
-    heading = " > ".join(p.heading_path) if p.heading_path else "(top of file)"
-    head = [
-        f"{hit.rank}. {p.path}  lines {p.line_start}-{p.line_end}",
-        f"   Heading: {heading}",
-        f"   {hit.url}",
-    ]
-    return "\n".join(head + _excerpt(hit))
+def _format_file(hit: FileHit) -> str:
+    parts = [f"{hit.rank}. {hit.path}  (score {hit.score:.4f})", f"   {hit.url}"]
+    for letter, match in zip("abcdefghij", hit.passages, strict=False):
+        p = match.passage
+        heading = " > ".join(p.heading_path) if p.heading_path else "(top of file)"
+        parts.append(f"   {letter}. lines {p.line_start}-{p.line_end}  Heading: {heading}")
+        parts.append(f"      {match.url}")
+        parts.extend(_excerpt(match))
+    return "\n".join(parts)
 
 
 def format_result(result: RetrievalResult, index: Index) -> str:
-    docs = f"Docs: {index.repo} @ {index.commit}"
-    if not result.confident:
-        reason: str = result.reason
-        if result.reason == "below-threshold":
-            reason += (
-                f" (best similarity {result.confidence:.3f}, threshold {result.threshold:.3f})"
-            )
-        return f"no confident match\n{docs}\nReason: {reason}"
     parts = [
         f"Sources for: {result.question}",
-        docs,
+        f"Docs: {index.repo} @ {index.commit}",
+        f"Ranking: {result.ranking_mode}  no text generated",
         (
-            f"Confidence: {result.confidence:.3f} (threshold {result.threshold:.3f})  "
-            f"ranking: {result.ranking_mode}  no text generated"
+            f"Top score: {result.top_score:.3f} (best passage similarity; ingest reference "
+            f"{result.reference:.3f}, reported only: retrieval does not decide whether the docs answer)"
         ),
-        f"Lexical corroboration (reported, not gated): {result.corroboration:.2f}",
         "",
     ]
-    parts.extend(_format_hit(h) for h in result.hits)
+    parts.extend(_format_file(f) for f in result.files)
     parts.append("")
     parts.append("These are sources, not an answer.")
     return "\n".join(parts)
@@ -75,7 +68,7 @@ def _parser() -> argparse.ArgumentParser:
     ing = sub.add_parser("ingest", help="fetch the pinned docs and model, and build the index")
     ing.add_argument("--config", default=DEFAULT_CONFIG)
     ing.add_argument("--out", default=DEFAULT_INDEX)
-    ret = sub.add_parser("retrieve", help="find passages for a question")
+    ret = sub.add_parser("retrieve", help="find the docs files for a question")
     ret.add_argument("--index", default=DEFAULT_INDEX)
     ret.add_argument("question", nargs="+")
     ev = sub.add_parser("eval", help="score retrieval against an eval set")
@@ -112,8 +105,9 @@ def _dispatch(args: argparse.Namespace, embedder: Embedder | None, models_dir: P
         )
         offtopic = "none" if report.tau_offtopic is None else f"{report.tau_offtopic:.6f}"
         print(
-            f"confidence threshold: {report.threshold:.6f} (dense-null-v3: "
-            f"tau_salad {report.tau_salad:.6f}, tau_offtopic {offtopic}; seed 20260926)"
+            f"reference similarity: {report.threshold:.6f} (dense-null-v3: "
+            f"tau_salad {report.tau_salad:.6f}, tau_offtopic {offtopic}; seed 20260926; "
+            f"diagnostic, retrieval does not abstain)"
         )
         print(f"model files: {report.model_status} (sha256 verified before use)")
         print(f"wrote {args.out}  sha256 {report.sha256}")

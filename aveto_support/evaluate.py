@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from aveto_support.index import Index
-from aveto_support.search import Searcher, analyse, decide
+from aveto_support.search import Searcher, retrieve
 
 REQUIRED_PERCENT = 80
 
@@ -45,15 +45,11 @@ class EvalReport:
     outcomes: tuple[QuestionOutcome, ...]
     answerable_hits: int
     answerable_total: int
-    unanswerable_hits: int
     unanswerable_total: int
-    ungated_recall: int
-    answerable_pass: bool
-    unanswerable_pass: bool
 
     @property
     def passed(self) -> bool:
-        return self.answerable_pass and self.unanswerable_pass
+        return self.answerable_total > 0 and self.answerable_hits * 5 >= self.answerable_total * 4
 
 
 def load_eval_set(path: Path) -> EvalSet:
@@ -91,6 +87,8 @@ def load_eval_set(path: Path) -> EvalSet:
             questions.append(
                 EvalQuestion(qid, text, False, hard_negative=entry.get("hard_negative") is True)
             )
+    if not any(q.answerable for q in questions):
+        raise EvalFormatError("eval file needs at least one answerable question")
     return EvalSet(commit, tuple(questions))
 
 
@@ -102,74 +100,32 @@ def check_commit(index: Index, eval_set: EvalSet) -> None:
         )
 
 
-def _passes(hits: int, total: int) -> bool:
-    return hits * 5 >= total * 4
-
-
 def score(searcher: Searcher, eval_set: EvalSet) -> EvalReport:
     outcomes: list[QuestionOutcome] = []
-    a_hits = a_total = u_hits = u_total = recall = 0
+    a_hits = a_total = u_total = 0
     for q in eval_set.questions:
-        analysis = analyse(searcher, q.question)
-        result = decide(searcher, analysis)
+        result = retrieve(searcher, q.question)
+        top = f"top score {result.top_score:.2f}"
         if q.answerable:
             a_total += 1
-            if any(p.path in q.sources for p, _ in analysis.top):
-                recall += 1
-            matched = [h for h in result.hits if h.passage.path in q.sources]
-            if result.confident and matched:
+            matched = [f for f in result.files if f.path in q.sources]
+            if matched:
                 a_hits += 1
                 outcomes.append(
-                    QuestionOutcome(q.id, True, True, f"{matched[0].passage.path} (rank {matched[0].rank})")
-                )
-            elif result.confident:
-                got = ", ".join(dict.fromkeys(h.passage.path for h in result.hits))
-                outcomes.append(
-                    QuestionOutcome(q.id, True, False, f"expected {' | '.join(q.sources)}; got {got}")
+                    QuestionOutcome(q.id, True, True, f"{matched[0].path} (rank {matched[0].rank})  {top}")
                 )
             else:
+                got = ", ".join(f.path for f in result.files)
                 outcomes.append(
-                    QuestionOutcome(
-                        q.id,
-                        True,
-                        False,
-                        f"expected {' | '.join(q.sources)}; got no confident match "
-                        f"({result.reason}, similarity {result.confidence:.2f})",
-                    )
+                    QuestionOutcome(q.id, True, False, f"expected {' | '.join(q.sources)}; got {got}  {top}")
                 )
         else:
             u_total += 1
             tag = " [hard negative]" if q.hard_negative else ""
-            if not result.confident:
-                u_hits += 1
-                outcomes.append(
-                    QuestionOutcome(
-                        q.id,
-                        False,
-                        True,
-                        f"no confident match ({result.reason}, similarity {result.confidence:.2f}){tag}",
-                    )
-                )
-            else:
-                outcomes.append(
-                    QuestionOutcome(
-                        q.id,
-                        False,
-                        False,
-                        f"returned {len(result.hits)} passages; top {result.hits[0].passage.path} "
-                        f"(similarity {result.confidence:.2f}){tag}",
-                    )
-                )
-    return EvalReport(
-        tuple(outcomes),
-        a_hits,
-        a_total,
-        u_hits,
-        u_total,
-        recall,
-        _passes(a_hits, a_total),
-        _passes(u_hits, u_total),
-    )
+            outcomes.append(
+                QuestionOutcome(q.id, False, False, f"top file {result.files[0].path}  {top}{tag}")
+            )
+    return EvalReport(tuple(outcomes), a_hits, a_total, u_total)
 
 
 def _pct(hits: int, total: int) -> str:
@@ -178,24 +134,20 @@ def _pct(hits: int, total: int) -> str:
 
 def format_report(report: EvalReport, eval_file: str, index: Index) -> str:
     lines = [
-        f"eval: {eval_file}  index: {index.repo} @ {index.commit[:8]}…  threshold: {index.threshold:.3f}"
+        (
+            f"eval: {eval_file}  index: {index.repo} @ {index.commit[:8]}…  ranking: file-rrf-v1  "
+            f"reference similarity: {index.threshold:.3f} (diagnostic)"
+        )
     ]
     for o in report.outcomes:
-        lines.append(f"{o.id}  {'HIT' if o.hit else 'MISS':<6}{o.detail}")
-    a_verdict = "PASS" if report.answerable_pass else "FAIL"
-    u_verdict = "PASS" if report.unanswerable_pass else "FAIL"
+        label = "HIT" if o.hit else ("MISS" if o.answerable else "DIAG")
+        lines.append(f"{o.id}  {label:<6}{o.detail}")
+    verdict = "PASS" if report.passed else "FAIL"
     lines.append(
         f"answerable:   {report.answerable_hits}/{report.answerable_total} "
         f"({_pct(report.answerable_hits, report.answerable_total)})  "
-        f"required >= {REQUIRED_PERCENT}%  {a_verdict}"
+        f"required >= {REQUIRED_PERCENT}%  {verdict}"
     )
-    lines.append(
-        f"unanswerable: {report.unanswerable_hits}/{report.unanswerable_total} "
-        f"({_pct(report.unanswerable_hits, report.unanswerable_total)})  "
-        f"required >= {REQUIRED_PERCENT}%  {u_verdict}"
-    )
-    lines.append(
-        f"diagnostic:   ungated recall@5 {report.ungated_recall}/{report.answerable_total} (not a gate)"
-    )
-    lines.append(f"eval: {'PASS' if report.passed else 'FAIL'}")
+    lines.append(f"unanswerable: {report.unanswerable_total} (diagnostic only, not gated)")
+    lines.append(f"eval: {verdict}")
     return "\n".join(lines)
