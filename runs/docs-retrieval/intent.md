@@ -5,8 +5,7 @@
 > confirmed as written. Pass this file to `/agentic-slice intent.md` from a
 > session started in this repo.
 >
-> **Amended and confirmed by the owner, 2026-09-29** (one open question below
-> is still open). Eval run 1
+> **Amended and confirmed by the owner, 2026-09-29.** Eval run 1
 > (`runs/docs-retrieval/eval-run-1.txt`) showed keyword retrieval puts a correct
 > source in the top 5 for 14 of 24 questions phrased the way users ask; the bar
 > is 80%. Two changes follow. One small **local embedding model** is allowed —
@@ -135,12 +134,11 @@ Research, Discovery or UX Research. QA, Security and the Release Gate still run.
 
 ## Open questions
 
-- **Does changing INV-5 (network egress) tick "Changes a safety control"?**
-  Claude's view: no — the invariant was created in this slice, no user
-  depends on it yet, and the change still needs rule 4 approval. Ticking it
-  would take the slice off the short path. The owner decides before
-  confirming this amendment.
+None. The amendment's one question — does changing INV-5 (network egress)
+tick "Changes a safety control"? — was answered by the owner on 2026-09-29,
+verbatim: "Don't tick it; stay on the short path". The change itself was
+approved under rule 4 (`runs/docs-retrieval/APPROVAL_RECORD-4.md`).
 
-Previously: none. The one question this intent had — who writes
+Before the amendment: none. The one question this intent had — who writes
 `.agentic/PROJECT_CONTEXT.md` on a greenfield short path — was resolved by the
 owner writing it directly and committing it alongside this file.

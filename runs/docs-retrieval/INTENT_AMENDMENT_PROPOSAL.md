@@ -55,3 +55,12 @@ changing INV-5 ticks "Changes a safety control". The owner answered it in the dr
 session (verbatim "Don't tick it; stay on the short path", recorded in STATE.md and the
 "To finalise" section above), so the slice proceeds on the short path. The text in the
 intent is stale relative to that answer; tidying it is the owner's, not blocking.
+
+## Open question closed on main — 2026-09-29T07:27:51Z
+
+`04ba5fb` (Gopal Patwa, 2026-09-29 00:27 -0700) replaced the intent's open-question
+paragraph with the owner's verbatim answer ("Don't tick it; stay on the short path") and
+a pointer to `APPROVAL_RECORD-4.md`, and dropped "one open question is still open" from
+the banner. Only the header line and the Open questions section changed. Verified on
+`main` by the Orchestrator; merged; `runs/docs-retrieval/intent.md` re-copied unchanged.
+The intent now has no open question, so the "stale text" note above no longer applies.
