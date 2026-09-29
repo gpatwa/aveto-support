@@ -13,6 +13,11 @@ the originating conversation.
 - Never advance `Current stage` past a stage whose gate hasn't passed.
 - Never advance past an open approval (see `APPROVAL_PROTOCOL.md`).
 - Artefacts are referenced by path, never inlined.
+- `Status` is exactly one of the four template values, and the Budget block's
+  `Budget`, `Spent` and `Next stage` lines keep their template format. The
+  pre-spawn budget hook parses them; anything else — a reason, a split's
+  per-slice figures — goes in a note beneath. A slice it cannot parse is
+  checked by no one, and the hook can only say so.
 - Alongside `STATE.md`, emit `runs/<slice-id>/trace.json` — machine-readable
   telemetry mirroring the Trace table (see "Machine-readable trace").
 
@@ -78,13 +83,23 @@ One row per stage attempt — this is the pipeline's telemetry. Fill Tokens /
 Tool calls from the harness's usage stats where available; wall-clock
 always. Totals row = the slice's run cost. Feeds `PIPELINE_SLOS.md`.
 
+**Model comes from the harness log, never from memory.** After each stage,
+run `node <playbook>/execution/usage.mjs <product-repo> --slice <id>` and copy
+that spawn's `model` — what the harness logged for every request it made. A
+Trace filled from recall has recorded an Opus stage as Sonnet. If the log
+cannot be read, write the model the agent's frontmatter (or your spawn
+override) set, followed by `(declared)`. Every spawn the report lists gets a
+row, including ones you consider minor.
+
 | Stage | Model | Effort | Start (UTC) | End (UTC) | Wall | Tokens | Tool calls | Retry # |
 |-------|-------|--------|-------------|-----------|------|--------|------------|---------|
 | <stage> | <model> | <effort> | <ts> | <ts> | <m:ss> | <n> | <n> | 0 |
 | **Total** | | | | | | <Σ> | <Σ> | |
 
 Record the effort the stage **actually ran at**, not the frontmatter
-default — tier and failure escalation both move it (`MODEL_ROUTING.md`).
+default — tier and failure escalation both move it (`MODEL_ROUTING.md`). The
+harness log does not record effort, so this column is always declared: the
+frontmatter value, or the override you passed at spawn.
 Without this column a routing change cannot be evaluated after the fact.
 
 ## Next action

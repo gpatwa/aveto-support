@@ -13,6 +13,15 @@ Do this:
 
 1. Read `.agentic/` (PROJECT_CONTEXT, SAFETY_INVARIANTS, LOCAL_COMMANDS,
    CURRENT_MVP_STATUS) and pick the project pack.
+   **Resolve the playbook path first.** It is recorded relative to the repo's
+   *main* checkout. In a git worktree (e.g. under `.claude/worktrees/`) that
+   relative path points nowhere; resolve it against the main checkout — the
+   directory containing `git rev-parse --path-format=absolute
+   --git-common-dir` — and hand every role the absolute path. If it resolves
+   neither way, stop and tell the human: the gates and approval rules live
+   there, and a run without them is ungoverned. Also check the
+   worktree's branch is not behind `main` before planning — a stale branch
+   plans without files the owner has already committed.
 2. Choose a short `slice-id` (kebab-case). Create `runs/<slice-id>/` and a
    `STATE.md` following `.claude/protocols/SLICE_STATE.md`.
 3. **Capture the intent** in `runs/<slice-id>/intent.md`, following the
@@ -45,7 +54,9 @@ Do this:
    subagents in `.claude/agents/` (Engineering Manager → Product Manager →
    … → Release Manager → Post-Launch). Each agent reads its input artefact
    from `runs/<slice-id>/`, writes its output there, and updates `STATE.md`.
-   Every agent may read `intent.md`; the Architect and QA must.
+   Every agent may read `intent.md`; the Architect and QA must. After each
+   stage, fill its Trace row's Model from `usage.mjs` (the harness log), not
+   from memory — see `SLICE_STATE.md` "Trace".
 8. Enforce gates (`RELEASE_GATES.md`) between stages. On a failure, follow
    `.claude/protocols/FAILURE_LOOP.md` (bounded retries, then escalate).
    **Gates never compress**, however short the path to them was.
