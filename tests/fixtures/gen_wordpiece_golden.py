@@ -30,7 +30,7 @@ import json
 import sys
 from pathlib import Path
 
-import tokenizers
+import tokenizers  # type: ignore[import-not-found]  # one-off dev tool; deliberately not a project dependency
 from tokenizers import BertWordPieceTokenizer
 
 EXPECTED_TOKENIZERS = "0.22.2"
@@ -43,7 +43,7 @@ TEXTS = [
     "Café naïve résumé Ångström",
     "日本語のテキストと中文",
     "don't stop-believing: e.g. 3.14 (v2) [x] {y} <z>",
-    "tab\there\nnewline\u0007bell​zero-width",
+    "tab\there\nnewline\u0007bell\u200bzero-width",
     "unaffable electroencephalography antidisestablishmentarianism",
     "🙂 ☃ ∑ emoji and symbols",
     "## Install `install.mjs` → run /agentic-slice --help",
