@@ -70,5 +70,11 @@
   ],
   "escalations": [
     "runs/docs-retrieval-2-proof/ESCALATION-1.md"
-  ]
+  ],
+  "escalation1Resolution": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-30T01:32:07Z",
+    "verbatim": "A.",
+    "outcome": "stop; nothing ships; close-out only"
+  }
 }

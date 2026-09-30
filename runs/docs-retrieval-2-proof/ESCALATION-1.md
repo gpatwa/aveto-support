@@ -30,3 +30,12 @@ The third set was drafted by Claude in the playbook session, reviewed and commit
 - **A. Stop here and record the finding (recommended).** Nothing ships; Security Review and the Release Gate do not run; the close-out records the result and carries forward the hypothesis. The intent's Decision 3 already names the next question: a **reranker** (a cross-encoder that re-orders the top candidates), which is a new model, dependency and download (approval rules 5 and possibly 4), its own slice, and a **fourth fresh held-out set**, since this one is now seen.
 - **B. Spend a retry on another method change within the existing approvals** (no new model). It would need a fourth fresh set, a new design choice made after seeing these misses (so not held out from the designer), and about 360k for Architecture, Implementation and QA before Security, the Release Gate and the close-out (another about 300k). Slice B's budget is 430k with 27k spent, so this needs the owner to set a larger budget. Expected value is low: the intent already judged that further gains need a stronger component.
 - **C. Change the bar** (for example to accept about 69%). That weakens a gate after seeing the result: approval rule 4, the owner's decision only, and exactly the reactive change the intent avoided. Not recommended.
+
+## Resolution — 2026-09-30T01:32:07Z
+
+Prompted with options A, B and C (see above), the owner (Gopal Patwa) answered, verbatim: **"A."** Read as option A as presented: **stop here and record the finding.**
+
+- Nothing ships. Security Review and the Release Gate do not run (a failed gate sends the slice back, never forward).
+- The Post-Launch close-out runs (smoke; it was in the plan either way) and records the result, the caveats, and the carry-forward.
+- No retry is spent (0 of 2 used). The next question, per the intent's Decision 3, is a reranker: its own slice, with its own rule 5 (and possibly rule 4) approvals and a fourth fresh held-out set. **None of that is started or approved by this answer.**
+- `docs-retrieval-ci` stays unstarted (blocked on a passing gate).

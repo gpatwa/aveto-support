@@ -3,12 +3,12 @@
 - **Ask:** Score the frozen file-level retrieval method once on the owner's third held-out set (slice B of docs-retrieval-2)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** QA Evidence — held-out gate failed; escalated (ESCALATION-1.md)
-- **Status:** blocked-on-failure
+- **Current stage:** Post-Launch close-out (gate failed; owner chose option A)
+- **Status:** in-progress
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 6be205c
-- **Started:** 2026-09-29T20:58:53Z  ·  **Updated:** 2026-09-29T21:01:51Z
+- **Started:** 2026-09-29T20:58:53Z  ·  **Updated:** 2026-09-30T01:32:07Z
 
 ## Stages
 
@@ -19,7 +19,7 @@
 | QA Evidence | qa-evidence | done: GATE FAILED (11/16, bar 13) | runs/docs-retrieval-2-proof/01-qa-result.md | gate: >= 13 of 16 answerable, third set, once: FAIL |
 | Security Review | security-privacy | not run — gate failed | — | — |
 | Release Gate | release-manager | not run — gate failed | — | — |
-| Post-Launch | post-launch-learning | pending (smoke) | — | — |
+| Post-Launch | post-launch-learning | in-progress (smoke) | — | — |
 
 ## Approvals
 
@@ -35,7 +35,7 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 430k tokens  ·  **Depth:** standard
 - **Spent:** 27k (6%)  ·  **Remaining:** 403k
-- **Next stage:** Security Review (security-privacy, review) est. 100k → **STOP-AND-ASK** — held-out gate failed (11 of 16, need 13); a failed gate sends the slice back, never forward; see ESCALATION-1.md
+- **Next stage:** Post-Launch close-out (post-launch-learning, review, smoke) est. 100k → **PROCEED** (27k + 100k = 127k ≤ 430k)
 
 Slice B's own budget from Scope Review (slice A 460k + slice B 430k = the owner-confirmed 890k), with no separate headroom: an overrun is a stop-and-ask. Budget units are peak context per spawn; processed tokens are typically 10–50× larger. Prefer one fresh spawn per stage.
 
@@ -61,4 +61,4 @@ Model comes from `usage.mjs` (the harness log) after each stage; effort is the d
 
 ## Next action
 
-Owner decides (ESCALATION-1.md): A) stop and record the finding, the next question being a reranker as its own slice with a fourth fresh held-out set (recommended); B) spend a retry (needs a larger budget and a fourth set); C) change the bar (rule 4, owner only, not recommended). Nothing runs until answered.
+Owner chose option A on 2026-09-30T01:32:07Z (verbatim "A."): stop, record the finding, nothing ships. post-launch-learning writes the close-out (runs/docs-retrieval-2-proof/02-close-out.md) covering slices A and B. Then reconcile trace.json with this table, regenerate analytics, and set Status done (closed, gate failed).
