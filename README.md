@@ -1,5 +1,12 @@
 # Aveto Support
 
+> **Status: retrieval has not yet passed its held-out gate.** Best so far:
+> about 70% top-5 recall on unseen questions, against an 80% bar (two
+> held-out sets, 11/16 and 12/17). Nothing here is released. The record of
+> each attempt, including what failed and why, is under
+> [`runs/docs-retrieval-2-proof/`](runs/docs-retrieval-2-proof/02-close-out.md)
+> and [`runs/docs-retrieval/`](runs/docs-retrieval/08-close-out.md).
+
 A support agent for [Aveto](https://aveto.dev) — built **by Aveto, in public**.
 
 It answers questions about Aveto from Aveto's own documentation and drafts
@@ -19,7 +26,7 @@ The plan, and the bar it has to clear, is T22 in the playbook's
 ## How it works (as designed)
 
 1. **Classify** the question — plain rules first, a model only when they can't.
-2. **Retrieve** the relevant docs — plain code.
+2. **Retrieve** the relevant docs — keyword search plus a small local embedding model; no generative model.
 3. **Draft** a grounded reply — model one.
 4. **Check** the draft against its sources — a separate, cheaper model that did
    not write it. Unsupported claims are removed or the question is escalated.
