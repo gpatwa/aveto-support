@@ -1,0 +1,109 @@
+{
+  "schema": "agentic-sdlc/trace@2",
+  "slice": "docs-retrieval-2-proof",
+  "tier": 2,
+  "overlay": false,
+  "landed": false,
+  "started": "2026-09-29T20:58:53Z",
+  "operator": "Gopal Patwa",
+  "leastPrivilegeEnforced": true,
+  "leastPrivilegeNote": "Run from a worktree of aveto-support; role subagents load from this repo's .claude/agents/ with their tools frontmatter and write-scope hooks.",
+  "telemetrySource": "self-reported",
+  "approvals": [
+    {
+      "action": "drop the unanswerable half of the gate (slice A)",
+      "rule": "4",
+      "record": "runs/docs-retrieval-2/APPROVAL_RECORD-1.md"
+    },
+    {
+      "action": "retrieval always returns its top 5 files (slice A)",
+      "rule": "4",
+      "record": "runs/docs-retrieval-2/APPROVAL_RECORD-2.md"
+    },
+    {
+      "action": "INV-4 note edit (slice A)",
+      "rule": "4",
+      "record": "runs/docs-retrieval-2/APPROVAL_RECORD-3.md"
+    }
+  ],
+  "frozen": {
+    "methodCommit": "b3f3fc41f2382283678e638b55ff44b32876034c"
+  },
+  "heldOut3": {
+    "commit": "74c5a2d",
+    "answerable": 16,
+    "unanswerable": 4,
+    "gate": "13 of 16"
+  },
+  "stages": [
+    {
+      "stage": "QA Evidence (fresh single spawn)",
+      "role": "qa-evidence",
+      "model": "sonnet-5-5",
+      "effort": "high (declared)",
+      "tokens": 26879,
+      "toolCalls": 11,
+      "retry": 0,
+      "outcome": "held-out-3 FAIL 11/16; diagnostics 12/17 and 19/24"
+    },
+    {
+      "stage": "Post-Launch close-out attempt (resumed once to return its draft)",
+      "role": "post-launch-learning",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 39756,
+      "toolCalls": 14,
+      "retry": 0,
+      "outcome": "draft returned as text; writes denied by write-scope-guard (worktree defect); paused"
+    },
+    {
+      "stage": "Post-Launch close-out written (resumed after hook fix)",
+      "role": "post-launch-learning",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 8030,
+      "toolCalls": 5,
+      "retry": 0,
+      "outcome": "02-close-out.md written by the role via the fixed guard"
+    }
+  ],
+  "evalRuns": [
+    {
+      "n": 1,
+      "set": "held-out-3 (gate)",
+      "answerable": "11/16",
+      "gate": "FAIL",
+      "file": "runs/docs-retrieval-2-proof/eval-run-1-heldout3.txt"
+    },
+    {
+      "n": 2,
+      "set": "held-out-2 (diagnostic)",
+      "answerable": "12/17",
+      "file": "runs/docs-retrieval-2-proof/eval-run-2-heldout2-diagnostic.txt"
+    },
+    {
+      "n": 3,
+      "set": "dev (diagnostic)",
+      "answerable": "19/24",
+      "file": "runs/docs-retrieval-2-proof/eval-run-3-dev-diagnostic.txt"
+    }
+  ],
+  "escalations": [
+    "runs/docs-retrieval-2-proof/ESCALATION-1.md"
+  ],
+  "escalation1Resolution": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-30T01:32:07Z",
+    "verbatim": "A.",
+    "outcome": "stop; nothing ships; close-out only"
+  },
+  "interruptions": [
+    {
+      "stage": "Post-Launch close-out",
+      "cause": "write-scope-guard false deny in worktree",
+      "class": "infra",
+      "reportedUpstream": true
+    }
+  ],
+  "outcome": "closed: held-out gate failed (11/16); nothing shipped; Security and Release Gate did not run"
+}

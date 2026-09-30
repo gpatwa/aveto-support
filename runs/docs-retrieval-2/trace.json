@@ -1,0 +1,104 @@
+{
+  "schema": "agentic-sdlc/trace@2",
+  "slice": "docs-retrieval-2",
+  "tier": 2,
+  "overlay": false,
+  "landed": false,
+  "started": "2026-09-29T16:52:18Z",
+  "operator": "Gopal Patwa",
+  "leastPrivilegeEnforced": true,
+  "leastPrivilegeNote": "Run from a worktree of aveto-support; role subagents load from this repo's .claude/agents/ with their tools frontmatter and write-scope hooks.",
+  "telemetrySource": "self-reported",
+  "approvals": [
+    {
+      "action": "drop the unanswerable half of the gate for this slice",
+      "rule": "4",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T16:54:46Z",
+      "record": "runs/docs-retrieval-2/APPROVAL_RECORD-1.md"
+    },
+    {
+      "action": "retrieval stops abstaining; always returns top 5 files",
+      "rule": "4",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T16:54:46Z",
+      "record": "runs/docs-retrieval-2/APPROVAL_RECORD-2.md"
+    },
+    {
+      "action": "INV-4 Enforced-by note: remove retired test name",
+      "rule": "4",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T17:49:13Z",
+      "record": "runs/docs-retrieval-2/APPROVAL_RECORD-3.md"
+    }
+  ],
+  "stages": [
+    {
+      "stage": "Scope Review",
+      "role": "engineering-manager",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 51899,
+      "toolCalls": 21,
+      "retry": 0,
+      "outcome": "split at the freeze: A docs-retrieval-2 (460k), B docs-retrieval-2-proof (430k)"
+    },
+    {
+      "stage": "Architecture (fresh single spawn)",
+      "role": "software-architect",
+      "model": "opus-5-5",
+      "effort": "high (declared)",
+      "tokens": 122905,
+      "toolCalls": 49,
+      "retry": 0,
+      "outcome": "02-tech-spec.md; ADR 0004; file-rrf-v1 pre-registered"
+    },
+    {
+      "stage": "Implementation",
+      "role": "backend-architect",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 116263,
+      "toolCalls": 34,
+      "retry": 0,
+      "outcome": "built; 122 tests pass; 11 files; no eval run"
+    },
+    {
+      "stage": "Doc fix C1 (PROJECT_CONTEXT Stage paragraph)",
+      "role": "product-manager",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 15429,
+      "toolCalls": 6,
+      "retry": 0,
+      "outcome": "stale Stage paragraph fixed; 2 other stale lines flagged, not changed"
+    },
+    {
+      "stage": "Architecture: INV-4 note edit (resumed)",
+      "role": "software-architect",
+      "model": "opus-5-5",
+      "effort": "high (declared)",
+      "tokens": 5233,
+      "toolCalls": 8,
+      "retry": 0,
+      "outcome": "approved one-line INV-4 note edit applied"
+    }
+  ],
+  "planConfirmation": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-29T16:54:46Z",
+    "verbatim": "Confirm all, inferred lines too",
+    "stakes": "Don't tick it; stay on the short path"
+  },
+  "split": {
+    "A": "docs-retrieval-2",
+    "B": "docs-retrieval-2-proof",
+    "budgetA": 460000,
+    "budgetB": 430000
+  },
+  "frozen": {
+    "methodCommit": "b3f3fc41f2382283678e638b55ff44b32876034c",
+    "when": "2026-09-29T17:18:23Z"
+  },
+  "outcome": "closed at the freeze (method b3f3fc4); scored in slice docs-retrieval-2-proof: gate failed"
+}

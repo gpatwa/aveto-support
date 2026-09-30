@@ -7,3 +7,10 @@ node_modules/
 .azure/*/.env
 .claude/worktrees/
 .claude/settings.local.json
+index/
+.venv/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+models/

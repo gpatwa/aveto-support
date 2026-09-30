@@ -1,0 +1,29 @@
+eval: evals/retrieval-heldout.toml  index: gpatwa/agentic-sdlc-playbook @ 3a83b669…  threshold: 0.702
+h01  MISS  expected execution/pack/protocols/SLICE_STATE.md; got docs/BACKLOG.md, execution/pack/protocols/RUN_ECONOMICS.md, docs/ARCHITECTURE.md, docs/GETTING_STARTED.md
+h02  MISS  expected execution/pack/protocols/HANDOFF_CHECK.md | templates/AGENT_HANDOFF_TEMPLATE.md; got docs/GETTING_STARTED.md, docs/ARCHITECTURE.md, docs/AGENT_ROLES.md, agents/analytics-engineer.md
+h03  MISS  expected agents/finops.md; got no confident match (below-threshold, similarity 0.66)
+h04  HIT   examples/README.md (rank 1)
+h05  MISS  expected execution/pack/commands/agentic-status.md; got no confident match (below-threshold, similarity 0.68)
+h06  MISS  expected templates/INCIDENT_REVIEW_TEMPLATE.md; got no confident match (below-threshold, similarity 0.65)
+h07  HIT   skills/tdd-fail-first/SKILL.md (rank 1)
+h08  MISS  expected project-packs/browser-automation-product.md; got no confident match (below-threshold, similarity 0.65)
+h09  MISS  expected execution/pack/protocols/APPROVAL_PROTOCOL.md; got no confident match (below-threshold, similarity 0.69)
+h10  HIT   agents/production-verification.md (rank 3)
+h11  MISS  expected agents/data-governance.md; got no confident match (below-threshold, similarity 0.66)
+h12  MISS  expected templates/EXPERIMENT_SPEC_TEMPLATE.md | agents/data-analyst.md; got no confident match (below-threshold, similarity 0.64)
+h13  MISS  expected execution/pack/protocols/PIPELINE_SLOS.md; got no confident match (below-threshold, similarity 0.68)
+h14  MISS  expected agents/engineering-manager.md; got no confident match (below-threshold, similarity 0.67)
+h15  HIT   templates/DOC_DELTA_TEMPLATE.md (rank 3)
+h16  HIT   templates/THREAT_MODEL_TEMPLATE.md (rank 1)
+h17  MISS  expected agents/frontend-developer.md; got no confident match (below-threshold, similarity 0.62)
+hu01  MISS  returned 5 passages; top execution/pack/AGENTS.md (similarity 0.70)
+hu02  HIT   no confident match (below-threshold, similarity 0.60)
+hu03  HIT   no confident match (below-threshold, similarity 0.65)
+hu04  HIT   no confident match (below-threshold, similarity 0.63)
+hu05  HIT   no confident match (below-threshold, similarity 0.68)
+hu06  HIT   no confident match (below-threshold, similarity 0.65)
+answerable:   5/17 (29.4%)  required >= 80%  FAIL
+unanswerable: 5/6 (83.3%)  required >= 80%  PASS
+diagnostic:   ungated recall@5 8/17 (not a gate)
+eval: FAIL
+exit code: 1

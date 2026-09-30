@@ -1,0 +1,25 @@
+eval: evals/retrieval-heldout-3.toml  index: gpatwa/agentic-sdlc-playbook @ 3a83b669…  ranking: file-rrf-v1  reference similarity: 0.702 (diagnostic)
+t01  HIT   agents/release-manager.md (rank 1)  top score 0.62
+t02  HIT   templates/MIGRATION_PLAN_TEMPLATE.md (rank 1)  top score 0.65
+t03  HIT   templates/MODEL_CARD_TEMPLATE.md (rank 2)  top score 0.73
+t04  MISS  expected templates/VENDOR_RISK_TEMPLATE.md; got agents/production-verification.md, agents/qa-evidence.md, agents/sre.md, docs/GETTING_STARTED.md, agents/on-call-engineer.md  top score 0.65
+t05  HIT   templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md (rank 1)  top score 0.66
+t06  MISS  expected agents/ux-researcher.md; got agents/tech-writer.md, agents/customer-support.md, project-packs/b2c-saas.md, docs/AGENTIC_SDLC.md, agents/product-manager.md  top score 0.69
+t07  HIT   templates/CUSTOMER_ISSUE_RESOLUTION_TEMPLATE.md (rank 1)  top score 0.74
+t08  HIT   execution/pack/protocols/RUN_INVENTORY.md (rank 1)  top score 0.74
+t09  HIT   execution/pack/protocols/TELEMETRY.md (rank 1)  top score 0.74
+t10  HIT   docs/DEPLOYMENT.md (rank 1)  top score 0.74
+t11  HIT   project-packs/b2c-saas.md (rank 3)  top score 0.64
+t12  MISS  expected agents/ai-governance.md | templates/AI_RISK_ASSESSMENT_TEMPLATE.md; got agents/ml-engineer.md, agents/finops.md, agents/ai-engineer.md, agents/engineering-manager.md, project-packs/ai-agent-product.md  top score 0.74
+t13  MISS  expected templates/CHANGE_REQUEST_TEMPLATE.md; got agents/release-manager.md, prompts/security-review.md, docs/HUMAN_APPROVAL_RULES.md, agents/compliance-reviewer.md, agents/tech-writer.md  top score 0.69
+t14  HIT   agents/ml-engineer.md (rank 2)  top score 0.72
+t15  MISS  expected execution/SECURITY.md; got execution/pack/AGENTS.md, docs/DEPLOYMENT.md, templates/THREAT_MODEL_TEMPLATE.md, README.md, execution/pack/commands/agentic-slice.md  top score 0.67
+t16  HIT   docs/OPERATING_MODEL.md (rank 1)  top score 0.80
+tu01  DIAG  top file docs/HUMAN_APPROVAL_RULES.md  top score 0.70
+tu02  DIAG  top file docs/VALIDATION_MATRIX.md  top score 0.59
+tu03  DIAG  top file docs/DEPLOYMENT.md  top score 0.81
+tu04  DIAG  top file docs/DEPLOYMENT.md  top score 0.67
+answerable:   11/16 (68.8%)  required >= 80%  FAIL
+unanswerable: 4 (diagnostic only, not gated)
+eval: FAIL
+exit code: 1

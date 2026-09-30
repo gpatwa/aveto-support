@@ -1,0 +1,250 @@
+# Off-topic calibration questions for embed-v3 abstention (slice docs-retrieval).
+#
+# Written by QA, not by the Architect or the engineer who builds retrieval.
+# Frozen by the Orchestrator (sha256 recorded in STATE.md); nobody who builds
+# retrieval reads this file. It is not an eval set: nothing is scored against
+# it. The dense-rank-1 similarity of each question is used to set tau_offtopic.
+#
+# Every question is a fluent question a developer-tool user might plausibly ask
+# that the configured docs (gpatwa/agentic-sdlc-playbook at the pinned commit)
+# do NOT answer. Several are hard negatives that share vocabulary with the docs
+# in an unrelated sense (Terraform, latency, registry, keyboard, changelog,
+# certificate, wildcard, benchmark, memory, rate limit).
+
+pinned_commit = "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+
+[[question]]
+id = "o01"
+question = "How do I import my existing Jira tickets?"
+
+[[question]]
+id = "o02"
+question = "Can I host my app on Heroku instead?"
+
+[[question]]
+id = "o03"
+question = "Is there an official Docker image I can pull?"
+
+[[question]]
+id = "o04"
+question = "How do I get it working behind my company's HTTP proxy?"
+
+[[question]]
+id = "o05"
+question = "How do I export the results as a PDF?"
+
+[[question]]
+id = "o06"
+question = "Can I schedule it to run every night with cron?"
+
+[[question]]
+id = "o07"
+question = "Which Node.js version do I need?"
+
+[[question]]
+id = "o08"
+question = "How do I connect it to my Postgres database?"
+
+[[question]]
+id = "o09"
+question = "What does an HTTP 429 error mean and how do I stop getting it?"
+
+[[question]]
+id = "o10"
+question = "Is there a Discord server or community forum where I can ask for help?"
+
+[[question]]
+id = "o11"
+question = "Where do I report a bug I found in the tool?"
+
+[[question]]
+id = "o12"
+question = "How do I make a monorepo build faster with caching?"
+
+[[question]]
+id = "o13"
+question = "Can it send errors to Sentry?"
+
+[[question]]
+id = "o14"
+question = "Can I hook it into Jenkins?"
+
+[[question]]
+id = "o15"
+question = "Does it import designs from Figma?"
+
+[[question]]
+id = "o16"
+question = "Should I pick Pulumi or Terraform for a small startup?"
+
+[[question]]
+id = "o17"
+question = "What is the easiest way to run Kubernetes locally on a laptop?"
+
+[[question]]
+id = "o18"
+question = "Can I point it at a locally hosted Llama model through Ollama?"
+
+[[question]]
+id = "o19"
+question = "Is there an uptime guarantee for the hosted service?"
+
+[[question]]
+id = "o20"
+question = "Is there a public HTTP API I can use to feed my own dashboards?"
+
+[[question]]
+id = "o21"
+question = "How do I stop ESLint from checking my build folder?"
+
+[[question]]
+id = "o22"
+question = "How do I mock a function in Jest?"
+
+[[question]]
+id = "o23"
+question = "Can I switch the interface to dark mode?"
+
+[[question]]
+id = "o24"
+question = "How do I change the interface language to Spanish?"
+
+[[question]]
+id = "o25"
+question = "Can it translate my documentation into Japanese?"
+
+[[question]]
+id = "o26"
+question = "How do I resolve a merge conflict in git?"
+
+[[question]]
+id = "o27"
+question = "How do I undo a git commit I already pushed?"
+
+[[question]]
+id = "o28"
+question = "What is the easiest way to deploy a static site on Netlify or Vercel?"
+
+[[question]]
+id = "o29"
+question = "How do I add Google login to my web app using OAuth?"
+
+[[question]]
+id = "o30"
+question = "Who founded the company behind this project?"
+
+[[question]]
+id = "o31"
+question = "Is there a changelog page with release notes for each version?"
+
+[[question]]
+id = "o32"
+question = "How do I write a GraphQL resolver in Node?"
+
+[[question]]
+id = "o33"
+question = "How do I find a memory leak in a Go service?"
+
+[[question]]
+id = "o34"
+question = "How do I turn on syntax highlighting for code blocks in my blog?"
+
+[[question]]
+id = "o35"
+question = "Why is my Python virtual environment not activating?"
+
+[[question]]
+id = "o36"
+question = "Can I use it inside a Jupyter notebook?"
+
+[[question]]
+id = "o37"
+question = "How do I make Excel save a CSV file with UTF-8 encoding?"
+
+[[question]]
+id = "o38"
+question = "What is a sensible naming convention for git branches?"
+
+[[question]]
+id = "o39"
+question = "How do I set up a custom domain and an HTTPS certificate for my app?"
+
+[[question]]
+id = "o40"
+question = "What is the maximum file size I can upload?"
+
+[[question]]
+id = "o41"
+question = "What keyboard shortcuts does the terminal interface have?"
+
+[[question]]
+id = "o42"
+question = "Does it work with Rust and the cargo build tool?"
+
+[[question]]
+id = "o43"
+question = "How do I write a Dockerfile for a Django app?"
+
+[[question]]
+id = "o44"
+question = "Is Claude or ChatGPT better at writing SQL queries?"
+
+[[question]]
+id = "o45"
+question = "How do I add rate limiting to an Express server?"
+
+[[question]]
+id = "o46"
+question = "How do I read a large CSV file in pandas without running out of memory?"
+
+[[question]]
+id = "o47"
+question = "What is the cheapest way to host a small side project?"
+
+[[question]]
+id = "o48"
+question = "How do I benchmark two web frameworks fairly?"
+
+[[question]]
+id = "o49"
+question = "Which cloud provider has the lowest latency in Southeast Asia?"
+
+[[question]]
+id = "o50"
+question = "What is the difference between a container registry and a package registry?"
+
+[[question]]
+id = "o51"
+question = "How do I set up a wildcard DNS record for my subdomains?"
+
+[[question]]
+id = "o52"
+question = "How do I speed up npm install on my build server?"
+
+[[question]]
+id = "o53"
+question = "Why does my Python script say ModuleNotFoundError even though I installed the package?"
+
+[[question]]
+id = "o54"
+question = "Why does my CSS grid overflow on small screens?"
+
+[[question]]
+id = "o55"
+question = "How do I generate a QR code in JavaScript?"
+
+[[question]]
+id = "o56"
+question = "How do I resize a batch of images with ImageMagick?"
+
+[[question]]
+id = "o57"
+question = "What is the difference between TCP and UDP?"
+
+[[question]]
+id = "o58"
+question = "Can I use emoji in commit messages without confusing my release tooling?"
+
+[[question]]
+id = "o59"
+question = "How do I read an environment variable inside a Bash script?"

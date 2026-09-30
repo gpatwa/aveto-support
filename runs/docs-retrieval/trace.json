@@ -1,0 +1,330 @@
+{
+  "schema": "agentic-sdlc/trace@2",
+  "slice": "docs-retrieval",
+  "tier": 2,
+  "overlay": false,
+  "landed": false,
+  "started": "2026-09-27T02:29:54Z",
+  "operator": "Gopal Patwa",
+  "leastPrivilegeEnforced": true,
+  "leastPrivilegeNote": "Run from a worktree of aveto-support; role subagents load from this repo's .claude/agents/ with their tools: frontmatter and write-scope hooks.",
+  "telemetrySource": "self-reported",
+  "approvals": [
+    {
+      "action": "Read-only fetch of pinned docs in ingest + CI",
+      "rule": "5",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T00:02:48Z",
+      "record": "runs/docs-retrieval/APPROVAL_RECORD-1.md"
+    },
+    {
+      "action": "model",
+      "rule": "5",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T05:28:14Z",
+      "record": "runs/docs-retrieval/APPROVAL_RECORD-2.md"
+    },
+    {
+      "action": "weights download",
+      "rule": "5",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T05:28:14Z",
+      "record": "runs/docs-retrieval/APPROVAL_RECORD-3.md"
+    },
+    {
+      "action": "INV-4/INV-5 wording",
+      "rule": "4",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T05:28:14Z",
+      "record": "runs/docs-retrieval/APPROVAL_RECORD-4.md"
+    },
+    {
+      "action": "one-off tokenizers install for golden fixture",
+      "rule": "5",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T15:26:12Z",
+      "record": "runs/docs-retrieval/APPROVAL_RECORD-5.md"
+    },
+    {
+      "action": "reference-embedding comparison (sentence-transformers + torch, model.safetensors)",
+      "rule": "5",
+      "approver": "Gopal Patwa",
+      "when": "2026-09-29T16:14:41Z",
+      "record": "runs/docs-retrieval/APPROVAL_RECORD-6.md"
+    }
+  ],
+  "stages": [
+    {
+      "stage": "Scope Review",
+      "role": "engineering-manager",
+      "model": "sonnet-5",
+      "effort": "medium",
+      "start": "2026-09-27T20:59:31Z",
+      "end": "2026-09-27T21:03:39Z",
+      "wallSeconds": 248,
+      "tokens": 55125,
+      "toolCalls": 18,
+      "retry": 0,
+      "outcome": "split proposed"
+    },
+    {
+      "stage": "Scope amendment + file-count ruling",
+      "role": "engineering-manager",
+      "model": "sonnet-5-5",
+      "effort": "medium",
+      "tokens": 33715,
+      "toolCalls": 20,
+      "retry": 0,
+      "outcome": "\u226580% bar into core; 18 files accepted"
+    },
+    {
+      "stage": "Architecture",
+      "role": "software-architect",
+      "model": "opus-5-5",
+      "effort": "high",
+      "wallSeconds": 816,
+      "tokens": 131797,
+      "toolCalls": 44,
+      "retry": 0,
+      "outcome": "tech spec, ADR 0001/0002, ARCHITECTURE.md, INV-4/5"
+    },
+    {
+      "stage": "Implementation",
+      "role": "backend-architect",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "wallSeconds": 376,
+      "tokens": 107180,
+      "toolCalls": 28,
+      "retry": 0,
+      "outcome": "built; eval run 1 FAIL 2/24 (ungated 14/24); escalated"
+    },
+    {
+      "stage": "Architecture v2 revision (retry 1)",
+      "role": "software-architect",
+      "model": "opus-5-5",
+      "effort": "high",
+      "wallSeconds": 384,
+      "tokens": 54624,
+      "toolCalls": 35,
+      "retry": 1,
+      "outcome": "lexical v2 pre-registered; predicted 17/24 ungated, ~15% pass"
+    },
+    {
+      "stage": "Architecture embed-v3 spec-only design",
+      "role": "software-architect",
+      "model": "opus-5-5",
+      "effort": "high",
+      "wallSeconds": 340,
+      "tokens": 39162,
+      "toolCalls": 14,
+      "retry": 1,
+      "outcome": "embed-v3 spec; architect recommends against; owner chose to pursue"
+    },
+    {
+      "stage": "QA off-topic calibration list",
+      "role": "qa-evidence",
+      "model": "sonnet-5-5",
+      "effort": "high (declared)",
+      "tokens": 44781,
+      "toolCalls": 15,
+      "retry": 0,
+      "outcome": "59 questions; frozen"
+    },
+    {
+      "stage": "Architecture: ADR 0003 + ARCHITECTURE.md (resumed)",
+      "role": "software-architect",
+      "model": "opus-5-5",
+      "effort": "high",
+      "tokens": 16517,
+      "toolCalls": 11,
+      "retry": 1,
+      "outcome": "ADR 0003 accepted/impl pending; ARCHITECTURE.md updated"
+    },
+    {
+      "stage": "Implementation of embed-v3 (resumed)",
+      "role": "backend-architect",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "wallSeconds": 1094,
+      "tokens": 155759,
+      "toolCalls": 41,
+      "retry": 1,
+      "outcome": "built; 118 tests pass; 1 expected fail (golden fixture); no eval run"
+    },
+    {
+      "stage": "QA golden fixture (resumed)",
+      "role": "qa-evidence",
+      "model": "sonnet-5-5",
+      "effort": "high (declared)",
+      "tokens": 15923,
+      "toolCalls": 10,
+      "retry": 0,
+      "outcome": "fixture 13 cases; golden test passes"
+    },
+    {
+      "stage": "QA held-out scoring (resumed)",
+      "role": "qa-evidence",
+      "model": "sonnet-5-5",
+      "effort": "high (declared)",
+      "tokens": 11427,
+      "toolCalls": 7,
+      "retry": 0,
+      "outcome": "held-out FAIL 5/17, 5/6; dev 10/24, 4/6"
+    },
+    {
+      "stage": "QA reference-embedding comparison (resumed)",
+      "role": "qa-evidence",
+      "model": "sonnet-5-5",
+      "effort": "high (declared)",
+      "tokens": 30234,
+      "toolCalls": 16,
+      "retry": 0,
+      "outcome": "MATCHES: float cos>=0.99999989; int8 explains top-5 differences"
+    },
+    {
+      "stage": "Architecture embed-v3 fact-fill (resumed)",
+      "role": "software-architect",
+      "model": "opus-5-5",
+      "effort": "high (declared)",
+      "tokens": 50042,
+      "toolCalls": 39,
+      "retry": 1,
+      "outcome": "embed-v3 facts verified/labelled; INV wording drafted"
+    },
+    {
+      "stage": "EM embed-v3 re-scope (resumed)",
+      "role": "engineering-manager",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 38382,
+      "toolCalls": 11,
+      "retry": 1,
+      "outcome": "split required; owner overrode"
+    },
+    {
+      "stage": "Close-out (post-launch-learning)",
+      "role": "post-launch-learning",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 69266,
+      "toolCalls": 27,
+      "retry": 0,
+      "outcome": "08-close-out.md"
+    }
+  ],
+  "evalSet": {
+    "path": "evals/retrieval.toml",
+    "commit": "a4e5275",
+    "author": "owner",
+    "answerable": 24,
+    "unanswerable": 6
+  },
+  "intentCommit": "a3803ca",
+  "planConfirmation": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-27T20:59:31Z",
+    "verbatim": "plan is approved"
+  },
+  "splitAccepted": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-29T00:02:48Z",
+    "choice": "Accept split + \u226580% in core"
+  },
+  "evalRuns": [
+    {
+      "n": 1,
+      "answerable": "2/24",
+      "unanswerable": "6/6",
+      "ungatedRecall5": "14/24",
+      "file": "runs/docs-retrieval/eval-run-1.txt"
+    },
+    {
+      "n": 2,
+      "set": "held-out",
+      "answerable": "5/17",
+      "unanswerable": "5/6",
+      "ungatedRecall5": "8/17",
+      "file": "runs/docs-retrieval/eval-run-2-heldout.txt",
+      "gate": "FAIL"
+    },
+    {
+      "n": 3,
+      "set": "dev (diagnostic)",
+      "answerable": "10/24",
+      "unanswerable": "4/6",
+      "ungatedRecall5": "17/24",
+      "file": "runs/docs-retrieval/eval-run-3-dev-diagnostic.txt"
+    }
+  ],
+  "escalations": [
+    "runs/docs-retrieval/ESCALATION-1.md",
+    "runs/docs-retrieval/ESCALATION-2.md"
+  ],
+  "retryDecision": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-29T00:41:49Z",
+    "verbatim": "A, and I'll write the fresh questions",
+    "budgetRaisedTo": "820k"
+  },
+  "heldOutDecision": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-29T01:31:40Z",
+    "verbatim": "Freeze first; held-out set is the gate (Recommended)",
+    "embeddingsAnswer": "Allow a local embedding model",
+    "embeddingsApproved": false
+  },
+  "embedV3Decision": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-29T03:46:06Z",
+    "verbatim": "Pursue embed-v3 in this slice",
+    "approvalsGranted": []
+  },
+  "budgetSet": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-29T05:28:14Z",
+    "verbatim": "Set 1,130k",
+    "tokens": 1130000
+  },
+  "corrections": [
+    {
+      "when": "2026-09-29T05:28:36Z",
+      "what": "3 software-architect stage entries corrected from sonnet/medium to opus/high (frontmatter + harness transcript); tokens unchanged"
+    }
+  ],
+  "frozenInputs": {
+    "offtopic": {
+      "path": "evals/calibration-offtopic.toml",
+      "sha256": "9045189567b083c83c02336a4f70990c8a8e3ce3e49d5917642fbad6e293627c",
+      "commit": "fa3673ad75278003516a570639a39cdc616444e2",
+      "questions": 59
+    }
+  },
+  "usageMeasured": {
+    "when": "2026-09-29T07:17:38Z",
+    "requests": 156,
+    "processedTokens": 19460000,
+    "inEquivalentTokens": 4730000,
+    "peakContextSum": 363000,
+    "cacheHit": 0.923,
+    "byRole": {
+      "software-architect": 15600000,
+      "backend-architect": 2140000,
+      "engineering-manager": 1262000,
+      "qa-evidence": 454000
+    }
+  },
+  "methodCommit": "c9b64e7bf55da02a925e5a0be8ca37a4a9dc189a",
+  "frozen": {
+    "methodCommit": "c9b64e7bf55da02a925e5a0be8ca37a4a9dc189a",
+    "fixtureCommit": "593bb35110da0b0b5ae3e10817a277f6ca01a81e",
+    "when": "2026-09-29T15:28:06Z"
+  },
+  "escalation2Resolution": {
+    "by": "Gopal Patwa",
+    "when": "2026-09-29T16:06:36Z",
+    "verbatim": "Confirm the proposal as written",
+    "outcome": "A: stop core; nothing ships"
+  },
+  "outcome": "closed: held-out gate failed (5/17 answerable); nothing shipped; Security and Release Gate did not run"
+}
