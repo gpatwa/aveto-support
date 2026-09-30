@@ -55,6 +55,16 @@
       "toolCalls": 14,
       "retry": 0,
       "outcome": "draft returned as text; writes denied by write-scope-guard (worktree defect); paused"
+    },
+    {
+      "stage": "Post-Launch close-out written (resumed after hook fix)",
+      "role": "post-launch-learning",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 8030,
+      "toolCalls": 5,
+      "retry": 0,
+      "outcome": "02-close-out.md written by the role via the fixed guard"
     }
   ],
   "evalRuns": [
@@ -94,5 +104,6 @@
       "class": "infra",
       "reportedUpstream": true
     }
-  ]
+  ],
+  "outcome": "closed: held-out gate failed (11/16); nothing shipped; Security and Release Gate did not run"
 }

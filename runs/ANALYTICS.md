@@ -1,18 +1,20 @@
 # Pipeline Analytics — generated
 
-_Generated 2026-09-29T16:21:59Z. **Do not edit by hand** — regenerate with `node <playbook>/execution/analyze.mjs .` from the repo root._
+_Generated 2026-09-30T01:37:41Z. **Do not edit by hand** — regenerate with `node <playbook>/execution/analyze.mjs .` from the repo root._
 
 ## Fleet
 
-- Runs traced: **1**
-- Stages: **15** · Tokens: **853,934** · Tool calls: **336**
-- Envelope breaches: **0/1** · Stage outliers: **1**
+- Runs traced: **3**
+- Stages: **23** · Tokens: **1,240,328** · Tool calls: **484**
+- Envelope breaches: **0/3** · Stage outliers: **1**
 
 ## Per run
 
 | Run | Tier | Stages | Tokens | Calls | Envelope | Status |
 |-----|------|--------|--------|-------|----------|--------|
 | docs-retrieval | 2 | 15 | 853,934 | 336 | 1,500,000 | ✅ pass |
+| docs-retrieval-2 | 2 | 5 | 311,729 | 118 | 500,000 | ✅ pass |
+| docs-retrieval-2-proof | 2 | 3 | 74,665 | 30 | 300,000 | ✅ pass |
 
 ## Pipeline completeness
 
@@ -25,6 +27,8 @@ this table) can say whether a given skip was earned.
 | Run | Missing (always) | Skipped (conditional) | Unrecognized stage name |
 |-----|-------------------|------------------------|--------------------------|
 | docs-retrieval | ⚠ Intake, Release Gate | Market Research, Discovery, UX Research, UI Design, Security Review | — |
+| docs-retrieval-2 | ⚠ Intake, Release Gate | Market Research, Discovery, UX Research, UI Design, QA Evidence, Security Review, Post-Launch | Doc fix C1 (PROJECT_CONTEXT Stage paragraph) |
+| docs-retrieval-2-proof | ⚠ Intake, Scope Review, Implementation, Release Gate | Market Research, Discovery, UX Research, UI Design, Architecture, Security Review | — |
 
 ## DORA
 
@@ -44,8 +48,8 @@ Tokens per tool call, measured against each archetype's own cap.
 
 | Archetype | What it does | Cap | Observed (n) | Range | Avg |
 |-----------|--------------|-----|--------------|-------|-----|
-| **review** | read artefacts → verdict | 8,000 | 13 | 1,283–3,489 | 2,234 |
-| **build** | heavy file / test I/O | 5,000 | 1 | 3,828–3,828 | 3,828 |
+| **review** | read artefacts → verdict | 8,000 | 20 | 654–3,489 | 2,207 |
+| **build** | heavy file / test I/O | 5,000 | 2 | 3,420–3,828 | 3,624 |
 
 ## Per stage
 
@@ -66,6 +70,14 @@ Tokens per tool call, measured against each archetype's own cap.
 | docs-retrieval | Architecture embed-v3 fact-fill (resumed) | review | opus-5-5 | high (declared) | 50,042 | 39 | 1,283 | 16% | — |
 | docs-retrieval | EM embed-v3 re-scope (resumed) | review | sonnet-5-5 | medium (declared) | 38,382 | 11 | 3,489 | 44% | — |
 | docs-retrieval | Close-out (post-launch-learning) | review | sonnet-5-5 | medium (declared) | 69,266 | 27 | 2,565 | 32% | — |
+| docs-retrieval-2 | Scope Review | review | sonnet-5-5 | medium (declared) | 51,899 | 21 | 2,471 | 31% | — |
+| docs-retrieval-2 | Architecture (fresh single spawn) | review | opus-5-5 | high (declared) | 122,905 | 49 | 2,508 | 31% | — |
+| docs-retrieval-2 | Implementation | build | sonnet-5-5 | medium (declared) | 116,263 | 34 | 3,420 | 68% | — |
+| docs-retrieval-2 | Doc fix C1 (PROJECT_CONTEXT Stage paragraph) | review | sonnet-5-5 | medium (declared) | 15,429 | 6 | 2,572 | 32% | — |
+| docs-retrieval-2 | Architecture: INV-4 note edit (resumed) | review | opus-5-5 | high (declared) | 5,233 | 8 | 654 | 8% | — |
+| docs-retrieval-2-proof | QA Evidence (fresh single spawn) | review | sonnet-5-5 | high (declared) | 26,879 | 11 | 2,444 | 31% | — |
+| docs-retrieval-2-proof | Post-Launch close-out attempt (resumed once to return its draft) | review | sonnet-5-5 | medium (declared) | 39,756 | 14 | 2,840 | 36% | — |
+| docs-retrieval-2-proof | Post-Launch close-out written (resumed after hook fix) | review | sonnet-5-5 | medium (declared) | 8,030 | 5 | 1,606 | 20% | — |
 
 ## Untraced stages
 
@@ -74,7 +86,7 @@ None — every stage in every run reported its own telemetry.
 ## Gate catches
 
 Defects the gates caught before they shipped — the pipeline earning its keep.
-**A floor, not a total:** 1 run(s) predate the `gateCatches` field (docs-retrieval) and recorded catches only in prose, so a real block — e.g. Security stopping the http-layer bind — is not counted here.
+**A floor, not a total:** 3 run(s) predate the `gateCatches` field (docs-retrieval, docs-retrieval-2, docs-retrieval-2-proof) and recorded catches only in prose, so a real block — e.g. Security stopping the http-layer bind — is not counted here.
 
 None structurally recorded yet.
 

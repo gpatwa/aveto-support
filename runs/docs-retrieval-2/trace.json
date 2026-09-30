@@ -99,5 +99,6 @@
   "frozen": {
     "methodCommit": "b3f3fc41f2382283678e638b55ff44b32876034c",
     "when": "2026-09-29T17:18:23Z"
-  }
+  },
+  "outcome": "closed at the freeze (method b3f3fc4); scored in slice docs-retrieval-2-proof: gate failed"
 }
