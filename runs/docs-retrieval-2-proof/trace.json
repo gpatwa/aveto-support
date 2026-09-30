@@ -45,6 +45,16 @@
       "toolCalls": 11,
       "retry": 0,
       "outcome": "held-out-3 FAIL 11/16; diagnostics 12/17 and 19/24"
+    },
+    {
+      "stage": "Post-Launch close-out attempt (resumed once to return its draft)",
+      "role": "post-launch-learning",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 39756,
+      "toolCalls": 14,
+      "retry": 0,
+      "outcome": "draft returned as text; writes denied by write-scope-guard (worktree defect); paused"
     }
   ],
   "evalRuns": [
@@ -76,5 +86,13 @@
     "when": "2026-09-30T01:32:07Z",
     "verbatim": "A.",
     "outcome": "stop; nothing ships; close-out only"
-  }
+  },
+  "interruptions": [
+    {
+      "stage": "Post-Launch close-out",
+      "cause": "write-scope-guard false deny in worktree",
+      "class": "infra",
+      "reportedUpstream": true
+    }
+  ]
 }
