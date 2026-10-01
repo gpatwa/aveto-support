@@ -33,6 +33,37 @@
     {
       "stage": "Intake",
       "executor": "orchestrator"
+    },
+    {
+      "stage": "Scope Review",
+      "executor": "subagent",
+      "model": "sonnet-5-5",
+      "effort": "declared: frontmatter default",
+      "tokens": 402000,
+      "toolCalls": 22,
+      "retries": 0
+    },
+    {
+      "stage": "Architecture",
+      "executor": "subagent",
+      "model": "opus-5-5",
+      "effort": "declared: frontmatter default",
+      "tokens": 2690000,
+      "toolCalls": 50,
+      "retries": 0
+    },
+    {
+      "stage": "Implementation",
+      "executor": "subagent",
+      "model": "sonnet-5-5",
+      "effort": "declared: frontmatter default",
+      "tokens": 2700000,
+      "toolCalls": 37,
+      "retries": 0
+    },
+    {
+      "stage": "Freeze",
+      "executor": "orchestrator"
     }
   ]
 }

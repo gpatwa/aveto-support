@@ -10,6 +10,35 @@
   "leastPrivilegeNote": "Run from a worktree of aveto-support; role subagents load from this repo's .claude/agents/ with tools frontmatter and write-scope hooks.",
   "telemetrySource": "self-reported",
   "approvals": [],
-  "frozen": { "methodCommit": "8499c2a778b739b08cc41e7fa2ac24e46ce3422c" },
-  "stages": [ { "stage": "Intake", "executor": "orchestrator" } ]
+  "frozen": {
+    "methodCommit": "8499c2a778b739b08cc41e7fa2ac24e46ce3422c"
+  },
+  "stages": [
+    {
+      "stage": "Intake",
+      "executor": "orchestrator"
+    },
+    {
+      "stage": "Label review",
+      "executor": "subagent",
+      "model": "sonnet-5-5",
+      "effort": "declared: frontmatter default",
+      "tokens": 2070000,
+      "toolCalls": 35,
+      "retries": 0
+    },
+    {
+      "stage": "Scoring",
+      "executor": "subagent",
+      "model": "sonnet-5-5",
+      "effort": "declared: frontmatter default",
+      "tokens": 275000,
+      "toolCalls": 16,
+      "retries": 0
+    },
+    {
+      "stage": "Close-out",
+      "executor": "orchestrator"
+    }
+  ]
 }

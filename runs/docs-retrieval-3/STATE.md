@@ -3,8 +3,8 @@
 - **Ask:** Add a local reranker over slice 2's file-level retrieval and gate it once on a fourth held-out set (slice A: through the freeze)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Freeze done — slice A closed; next: slice B (docs-retrieval-3-proof)
-- **Status:** in-progress
+- **Current stage:** Closed — gate met, no demonstrated gain; nothing ships (see runs/docs-retrieval-3-proof/03-close-out.md)
+- **Status:** done
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 383058a
@@ -35,7 +35,7 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 360k tokens  ·  **Depth:** standard
 - **Spent:** 314k (87%)  ·  **Remaining:** 46k
-- **Next stage:** none — slice A closed at the freeze; slice B opens as docs-retrieval-3-proof (240k)
+- **Next stage:** none — slice A closed at the freeze; slice B ran as docs-retrieval-3-proof and is closed
 
 Budget decision (owner, this session, verbatim): "move 30k from slice B to slice A (A 360k, B 240k); the 600k total is unchanged. If B then runs short, stop and ask me with the numbers." Slice A is now 360k, slice B (`docs-retrieval-3-proof`) 240k. Reason: Architecture ran 143k vs a 110k estimate.
 
@@ -69,4 +69,4 @@ Note: the owner's 600k is split at the freeze (intent Decision 1): slice A (this
 
 ## Next action
 
-Open docs-retrieval-3-proof (slice B, 240k). Owner hands over the draft fourth set; a fresh QA spawn reviews its labels; the owner commits it; a different fresh QA spawn scores it once.
+None. Closed with slice B (runs/docs-retrieval-3-proof/03-close-out.md).

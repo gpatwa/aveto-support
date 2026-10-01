@@ -3,8 +3,8 @@
 - **Ask:** Score slice 3's frozen reranker method once on a fourth held-out set (slice B of docs-retrieval-3)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Scoring done — GATE PASSED 13/16; awaiting the owner's budget decision for Security, Release Gate, Post-Launch
-- **Status:** blocked-on-approval
+- **Current stage:** Closed — gate met, no demonstrated gain; nothing ships (see runs/docs-retrieval-3-proof/03-close-out.md)
+- **Status:** done
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 383058a
@@ -19,9 +19,9 @@
 | Label review | qa-evidence (fresh #1) | done | runs/docs-retrieval-3-proof/01-label-review.md (reviewed set: retrieval-heldout-4.reviewed.toml) | labels reviewed before the owner commits the set |
 | Owner commits reviewed set | Human | done: main 431486e, evals/retrieval-heldout-4.toml (sha256 180cfc0b…8aee), merged here at 0be91a4 | evals/retrieval-heldout-4.toml | git order: freeze 8499c2a before the set |
 | Scoring | qa-evidence (different fresh spawn) | done: PASS 13/16 (81.2%), run once | runs/docs-retrieval-3-proof/02-qa-result.md | >= 13 of 16 answerable, once |
-| Security Review | security-privacy | pending (only if the gate passes) | — | — |
-| Release Gate | release-manager | pending (only if the gate passes) | — | — |
-| Post-Launch | post-launch-learning | pending | — | — |
+| Security Review | security-privacy | not run — owner's decision (no demonstrated gain) | — | — |
+| Release Gate | release-manager | not run — owner's decision; MS MARCO licence unresolved | — | — |
+| Post-Launch | Orchestrator (owner directed; no spawn) | done | runs/docs-retrieval-3-proof/03-close-out.md | — |
 
 ## Approvals
 
@@ -37,7 +37,9 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 240k tokens  ·  **Depth:** standard
 - **Spent:** 143k (60%)  ·  **Remaining:** 97k
-- **Next stage:** Security Review (security-privacy) est. 60k → **STOP-AND-ASK**
+- **Next stage:** none — slice closed at the owner's direction (gate met, no demonstrated gain); any follow-up is a new slice (03-close-out.md §6)
+
+Owner's decision (verbatim): "Stop slice B here as 'gate met, no demonstrated gain'...Don't spend the remaining budget on Security, the Release Gate or Post-Launch for the reranker, and don't try to settle the MS MARCO licence question." Remaining 97k unspent.
 
 Note (Orchestrator): scoring peaked at 38k (est. 90k). Remaining stages (Security 60k, Release Gate 60k, Post-Launch 60k = 180k at the plan's estimates, or ~120k if the Release/Post-Launch estimates are lean) exceed the 97k remaining: stop and ask the owner with the numbers, as he directed.
 
@@ -67,4 +69,4 @@ Note: owner set A 360k / B 240k (total 600k). Plan estimates total 270k; if B ru
 
 ## Next action
 
-Owner decides how to spend the remaining 97k on Security Review, Release Gate (which blocks on the MS MARCO licence question) and Post-Launch. Then spawn each as a fresh spawn.
+None. Closed. Owner decides on slice 4 (03-close-out.md §6); push, PR and merge are the owner's.
