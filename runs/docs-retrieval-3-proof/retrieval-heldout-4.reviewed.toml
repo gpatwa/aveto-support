@@ -1,0 +1,148 @@
+# Retrieval evaluation set — FOURTH held-out gate, for docs-retrieval-3-proof.
+#
+# Committed after slice A froze its method (commit recorded in
+# runs/docs-retrieval-3/STATE.md). The gate (intent "Done means"): a correct
+# file in the top 5 for at least 80% of answerable questions — 13 of these 16.
+# Unanswerable questions are a diagnostic only; they do not gate.
+#
+# Provenance, stated plainly:
+#   - Drafted by Claude in the playbook session, 2026-09-30, while slice A was
+#     implementing, and kept outside the repo until the freeze. Its labels are
+#     then reviewed by a fresh QA spawn (intent Decision 2) before the owner
+#     commits it; a different fresh QA spawn scores it once.
+#   - The drafter drafted all three earlier sets and has read their results
+#     and slice 3's spec. It has NOT run retrieval, the index or the eval
+#     command on these questions. No role that designed or built retrieval
+#     has seen them.
+#   - Labels follow the pack's "Held-out gates" rule 4: each lists every file
+#     that defensibly answers it — typically the owning agent AND its template
+#     or prompt. The label reviewer should add any it finds missing.
+#   - No question repeats a topic from an earlier set, and no source file
+#     below is a source in any earlier set. Every source is inside the
+#     Decision 2 corpus.
+#   - Every `sources` path was checked to exist and contain the answer at the
+#     pinned commit 3a83b669a8b53dfdff869a1bbe361bdb156e3a13.
+#   - Label-reviewed by a fresh QA spawn (only `sources` lists changed; nothing dropped): runs/docs-retrieval-3-proof/01-label-review.md
+
+pinned_commit = "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+
+# ── Answerable ──────────────────────────────────────────────────────────────
+
+[[question]]
+id = "f01"
+question = "What should the requirements doc for a feature cover before anyone designs it?"
+sources = ["templates/PRD_TEMPLATE.md", "agents/product-manager.md", "prompts/product-brief.md", "docs/AGENTIC_SDLC.md", "templates/INTENT_TEMPLATE.md"]
+where = "the PRD: problem, user, success criteria, scope, non-goals"
+
+[[question]]
+id = "f02"
+question = "Who checks a release against frameworks like SOC 2 or ISO 27001?"
+sources = ["agents/compliance-reviewer.md", "templates/COMPLIANCE_REVIEW_TEMPLATE.md", "prompts/compliance-review.md", "project-packs/enterprise-saas-future.md", "docs/AGENTIC_SDLC.md", "docs/AGENT_ROLES.md", "docs/RELEASE_GATES.md"]
+where = "compliance review against the frameworks in scope"
+
+[[question]]
+id = "f03"
+question = "How do I work out what a new feature will cost to run each month?"
+sources = ["templates/COST_BUDGET_TEMPLATE.md", "prompts/cost-review.md", "agents/finops.md", "docs/AGENTIC_SDLC.md", "docs/AGENT_ROLES.md", "project-packs/enterprise-saas-future.md"]
+where = "the cost and budget review"
+
+[[question]]
+id = "f04"
+question = "What do we tick off right before shipping, including how to undo it?"
+sources = ["templates/RELEASE_CHECKLIST_TEMPLATE.md", "prompts/release-gate.md", "agents/release-manager.md", "docs/RELEASE_GATES.md", "docs/AGENTIC_SDLC.md"]
+where = "the release checklist and rollback plan"
+
+[[question]]
+id = "f05"
+question = "Who builds the server side — the APIs, services and data changes?"
+sources = ["agents/backend-architect.md", "prompts/developer-task.md"]
+where = "the Backend Architect agent"
+
+[[question]]
+id = "f06"
+question = "Where are a screen's empty, loading and error states written down for the developer?"
+sources = ["templates/UX_SPEC_TEMPLATE.md", "agents/ui-designer.md", "docs/AGENTIC_SDLC.md"]
+where = "UX spec states; the UI Designer's states and interaction notes"
+
+[[question]]
+id = "f07"
+question = "How do patterns in customer complaints turn into ideas for what to build next?"
+sources = ["agents/customer-success.md", "templates/CUSTOMER_SIGNAL_REVIEW_TEMPLATE.md", "prompts/customer-signal.md"]
+where = "customer signal review: themes and candidate slices"
+
+[[question]]
+id = "f08"
+question = "Who checks there's real evidence a problem exists before we build anything?"
+sources = ["agents/market-researcher.md", "templates/DISCOVERY_BRIEF_TEMPLATE.md", "prompts/market-research.md", "docs/AGENTIC_SDLC.md", "agents/product-manager.md"]
+where = "market research and the discovery brief's problem hypothesis"
+
+[[question]]
+id = "f09"
+question = "Where is the technical design for a feature written down?"
+sources = ["templates/TECH_SPEC_TEMPLATE.md", "agents/software-architect.md", "prompts/architect-plan.md", "docs/AGENTIC_SDLC.md", "docs/AGENT_ROLES.md"]
+where = "the tech spec"
+
+[[question]]
+id = "f10"
+question = "Who looks for security holes and privacy leaks in a change before release?"
+sources = ["agents/security-privacy.md", "prompts/security-review.md", "templates/THREAT_MODEL_TEMPLATE.md", "docs/AGENTIC_SDLC.md", "docs/RELEASE_GATES.md"]
+where = "the Security & Privacy agent and its review prompt"
+
+[[question]]
+id = "f11"
+question = "Who makes sure the product sends the events we need to measure success?"
+sources = ["agents/analytics-engineer.md", "prompts/analytics-contract.md", "docs/AGENTIC_SDLC.md", "docs/AGENT_ROLES.md"]
+where = "the instrumentation contract"
+
+[[question]]
+id = "f12"
+question = "What happens after a release to check whether it actually did what we hoped?"
+sources = ["agents/post-launch-learning.md", "templates/POST_LAUNCH_REVIEW_TEMPLATE.md", "docs/AGENTIC_SDLC.md", "agents/data-analyst.md"]
+where = "the post-launch review: success criteria met?"
+
+[[question]]
+id = "f13"
+question = "Which agent hands out the work to all the others during a run?"
+sources = ["agents/orchestrator.md", "prompts/orchestrator.md", "docs/AGENTIC_SDLC.md", "execution/pack/commands/agentic-slice.md", "execution/pack/AGENTS.md", "execution/README.md", "docs/GETTING_STARTED.md"]
+where = "the Orchestrator"
+
+[[question]]
+id = "f14"
+question = "Is there guidance for selling to large companies that need SSO and audit trails?"
+sources = ["project-packs/enterprise-saas-future.md"]
+where = "the Enterprise SaaS (future roadmap) project pack"
+
+[[question]]
+id = "f15"
+question = "Who writes the prompts and wires up the model calls in an AI feature?"
+sources = ["agents/ai-engineer.md", "docs/AGENTIC_SDLC.md", "project-packs/ai-agent-product.md", "prompts/developer-task.md", "agents/ml-engineer.md"]
+where = "implements the AI / LLM portion: adapter wiring, prompts"
+
+[[question]]
+id = "f16"
+question = "Can I see how my runs have gone over time, as a report or dashboard?"
+sources = ["docs/PIPELINE_ANALYTICS.md", "docs/GETTING_STARTED.md", "execution/README.md", "agents/post-launch-learning.md", "execution/pack/protocols/SLICE_STATE.md", "docs/VALIDATION_MATRIX.md"]
+where = "pipeline analytics"
+
+# ── Unanswerable (diagnostic only; not gated) ───────────────────────────────
+
+[[question]]
+id = "fu01"
+question = "Does it work with Bitbucket?"
+answerable = false
+
+[[question]]
+id = "fu02"
+question = "Is Aveto listed on the GitHub Marketplace?"
+answerable = false
+
+[[question]]
+id = "fu03"
+question = "Is Aveto itself SOC 2 certified?"
+answerable = false
+hard_negative = "\"SOC 2\" and \"certification\" appear in the compliance brief and templates, about the product being built — never Aveto's own status"
+
+[[question]]
+id = "fu04"
+question = "Are the docs available in Japanese?"
+answerable = false
