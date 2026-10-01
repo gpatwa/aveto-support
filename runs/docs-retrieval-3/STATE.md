@@ -35,7 +35,7 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 360k tokens  ·  **Depth:** standard
 - **Spent:** 314k (87%)  ·  **Remaining:** 46k
-- **Next stage:** Implementation (backend-architect) none — slice A closed at the freeze; slice B opens as docs-retrieval-3-proof (240k)
+- **Next stage:** none — slice A closed at the freeze; slice B opens as docs-retrieval-3-proof (240k)
 
 Budget decision (owner, this session, verbatim): "move 30k from slice B to slice A (A 360k, B 240k); the 600k total is unchanged. If B then runs short, stop and ask me with the numbers." Slice A is now 360k, slice B (`docs-retrieval-3-proof`) 240k. Reason: Architecture ran 143k vs a 110k estimate.
 
