@@ -16,8 +16,12 @@
   ingest from word salads and a frozen off-topic question list.
 - `eval`: scores retrieval against an eval file and exits non-zero below 80% on
   either group.
-- The model (`BAAI/bge-small-en-v1.5`, ONNX, CPU) only ranks and gates. It never
-  writes or alters text. Questions never leave the machine; `retrieve` and
+- Retrieval is two-stage (`file-rerank-v1`, default): `file-rrf-v1` ranks all files, then a
+  local cross-encoder (`cross-encoder/ms-marco-MiniLM-L6-v2`, ONNX, CPU) re-scores the
+  top 20 files' shown passages (MaxP) and orders them; `--ranking file-rrf-v1` runs the
+  first stage alone. Not yet evaluated on a held-out set.
+- The models (`BAAI/bge-small-en-v1.5` and the reranker, ONNX, CPU) only rank. They never
+  write or alter text. Questions never leave the machine; `retrieve` and
   `eval` are offline.
 - Runtime dependencies: `onnxruntime` and `numpy` only.
 
