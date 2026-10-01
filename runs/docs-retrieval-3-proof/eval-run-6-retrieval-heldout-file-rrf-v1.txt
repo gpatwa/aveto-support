@@ -1,0 +1,28 @@
+Ranking: file-rrf-v1:hybrid:BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a
+eval: evals/retrieval-heldout.toml  index: gpatwa/agentic-sdlc-playbook @ 3a83b669…  ranking: file-rrf-v1  reference similarity: 0.702 (diagnostic)
+h01  MISS  expected execution/pack/protocols/SLICE_STATE.md; got execution/pack/protocols/RUN_ECONOMICS.md, docs/VALIDATION_MATRIX.md, docs/GETTING_STARTED.md, execution/README.md, execution/pack/protocols/MODEL_ROUTING.md  top score 0.70
+h02  HIT   templates/AGENT_HANDOFF_TEMPLATE.md (rank 5)  top score 0.70
+h03  HIT   agents/finops.md (rank 1)  top score 0.66
+h04  HIT   examples/README.md (rank 1)  top score 0.71
+h05  MISS  expected execution/pack/commands/agentic-status.md; got execution/pack/protocols/HANDOFF_CHECK.md, docs/OPERATING_MODEL.md, docs/VALIDATION_MATRIX.md, agents/engineering-manager.md, agents/security-privacy.md  top score 0.68
+h06  HIT   templates/INCIDENT_REVIEW_TEMPLATE.md (rank 2)  top score 0.65
+h07  HIT   skills/tdd-fail-first/SKILL.md (rank 1)  top score 0.75
+h08  HIT   project-packs/browser-automation-product.md (rank 1)  top score 0.65
+h09  HIT   execution/pack/protocols/APPROVAL_PROTOCOL.md (rank 4)  top score 0.69
+h10  HIT   agents/production-verification.md (rank 2)  top score 0.73
+h11  HIT   agents/data-governance.md (rank 3)  top score 0.66
+h12  HIT   agents/data-analyst.md (rank 2)  top score 0.64
+h13  MISS  expected execution/pack/protocols/PIPELINE_SLOS.md; got agents/sre.md, docs/OPERATING_MODEL.md, execution/pack/protocols/RUN_ECONOMICS.md, README.md, docs/GETTING_STARTED.md  top score 0.68
+h14  MISS  expected agents/engineering-manager.md; got execution/pack/protocols/RUN_ECONOMICS.md, docs/OPERATING_MODEL.md, templates/THREAT_MODEL_TEMPLATE.md, docs/AGENT_ROLES.md, execution/pack/AGENTS.md  top score 0.67
+h15  HIT   templates/DOC_DELTA_TEMPLATE.md (rank 2)  top score 0.71
+h16  HIT   templates/THREAT_MODEL_TEMPLATE.md (rank 1)  top score 0.72
+h17  MISS  expected agents/frontend-developer.md; got agents/ui-designer.md, templates/QA_EVIDENCE_TEMPLATE.md, templates/UX_SPEC_TEMPLATE.md, agents/ux-researcher.md, examples/saved-items-bulk-delete/artefacts/04-ux-spec.md  top score 0.62
+hu01  DIAG  top file docs/DEPLOYMENT.md  top score 0.70
+hu02  DIAG  top file agents/customer-support.md  top score 0.60
+hu03  DIAG  top file templates/RELEASE_CHECKLIST_TEMPLATE.md  top score 0.65
+hu04  DIAG  top file agents/tech-writer.md  top score 0.63
+hu05  DIAG  top file templates/INCIDENT_REVIEW_TEMPLATE.md  top score 0.68
+hu06  DIAG  top file README.md  top score 0.65
+answerable:   12/17 (70.6%)  required >= 80%  FAIL
+unanswerable: 6 (diagnostic only, not gated)
+eval: FAIL
