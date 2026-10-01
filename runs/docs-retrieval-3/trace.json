@@ -1,0 +1,38 @@
+{
+  "schema": "agentic-sdlc/trace@2",
+  "slice": "docs-retrieval-3",
+  "tier": 2,
+  "overlay": false,
+  "landed": false,
+  "started": "2026-10-01T04:56:00Z",
+  "operator": "Gopal Patwa",
+  "leastPrivilegeEnforced": true,
+  "leastPrivilegeNote": "Run from a worktree of aveto-support; role subagents load from this repo's .claude/agents/ with tools frontmatter and write-scope hooks.",
+  "telemetrySource": "self-reported",
+  "approvals": [
+    {
+      "action": "A1: reranker cross-encoder/ms-marco-MiniLM-L6-v2 @ 233902d2, two files, building and scoring only",
+      "rule": "5",
+      "decision": "approved",
+      "approver": "Gopal Patwa",
+      "requestedAt": "2026-10-01T05:20:00Z",
+      "decidedAt": "2026-10-01T06:32:09Z",
+      "record": "runs/docs-retrieval-3/APPROVAL_RECORD-1.md"
+    },
+    {
+      "action": "A2: INV-5 wording and INV-4 note, verbatim",
+      "rule": "4",
+      "decision": "approved",
+      "approver": "Gopal Patwa",
+      "requestedAt": "2026-10-01T05:20:00Z",
+      "decidedAt": "2026-10-01T06:32:09Z",
+      "record": "runs/docs-retrieval-3/APPROVAL_RECORD-2.md"
+    }
+  ],
+  "stages": [
+    {
+      "stage": "Intake",
+      "executor": "orchestrator"
+    }
+  ]
+}

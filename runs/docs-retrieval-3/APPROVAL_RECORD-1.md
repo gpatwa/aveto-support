@@ -1,0 +1,7 @@
+# Approval record 1 — A1: the reranker model (rule 5)
+
+- **Slice:** docs-retrieval-3  ·  **Approver:** Gopal Patwa (the owner, in the Orchestrator's session)  ·  **Decided:** 2026-10-01T06:32:09Z (recorded)  ·  **Request:** `02-approval-request.md` section A1, with the Orchestrator's fill-in
+- **Decision: APPROVED.** Owner's words, verbatim: "A1 approved under rule 5: cross-encoder/ms-marco-MiniLM-L6-v2 at revision 233902d25c440f23af6f7d6e94d2946bac0bee0a, exactly onnx/model.onnx (sha256 5d3e70fd…4d4a) and vocab.txt (sha256 07eced37…38a3), for building and scoring only; the MS MARCO licence question must be resolved before any release. Nothing wider."
+- **Scope authorised:** `ingest` may download exactly those two files at that revision from `huggingface.co` (redirects only under `hf.co`), full sha256s as in the request (`5d3e70fd0c9ff14b9b5169a51e957b7a9c74897afd0a35ce4bd318150c1d4d4a`, 91,011,230 B; `07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3`, 231,508 B); `retrieve`/`eval` may run it locally. Nothing else from the repo, no other revision or variant.
+- **Condition (owner's):** for **building and scoring only**. **The MS MARCO licence question must be resolved before any release.** The Release Manager must treat this as a blocking item at the Release Gate; nothing releases on this approval alone.
+- **Open check carried to Implementation:** `tokenizer_config.json` `do_lower_case: true` (reported by another session, not read by the Orchestrator); the Implementer verifies it first and hands back if it differs.
