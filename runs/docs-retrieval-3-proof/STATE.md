@@ -3,8 +3,8 @@
 - **Ask:** Score slice 3's frozen reranker method once on a fourth held-out set (slice B of docs-retrieval-3)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Label review done — awaiting the owner's decision on the reviewed set
-- **Status:** blocked-on-approval
+- **Current stage:** Scoring (fresh QA spawn #2, a different spawn from the label reviewer)
+- **Status:** in-progress
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (worktree of aveto-support)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 383058a
@@ -17,8 +17,8 @@
 | Intent | Human | confirmed | runs/docs-retrieval-3-proof/intent.md | human confirmed |
 | Intake | Orchestrator | done | runs/docs-retrieval-3-proof/00-slice-plan.md | owner directed slice B at the freeze |
 | Label review | qa-evidence (fresh #1) | done | runs/docs-retrieval-3-proof/01-label-review.md (reviewed set: retrieval-heldout-4.reviewed.toml) | labels reviewed before the owner commits the set |
-| Owner commits reviewed set | Human | pending | — | — |
-| Scoring | qa-evidence (different fresh spawn) | pending | — | >= 13 of 16 answerable, once |
+| Owner commits reviewed set | Human | done: main 431486e, evals/retrieval-heldout-4.toml (sha256 180cfc0b…8aee), merged here at 0be91a4 | evals/retrieval-heldout-4.toml | git order: freeze 8499c2a before the set |
+| Scoring | qa-evidence (different fresh spawn) | in-progress | — | >= 13 of 16 answerable, once |
 | Security Review | security-privacy | pending (only if the gate passes) | — | — |
 | Release Gate | release-manager | pending (only if the gate passes) | — | — |
 | Post-Launch | post-launch-learning | pending | — | — |
@@ -64,4 +64,4 @@ Note: owner set A 360k / B 240k (total 600k). Plan estimates total 270k; if B ru
 
 ## Next action
 
-Owner decides on the reviewed set (commit it as evals/retrieval-heldout-4.toml, as is or amended). Then verify no method file changed since 8499c2a and spawn a DIFFERENT fresh qa-evidence to score once.
+Scorer writes 02-qa-result.md; then record Spent from usage.mjs, and either stop-and-ask on budget (if the gate passes) or go to Post-Launch.

@@ -13,3 +13,7 @@
 | B2 Scoring | qa-evidence (a DIFFERENT fresh spawn) | 90k | Scores once; earlier sets and `file-rrf-v1` as diagnostics; verifies no method file changed since 8499c2a |
 | B3 Security / Release Gate | security-privacy, release-manager | 60k | Only if the gate passes; Release blocks on the MS MARCO licence question |
 | B4 Post-Launch | post-launch-learning | 60k | Smoke depth, either outcome |
+
+## The committed set (Orchestrator's note, 2026-10-01)
+
+The owner committed `evals/retrieval-heldout-4.toml` at `431486e` (main), after the freeze (`8499c2a`). It is NOT byte-identical to the reviewer's `retrieval-heldout-4.reviewed.toml`: the owner's version drops `docs/AGENTIC_SDLC.md` from every question's sources (the reviewer had added it to 12) and trims some other additions (for example `project-packs/enterprise-saas-future.md`, `docs/AGENT_ROLES.md`, `docs/GETTING_STARTED.md`, `execution/README.md`, `execution/pack/AGENTS.md`), keeping the rest. That is the owner's call before commit and before any result; the committed file is the gate, labels fixed. 16 answerable + 4 unanswerable; sha256 `180cfc0b5505935b02e92a3f96dba2f0bf5799af71ed36ea9d855cdfdcc48aee`. Merged into this branch at `0be91a4`; `git diff 8499c2a HEAD` over method files and the earlier eval files is empty.
