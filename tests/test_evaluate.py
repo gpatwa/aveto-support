@@ -8,6 +8,7 @@ from conftest import (
     REPO,
     FakeEmbedder,
     FakeOpener,
+    FakeReranker,
     as_opener,
     config_text,
     embed_all,
@@ -149,7 +150,7 @@ def test_eval_with_no_answerable_question_exit_2(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     idx, ev = _write(tmp_path, 0.3, '[[question]]\nid = "u1"\nquestion = "q"\nanswerable = false\n')
-    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE) == 2
+    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE, reranker=FakeReranker()) == 2
     assert "at least one answerable" in capsys.readouterr().err
     with pytest.raises(EvalFormatError):
         load_eval_set(ev)
@@ -160,14 +161,14 @@ def test_commit_mismatch_exit_2(tmp_path: Path, capsys: pytest.CaptureFixture[st
     write_index(searcher().index, idx)
     ev = tmp_path / "e.toml"
     ev.write_text('pinned_commit = "other"\n[[question]]\nid = "a1"\nquestion = "q"\nsources = ["x.md"]\n')
-    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE) == 2
+    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE, reranker=FakeReranker()) == 2
     assert "re-run ingest" in capsys.readouterr().err
     with pytest.raises(EvalFormatError):
         check_commit(searcher().index, EvalSet("other", ()))
 
 
 def test_missing_index_exit_2(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    assert main(["retrieve", "--index", str(tmp_path / "none.json"), "anything"], embedder=FAKE) == 2
+    assert main(["retrieve", "--index", str(tmp_path / "none.json"), "anything"], embedder=FAKE, reranker=FakeReranker()) == 2
     assert capsys.readouterr().err.startswith("error: ")
 
 
@@ -183,24 +184,24 @@ A_CATS = '[[question]]\nid = "a1"\nquestion = "cats purr"\nsources = ["pets/cats
 
 def test_cli_eval_exit_0_on_pass(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     idx, ev = _write(tmp_path, 0.3, A_CATS)
-    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE) == 0
+    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE, reranker=FakeReranker()) == 0
     assert capsys.readouterr().out.rstrip().endswith("eval: PASS")
 
 
 def test_cli_eval_exit_1_on_miss(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     idx, ev = _write(tmp_path, 0.3, A_CATS.replace("pets/cats.md", "zzz/last.md"))
-    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE) == 1
+    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE, reranker=FakeReranker()) == 1
     assert capsys.readouterr().out.rstrip().endswith("eval: FAIL")
 
 
 def test_cli_retrieve_below_reference_exit_0_with_files(tmp_path: Path) -> None:
     idx, _ = _write(tmp_path, 0.99, "")
-    assert main(["retrieve", "--index", str(idx), "quantum", "spaceship"], embedder=FAKE) == 0
+    assert main(["retrieve", "--index", str(idx), "quantum", "spaceship"], embedder=FAKE, reranker=FakeReranker()) == 0
 
 
 def test_cli_retrieve_output_shape(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     idx, _ = _write(tmp_path, 0.99, "")
-    assert main(["retrieve", "--index", str(idx), "Do", "cats", "purr?"], embedder=FAKE) == 0
+    assert main(["retrieve", "--index", str(idx), "--ranking", "file-rrf-v1", "Do", "cats", "purr?"], embedder=FAKE) == 0
     out = capsys.readouterr().out
     assert "no confident match" not in out.lower()
     lines = out.split("\n")

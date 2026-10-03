@@ -14,7 +14,7 @@ from typing import Literal
 import numpy as np
 import numpy.typing as npt
 
-from aveto_support.embed import Embedder, PlaceholderEmbedder
+from aveto_support.embed import Embedder, ModelError, PlaceholderEmbedder, passage_input
 from aveto_support.index import (
     CALIBRATION_LENGTHS,
     CALIBRATION_QUANTILE,
@@ -25,6 +25,7 @@ from aveto_support.index import (
     Passage,
     RetrievalParams,
 )
+from aveto_support.rerank import Reranker, RerankParams
 
 SENTINEL_THRESHOLD = 1_000_000.0
 INT8_UNIT = 127 * 127
@@ -291,8 +292,11 @@ class DenseMatrix:
 
 
 class Searcher:
-    def __init__(self, index: Index, embedder: Embedder | None = None) -> None:
+    def __init__(
+        self, index: Index, embedder: Embedder | None = None, reranker: Reranker | None = None
+    ) -> None:
         self.index = index
+        self.reranker = reranker
         self.embedder: Embedder = embedder if embedder is not None else PlaceholderEmbedder()
         params = index.params
         self._params = params
@@ -405,8 +409,50 @@ def _matches_in_file(
     return [(by_start[ls], fused[ls]) for ls in order]
 
 
+def _rerank(
+    searcher: Searcher,
+    question: str,
+    order: list[str],
+    matches_of: dict[str, list[tuple[Passage, float]]],
+    rerank_params: RerankParams,
+) -> list[tuple[str, float]]:
+    """Score the shown passages of the first `candidates` files; MaxP; (-score, first-stage rank)."""
+    reranker = searcher.reranker
+    if reranker is None:
+        raise ModelError("no reranker is configured")
+    scored: list[tuple[float, int, str]] = []
+    for rank, path in enumerate(order[: rerank_params.candidates]):
+        best: float | None = None
+        for passage, _ in matches_of[path]:
+            value = reranker.score(question, passage_input(passage))
+            if isinstance(value, bool) or not isinstance(value, int | float):
+                raise ModelError("the reranker returned a non-numeric score")
+            if not math.isfinite(value):
+                raise ModelError("the reranker returned a non-finite score")
+            if best is None or value > best:
+                best = float(value)
+        if best is None:
+            raise ModelError(f"no passages to rerank for {path}")
+        scored.append((best, rank, path))
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    return [(path, score) for score, _, path in scored[: searcher.index.params.top_k]]
+
+
+def ranking_mode(searcher: Searcher) -> str:
+    emb = searcher.index.params.embedding
+    if searcher.reranker is None:
+        return f"file-rrf-v1:hybrid:{emb.model}@{emb.revision}"
+    rr = RerankParams()
+    return (
+        f"file-rerank-v1:hybrid:{emb.model}@{emb.revision}"
+        f"+ce:{rr.model}@{rr.revision}:n{rr.candidates}"
+    )
+
+
 def retrieve(searcher: Searcher, question: str) -> RetrievalResult:
-    """Rank files (file-rrf-v1). Runs the embedder on the question, locally. Never abstains."""
+    """Rank files: file-rrf-v1, or file-rerank-v1 when the searcher has a reranker.
+
+    Runs the embedder on the question, locally. Never abstains. No text is generated."""
     embedder = searcher.embedder
     if not question.strip() or embedder.token_count(question) == 0:
         raise QuestionError("the question has no searchable words")
@@ -421,25 +467,31 @@ def retrieve(searcher: Searcher, question: str) -> RetrievalResult:
     lexical = [path for path, _ in searcher.file_lexical(terms)]
     dense = [path for path, _ in searcher.file_dense(sims)]
     fused = rrf([lexical, dense], emb.rrf_k, emb.fusion_depth)
-    top = sorted(fused, key=lambda path: (-fused[path], path))[: params.top_k]
+    order = sorted(fused, key=lambda path: (-fused[path], path))
     sims_of = {(p.path, p.line_start): sims[i] for i, p in enumerate(index.passages)}
     lex_scores = {(p.path, p.line_start): sc for p, sc in searcher.rank(terms)}
+    if searcher.reranker is None:
+        ranked = [(path, fused[path]) for path in order[: params.top_k]]
+        matches_of = {
+            path: _matches_in_file(searcher, path, lex_scores, sims_of) for path, _ in ranked
+        }
+    else:
+        rr = RerankParams()
+        matches_of = {
+            path: _matches_in_file(searcher, path, lex_scores, sims_of)
+            for path in order[: rr.candidates]
+        }
+        ranked = _rerank(searcher, question, order, matches_of, rr)
     files: list[FileHit] = []
-    for rank, path in enumerate(top, start=1):
+    for rank, (path, score) in enumerate(ranked, start=1):
         matches = tuple(
-            PassageMatch(passage, score, permalink(index.repo, index.commit, passage))
-            for passage, score in _matches_in_file(searcher, path, lex_scores, sims_of)
+            PassageMatch(passage, within, permalink(index.repo, index.commit, passage))
+            for passage, within in matches_of[path]
         )
         files.append(
-            FileHit(rank, path, fused[path], file_permalink(index.repo, index.commit, path), matches)
+            FileHit(rank, path, score, file_permalink(index.repo, index.commit, path), matches)
         )
-    return RetrievalResult(
-        question,
-        tuple(files),
-        max(sims),
-        index.threshold,
-        f"file-rrf-v1:hybrid:{emb.model}@{emb.revision}",
-    )
+    return RetrievalResult(question, tuple(files), max(sims), index.threshold, ranking_mode(searcher))
 
 
 # --- calibration -----------------------------------------------------------

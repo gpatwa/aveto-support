@@ -16,7 +16,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from http.client import HTTPMessage
 from pathlib import Path
-from typing import IO, Any
+from typing import IO, Any, Protocol
 from urllib.parse import urlparse
 
 from aveto_support.embed import (
@@ -37,6 +37,7 @@ from aveto_support.index import (
     split_sections,
     write_index,
 )
+from aveto_support.rerank import OnnxReranker, RerankParams, reranker_dir
 from aveto_support.search import calibrate, eligible_passages_by_file
 
 ALLOWED_HOSTS = frozenset({"github.com", "codeload.github.com"})
@@ -88,6 +89,7 @@ class IngestReport:
     tau_salad: float = 0.0
     tau_offtopic: float | None = None
     model_status: str = ""
+    reranker_status: str = ""
 
 
 def _load_embedding(raw: object) -> tuple[EmbeddingParams, str | None]:
@@ -269,8 +271,16 @@ def fetch_archive(
     return data
 
 
+class _ModelPin(Protocol):
+    @property
+    def model(self) -> str: ...
+
+    @property
+    def revision(self) -> str: ...
+
+
 def download_model_file(
-    params: EmbeddingParams,
+    params: _ModelPin,
     name: str,
     dest: Path,
     expected_sha256: str,
@@ -328,6 +338,27 @@ def ensure_model_files(
     """Make sure both pinned files are cached and match their sha256. Returns the status."""
     base = model_dir(models_dir, params)
     pins = ((ONNX_FILE, params.onnx_sha256), (VOCAB_FILE, params.vocab_sha256))
+    downloaded = False
+    for name, expected in pins:
+        target = base / name
+        if target.is_file():
+            if sha256_file(target) == expected:
+                continue
+            target.unlink()
+        download_model_file(params, name, target, expected, opener=opener)
+        downloaded = True
+    return "downloaded" if downloaded else "cached"
+
+
+def ensure_reranker_files(
+    params: RerankParams,
+    models_dir: Path,
+    *,
+    opener: urllib.request.OpenerDirector | None = None,
+) -> str:
+    """Make sure the reranker's two pinned files are cached and match their sha256."""
+    base = reranker_dir(models_dir, params)
+    pins = ((params.onnx_file, params.onnx_sha256), (params.vocab_file, params.vocab_sha256))
     downloaded = False
     for name, expected in pins:
         target = base / name
@@ -418,8 +449,11 @@ def run_ingest(
     if embedder is None:
         model_status = ensure_model_files(source.embedding, models_dir, opener=model_opener)
         embedder = OnnxEmbedder.load(models_dir, source.embedding)
+        reranker_status = ensure_reranker_files(RerankParams(), models_dir, opener=model_opener)
+        OnnxReranker.load(models_dir)
     else:
         model_status = "injected"
+        reranker_status = "injected"
     passages: list[Passage] = []
     truncated = 0
     for passage in split:
@@ -466,4 +500,5 @@ def run_ingest(
         tau_salad=calibration.tau_salad,
         tau_offtopic=calibration.tau_offtopic,
         model_status=model_status,
+        reranker_status=reranker_status,
     )

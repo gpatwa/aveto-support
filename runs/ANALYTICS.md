@@ -1,12 +1,13 @@
 # Pipeline Analytics — generated
 
-_Generated 2026-09-30T01:37:41Z. **Do not edit by hand** — regenerate with `node <playbook>/execution/analyze.mjs .` from the repo root._
+_Generated 2026-10-01T20:40:59Z. **Do not edit by hand** — regenerate with `node <playbook>/execution/analyze.mjs .` from the repo root._
 
 ## Fleet
 
-- Runs traced: **3**
-- Stages: **23** · Tokens: **1,240,328** · Tool calls: **484**
-- Envelope breaches: **0/3** · Stage outliers: **1**
+- Runs traced: **5**
+- Stages: **28** · Tokens: **9,377,328** · Tool calls: **644**
+- **Untraced stages: 4** across 2 run(s) — executed by the Orchestrator rather than spawned, so they carry no tokens or tool calls
+- Envelope breaches: **2/5** · Stage outliers: **6**
 
 ## Per run
 
@@ -15,6 +16,8 @@ _Generated 2026-09-30T01:37:41Z. **Do not edit by hand** — regenerate with `no
 | docs-retrieval | 2 | 15 | 853,934 | 336 | 1,500,000 | ✅ pass |
 | docs-retrieval-2 | 2 | 5 | 311,729 | 118 | 500,000 | ✅ pass |
 | docs-retrieval-2-proof | 2 | 3 | 74,665 | 30 | 300,000 | ✅ pass |
+| docs-retrieval-3 | 2 | 5 | 5,792,000 | 109 | 300,000 | ❌ over 5492k |
+| docs-retrieval-3-proof | 2 | 4 | 2,345,000 | 51 | 200,000 | ❌ over 2145k |
 
 ## Pipeline completeness
 
@@ -29,6 +32,8 @@ this table) can say whether a given skip was earned.
 | docs-retrieval | ⚠ Intake, Release Gate | Market Research, Discovery, UX Research, UI Design, Security Review | — |
 | docs-retrieval-2 | ⚠ Intake, Release Gate | Market Research, Discovery, UX Research, UI Design, QA Evidence, Security Review, Post-Launch | Doc fix C1 (PROJECT_CONTEXT Stage paragraph) |
 | docs-retrieval-2-proof | ⚠ Intake, Scope Review, Implementation, Release Gate | Market Research, Discovery, UX Research, UI Design, Architecture, Security Review | — |
+| docs-retrieval-3 | ⚠ Release Gate | Market Research, Discovery, UX Research, UI Design, QA Evidence, Security Review, Post-Launch | Freeze |
+| docs-retrieval-3-proof | ⚠ Scope Review, Implementation, Release Gate | Market Research, Discovery, UX Research, UI Design, Architecture, QA Evidence, Security Review, Post-Launch | Label review, Scoring, Close-out |
 
 ## DORA
 
@@ -78,21 +83,40 @@ Tokens per tool call, measured against each archetype's own cap.
 | docs-retrieval-2-proof | QA Evidence (fresh single spawn) | review | sonnet-5-5 | high (declared) | 26,879 | 11 | 2,444 | 31% | — |
 | docs-retrieval-2-proof | Post-Launch close-out attempt (resumed once to return its draft) | review | sonnet-5-5 | medium (declared) | 39,756 | 14 | 2,840 | 36% | — |
 | docs-retrieval-2-proof | Post-Launch close-out written (resumed after hook fix) | review | sonnet-5-5 | medium (declared) | 8,030 | 5 | 1,606 | 20% | — |
+| docs-retrieval-3 | Scope Review | review | sonnet-5-5 | declared: frontmatter default | 402,000 | 22 | 18,273 | 228% | ⚠ over cap, ⚠ density |
+| docs-retrieval-3 | Architecture | review | opus-5-5 | declared: frontmatter default | 2,690,000 | 50 | 53,800 | 673% | ⚠ over cap, ⚠ density |
+| docs-retrieval-3 | Implementation | build | sonnet-5-5 | declared: frontmatter default | 2,700,000 | 37 | 72,973 | 1459% | ⚠ over cap, ⚠ density |
+| docs-retrieval-3-proof | Label review | review | sonnet-5-5 | declared: frontmatter default | 2,070,000 | 35 | 59,143 | 739% | ⚠ over cap, ⚠ density |
+| docs-retrieval-3-proof | Scoring | review | sonnet-5-5 | declared: frontmatter default | 275,000 | 16 | 17,188 | 215% | ⚠ over cap, ⚠ density |
 
 ## Untraced stages
 
-None — every stage in every run reported its own telemetry.
+Executed by the Orchestrator rather than spawned as a subagent, so they
+carry no tokens or tool calls. **Every fleet and per-run figure above
+excludes them** — treat slice costs as a floor, not a total.
+
+| Run | Stage | Recorded via |
+|-----|-------|-------------|
+| docs-retrieval-3 | Intake | `executor` (trace@2) |
+| docs-retrieval-3 | Freeze | `executor` (trace@2) |
+| docs-retrieval-3-proof | Intake | `executor` (trace@2) |
+| docs-retrieval-3-proof | Close-out | `executor` (trace@2) |
 
 ## Gate catches
 
 Defects the gates caught before they shipped — the pipeline earning its keep.
-**A floor, not a total:** 3 run(s) predate the `gateCatches` field (docs-retrieval, docs-retrieval-2, docs-retrieval-2-proof) and recorded catches only in prose, so a real block — e.g. Security stopping the http-layer bind — is not counted here.
+**A floor, not a total:** 5 run(s) predate the `gateCatches` field (docs-retrieval, docs-retrieval-2, docs-retrieval-2-proof, docs-retrieval-3, docs-retrieval-3-proof) and recorded catches only in prose, so a real block — e.g. Security stopping the http-layer bind — is not counted here.
 
 None structurally recorded yet.
 
 ## Outliers
 
 - **Implementation of embed-v3 (resumed)** (docs-retrieval, review): 155,759 tok / 41 calls — 1.0× the 150k per-stage token cap
+- **Scope Review** (docs-retrieval-3, review): 402,000 tok / 22 calls — 2.7× the 150k per-stage token cap; 2.3× the 8.0k review-density cap
+- **Architecture** (docs-retrieval-3, review): 2,690,000 tok / 50 calls — 17.9× the 150k per-stage token cap; 6.7× the 8.0k review-density cap
+- **Implementation** (docs-retrieval-3, build): 2,700,000 tok / 37 calls — 18.0× the 150k per-stage token cap; 14.6× the 5.0k build-density cap
+- **Label review** (docs-retrieval-3-proof, review): 2,070,000 tok / 35 calls — 13.8× the 150k per-stage token cap; 7.4× the 8.0k review-density cap
+- **Scoring** (docs-retrieval-3-proof, review): 275,000 tok / 16 calls — 1.8× the 150k per-stage token cap; 2.1× the 8.0k review-density cap
 
 ## Baselines
 

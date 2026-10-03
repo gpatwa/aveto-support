@@ -12,12 +12,14 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from aveto_support.embed import Embedder
     from aveto_support.index import Index
+    from aveto_support.rerank import Reranker
     from aveto_support.search import FileHit, PassageMatch, RetrievalResult
 
 DEFAULT_CONFIG = "docs-source.toml"
 DEFAULT_INDEX = "index/docs-index.json"
 DEFAULT_EVAL = "evals/retrieval.toml"
 DEFAULT_MODELS = "models"
+RANKINGS = ("file-rerank-v1", "file-rrf-v1")
 
 
 def _excerpt(match: PassageMatch) -> list[str]:
@@ -70,10 +72,12 @@ def _parser() -> argparse.ArgumentParser:
     ing.add_argument("--out", default=DEFAULT_INDEX)
     ret = sub.add_parser("retrieve", help="find the docs files for a question")
     ret.add_argument("--index", default=DEFAULT_INDEX)
+    ret.add_argument("--ranking", choices=RANKINGS, default=RANKINGS[0])
     ret.add_argument("question", nargs="+")
     ev = sub.add_parser("eval", help="score retrieval against an eval set")
     ev.add_argument("--index", default=DEFAULT_INDEX)
     ev.add_argument("--eval-file", default=DEFAULT_EVAL)
+    ev.add_argument("--ranking", choices=RANKINGS, default=RANKINGS[0])
     return parser
 
 
@@ -83,12 +87,18 @@ def _limit_threads() -> None:
         os.environ[name] = "1"
 
 
-def _dispatch(args: argparse.Namespace, embedder: Embedder | None, models_dir: Path) -> int:
+def _dispatch(
+    args: argparse.Namespace,
+    embedder: Embedder | None,
+    reranker: Reranker | None,
+    models_dir: Path,
+) -> int:
     from aveto_support.embed import OnnxEmbedder
     from aveto_support.evaluate import check_commit, format_report, load_eval_set, score
     from aveto_support.index import load_index
     from aveto_support.ingest import run_ingest
-    from aveto_support.search import Searcher, retrieve
+    from aveto_support.rerank import OnnxReranker
+    from aveto_support.search import Searcher, ranking_mode, retrieve
 
     if args.command == "ingest":
         report = run_ingest(
@@ -110,18 +120,25 @@ def _dispatch(args: argparse.Namespace, embedder: Embedder | None, models_dir: P
             f"diagnostic, retrieval does not abstain)"
         )
         print(f"model files: {report.model_status} (sha256 verified before use)")
+        print(f"reranker files: {report.reranker_status} (sha256 verified before use)")
         print(f"wrote {args.out}  sha256 {report.sha256}")
         return 0
     index = load_index(Path(args.index))
     active = embedder if embedder is not None else OnnxEmbedder.load(models_dir, index.params.embedding)
-    searcher = Searcher(index, active)
+    active_reranker: Reranker | None = None
+    if args.ranking == "file-rerank-v1":
+        active_reranker = reranker if reranker is not None else OnnxReranker.load(models_dir)
+    searcher = Searcher(index, active, active_reranker)
     if args.command == "retrieve":
         print(format_result(retrieve(searcher, " ".join(args.question)), index))
         return 0
     eval_set = load_eval_set(Path(args.eval_file))
     check_commit(index, eval_set)
+    print(f"Ranking: {ranking_mode(searcher)}")
     report_eval = score(searcher, eval_set)
-    print(format_report(report_eval, args.eval_file, index))
+    text = format_report(report_eval, args.eval_file, index)
+    # evaluate.py (frozen) labels its header file-rrf-v1; name the method that actually ran.
+    print(text.replace("ranking: file-rrf-v1", f"ranking: {args.ranking}", 1))
     return 0 if report_eval.passed else 1
 
 
@@ -129,6 +146,7 @@ def main(
     argv: Sequence[str] | None = None,
     *,
     embedder: Embedder | None = None,
+    reranker: Reranker | None = None,
     models_dir: Path = Path(DEFAULT_MODELS),
 ) -> int:
     try:
@@ -142,7 +160,7 @@ def main(
     from aveto_support.ingest import ConfigError, FetchError
 
     try:
-        return _dispatch(args, embedder, models_dir)
+        return _dispatch(args, embedder, reranker, models_dir)
     except (ConfigError, IndexFormatError, EvalFormatError, ModelError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
