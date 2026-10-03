@@ -20,7 +20,14 @@
    "record": "runs/docs-retrieval-4/APPROVAL_RECORD-1.md"
   }
  ],
- "gateCatches": [],
+ "gateCatches": [
+  {
+   "gate": "Security",
+   "verdict": "fail",
+   "severity": "required-fix",
+   "finding": "ADR 0006 states crash outcomes the evidence does not support (crash not reproduced)"
+  }
+ ],
  "stages": [
   {
    "stage": "Intake",
@@ -51,6 +58,15 @@
    "effort": "declared: frontmatter default",
    "tokens": 4320000,
    "toolCalls": 64,
+   "retries": 0
+  },
+  {
+   "stage": "Security Review",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 2860000,
+   "toolCalls": 43,
    "retries": 0
   }
  ]

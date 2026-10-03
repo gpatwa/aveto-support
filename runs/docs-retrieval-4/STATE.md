@@ -3,8 +3,8 @@
 - **Ask:** Make file-rrf-v1 the default ranking, fix the shutdown crash (exit 134), run Security Review and the Release Gate once (intents/docs-retrieval-4.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Security Review
-- **Status:** in-progress
+- **Current stage:** Security Review (failed; awaiting the owner on budget)
+- **Status:** blocked-on-failure
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the aveto-support main checkout)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 931650b
@@ -35,8 +35,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 400k tokens  ·  **Depth:** standard
-- **Spent:** 228k (57%)  ·  **Remaining:** 172k
-- **Next stage:** Security Review (review) est. 70k → **PROCEED** (228 + 70 = 298k ≤ 400k; Release Gate 70k + Close-out 30k still to fit: 168k of 172k)
+- **Spent:** 358k (90%)  ·  **Remaining:** 42k
+- **Next stage:** Fix R1 (ADR 0006 wording) est. 20k → STOP-AND-ASK
 
 Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+70+30); the Engineering Manager confirms or compresses at Scope Review. Security Review runs at adversarial depth for the download path and INV-4 / INV-5 by the owner's instruction.
 
@@ -44,7 +44,7 @@ Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+
 
 | Stage | Retries used | Cap | Class | Last failure |
 |-------|--------------|-----|-------|--------------|
-| (none) | 0 | 2 | — | — |
+| Security Review | 0 | 2 | gate failure (security): required-fix R1, doc-only, ADR 0006 crash wording | FAIL 2026-10-03, runs/docs-retrieval-4/04-security-review.md |
 
 ## Interruptions
 
@@ -60,11 +60,12 @@ Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+
 | Scope Review (engineering-manager) | sonnet-5-5 | declared: frontmatter default | 2026-10-03T06:30:00Z | 2026-10-03T06:32:00Z | 1:37 | 194k processed (peak ctx 46k) | 18 | 0 |
 | Architecture (software-architect) | opus-5-5 | declared: frontmatter default | 2026-10-03T06:35:00Z | 2026-10-03T06:40:00Z | 4:55 | 825k processed (peak ctx 70k) | 30 | 0 |
 | Implementation (backend-architect) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-03 (commit 4419650) | 87:25 | 4.32M processed (peak ctx 112k) | 64 | 0 |
-| **Total** | | | | | | 5.34M processed (peak ctx sum 228k) | 112 | |
+| Security Review (security-privacy) | opus-5-5 | declared: frontmatter default | — | 2026-10-03 (commit 08d6a86) | 7:34 | 2.86M processed (peak ctx 129k) | 43 | 0 |
+| **Total** | | | | | | 8.20M processed (peak ctx sum 358k) | 155 | |
 
 ## Next action
 
-Security Review (security-privacy), fresh spawn, adversarial on the download path and INV-4 / INV-5; standard elsewhere. Then Release Gate (qa-evidence one fourth-set regression run, then release-manager). The crash is NOT REPRODUCED (neither fixed nor explained); no stage may claim otherwise.
+STOP-AND-ASK (budget). Security Review FAILED with one doc-only required-fix (R1). Spent 358k of 400k (Security peaked at 129k vs a 70k estimate). Remaining 42k. Still needed, estimated: R1 fix 20k + limited Security re-check ~35k + Release Gate 70k + Close-out 30k = ~155k, a shortfall of ~113k. Owner decides; no agent raises the budget; Security and the Release Gate are not compressed. The owner has not yet answered. Do not spawn until the owner does.
 
 ## Implementation notes (resumable)
 
