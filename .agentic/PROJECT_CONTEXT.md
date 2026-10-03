@@ -44,7 +44,9 @@ answer. A draft that cannot be backed by sources is worse than no draft.
 
 1. **Classify** the question — plain rules first, a model only for what rules
    cannot place.
-2. **Retrieve** the relevant passages — plain code.
+2. **Retrieve** the relevant passages — a local embedding model ranks files and
+   passages (`file-rrf-v1`, the default), plus an optional local cross-encoder
+   reranker that is off by default. No generative model is involved.
 3. **Draft** a grounded reply — model role 1, as a **bounded tool-using
    loop**: it may search the docs again, read the full issue thread, or look up
    related issues, under a hard cap on turns and spend.

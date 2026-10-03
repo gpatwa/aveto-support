@@ -3,6 +3,7 @@
 > Architecture Decision Record. Owned by the Architect. Never edited after it is
 > accepted. A changed decision gets a new ADR that supersedes this one.
 
+- **Status note (slice `docs-retrieval-4`):** kept, off by default, opt-in via `ingest --with-reranker`; see ADR 0006. The decision text below is not edited.
 - **Status:** proposed. Becomes accepted only if the owner approves the specific model (A1, rule 5) and the INV-5 wording (A2, rule 4), and slice B (`docs-retrieval-3-proof`) passes its held-out gate. If A1 is denied, this ADR is superseded before implementation.
 - **Date:** 2026-09-30
 - **Slice:** `runs/docs-retrieval-3/` (slice A, method to freeze). Full specification: `runs/docs-retrieval-3/02-tech-spec.md`. Approval request: `runs/docs-retrieval-3/02-approval-request.md`.
