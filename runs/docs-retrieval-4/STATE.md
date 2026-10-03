@@ -19,7 +19,7 @@
 | Scope Review | engineering-manager | done | runs/docs-retrieval-4/01-scope.md | plan accepted |
 | Architecture | software-architect | done | runs/docs-retrieval-4/02-tech-spec.md; runs/docs-retrieval-4/02-approval-request.md; docs/adr/0006-default-rrf-reranker-opt-in.md (proposed) | spec argued before any run |
 | INV-5 sentence approval (rule 4) | Human | requested | runs/docs-retrieval-4/02-approval-request.md | owner's own words |
-| Implementation | backend-architect | in-progress | — | full regression green; 20 exit-0 runs per mode |
+| Implementation | backend-architect | in-progress | runs/docs-retrieval-4/03-implementation.md (not yet written) | full regression green; 20 exit-0 runs per mode |
 | Security Review | security-privacy | pending | — | no blocker |
 | Release Gate | qa-evidence, release-manager | pending | — | all gates for tier 2 |
 | Close-out | post-launch-learning | pending | — | n/a |
@@ -64,3 +64,10 @@ Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+
 ## Next action
 
 Implementation (backend-architect), fresh spawn, running, told of 01-scope-addendum.md (200-run retrieve loop per mode; ARCHITECTURE.md exception, 14 files). Apply the owner's INV-5 sentence from APPROVAL_RECORD-1.md.
+
+
+## Implementation notes (resumable)
+
+- models/ and index/ copied locally from .claude/worktrees/docs-retrieval-3 (gitignored; no download).
+- Done: nothing in code yet. Running: unfixed reproduction, restartable: `crash-evidence/loop.sh crash-evidence/prefix-unfixed-rerank-eval.txt 20 eval rerank` (9/20 done, all exit 1, 0 x 134). Evidence dir: runs/docs-retrieval-4/crash-evidence/.
+- Next: fix + tests, then post-fix loops (rrf/rerank eval 20; retrieve 200 each), then wording/ARCHITECTURE.md/INV-5 last.
