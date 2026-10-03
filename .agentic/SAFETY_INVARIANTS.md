@@ -49,6 +49,8 @@
   `aveto_support/rerank.py` — each requested from `huggingface.co` at its own
   full 40-hex revision, with redirects only to hosts under `hf.co` (for example
   `us.aws.cdn.hf.co`).
+  Of the two models, the default path fetches only the embedding model's files:
+  **`ingest`** fetches the reranker's files only when run with **`--with-reranker`**.
   Every model file is checked against its committed sha256 **before it is
   used**. On a mismatch the file is deleted and ingest fails. Trust rests on the
   hash, never on the host. No credentials are sent. **No question, passage or
@@ -64,5 +66,9 @@
   `test_reranker_hash_mismatch_rejected_and_deleted`,
   `test_reranker_cached_file_rehashed_before_use`,
   `test_reranker_redirect_outside_hf_co_refused`,
-  `test_retrieve_is_offline_with_cached_reranker`, and the autouse network
+  `test_retrieve_is_offline_with_cached_reranker`,
+  `test_default_ingest_fetches_no_reranker`,
+  `test_default_ingest_makes_no_reranker_request`,
+  `test_ingest_with_reranker_fetches_and_rehashes`,
+  `test_reranker_absent_fails_closed_without_download`, and the autouse network
   block.)*

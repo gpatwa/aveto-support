@@ -19,7 +19,7 @@
 | Scope Review | engineering-manager | done | runs/docs-retrieval-4/01-scope.md | plan accepted |
 | Architecture | software-architect | done | runs/docs-retrieval-4/02-tech-spec.md; runs/docs-retrieval-4/02-approval-request.md; docs/adr/0006-default-rrf-reranker-opt-in.md (proposed) | spec argued before any run |
 | INV-5 sentence approval (rule 4) | Human | requested | runs/docs-retrieval-4/02-approval-request.md | owner's own words |
-| Implementation | backend-architect | in-progress | runs/docs-retrieval-4/03-implementation.md (not yet written) | full regression green; 20 exit-0 runs per mode |
+| Implementation | backend-architect | done | runs/docs-retrieval-4/03-implementation.md | full regression green; 20 exit-0 runs per mode |
 | Security Review | security-privacy | pending | — | no blocker |
 | Release Gate | qa-evidence, release-manager | pending | — | all gates for tier 2 |
 | Close-out | post-launch-learning | pending | — | n/a |
@@ -72,3 +72,7 @@ Implementation (backend-architect), fresh spawn, running, told of 01-scope-adden
 - DONE: unfixed reproduction, rerank eval x20: 20x exit 1, 0x exit 134 (crash-evidence/prefix-unfixed-rerank-eval.txt). Weakref premise check (unfixed): both adapters already dead when main() returns (premise of spec 3.2 NOT observed). Code + tests done, regression green (168 passed, mypy, ruff).
 - RUNNING (background): `runs/docs-retrieval-4/crash-evidence/run-all.sh` (restartable; skips recorded runs): fixed-rrf-eval 20, fixed-rerank-eval 20, fixed-rrf-retrieve200, fixed-rerank-retrieve200, all in crash-evidence/.
 - TODO after loops: 03-implementation.md; wording files; docs/ARCHITECTURE.md; INV-5 last (approval granted, APPROVAL_RECORD-1.md).
+
+- RUNNING (parallel): unfixed retrieve200, crash-evidence/unfixed-retrieve-loop.sh -> crash-evidence/prefix-unfixed-rerank-retrieve200.txt (worktree of 6591bf3 in scratchpad prefix-wt; remove with `git worktree remove --force` when done).
+
+- DONE: all loops finished (0 x 134 in 660 runs; crash NOT REPRODUCED, see 03-implementation.md), wording, ARCHITECTURE, INV-5 applied, regression green. Scratch worktree removed.
