@@ -20,7 +20,7 @@
 | Architecture | software-architect | done | runs/docs-retrieval-4/02-tech-spec.md; runs/docs-retrieval-4/02-approval-request.md; docs/adr/0006-default-rrf-reranker-opt-in.md (proposed) | spec argued before any run |
 | INV-5 sentence approval (rule 4) | Human | requested | runs/docs-retrieval-4/02-approval-request.md | owner's own words |
 | Implementation | backend-architect | done | runs/docs-retrieval-4/03-implementation.md | full regression green; 20 exit-0 runs per mode |
-| Security Review | security-privacy | in-progress | — | no blocker |
+| Security Review | security-privacy | blocked: FAIL, 1 required-fix (R1, doc-only: ADR 0006 crash wording), 0 blockers, 5 advisories; code passes; re-check limited to the R1 scope | runs/docs-retrieval-4/04-security-review.md | no blocker |
 | Release Gate | qa-evidence, release-manager | pending | — | all gates for tier 2 |
 | Close-out | post-launch-learning | pending | — | n/a |
 
