@@ -3,7 +3,7 @@
 - **Ask:** Make file-rrf-v1 the default ranking, fix the shutdown crash (exit 134), run Security Review and the Release Gate once (intents/docs-retrieval-4.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** INV-5 sentence approval (rule 4)
+- **Current stage:** Security Review
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the aveto-support main checkout)
 - **Telemetry:** self-reported
@@ -20,7 +20,7 @@
 | Architecture | software-architect | done | runs/docs-retrieval-4/02-tech-spec.md; runs/docs-retrieval-4/02-approval-request.md; docs/adr/0006-default-rrf-reranker-opt-in.md (proposed) | spec argued before any run |
 | INV-5 sentence approval (rule 4) | Human | requested | runs/docs-retrieval-4/02-approval-request.md | owner's own words |
 | Implementation | backend-architect | done | runs/docs-retrieval-4/03-implementation.md | full regression green; 20 exit-0 runs per mode |
-| Security Review | security-privacy | pending | — | no blocker |
+| Security Review | security-privacy | in-progress | — | no blocker |
 | Release Gate | qa-evidence, release-manager | pending | — | all gates for tier 2 |
 | Close-out | post-launch-learning | pending | — | n/a |
 
@@ -35,8 +35,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 400k tokens  ·  **Depth:** standard
-- **Spent:** 116k (29%)  ·  **Remaining:** 284k
-- **Next stage:** Implementation (build) est. 100k → **PROCEED** (116 + 100 = 216k ≤ 400k)
+- **Spent:** 228k (57%)  ·  **Remaining:** 172k
+- **Next stage:** Security Review (review) est. 70k → **PROCEED** (228 + 70 = 298k ≤ 400k; Release Gate 70k + Close-out 30k still to fit: 168k of 172k)
 
 Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+70+30); the Engineering Manager confirms or compresses at Scope Review. Security Review runs at adversarial depth for the download path and INV-4 / INV-5 by the owner's instruction.
 
@@ -59,12 +59,12 @@ Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+
 | Intake (Orchestrator) | — | — | 2026-10-03T06:20:00Z | 2026-10-03T06:27:00Z | — | — | — | 0 |
 | Scope Review (engineering-manager) | sonnet-5-5 | declared: frontmatter default | 2026-10-03T06:30:00Z | 2026-10-03T06:32:00Z | 1:37 | 194k processed (peak ctx 46k) | 18 | 0 |
 | Architecture (software-architect) | opus-5-5 | declared: frontmatter default | 2026-10-03T06:35:00Z | 2026-10-03T06:40:00Z | 4:55 | 825k processed (peak ctx 70k) | 30 | 0 |
-| **Total** | | | | | | 1.02M processed (peak ctx sum 116k) | 48 | |
+| Implementation (backend-architect) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-03 (commit 4419650) | 87:25 | 4.32M processed (peak ctx 112k) | 64 | 0 |
+| **Total** | | | | | | 5.34M processed (peak ctx sum 228k) | 112 | |
 
 ## Next action
 
-Implementation (backend-architect), fresh spawn, running, told of 01-scope-addendum.md (200-run retrieve loop per mode; ARCHITECTURE.md exception, 14 files). Apply the owner's INV-5 sentence from APPROVAL_RECORD-1.md.
-
+Security Review (security-privacy), fresh spawn, adversarial on the download path and INV-4 / INV-5; standard elsewhere. Then Release Gate (qa-evidence one fourth-set regression run, then release-manager). The crash is NOT REPRODUCED (neither fixed nor explained); no stage may claim otherwise.
 
 ## Implementation notes (resumable)
 

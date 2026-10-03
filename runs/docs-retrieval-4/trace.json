@@ -43,6 +43,15 @@
    "tokens": 825000,
    "toolCalls": 30,
    "retries": 0
+  },
+  {
+   "stage": "Implementation",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 4320000,
+   "toolCalls": 64,
+   "retries": 0
   }
  ]
 }
