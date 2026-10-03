@@ -1,0 +1,48 @@
+{
+ "schema": "agentic-sdlc/trace@2",
+ "slice": "docs-retrieval-4",
+ "tier": 2,
+ "overlay": false,
+ "landed": false,
+ "started": "2026-10-03T06:26:00Z",
+ "operator": "Gopal Patwa",
+ "leastPrivilegeEnforced": true,
+ "leastPrivilegeNote": "Role subagents load from this repo's .claude/agents/; session rooted in the aveto-support main checkout.",
+ "telemetrySource": "self-reported",
+ "approvals": [
+  {
+   "action": "INV-5 one-sentence clarification (owner's wording) + 4 test names + ingest --with-reranker default",
+   "rule": "4",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-03T06:40:00Z",
+   "decidedAt": "2026-10-03T06:42:53Z",
+   "record": "runs/docs-retrieval-4/APPROVAL_RECORD-1.md"
+  }
+ ],
+ "gateCatches": [],
+ "stages": [
+  {
+   "stage": "Intake",
+   "executor": "orchestrator"
+  },
+  {
+   "stage": "Scope Review",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 194000,
+   "toolCalls": 18,
+   "retries": 0
+  },
+  {
+   "stage": "Architecture",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 825000,
+   "toolCalls": 30,
+   "retries": 0
+  }
+ ]
+}
