@@ -1,6 +1,8 @@
 #!/bin/bash
 # Restartable loop: loop.sh <evidence-file> <total-runs> <eval|retrieve> <rrf|rerank>
 # Appends "N exitcode" per run; skips run numbers already present. Run output goes to scratch, not evidence.
+# NOTE: <evidence-file> must be an ABSOLUTE path (the script cd's to the repo root).
+case "$1" in /*) ;; *) echo "evidence file must be absolute" >&2; exit 2;; esac
 cd /Users/gopalpatwa/opt/aveto-support || exit 2
 f="$1"; total="$2"; cmd="$3"; mode="$4"
 case "$mode" in rrf) r=file-rrf-v1;; rerank) r=file-rerank-v1;; esac

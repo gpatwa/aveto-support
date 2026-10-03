@@ -69,5 +69,6 @@ Implementation (backend-architect), fresh spawn, running, told of 01-scope-adden
 ## Implementation notes (resumable)
 
 - models/ and index/ copied locally from .claude/worktrees/docs-retrieval-3 (gitignored; no download).
-- Done: nothing in code yet. Running: unfixed reproduction, restartable: `crash-evidence/loop.sh crash-evidence/prefix-unfixed-rerank-eval.txt 20 eval rerank` (9/20 done, all exit 1, 0 x 134). Evidence dir: runs/docs-retrieval-4/crash-evidence/.
-- Next: fix + tests, then post-fix loops (rrf/rerank eval 20; retrieve 200 each), then wording/ARCHITECTURE.md/INV-5 last.
+- DONE: unfixed reproduction, rerank eval x20: 20x exit 1, 0x exit 134 (crash-evidence/prefix-unfixed-rerank-eval.txt). Weakref premise check (unfixed): both adapters already dead when main() returns (premise of spec 3.2 NOT observed). Code + tests done, regression green (168 passed, mypy, ruff).
+- RUNNING (background): `runs/docs-retrieval-4/crash-evidence/run-all.sh` (restartable; skips recorded runs): fixed-rrf-eval 20, fixed-rerank-eval 20, fixed-rrf-retrieve200, fixed-rerank-retrieve200, all in crash-evidence/.
+- TODO after loops: 03-implementation.md; wording files; docs/ARCHITECTURE.md; INV-5 last (approval granted, APPROVAL_RECORD-1.md).

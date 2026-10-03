@@ -425,6 +425,7 @@ def run_ingest(
     model_opener: urllib.request.OpenerDirector | None = None,
     models_dir: Path = Path("models"),
     embedder: Embedder | None = None,
+    with_reranker: bool = False,
 ) -> IngestReport:
     source = load_source_config(config_path)
     offtopic = load_offtopic(source, config_path)
@@ -446,59 +447,67 @@ def run_ingest(
         split.extend(found)
         dropped += empty
     split.sort(key=lambda p: (p.path, p.line_start))
+    loaded: OnnxEmbedder | None = None
     if embedder is None:
         model_status = ensure_model_files(source.embedding, models_dir, opener=model_opener)
-        embedder = OnnxEmbedder.load(models_dir, source.embedding)
-        reranker_status = ensure_reranker_files(RerankParams(), models_dir, opener=model_opener)
-        OnnxReranker.load(models_dir)
+        embedder = loaded = OnnxEmbedder.load(models_dir, source.embedding)
     else:
         model_status = "injected"
-        reranker_status = "injected"
-    passages: list[Passage] = []
-    truncated = 0
-    for passage in split:
-        text = passage_input(passage)
-        if embedder.token_count(text) + 2 > MAX_TOKENS:
-            truncated += 1
-        passages.append(dataclasses.replace(passage, embedding=embedder.embed_passage(text)))
-    calibration = calibrate(passages, embedder, offtopic)
-    warnings: list[str] = []
-    if len(eligible_passages_by_file(passages)) < 5:
-        warnings.append("fewer than 5 files have searchable text; threshold set to 1000000.0")
-    if not offtopic:
-        warnings.append(
-            "no off-topic calibration list configured; abstention is calibrated only on "
-            "word salads and is likely too permissive"
+    try:
+        if with_reranker:
+            reranker_status = ensure_reranker_files(RerankParams(), models_dir, opener=model_opener)
+            OnnxReranker.load(models_dir).close()  # load-check only; released at once
+        else:
+            reranker_status = "not fetched"
+
+        passages: list[Passage] = []
+        truncated = 0
+        for passage in split:
+            text = passage_input(passage)
+            if embedder.token_count(text) + 2 > MAX_TOKENS:
+                truncated += 1
+            passages.append(dataclasses.replace(passage, embedding=embedder.embed_passage(text)))
+        calibration = calibrate(passages, embedder, offtopic)
+        warnings: list[str] = []
+        if len(eligible_passages_by_file(passages)) < 5:
+            warnings.append("fewer than 5 files have searchable text; threshold set to 1000000.0")
+        if not offtopic:
+            warnings.append(
+                "no off-topic calibration list configured; abstention is calibrated only on "
+                "word salads and is likely too permissive"
+            )
+        elif len(offtopic) < 50:
+            warnings.append(f"off-topic calibration list has {len(offtopic)} questions; at least 50 are expected")
+        index = Index(
+            repo=source.repo,
+            commit=source.commit,
+            files_indexed=len(files),
+            skipped=tuple(skipped),
+            passages=tuple(passages),
+            threshold=calibration.threshold,
+            params=RetrievalParams(embedding=source.embedding),
+            empty_sections_dropped=dropped,
+            tau_salad=calibration.tau_salad,
+            tau_offtopic=calibration.tau_offtopic,
+            truncated_for_embedding=truncated,
         )
-    elif len(offtopic) < 50:
-        warnings.append(f"off-topic calibration list has {len(offtopic)} questions; at least 50 are expected")
-    index = Index(
-        repo=source.repo,
-        commit=source.commit,
-        files_indexed=len(files),
-        skipped=tuple(skipped),
-        passages=tuple(passages),
-        threshold=calibration.threshold,
-        params=RetrievalParams(embedding=source.embedding),
-        empty_sections_dropped=dropped,
-        tau_salad=calibration.tau_salad,
-        tau_offtopic=calibration.tau_offtopic,
-        truncated_for_embedding=truncated,
-    )
-    digest = write_index(index, out_path)
-    return IngestReport(
-        repo=source.repo,
-        commit=source.commit,
-        files_indexed=len(files),
-        passages=len(passages),
-        skipped=tuple(skipped),
-        empty_sections_dropped=dropped,
-        threshold=calibration.threshold,
-        sha256=digest,
-        warnings=tuple(warnings),
-        truncated_for_embedding=truncated,
-        tau_salad=calibration.tau_salad,
-        tau_offtopic=calibration.tau_offtopic,
-        model_status=model_status,
-        reranker_status=reranker_status,
-    )
+        digest = write_index(index, out_path)
+        return IngestReport(
+            repo=source.repo,
+            commit=source.commit,
+            files_indexed=len(files),
+            passages=len(passages),
+            skipped=tuple(skipped),
+            empty_sections_dropped=dropped,
+            threshold=calibration.threshold,
+            sha256=digest,
+            warnings=tuple(warnings),
+            truncated_for_embedding=truncated,
+            tau_salad=calibration.tau_salad,
+            tau_offtopic=calibration.tau_offtopic,
+            model_status=model_status,
+            reranker_status=reranker_status,
+        )
+    finally:
+        if loaded is not None:
+            loaded.close()

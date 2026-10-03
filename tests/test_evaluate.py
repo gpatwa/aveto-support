@@ -257,3 +257,82 @@ def test_committed_eval_set_is_well_formed() -> None:
     from aveto_support.ingest import load_source_config
 
     assert es.pinned_commit == load_source_config(root / "docs-source.toml").commit
+
+
+# --- default ranking and adapter ownership ----------------------------------
+
+
+def _fail_reranker_load(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fail(*args: object, **kwargs: object) -> object:
+        raise AssertionError("the default ranking must not load the reranker")
+
+    monkeypatch.setattr("aveto_support.rerank.OnnxReranker.load", fail)
+
+
+def test_retrieve_default_ranking_is_rrf(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    idx, _ = _write(tmp_path, 0.3, "")
+    assert main(["retrieve", "--index", str(idx), "cats", "purr"], embedder=FAKE) == 0
+    out = capsys.readouterr().out
+    assert "Ranking: file-rrf-v1" in out and "file-rerank-v1" not in out
+
+
+def test_eval_default_ranking_is_rrf(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    idx, ev = _write(tmp_path, 0.3, A_CATS)
+    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE) == 0
+    lines = capsys.readouterr().out.split("\n")
+    assert lines[0].startswith("Ranking: file-rrf-v1") and "ranking: file-rrf-v1" in lines[1]
+
+
+def test_default_run_loads_no_reranker(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _fail_reranker_load(monkeypatch)
+    idx, ev = _write(tmp_path, 0.3, A_CATS)
+    assert main(["retrieve", "--index", str(idx), "cats"], embedder=FAKE) == 0
+    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE) == 0
+
+
+def test_rerank_ranking_still_selectable(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    idx, _ = _write(tmp_path, 0.3, "")
+    fake = FakeReranker()
+    assert main(["retrieve", "--index", str(idx), "--ranking", "file-rerank-v1", "cats", "purr"],
+                embedder=FAKE, reranker=fake) == 0
+    assert "Ranking: file-rerank-v1" in capsys.readouterr().out and fake.calls
+
+
+class _Tracked:
+    def __init__(self, log: list[str], name: str, inner: object) -> None:
+        self._log, self._name, self._inner = log, name, inner
+
+    def close(self) -> None:
+        self._log.append(self._name)
+
+    def __getattr__(self, attr: str) -> object:
+        return getattr(self._inner, attr)
+
+
+def test_main_closes_loaded_adapters_in_reverse_order(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    log: list[str] = []
+    monkeypatch.setattr(
+        "aveto_support.embed.OnnxEmbedder.load", lambda *a, **k: _Tracked(log, "embedder", FAKE)
+    )
+    monkeypatch.setattr(
+        "aveto_support.rerank.OnnxReranker.load", lambda *a, **k: _Tracked(log, "reranker", FakeReranker())
+    )
+    idx, ev = _write(tmp_path, 0.3, A_CATS)
+    miss = tmp_path / "miss.toml"
+    miss.write_text(ev.read_text().replace("pets/cats.md", "zzz/last.md"))
+    base = ["eval", "--index", str(idx), "--ranking", "file-rerank-v1", "--eval-file"]
+    for eval_file, expected in ((ev, 0), (miss, 1), (tmp_path / "absent.toml", 2)):
+        log.clear()
+        assert main([*base, str(eval_file)]) == expected
+        assert log == ["reranker", "embedder"]
+    log.clear()
+    assert main(["retrieve", "--index", str(idx), "cats"]) == 0
+    assert log == ["embedder"]  # default ranking: no reranker was loaded
+    capsys.readouterr()
+    # Injected adapters belong to the caller and are never closed.
+    log.clear()
+    injected = _Tracked(log, "injected", FAKE)
+    assert main(["retrieve", "--index", str(idx), "cats"], embedder=injected) == 0  # type: ignore[arg-type]
+    assert log == []

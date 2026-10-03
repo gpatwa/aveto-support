@@ -10,6 +10,7 @@ from aveto_support.__main__ import main
 from aveto_support.embed import (
     INPUT_NAMES,
     ModelError,
+    OnnxEmbedder,
     WordPiece,
     passage_input,
     sha256_file,
@@ -216,7 +217,8 @@ def test_rerank_non_finite_score_fails_closed(bad: float, tmp_path: Path, capsys
         retrieve(build(reranker=Bad(bad)), QUESTION)
     idx = tmp_path / "i.json"
     write_index(build().index, idx)
-    assert main(["retrieve", "--index", str(idx), QUESTION], embedder=FAKE, reranker=Bad(bad)) == 2
+    assert main(["retrieve", "--index", str(idx), "--ranking", "file-rerank-v1", QUESTION],
+                embedder=FAKE, reranker=Bad(bad)) == 2
     assert "non-finite" in capsys.readouterr().err
 
 
@@ -297,7 +299,8 @@ def test_cli_retrieve_ranking_switch(tmp_path: Path, capsys: pytest.CaptureFixtu
     assert main(["retrieve", "--index", str(idx), "--ranking", "file-rrf-v1", QUESTION], embedder=FAKE) == 0
     assert capsys.readouterr().out == out
     fake = FakeReranker()
-    assert main(["retrieve", "--index", str(idx), QUESTION], embedder=FAKE, reranker=fake) == 0
+    assert main(["retrieve", "--index", str(idx), "--ranking", "file-rerank-v1", QUESTION],
+                embedder=FAKE, reranker=fake) == 0
     assert "Ranking: file-rerank-v1:hybrid:" in capsys.readouterr().out
     assert fake.calls
 
@@ -319,11 +322,38 @@ def test_cli_eval_ranking_switch_on_synthetic_set(tmp_path: Path, capsys: pytest
         assert lines[-2] in ("eval: PASS", "eval: FAIL") or lines[-1] in ("eval: PASS", "eval: FAIL")
 
 
-def test_cli_default_mode_without_reranker_cache_exits_2(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_reranker_absent_fails_closed_without_download(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     idx = _index(tmp_path)
-    assert main(["retrieve", "--index", str(idx), QUESTION], embedder=FAKE, models_dir=tmp_path / "none") == 2
+    models = tmp_path / "none"
+    models.mkdir()
+    # The autouse fixture blocks every socket: a download attempt would raise RuntimeError.
+    code = main(["retrieve", "--index", str(idx), "--ranking", "file-rerank-v1", QUESTION],
+                embedder=FAKE, models_dir=models)
     captured = capsys.readouterr()
-    assert "run ingest" in captured.err and captured.out == ""
+    assert code == 2 and "ingest --with-reranker" in captured.err and captured.out == ""
+    assert list(models.rglob("*")) == []
+
+
+class _FakeSession:
+    pass
+
+
+def test_onnx_adapters_close_releases_session() -> None:
+    adapters: list[tuple[OnnxReranker | OnnxEmbedder, str]] = [
+        (object.__new__(OnnxReranker), "reranker"),
+        (object.__new__(OnnxEmbedder), "embedder"),
+    ]
+    for adapter, what in adapters:
+        adapter._session = _FakeSession()
+        adapter.close()
+        adapter.close()  # idempotent
+        assert adapter._session is None
+        with pytest.raises(ModelError, match=f"{what} is closed"):
+            adapter.signature()
+    closed = object.__new__(OnnxReranker)
+    closed._session = None
+    with pytest.raises(ModelError, match="reranker is closed"):
+        closed.score("q", "p")
 
 
 # --- the real model: needs the approved cached files (pytest -m model) -------

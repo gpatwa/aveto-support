@@ -11,7 +11,7 @@ import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 
 import numpy as np
 
@@ -117,17 +117,37 @@ class OnnxReranker:
         """Re-hash both cached files, then build the session. Never downloads."""
         base = reranker_dir(models_dir, params)
         onnx_path, vocab_path = base / params.onnx_file, base / params.vocab_file
-        verify_file(onnx_path, params.onnx_sha256)
-        verify_file(vocab_path, params.vocab_sha256)
+        if not onnx_path.is_file() or not vocab_path.is_file():
+            raise ModelError(
+                f"reranker files are not cached in {base}; --ranking file-rerank-v1 needs them. "
+                "Fetch them with: ingest --with-reranker (the default ranking, file-rrf-v1, "
+                "does not need them)"
+            )
+        try:
+            verify_file(onnx_path, params.onnx_sha256)
+            verify_file(vocab_path, params.vocab_sha256)
+        except ModelError as exc:
+            raise ModelError(f"{exc} (reranker: run ingest --with-reranker)") from exc
         return cls(onnx_path, vocab_path, params)
 
+    def close(self) -> None:
+        """Release the ONNX session now rather than at interpreter teardown. Idempotent."""
+        self._session = None
+
+    def _live(self) -> Any:
+        if self._session is None:
+            raise ModelError("reranker is closed")
+        return self._session
+
     def signature(self) -> GraphSignature:
-        outputs = self._session.get_outputs()
+        session = self._live()
+        outputs = session.get_outputs()
         return GraphSignature(
-            frozenset(i.name for i in self._session.get_inputs()), tuple(outputs[0].shape)
+            frozenset(i.name for i in session.get_inputs()), tuple(outputs[0].shape)
         )
 
     def score(self, question: str, passage_text: str) -> float:
+        session = self._live()
         ids, types = encode_pair(
             self.tokenizer,
             question,
@@ -141,7 +161,7 @@ class OnnxReranker:
             "attention_mask": np.ones((1, n), dtype=np.int64),
             "token_type_ids": np.array([types], dtype=np.int64),
         }
-        logits = np.asarray(self._session.run(None, feeds)[0])
+        logits = np.asarray(session.run(None, feeds)[0])
         if logits.shape != (1, 1):
             raise ModelError(f"unexpected reranker output {logits.shape}; expected (1, 1)")
         value = float(logits[0][0])

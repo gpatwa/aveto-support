@@ -488,28 +488,120 @@ def test_reranker_redirect_outside_hf_co_refused() -> None:
     ) is not None
 
 
-def test_ingest_fetches_reranker_with_embedding(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def _record(calls: list[str], name: str, result: object) -> Callable[..., object]:
+    def inner(*args: object, **kwargs: object) -> object:
+        calls.append(name)
+        return result
+
+    return inner
+
+
+class _Closable(FakeEmbedder):
+    def __init__(self, calls: list[str], name: str) -> None:
+        super().__init__()
+        self.calls, self.name = calls, name
+
+    def close(self) -> None:
+        self.calls.append(f"close-{self.name}")
+
+
+def _no_reranker(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fail(*args: object, **kwargs: object) -> object:
+        raise AssertionError("the reranker must not be fetched or loaded on the default path")
+
+    monkeypatch.setattr("aveto_support.ingest.ensure_reranker_files", fail)
+    monkeypatch.setattr("aveto_support.ingest.OnnxReranker.load", fail)
+
+
+def test_default_ingest_fetches_no_reranker(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[str] = []
-
-    def record(name: str, result: object) -> Callable[..., object]:
-        def inner(*args: object, **kwargs: object) -> object:
-            calls.append(name)
-            return result
-
-        return inner
-
-    monkeypatch.setattr("aveto_support.ingest.ensure_model_files", record("fetch-embed", "downloaded"))
-    monkeypatch.setattr("aveto_support.ingest.OnnxEmbedder.load", record("load-embed", FAKE))
-    monkeypatch.setattr("aveto_support.ingest.ensure_reranker_files", record("fetch-rr", "downloaded"))
-    monkeypatch.setattr("aveto_support.ingest.OnnxReranker.load", record("load-rr", None))
+    monkeypatch.setattr("aveto_support.ingest.ensure_model_files", _record(calls, "fetch-embed", "cached"))
+    monkeypatch.setattr("aveto_support.ingest.OnnxEmbedder.load", _record(calls, "load-embed", _Closable(calls, "embed")))
+    _no_reranker(monkeypatch)
     cfg = _cfg(tmp_path, _base())
     opener = FakeOpener(make_archive(DOCS))
     report = run_ingest(cfg, tmp_path / "i.json", opener=as_opener(opener), models_dir=tmp_path / "models")
-    assert calls == ["fetch-embed", "load-embed", "fetch-rr", "load-rr"]
-    assert (report.model_status, report.reranker_status) == ("downloaded", "downloaded")
+    assert calls == ["fetch-embed", "load-embed", "close-embed"] and report.reranker_status == "not fetched"
+
+
+def test_default_ingest_cli_line_says_not_fetched(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _no_reranker(monkeypatch)
+    cfg = _cfg(tmp_path, _base())
+    monkeypatch.setattr(
+        "aveto_support.ingest.fetch_archive", lambda *a, **k: make_archive(DOCS)
+    )
+    assert main(["ingest", "--config", str(cfg), "--out", str(tmp_path / "i.json")], embedder=FAKE) == 0
+    assert "reranker files: not fetched" in capsys.readouterr().out
+
+
+def test_default_ingest_makes_no_reranker_request(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    opener = _model_opener()
+    monkeypatch.setattr("aveto_support.ingest.OnnxEmbedder.load", lambda *a, **k: _Closable([], "e"))
+    p = _params()
+    embedding = (
+        f'[embedding]\nmodel = "{MODEL}"\nrevision = "{REVISION}"\n'
+        f'onnx_sha256 = "{p.onnx_sha256}"\nvocab_sha256 = "{p.vocab_sha256}"\n'
+    )
+    cfg = _cfg(tmp_path, _base(), embedding=embedding)
+    run_ingest(
+        cfg, tmp_path / "i.json", opener=as_opener(FakeOpener(make_archive(DOCS))),
+        model_opener=as_opener(opener), models_dir=tmp_path / "models",
+    )
+    assert opener.urls and not any("cross-encoder/ms-marco-MiniLM-L6-v2" in u for u in opener.urls)
+
+
+def test_ingest_with_reranker_fetches_and_rehashes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+    monkeypatch.setattr("aveto_support.ingest.ensure_reranker_files", _record(calls, "fetch-rr", "downloaded"))
+    monkeypatch.setattr(
+        "aveto_support.ingest.OnnxReranker.load", _record(calls, "load-rr", _Closable(calls, "rr"))
+    )
+    cfg = _cfg(tmp_path, _base())
+    report = run_ingest(
+        cfg, tmp_path / "i.json", opener=as_opener(FakeOpener(make_archive(DOCS))),
+        models_dir=tmp_path / "models", embedder=FAKE, with_reranker=True,
+    )
+    assert calls == ["fetch-rr", "load-rr", "close-rr"] and report.reranker_status == "downloaded"
+
+
+def test_reranker_opt_in_does_not_change_index(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    cfg = _cfg(tmp_path, _base())
+    opener = FakeOpener(make_archive(DOCS))
+    off = _ingest(cfg, tmp_path / "off.json", opener, tmp_path)
+    calls: list[str] = []
+    monkeypatch.setattr("aveto_support.ingest.ensure_reranker_files", _record(calls, "fetch-rr", "cached"))
+    monkeypatch.setattr(
+        "aveto_support.ingest.OnnxReranker.load", _record(calls, "load-rr", _Closable(calls, "rr"))
+    )
+    on = run_ingest(
+        cfg, tmp_path / "on.json", opener=as_opener(opener), models_dir=tmp_path / "models",
+        embedder=FAKE, with_reranker=True,
+    )
+    assert calls and (tmp_path / "off.json").read_bytes() == (tmp_path / "on.json").read_bytes()
+    assert off.sha256 == on.sha256
+
+
+def test_ingest_closes_embedder_it_loaded(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+    monkeypatch.setattr("aveto_support.ingest.ensure_model_files", _record(calls, "fetch-embed", "cached"))
+    monkeypatch.setattr(
+        "aveto_support.ingest.OnnxEmbedder.load", _record(calls, "load-embed", _Closable(calls, "embed"))
+    )
+    cfg = _cfg(tmp_path, _base())
+    run_ingest(
+        cfg, tmp_path / "i.json", opener=as_opener(FakeOpener(make_archive(DOCS))),
+        models_dir=tmp_path / "models",
+    )
+    assert calls == ["fetch-embed", "load-embed", "close-embed"]
     calls.clear()
-    injected = _ingest(cfg, tmp_path / "j.json", opener, tmp_path)
-    assert calls == [] and injected.reranker_status == "injected"
+    injected = _Closable(calls, "inj")
+    run_ingest(
+        cfg, tmp_path / "j.json", opener=as_opener(FakeOpener(make_archive(DOCS))),
+        models_dir=tmp_path / "models", embedder=injected,
+    )
+    assert calls == []  # the caller owns an injected embedder
 
 
 def test_retrieve_is_offline_with_cached_reranker(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -518,7 +610,7 @@ def test_retrieve_is_offline_with_cached_reranker(tmp_path: Path, capsys: pytest
     out = tmp_path / "i.json"
     _ingest(cfg, out, FakeOpener(make_archive(DOCS)), tmp_path)
     question = "Usage Launch the widget from the menu."
-    assert main(["retrieve", "--index", str(out), question], embedder=FAKE, reranker=FakeReranker()) == 0
+    assert main(["retrieve", "--index", str(out), "--ranking", "file-rerank-v1", question], embedder=FAKE, reranker=FakeReranker()) == 0
     assert "Ranking: file-rerank-v1" in capsys.readouterr().out
 
 
@@ -640,7 +732,7 @@ def test_retrieve_is_offline_with_cached_model(tmp_path: Path, capsys: pytest.Ca
     out = tmp_path / "i.json"
     _ingest(cfg, out, FakeOpener(make_archive(DOCS)), tmp_path)
     question = "Usage Launch the widget from the menu."
-    assert main(["retrieve", "--index", str(out), question], embedder=FAKE, reranker=FakeReranker()) == 0
+    assert main(["retrieve", "--index", str(out), "--ranking", "file-rerank-v1", question], embedder=FAKE, reranker=FakeReranker()) == 0
     assert "guide/usage.md" in capsys.readouterr().out
 
 

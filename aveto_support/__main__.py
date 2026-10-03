@@ -19,7 +19,8 @@ DEFAULT_CONFIG = "docs-source.toml"
 DEFAULT_INDEX = "index/docs-index.json"
 DEFAULT_EVAL = "evals/retrieval.toml"
 DEFAULT_MODELS = "models"
-RANKINGS = ("file-rerank-v1", "file-rrf-v1")
+DEFAULT_RANKING = "file-rrf-v1"
+RANKINGS = ("file-rrf-v1", "file-rerank-v1")
 
 
 def _excerpt(match: PassageMatch) -> list[str]:
@@ -70,14 +71,19 @@ def _parser() -> argparse.ArgumentParser:
     ing = sub.add_parser("ingest", help="fetch the pinned docs and model, and build the index")
     ing.add_argument("--config", default=DEFAULT_CONFIG)
     ing.add_argument("--out", default=DEFAULT_INDEX)
+    ing.add_argument(
+        "--with-reranker",
+        action="store_true",
+        help="also fetch and hash-check the optional reranker (file-rerank-v1); off by default",
+    )
     ret = sub.add_parser("retrieve", help="find the docs files for a question")
     ret.add_argument("--index", default=DEFAULT_INDEX)
-    ret.add_argument("--ranking", choices=RANKINGS, default=RANKINGS[0])
+    ret.add_argument("--ranking", choices=RANKINGS, default=DEFAULT_RANKING)
     ret.add_argument("question", nargs="+")
     ev = sub.add_parser("eval", help="score retrieval against an eval set")
     ev.add_argument("--index", default=DEFAULT_INDEX)
     ev.add_argument("--eval-file", default=DEFAULT_EVAL)
-    ev.add_argument("--ranking", choices=RANKINGS, default=RANKINGS[0])
+    ev.add_argument("--ranking", choices=RANKINGS, default=DEFAULT_RANKING)
     return parser
 
 
@@ -102,7 +108,11 @@ def _dispatch(
 
     if args.command == "ingest":
         report = run_ingest(
-            Path(args.config), Path(args.out), models_dir=models_dir, embedder=embedder
+            Path(args.config),
+            Path(args.out),
+            models_dir=models_dir,
+            embedder=embedder,
+            with_reranker=args.with_reranker,
         )
         for warning in report.warnings:
             print(f"warning: {warning}", file=sys.stderr)
@@ -120,26 +130,45 @@ def _dispatch(
             f"diagnostic, retrieval does not abstain)"
         )
         print(f"model files: {report.model_status} (sha256 verified before use)")
-        print(f"reranker files: {report.reranker_status} (sha256 verified before use)")
+        if report.reranker_status == "not fetched":
+            print(
+                "reranker files: not fetched (optional; ingest --with-reranker fetches them "
+                "for --ranking file-rerank-v1)"
+            )
+        else:
+            print(f"reranker files: {report.reranker_status} (sha256 verified before use)")
         print(f"wrote {args.out}  sha256 {report.sha256}")
         return 0
     index = load_index(Path(args.index))
-    active = embedder if embedder is not None else OnnxEmbedder.load(models_dir, index.params.embedding)
-    active_reranker: Reranker | None = None
-    if args.ranking == "file-rerank-v1":
-        active_reranker = reranker if reranker is not None else OnnxReranker.load(models_dir)
-    searcher = Searcher(index, active, active_reranker)
-    if args.command == "retrieve":
-        print(format_result(retrieve(searcher, " ".join(args.question)), index))
-        return 0
-    eval_set = load_eval_set(Path(args.eval_file))
-    check_commit(index, eval_set)
-    print(f"Ranking: {ranking_mode(searcher)}")
-    report_eval = score(searcher, eval_set)
-    text = format_report(report_eval, args.eval_file, index)
-    # evaluate.py (frozen) labels its header file-rrf-v1; name the method that actually ran.
-    print(text.replace("ranking: file-rrf-v1", f"ranking: {args.ranking}", 1))
-    return 0 if report_eval.passed else 1
+    # Adapters this function loads are closed here, reranker first; injected ones belong to the caller.
+    loaded_embedder: OnnxEmbedder | None = None
+    loaded_reranker: OnnxReranker | None = None
+    try:
+        active = embedder
+        if active is None:
+            active = loaded_embedder = OnnxEmbedder.load(models_dir, index.params.embedding)
+        active_reranker: Reranker | None = None
+        if args.ranking == "file-rerank-v1":
+            active_reranker = reranker
+            if active_reranker is None:
+                active_reranker = loaded_reranker = OnnxReranker.load(models_dir)
+        searcher = Searcher(index, active, active_reranker)
+        if args.command == "retrieve":
+            print(format_result(retrieve(searcher, " ".join(args.question)), index))
+            return 0
+        eval_set = load_eval_set(Path(args.eval_file))
+        check_commit(index, eval_set)
+        print(f"Ranking: {ranking_mode(searcher)}")
+        report_eval = score(searcher, eval_set)
+        text = format_report(report_eval, args.eval_file, index)
+        # evaluate.py (frozen) labels its header file-rrf-v1; name the method that actually ran.
+        print(text.replace("ranking: file-rrf-v1", f"ranking: {args.ranking}", 1))
+        return 0 if report_eval.passed else 1
+    finally:
+        if loaded_reranker is not None:
+            loaded_reranker.close()
+        if loaded_embedder is not None:
+            loaded_embedder.close()
 
 
 def main(
