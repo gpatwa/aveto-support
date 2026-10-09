@@ -35,8 +35,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 520k tokens  ·  **Depth:** standard
-- **Spent:** 358k (69%)  ·  **Remaining:** 162k
-- **Next stage:** R1 fix, ADR 0006 wording (build) est. 20k → **PROCEED** (358 + 20 = 378k ≤ 520k)
+- **Spent:** 373k (72%)  ·  **Remaining:** 147k
+- **Next stage:** Security re-check, limited to R1 (review) est. 35k → **PROCEED** (373 + 35 = 408k ≤ 520k; Release Gate 70k + Close-out 30k after: 138k of 147k)
 
 Budget raised 400k to 520k by the owner, 2026-10-08, in this session (chosen from three options; his words: "budget is approved", then selected "520k, full plan"). Remaining plan: R1 fix 20k + Security re-check 35k + Release Gate 70k + Close-out 30k = 155k; headroom 7k. Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+70+30); the Engineering Manager confirms or compresses at Scope Review. Security Review runs at adversarial depth for the download path and INV-4 / INV-5 by the owner's instruction.
 
@@ -61,7 +61,8 @@ Budget raised 400k to 520k by the owner, 2026-10-08, in this session (chosen fro
 | Architecture (software-architect) | opus-5-5 | declared: frontmatter default | 2026-10-03T06:35:00Z | 2026-10-03T06:40:00Z | 4:55 | 825k processed (peak ctx 70k) | 30 | 0 |
 | Implementation (backend-architect) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-03 (commit 4419650) | 87:25 | 4.32M processed (peak ctx 112k) | 64 | 0 |
 | Security Review (security-privacy) | opus-5-5 | declared: frontmatter default | — | 2026-10-03 (commit 08d6a86) | 7:34 | 2.86M processed (peak ctx 129k) | 43 | 0 |
-| **Total** | | | | | | 8.20M processed (peak ctx sum 358k) | 155 | |
+| R1 fix (backend-architect, Security retry 1) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-08 (commit 856a110) | 0:22 | 53k processed (peak ctx 15k) | 5 | 1 |
+| **Total** | | | | | | 8.25M processed (peak ctx sum 373k) | 160 | |
 
 ## Next action
 
