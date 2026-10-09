@@ -3,8 +3,8 @@
 - **Ask:** Make file-rrf-v1 the default ranking, fix the shutdown crash (exit 134), run Security Review and the Release Gate once (intents/docs-retrieval-4.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Security Review (failed; awaiting the owner on budget)
-- **Status:** blocked-on-failure
+- **Current stage:** Security Review retry 1 (R1 fix)
+- **Status:** in-progress
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the aveto-support main checkout)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 931650b
@@ -34,17 +34,17 @@
 
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
-- **Budget:** 400k tokens  ·  **Depth:** standard
-- **Spent:** 358k (90%)  ·  **Remaining:** 42k
-- **Next stage:** Fix R1 (ADR 0006 wording) est. 20k → STOP-AND-ASK
+- **Budget:** 520k tokens  ·  **Depth:** standard
+- **Spent:** 358k (69%)  ·  **Remaining:** 162k
+- **Next stage:** R1 fix, ADR 0006 wording (build) est. 20k → **PROCEED** (358 + 20 = 378k ≤ 520k)
 
-Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+70+30); the Engineering Manager confirms or compresses at Scope Review. Security Review runs at adversarial depth for the download path and INV-4 / INV-5 by the owner's instruction.
+Budget raised 400k to 520k by the owner, 2026-10-08, in this session (chosen from three options; his words: "budget is approved", then selected "520k, full plan"). Remaining plan: R1 fix 20k + Security re-check 35k + Release Gate 70k + Close-out 30k = 155k; headroom 7k. Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+70+30); the Engineering Manager confirms or compresses at Scope Review. Security Review runs at adversarial depth for the download path and INV-4 / INV-5 by the owner's instruction.
 
 ## Failure budget
 
 | Stage | Retries used | Cap | Class | Last failure |
 |-------|--------------|-----|-------|--------------|
-| Security Review | 0 | 2 | gate failure (security): required-fix R1, doc-only, ADR 0006 crash wording | FAIL 2026-10-03, runs/docs-retrieval-4/04-security-review.md |
+| Security Review | 1 | 2 | gate failure (security): required-fix R1, doc-only, ADR 0006 crash wording | FAIL 2026-10-03, runs/docs-retrieval-4/04-security-review.md |
 
 ## Interruptions
 
@@ -65,7 +65,7 @@ Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+
 
 ## Next action
 
-STOP-AND-ASK (budget). Security Review FAILED with one doc-only required-fix (R1). Spent 358k of 400k (Security peaked at 129k vs a 70k estimate). Remaining 42k. Still needed, estimated: R1 fix 20k + limited Security re-check ~35k + Release Gate 70k + Close-out 30k = ~155k, a shortfall of ~113k. Owner decides; no agent raises the budget; Security and the Release Gate are not compressed. The owner has not yet answered. Do not spawn until the owner does.
+Spawn a fresh agent to fix R1 in docs/adr/0006 only; commit; then a fresh security-privacy for the limited re-check (ADR 0006 diff + grep for crash wording). Then Release Gate, Close-out. Check spent + estimate against 520k before each spawn; stop and ask the owner with the numbers on any overrun.
 
 ## Implementation notes (resumable)
 
