@@ -4,7 +4,7 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
 - **Current stage:** Architecture (Baseline done; Q1-Q5 answered in APPROVAL_RECORD-2)
-- **Status:** blocked-on-approval
+- **Status:** in-progress
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the worktree of this repo)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 3b07317211f22e38c0111cd2fd40e021710c8b5c (main; includes pack v15 commit 894881a)
@@ -33,17 +33,18 @@
 | Action | Rule | Requested | Decision | Approver | When (UTC) | Record |
 |--------|------|-----------|----------|----------|-----------|--------|
 | Confirm intent and plan | plan confirmation | yes | approved | Gopal Patwa | 2026-10-09T06:32:12Z | runs/docs-abstention/APPROVAL_RECORD-1.md |
+| Budget raise 650k to 780k | budget raise (owner only) | yes | approved | Gopal Patwa | 2026-10-09T16:45:05Z | runs/docs-abstention/APPROVAL_RECORD-3.md |
 | Scope Q1-Q5 decisions (order, 90%/LOSO, abort rule, counts, INV-4 timing) | owner decision | yes | approved ("as recommended") | Gopal Patwa | 2026-10-09T06:45:47Z | runs/docs-abstention/APPROVAL_RECORD-2.md |
 
 ## Budget
 
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
-- **Budget:** 650k tokens  ·  **Depth:** standard (Security adversarial)
-- **Spent:** 245k (37.7%)  ·  **Remaining:** 405k
-- **Next stage:** Implementation (build) est. 130k → **STOP-AND-ASK** (slice A: 245k+130k=375k > 330k; model-path whole slice about 685-763k > 650k)
+- **Budget:** 780k tokens  ·  **Depth:** standard (Security adversarial)
+- **Spent:** 245k (31.4%)  ·  **Remaining:** 535k
+- **Next stage:** Architecture completion (review) est. 25k → **PROCEED** (245k+25k=270k of 780k; slice B reserve ~340k kept)
 
-Note: the budget is split at the freeze, as peak context per spawn. Slice A (Scope, Baseline, Architecture, approvals, Implementation, freeze) is 330k, planned at 310k. Slice B (label review, scoring, Security, Release Gate, close-out) is 320k, planned at 310k. Only the owner can raise the budget.
+Note: raised from 650k to 780k by the owner at 2026-10-09T16:45:05Z (APPROVAL_RECORD-3.md); the owner set the total only, not a new A/B split. The earlier split text below describes the original 650k plan. The budget is split at the freeze, as peak context per spawn. Slice A (Scope, Baseline, Architecture, approvals, Implementation, freeze) is 330k, planned at 310k. Slice B (label review, scoring, Security, Release Gate, close-out) is 320k, planned at 310k. Only the owner can raise the budget.
 
 ## Failure budget
 
