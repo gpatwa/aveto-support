@@ -3,7 +3,7 @@
 - **Ask:** Make file-rrf-v1 the default ranking, fix the shutdown crash (exit 134), run Security Review and the Release Gate once (intents/docs-retrieval-4.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Release Gate (step 3: Release Manager verdict)
+- **Current stage:** Close-out (Release Gate step 3 done: internally releasable, not announced)
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the aveto-support main checkout)
 - **Telemetry:** self-reported
@@ -21,7 +21,7 @@
 | INV-5 sentence approval (rule 4) | Human | requested | runs/docs-retrieval-4/02-approval-request.md | owner's own words |
 | Implementation | backend-architect | done | runs/docs-retrieval-4/03-implementation.md | full regression green; 20 exit-0 runs per mode |
 | Security Review | security-privacy | done: PASS with advisories after re-check (retry 1, 2026-10-08); R1 resolved, A4 resolved, A1/A2/A3/A5 carried (not blocking); 0 blockers; no code/test/INV change since 4419650; 168 passed | runs/docs-retrieval-4/04-security-review.md (section "Re-check (retry 1)") | no blocker |
-| Release Gate | qa-evidence, release-manager | in-progress: step 1 (gate plan and regression bar, before any run) done; step 2 (QA run) done, see runs/docs-retrieval-4/06-qa-result.md (fourth set at bar 14/16, misses f04 f12, exit 0; regression green); step 3 (verdict) pending | runs/docs-retrieval-4/06-release-gate-plan.md; runs/docs-retrieval-4/06-qa-result.md | all gates for tier 2 |
+| Release Gate | qa-evidence, release-manager | in-progress: step 1 (gate plan and regression bar, before any run) done; step 2 (QA run) done, see runs/docs-retrieval-4/06-qa-result.md (fourth set at bar 14/16, misses f04 f12, exit 0; regression green); step 3 (verdict) done: "internally releasable, not announced", see runs/docs-retrieval-4/06-release-checklist.md (crash item open, not reproduced; intent box 3 not met as written) | runs/docs-retrieval-4/06-release-gate-plan.md; runs/docs-retrieval-4/06-qa-result.md; runs/docs-retrieval-4/06-release-checklist.md | all gates for tier 2 |
 | Close-out | post-launch-learning | pending | — | n/a |
 
 ## Approvals
@@ -35,8 +35,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 560k tokens  ·  **Depth:** standard
-- **Spent:** 540k (96%) as of the verdict spawn still running (usage.mjs 2026-10-08; the 508k above was before it)  ·  **Remaining:** 20k
-- **Next stage:** Close-out (post-launch-learning) est. 25k → **STOP-AND-ASK** (540 + 25 = 565k > 560k); ask the owner with the numbers after the verdict lands
+- **Spent:** 555k (99%)  ·  **Remaining:** 5k
+- **Next stage:** Close-out (post-launch-learning) est. 25k → **STOP-AND-ASK** (555 + 25 = 580k > 560k)
 
 Budget raised again 520k to 560k by the owner, 2026-10-08 (his words: "Option 1, raise to 560k"). Earlier: raised 400k to 520k by the owner, 2026-10-08, in this session (chosen from three options; his words: "budget is approved", then selected "520k, full plan"). Remaining plan: R1 fix 20k + Security re-check 35k + Release Gate 70k + Close-out 30k = 155k; headroom 7k. Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+70+30); the Engineering Manager confirms or compresses at Scope Review. Security Review runs at adversarial depth for the download path and INV-4 / INV-5 by the owner's instruction.
 
@@ -65,11 +65,12 @@ Budget raised again 520k to 560k by the owner, 2026-10-08 (his words: "Option 1,
 | Security re-check (security-privacy, retry 1) | opus-5-5 | declared: frontmatter default | — | 2026-10-08 (commit 14df426) | 1:12 | 238k processed (peak ctx 36k) | 12 | 1 |
 | Release Gate step 1 (release-manager) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-08 (commit 23d233c) | 1:45 | 223k processed (peak ctx 59k vs 15k est.) | 14 | 0 |
 | Release Gate step 2 (qa-evidence) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-08 (commit 70c9ece) | 2:27 | 604k processed (peak ctx 40k) | 23 | 0 |
-| **Total** | | | | | | 9.31M processed (peak ctx sum 508k) | 209 | |
+| Release Gate step 3 (release-manager, verdict) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-08 | 1:35 | 305k processed (peak ctx 47k) | 17 | 0 |
+| **Total** | | | | | | 9.62M processed (peak ctx sum 555k) | 226 | |
 
 ## Next action
 
-Spawn qa-evidence (fresh) to execute 06-release-gate-plan.md section 3 exactly: default ranking on evals/retrieval-heldout-4.toml ONCE, full regression, diagnostics sets once each. Then a fresh release-manager for the verdict, then Close-out. Check spent + estimate against 560k before each spawn.
+Release Gate verdict given: internally releasable, not announced (06-release-checklist.md); README line 3 flipped by the Orchestrator per the Release Manager. STOP-AND-ASK (budget): Close-out needs ~25k, 5k remains. Owner decides: raise the budget (to ~585k) for the post-launch-learning spawn, or close the slice with a short close-out note written by the Orchestrator from the existing artefacts, or leave it open. The owner reads the Release Manager's crash call (checklist section 4) and may overrule it, which would make the verdict "not releasable". The owner pushes, opens the PR and merges; nothing is approved for push, merge, PR, deploy or announcement.
 
 ## Implementation notes (resumable)
 

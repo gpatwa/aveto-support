@@ -1,6 +1,6 @@
 # Aveto Support
 
-> **Status: retrieval only; Security Review and Release Gate pending; not announced.** It lists
+> **Status: retrieval only; Security Review and Release Gate run, internally releasable, not announced.** It lists
 > the docs files for a question and generates no answers. The default ranking
 > (`file-rrf-v1`) scored 14/16 on the latest held-out set (earlier sets 11/16
 > and 12/17); an optional reranker is off by default and showed no
