@@ -3,7 +3,7 @@
 - **Ask:** Make retrieval able to say "the docs don't answer this": baseline a threshold/margin first, model only if it fails, fifth held-out set, two bars (intents/docs-abstention.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Architecture (Baseline done; Q1-Q5 answered in APPROVAL_RECORD-2)
+- **Current stage:** Architecture done; awaiting the owner's licence decision and rule 4/5 approvals
 - **Status:** blocked-on-approval
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the worktree of this repo)
 - **Telemetry:** self-reported
