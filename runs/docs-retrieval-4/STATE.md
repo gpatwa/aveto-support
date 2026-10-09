@@ -3,7 +3,7 @@
 - **Ask:** Make file-rrf-v1 the default ranking, fix the shutdown crash (exit 134), run Security Review and the Release Gate once (intents/docs-retrieval-4.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Release Gate (step 1: regression bar stated before the run)
+- **Current stage:** Release Gate (step 1 done; budget decision needed before step 2)
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the aveto-support main checkout)
 - **Telemetry:** self-reported
@@ -35,8 +35,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 520k tokens  ·  **Depth:** standard
-- **Spent:** 409k (79%)  ·  **Remaining:** 111k
-- **Next stage:** Release Gate step 1, release-manager states the bar (review) est. 15k → **PROCEED** (409 + 15 = 424k ≤ 520k; then QA run ~30k, RM verdict ~30k, Close-out ~25k: 509k)
+- **Spent:** 467k (90%)  ·  **Remaining:** 53k
+- **Next stage:** Release Gate step 2, QA fourth-set run (build) est. 30k → **STOP-AND-ASK** (467 + 30 + RM verdict 30 + Close-out 25 = 552k > 520k)
 
 Budget raised 400k to 520k by the owner, 2026-10-08, in this session (chosen from three options; his words: "budget is approved", then selected "520k, full plan"). Remaining plan: R1 fix 20k + Security re-check 35k + Release Gate 70k + Close-out 30k = 155k; headroom 7k. Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+70+30); the Engineering Manager confirms or compresses at Scope Review. Security Review runs at adversarial depth for the download path and INV-4 / INV-5 by the owner's instruction.
 
@@ -63,11 +63,12 @@ Budget raised 400k to 520k by the owner, 2026-10-08, in this session (chosen fro
 | Security Review (security-privacy) | opus-5-5 | declared: frontmatter default | — | 2026-10-03 (commit 08d6a86) | 7:34 | 2.86M processed (peak ctx 129k) | 43 | 0 |
 | R1 fix (backend-architect, Security retry 1) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-08 (commit 856a110) | 0:22 | 53k processed (peak ctx 15k) | 5 | 1 |
 | Security re-check (security-privacy, retry 1) | opus-5-5 | declared: frontmatter default | — | 2026-10-08 (commit 14df426) | 1:12 | 238k processed (peak ctx 36k) | 12 | 1 |
-| **Total** | | | | | | 8.49M processed (peak ctx sum 409k) | 172 | |
+| Release Gate step 1 (release-manager) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-08 (commit 23d233c) | 1:45 | 223k processed (peak ctx 59k vs 15k est.) | 14 | 0 |
+| **Total** | | | | | | 8.71M processed (peak ctx sum 467k) | 186 | |
 
 ## Next action
 
-Release Gate in three fresh spawns: (1) release-manager writes the gate plan and the regression bar BEFORE any run (no run); (2) qa-evidence runs evals/retrieval-heldout-4.toml ONCE with the default and reports; (3) a fresh release-manager gives the verdict and, only if it is "internally releasable, not announced", flips the README line. Then Close-out.
+STOP-AND-ASK (budget). The bar is committed (06-release-gate-plan.md, 23d233c) but step 1 peaked at 59k vs a 15k estimate. Spent 467k of 520k; remaining 53k. Still needed: QA fourth-set run ~30k + RM verdict ~30k + Close-out ~25k = ~85k, ~32k over. Owner decides; no agent raises the budget; the Release Gate is not compressed. Do not spawn until the owner answers.
 
 ## Implementation notes (resumable)
 

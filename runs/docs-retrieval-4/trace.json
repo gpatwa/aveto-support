@@ -86,6 +86,15 @@
    "tokens": 238000,
    "toolCalls": 12,
    "retries": 1
+  },
+  {
+   "stage": "Release Gate step 1 (plan and bar)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 223000,
+   "toolCalls": 14,
+   "retries": 0
   }
  ]
 }
