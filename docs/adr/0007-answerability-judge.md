@@ -2,7 +2,7 @@
 
 > Architecture Decision Record. Owned by the Architect. Never edited after it is accepted. A changed decision gets a new record that supersedes this one.
 
-- **Status:** **proposed.** The fact table is filled from the support session's Reply 1 (`runs/docs-abstention/SUPPORT_REPLIES.md`); those facts are reported by another session and **not independently verified by the Architect**. One fact stays open until the file is loaded in implementation (ONNX input names), and one question is the owner's to decide **before** the rule 5 request (training-data licence, below). The record becomes **accepted** only when the owner has decided that question, approved the model (rule 5) and the INV-4 and INV-5 wording (rule 4), and slice `docs-abstention` passes its Release Gate. Accepting this record is not itself an approval of anything. If the slice stops (option d) or the model is rejected, this record is marked **rejected** with the reason and kept.
+- **Status:** **rejected** (2026-10-09, owner, `runs/docs-abstention/APPROVAL_RECORD-6.md`). The candidate failed the pre-registered seen-set condition in spec 4.1: pooled Bar 1 was 2/20 against a required 16/20. The decision above is not taken; the model was not adopted and its approvals lapsed unused.
 - **Date:** 2026-10-09
 - **Slice:** `runs/docs-abstention/`. Full specification: `runs/docs-abstention/02-tech-spec.md`.
 - **Relates to:** ADR 0004 (retrieval stopped abstaining), ADR 0005/0006 (the reranker and its open MS MARCO licence question; the reranker stays opt-in and is not reused here).
