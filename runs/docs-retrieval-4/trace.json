@@ -95,6 +95,15 @@
    "tokens": 223000,
    "toolCalls": 14,
    "retries": 0
+  },
+  {
+   "stage": "Release Gate step 2 (QA run)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 604000,
+   "toolCalls": 23,
+   "retries": 0
   }
  ]
 }

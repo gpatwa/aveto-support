@@ -35,8 +35,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 560k tokens  ·  **Depth:** standard
-- **Spent:** 467k (83%)  ·  **Remaining:** 93k
-- **Next stage:** Release Gate step 2, QA fourth-set run (build) est. 30k → **PROCEED** (467 + 30 = 497k ≤ 560k; then RM verdict 30k + Close-out 25k: 552k)
+- **Spent:** 508k (91%)  ·  **Remaining:** 52k
+- **Next stage:** Release Gate step 3, release-manager verdict (review) est. 30k → **PROCEED** (508 + 30 = 538k ≤ 560k). Close-out 25k after it is NOT yet affordable if the verdict runs over 27k: re-check before spawning Close-out
 
 Budget raised again 520k to 560k by the owner, 2026-10-08 (his words: "Option 1, raise to 560k"). Earlier: raised 400k to 520k by the owner, 2026-10-08, in this session (chosen from three options; his words: "budget is approved", then selected "520k, full plan"). Remaining plan: R1 fix 20k + Security re-check 35k + Release Gate 70k + Close-out 30k = 155k; headroom 7k. Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+70+30); the Engineering Manager confirms or compresses at Scope Review. Security Review runs at adversarial depth for the download path and INV-4 / INV-5 by the owner's instruction.
 
@@ -64,7 +64,8 @@ Budget raised again 520k to 560k by the owner, 2026-10-08 (his words: "Option 1,
 | R1 fix (backend-architect, Security retry 1) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-08 (commit 856a110) | 0:22 | 53k processed (peak ctx 15k) | 5 | 1 |
 | Security re-check (security-privacy, retry 1) | opus-5-5 | declared: frontmatter default | — | 2026-10-08 (commit 14df426) | 1:12 | 238k processed (peak ctx 36k) | 12 | 1 |
 | Release Gate step 1 (release-manager) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-08 (commit 23d233c) | 1:45 | 223k processed (peak ctx 59k vs 15k est.) | 14 | 0 |
-| **Total** | | | | | | 8.71M processed (peak ctx sum 467k) | 186 | |
+| Release Gate step 2 (qa-evidence) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-08 (commit 70c9ece) | 2:27 | 604k processed (peak ctx 40k) | 23 | 0 |
+| **Total** | | | | | | 9.31M processed (peak ctx sum 508k) | 209 | |
 
 ## Next action
 
