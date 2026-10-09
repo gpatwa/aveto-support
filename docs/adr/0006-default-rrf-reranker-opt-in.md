@@ -23,11 +23,12 @@ Across four held-out sets, the reranker (`file-rerank-v1`, ADR 0005) did no bett
 - **Keep the reranker as default:** it earned nothing across four sets, at 3-4x the latency.
 - **Remove the reranker:** discards a working, hash-pinned, INV-4-tested option. Keeping it off costs only the opt-in path.
 - **A config key instead of a flag:** it would put an egress choice in `docs-source.toml`, and a flag is visible per run.
-- **`os._exit` to skip teardown:** it hides the lifetime defect and drops `atexit` and stderr flushing.
+- **`os._exit` to skip teardown:** it would skip teardown rather than manage it, and drops `atexit` and stderr flushing.
 - **Changing ONNX Runtime options or version:** threads are already 1/1/sequential, and a version change is a new dependency decision.
 
 ## Consequences
 
-- **Easier:** the default path has one model, one session and one download. The MS MARCO licence question does not apply to it. Exit codes are no longer at the mercy of teardown order.
+- **Easier:** the default path has one model, one session and one download. The MS MARCO licence question does not apply to the default path; it stays open for anyone who opts in (`--with-reranker`). Our two adapters are now explicitly closed, in reverse order of creation, before interpreter shutdown (proven by `test_main_closes_loaded_adapters_in_reverse_order`). This is a property of the code, not a claim about exit codes.
 - **Harder:** anyone using `file-rerank-v1` must run `ingest --with-reranker` first.
-- **Unchanged:** if the abort turns out to be internal to ONNX Runtime's own static teardown, the close discipline does not fix it. Slice 4 then reports it as explained, not fixed.
+- **Unchanged:** the close discipline is not shown to fix the abort.
+- **Status of the exit-134 abort: NOT REPRODUCED.** Unfixed code: `eval` with `file-rerank-v1`, 20 runs, 0 exit-134; `retrieve` with `file-rerank-v1`, 200 runs, 0 exit-134. Fixed code: `eval` 20 runs per mode, `retrieve` 200 runs per mode, 0 exit-134 and no signal exit anywhere. The loops cannot tell the fixed code from the unfixed code. The spec's hypothesised mechanism (sessions alive at interpreter finalisation) was not observed. The likeliest remaining reading is a lock inside ONNX Runtime's own teardown, which is a reading and not a finding. Slice 4 reports the abort as not reproduced, neither fixed nor explained.
