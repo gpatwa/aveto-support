@@ -68,6 +68,24 @@
    "tokens": 2860000,
    "toolCalls": 43,
    "retries": 0
+  },
+  {
+   "stage": "R1 fix (Security retry 1)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 53000,
+   "toolCalls": 5,
+   "retries": 1
+  },
+  {
+   "stage": "Security re-check (retry 1)",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 238000,
+   "toolCalls": 12,
+   "retries": 1
   }
  ]
 }
