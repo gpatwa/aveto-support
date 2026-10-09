@@ -35,8 +35,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 560k tokens  ·  **Depth:** standard
-- **Spent:** 508k (91%)  ·  **Remaining:** 52k
-- **Next stage:** Release Gate step 3, release-manager verdict (review) est. 30k → **PROCEED** (508 + 30 = 538k ≤ 560k). Close-out 25k after it is NOT yet affordable if the verdict runs over 27k: re-check before spawning Close-out
+- **Spent:** 540k (96%) as of the verdict spawn still running (usage.mjs 2026-10-08; the 508k above was before it)  ·  **Remaining:** 20k
+- **Next stage:** Close-out (post-launch-learning) est. 25k → **STOP-AND-ASK** (540 + 25 = 565k > 560k); ask the owner with the numbers after the verdict lands
 
 Budget raised again 520k to 560k by the owner, 2026-10-08 (his words: "Option 1, raise to 560k"). Earlier: raised 400k to 520k by the owner, 2026-10-08, in this session (chosen from three options; his words: "budget is approved", then selected "520k, full plan"). Remaining plan: R1 fix 20k + Security re-check 35k + Release Gate 70k + Close-out 30k = 155k; headroom 7k. Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+70+30); the Engineering Manager confirms or compresses at Scope Review. Security Review runs at adversarial depth for the download path and INV-4 / INV-5 by the owner's instruction.
 
