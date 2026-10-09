@@ -3,8 +3,8 @@
 - **Ask:** Make retrieval able to say "the docs don't answer this": baseline a threshold/margin first, model only if it fails, fifth held-out set, two bars (intents/docs-abstention.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Implementation done; spec 4.1 seen-set condition FAILED (stop-and-ask the owner)
-- **Status:** blocked-on-failure
+- **Current stage:** model path stopped (owner, option 1); awaiting rule 4 approval of the spec 8.3 INV-4 correction
+- **Status:** blocked-on-approval
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the worktree of this repo)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 3b07317211f22e38c0111cd2fd40e021710c8b5c (main; includes pack v15 commit 894881a)
@@ -38,6 +38,9 @@
 | Rule 5: download/use qnli-electra-base @ c7dea87c | 5 | yes | approved | Gopal Patwa | 2026-10-09T17:05:20Z | runs/docs-abstention/APPROVAL_RECORD-5.md |
 | Rule 4: INV-4 items 4-i and 4-ii | 4 | yes | approved | Gopal Patwa | 2026-10-09T17:05:20Z | runs/docs-abstention/APPROVAL_RECORD-5.md |
 | Rule 4: INV-5 three-model change + A1 line | 4 | yes | approved | Gopal Patwa | 2026-10-09T17:05:20Z | runs/docs-abstention/APPROVAL_RECORD-5.md |
+| Option 1: stop the model path, drop candidate code | owner decision | yes | approved | Gopal Patwa | 2026-10-09T17:49:16Z | runs/docs-abstention/APPROVAL_RECORD-6.md |
+| (lapsed) rule 5 model + rule 4 INV-4 4-i/4-ii + INV-5 + A1 line from APPROVAL_RECORD-5 | 4, 5 | n/a | LAPSED, unused (owner chose option 1) | Gopal Patwa | 2026-10-09T17:49:16Z | runs/docs-abstention/APPROVAL_RECORD-6.md |
+| Rule 4: INV-4 correction, spec 8.3 text | 4 | yes (pending) | PENDING | — | — | — |
 | Scope Q1-Q5 decisions (order, 90%/LOSO, abort rule, counts, INV-4 timing) | owner decision | yes | approved ("as recommended") | Gopal Patwa | 2026-10-09T06:45:47Z | runs/docs-abstention/APPROVAL_RECORD-2.md |
 
 ## Budget
@@ -46,7 +49,7 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 780k tokens  ·  **Depth:** standard (Security adversarial)
 - **Spent:** 439k (56.3%)  ·  **Remaining:** 341k
-- **Next stage:** owner decision after the failed spec 4.1 seen-set condition (Bar 1 2/20 vs >=16/20): (d) stop, or a new method in a new slice. No further stage is spawned before that.
+- **Next stage:** Security Review (security-privacy, standard; INV-4 text correction only) est. 50k → **PROCEED** after the 8.3 approval (439k+50k=489k of 780k)
 
 Note: raised from 650k to 780k by the owner at 2026-10-09T16:45:05Z (APPROVAL_RECORD-3.md); the owner set the total only, not a new A/B split. The earlier split text below describes the original 650k plan. The budget is split at the freeze, as peak context per spawn. Slice A (Scope, Baseline, Architecture, approvals, Implementation, freeze) is 330k, planned at 310k. Slice B (label review, scoring, Security, Release Gate, close-out) is 320k, planned at 310k. Only the owner can raise the budget.
 
@@ -89,3 +92,7 @@ Spawn Architecture (software-architect, est. 70k) from 02-baseline.md; at its ex
 - Seen-set confirmation at the candidate code, rule fixed at judge p >= 0.5, nothing tuned: pooled Bar 1 = 2/20 (required >= 16/20), Bar 2 = 55/56 (required >= 45/56). Per set Bar 1: 1/6, 1/6, 0/4, 0/4. Raw: runs/docs-abstention/03-confirm-<set>.txt and 03-implementation.md. The method is NOT frozen and there is no method commit.
 - **Open crash item:** `eval` on retrieval-heldout-3 exited **134** (libc++abi recursive_mutex lock failed) AFTER its full report printed, on the default `file-rrf-v1` path with the judge loaded. Recorded, not retried. This is the exit-134 class slice 4 could not reproduce (0 in 660 runs); this is a new occurrence and is filed against that open item. Whether the judge session (a third ONNX session) is implicated is unknown.
 - The candidate code (10 files) is committed on this branch as a candidate, not as the method commit.
+
+## Option 1 plan (owner, APPROVAL_RECORD-6)
+
+Stages run: INV-4 correction via rule 4 (spec 8.3 text), Security Review (standard: a text change to a safety control plus a revert; no new code or download path), Release Gate (verdict: not releasable, with the reason), Close-out. Stages NOT run, with reason: Freeze (no method), Label review and Scoring (no frozen method to score; the fifth set stays unspent and unread), Implementation rework. Candidate code reverted (479f82a reverted); ADR 0007 to be marked rejected; the local models/ cache of the judge files (gitignored) is left in place.
