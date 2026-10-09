@@ -3,8 +3,8 @@
 - **Ask:** Make retrieval able to say "the docs don't answer this": baseline a threshold/margin first, model only if it fails, fifth held-out set, two bars (intents/docs-abstention.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Release Gate
-- **Status:** in-progress
+- **Current stage:** Release Gate done: NO-GO (not releasable); awaiting owner go on the stale-text pass
+- **Status:** blocked-on-approval
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the worktree of this repo)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 3b07317211f22e38c0111cd2fd40e021710c8b5c (main; includes pack v15 commit 894881a)
@@ -25,7 +25,7 @@
 | Label review | QA Evidence (fresh) | pending | — | — |
 | Scoring | QA Evidence (fresh, different) | pending | — | both bars |
 | Security | Security-Privacy (standard, per option 1 plan) | done: PASS with advisories (0 blockers, 0 required-fix, 4 advisories) | runs/docs-abstention/04-security-review.md | go to Release Gate |
-| Release Gate | Release Manager | pending | — | — |
+| Release Gate | Release Manager | done: NO-GO, not releasable (bars never evaluated; model path stopped; stale-text pass needed before any merge) | runs/docs-abstention/06-release-checklist.md | tier 2 confirmed |
 | Close-out | Post-Launch Learning | pending | — | — |
 
 ## Approvals
@@ -48,8 +48,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 780k tokens  ·  **Depth:** standard (Security adversarial)
-- **Spent:** 487k (62.4%)  ·  **Remaining:** 293k
-- **Next stage:** Release Gate (release-manager, standard) est. 55k → **PROCEED** (487k+55k=542k of 780k)
+- **Spent:** 540k (69.2%)  ·  **Remaining:** 240k
+- **Next stage:** stale-text pass (tech-writer, README/ARCHITECTURE/.agentic status) est. 30k, then Close-out est. 25k → **PROCEED** after the owner's go on touching `.agentic/CURRENT_MVP_STATUS.md` (540k+55k=595k of 780k)
 
 Note: raised from 650k to 780k by the owner at 2026-10-09T16:45:05Z (APPROVAL_RECORD-3.md); the owner set the total only, not a new A/B split. The earlier split text below describes the original 650k plan. The budget is split at the freeze, as peak context per spawn. Slice A (Scope, Baseline, Architecture, approvals, Implementation, freeze) is 330k, planned at 310k. Slice B (label review, scoring, Security, Release Gate, close-out) is 320k, planned at 310k. Only the owner can raise the budget.
 
@@ -97,3 +97,7 @@ Spawn Architecture (software-architect, est. 70k) from 02-baseline.md; at its ex
 ## Option 1 plan (owner, APPROVAL_RECORD-6)
 
 Stages run: INV-4 correction via rule 4 (spec 8.3 text), Security Review (standard: a text change to a safety control plus a revert; no new code or download path), Release Gate (verdict: not releasable, with the reason), Close-out. Stages NOT run, with reason: Freeze (no method), Label review and Scoring (no frozen method to score; the fifth set stays unspent and unread), Implementation rework. Candidate code reverted (479f82a reverted); ADR 0007 to be marked rejected; the local models/ cache of the judge files (gitignored) is left in place.
+
+## Process note: Security depth
+
+The intent asked for Security at adversarial depth for any new download path and for INV-4. After the model path was stopped (APPROVAL_RECORD-6) the Orchestrator ran Security at **standard** depth, scoped to the INV-4 text change and the revert, and said so to the owner before the owner approved the 8.3 text. No approval record names the downgrade. It is recorded here and in the close-out as an Orchestrator decision the owner can overturn; the review found the net product diff empty.
