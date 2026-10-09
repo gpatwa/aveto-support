@@ -3,8 +3,8 @@
 - **Ask:** Make retrieval able to say "the docs don't answer this": baseline a threshold/margin first, model only if it fails, fifth held-out set, two bars (intents/docs-abstention.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Close-out
-- **Status:** in-progress
+- **Current stage:** Closed: NOT RELEASABLE (runs/docs-abstention/07-close-out.md)
+- **Status:** done
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the worktree of this repo)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 3b07317211f22e38c0111cd2fd40e021710c8b5c (main; includes pack v15 commit 894881a)
@@ -26,7 +26,7 @@
 | Scoring | QA Evidence (fresh, different) | pending | — | both bars |
 | Security | Security-Privacy (standard, per option 1 plan) | done: PASS with advisories (0 blockers, 0 required-fix, 4 advisories) | runs/docs-abstention/04-security-review.md | go to Release Gate |
 | Release Gate | Release Manager | done: NO-GO, not releasable (bars never evaluated; model path stopped; stale-text pass needed before any merge) | runs/docs-abstention/06-release-checklist.md | tier 2 confirmed |
-| Close-out | Post-Launch Learning | pending | — | — |
+| Close-out | Post-Launch Learning | done | runs/docs-abstention/07-close-out.md | — |
 
 ## Approvals
 
@@ -49,8 +49,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 780k tokens  ·  **Depth:** standard (Security adversarial)
-- **Spent:** 631k (80.9%)  ·  **Remaining:** 149k
-- **Next stage:** Close-out (post-launch-learning) est. 25k → **PROCEED** (631k+25k=656k of 780k)
+- **Spent:** 672k (86.2%)  ·  **Remaining:** 108k
+- **Next stage:** none (slice closed; owner decides next)
 
 Note: raised from 650k to 780k by the owner at 2026-10-09T16:45:05Z (APPROVAL_RECORD-3.md); the owner set the total only, not a new A/B split. The earlier split text below describes the original 650k plan. The budget is split at the freeze, as peak context per spawn. Slice A (Scope, Baseline, Architecture, approvals, Implementation, freeze) is 330k, planned at 310k. Slice B (label review, scoring, Security, Release Gate, close-out) is 320k, planned at 310k. Only the owner can raise the budget.
 
@@ -81,11 +81,12 @@ Note: raised from 650k to 780k by the owner at 2026-10-09T16:45:05Z (APPROVAL_RE
 | Stale-text pass (tech-writer) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-09 | 0:56 | 179k processed (peak ctx 32k vs 30k est.) | 29 | 0 |
 | ARCHITECTURE.md edit (software-architect) | opus-5-5 | declared: frontmatter default | — | 2026-10-09 | 1:13 | 236k processed (peak ctx 31k vs 25k est.) | 27 | 0 |
 | Status-file edit (tech-writer, pack v17) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-09 | 0:16 | 63k processed (peak ctx 18k vs 25k est.) | 9 | 0 |
-| **Total** | | | | | | 8.28M processed (peak ctx sum 631k) | 229 | |
+| Close-out (post-launch-learning) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-09 | 0:39 | 126k processed (peak ctx 41k vs 25k est.) | 11 | 0 |
+| **Total** | | | | | | 8.40M processed (peak ctx sum 672k) | 240 | |
 
 ## Next action
 
-Spawn Architecture (software-architect, est. 70k) from 02-baseline.md; at its exit compute the model-path total before Implementation. Order change: Security (B3) before Scoring (B2).
+None for the run. The owner reviews branch claude/docs-abstention-c835b1 (not pushed), reads 07-close-out.md, and decides on push/PR/merge and on the next abstention step. Nothing is approved for push, merge, PR, deploy or announcement.
 
 ## Advice received (not approvals)
 
