@@ -3,7 +3,7 @@
 - **Ask:** Make retrieval able to say "the docs don't answer this": baseline a threshold/margin first, model only if it fails, fifth held-out set, two bars (intents/docs-abstention.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Stale-text pass (tech-writer)
+- **Current stage:** Close-out
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the worktree of this repo)
 - **Telemetry:** self-reported
@@ -49,8 +49,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 780k tokens  ·  **Depth:** standard (Security adversarial)
-- **Spent:** 613k (78.6%)  ·  **Remaining:** 167k
-- **Next stage:** Tech Writer for .agentic/CURRENT_MVP_STATUS.md (pack v17) est. 25k → **PROCEED** (613k+25k=638k of 780k); then Close-out est. 25k
+- **Spent:** 631k (80.9%)  ·  **Remaining:** 149k
+- **Next stage:** Close-out (post-launch-learning) est. 25k → **PROCEED** (631k+25k=656k of 780k)
 
 Note: raised from 650k to 780k by the owner at 2026-10-09T16:45:05Z (APPROVAL_RECORD-3.md); the owner set the total only, not a new A/B split. The earlier split text below describes the original 650k plan. The budget is split at the freeze, as peak context per spawn. Slice A (Scope, Baseline, Architecture, approvals, Implementation, freeze) is 330k, planned at 310k. Slice B (label review, scoring, Security, Release Gate, close-out) is 320k, planned at 310k. Only the owner can raise the budget.
 
@@ -80,7 +80,8 @@ Note: raised from 650k to 780k by the owner at 2026-10-09T16:45:05Z (APPROVAL_RE
 | Release Gate (release-manager) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-09 | 2:27 | 483k processed (peak ctx 63k vs 55k est.) | 26 | 0 |
 | Stale-text pass (tech-writer) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-09 | 0:56 | 179k processed (peak ctx 32k vs 30k est.) | 29 | 0 |
 | ARCHITECTURE.md edit (software-architect) | opus-5-5 | declared: frontmatter default | — | 2026-10-09 | 1:13 | 236k processed (peak ctx 31k vs 25k est.) | 27 | 0 |
-| **Total** | | | | | | 8.21M processed (peak ctx sum 613k) | 220 | |
+| Status-file edit (tech-writer, pack v17) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-09 | 0:16 | 63k processed (peak ctx 18k vs 25k est.) | 9 | 0 |
+| **Total** | | | | | | 8.28M processed (peak ctx sum 631k) | 229 | |
 
 ## Next action
 

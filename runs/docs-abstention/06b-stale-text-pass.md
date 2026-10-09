@@ -28,6 +28,10 @@ The hook allows the Tech Writer only runs/, README.md, CHANGELOG.md, docs/ (and 
 ### .agentic/CURRENT_MVP_STATUS.md lines 11-16 (owner path)
 Replace the `retrieve` bullet with: "`retrieve`: returns verbatim passages from the top five files with path, heading trail, line range and a permalink at the pinned commit, plus the top score. It never abstains: a question the docs do not answer still returns files. Ranking is hybrid: BM25 (Porter stemming, passage plus file evidence) fused with dense similarity by reciprocal rank fusion. The ingest-time reference similarity is printed for information and decides nothing." Add bullet: "Abstention is not built. Slice `docs-abstention` measured that no score-threshold or margin rule separates unanswerable from answerable questions on the seen sets, and a tried local judge model failed its seen-set check, so the owner stopped that path. There is no end-to-end figure, and nothing here claims production readiness or that drafting is safe to build on." (Line 26 is true as is. Also line 35-36 "Not yet done" is fine.)
 
+## CURRENT_MVP_STATUS.md applied (Tech Writer, under APPROVAL_RECORD-8 and Addendum 2)
+
+Before: `retrieve` returned "up to 5 passages or `no confident match`", confidence from a calibrated threshold. After: top five files, verbatim passages with provenance and top score, never abstains, reference similarity decides nothing; new bullet "Abstention is not built" (no figures, no readiness claim). Verified against `search.py` ("Never abstains"), `evaluate.py` (unanswerable "diagnostic only, not gated"), INV-4. Not applied, outside the list: lines 8-10 (two pinned model files) and lines 17-18 (`eval` exit rule, code gates answerable only).
+
 ## Final grep
 README.md: no remaining `no confident match`/abstain/confident staleness. docs/ (excl. adr/): remaining hits are the blocked ARCHITECTURE lines above. Not touched: INV text, LOCAL_COMMANDS.md, code, ADRs.
 

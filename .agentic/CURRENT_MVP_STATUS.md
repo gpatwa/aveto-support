@@ -8,12 +8,17 @@
   (`index/`, gitignored). On first run it also downloads two pinned model files
   from huggingface.co into `models/` (gitignored), each checked against its
   committed sha256 before use.
-- `retrieve`: returns up to 5 verbatim passages with path, heading trail, line
-  range and a permalink at the pinned commit, or `no confident match` with no
-  passages. Ranking is hybrid: BM25 (Porter stemming, passage plus file
-  evidence) fused with dense similarity by reciprocal rank fusion. Confidence is
-  the dense similarity of the best passage against a threshold calibrated at
-  ingest from word salads and a frozen off-topic question list.
+- `retrieve`: returns verbatim passages from the top five files with path,
+  heading trail, line range and a permalink at the pinned commit, plus the top
+  score. It never abstains: a question the docs do not answer still returns
+  files. Ranking is hybrid: BM25 (Porter stemming, passage plus file evidence)
+  fused with dense similarity by reciprocal rank fusion. The ingest-time
+  reference similarity is printed for information and decides nothing.
+- Abstention is not built. Slice `docs-abstention` measured that no
+  score-threshold or margin rule separates unanswerable from answerable
+  questions on the seen sets, and a tried local judge model failed its seen-set
+  check, so the owner stopped that path. There is no end-to-end figure, and
+  nothing here claims production readiness or that drafting is safe to build on.
 - `eval`: scores retrieval against an eval file and exits non-zero below 80% on
   either group.
 - The default ranking is `file-rrf-v1` (the first stage alone: hybrid dense and lexical
