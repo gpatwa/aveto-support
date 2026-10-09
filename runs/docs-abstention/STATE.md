@@ -49,8 +49,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 780k tokens  ·  **Depth:** standard (Security adversarial)
-- **Spent:** 550k (70.5%)  ·  **Remaining:** 230k
-- **Next stage:** Stale-text pass (tech-writer) est. 30k → **PROCEED** (550k+30k=580k of 780k); then Close-out est. 25k
+- **Spent:** 613k (78.6%)  ·  **Remaining:** 167k
+- **Next stage:** Close-out (post-launch-learning) est. 25k → **PROCEED** after the owner's call on .agentic/CURRENT_MVP_STATUS.md (613k+25k=638k of 780k)
 
 Note: raised from 650k to 780k by the owner at 2026-10-09T16:45:05Z (APPROVAL_RECORD-3.md); the owner set the total only, not a new A/B split. The earlier split text below describes the original 650k plan. The budget is split at the freeze, as peak context per spawn. Slice A (Scope, Baseline, Architecture, approvals, Implementation, freeze) is 330k, planned at 310k. Slice B (label review, scoring, Security, Release Gate, close-out) is 320k, planned at 310k. Only the owner can raise the budget.
 
@@ -78,7 +78,9 @@ Note: raised from 650k to 780k by the owner at 2026-10-09T16:45:05Z (APPROVAL_RE
 | Implementation (ai-engineer) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-09 | 21:44 | 3.15M processed (peak ctx 131k vs 130k est.) | 36 | 0 |
 | Security Review (security-privacy, standard) | opus-5-5 | declared: frontmatter default | — | 2026-10-09 | 2:19 | 489k processed (peak ctx 48k vs 50k est.) | 18 | 0 |
 | Release Gate (release-manager) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-09 | 2:27 | 483k processed (peak ctx 63k vs 55k est.) | 26 | 0 |
-| **Total** | | | | | | 7.80M processed (peak ctx sum 550k) | 164 | |
+| Stale-text pass (tech-writer) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-09 | 0:56 | 179k processed (peak ctx 32k vs 30k est.) | 29 | 0 |
+| ARCHITECTURE.md edit (software-architect) | opus-5-5 | declared: frontmatter default | — | 2026-10-09 | 1:13 | 236k processed (peak ctx 31k vs 25k est.) | 27 | 0 |
+| **Total** | | | | | | 8.21M processed (peak ctx sum 613k) | 220 | |
 
 ## Next action
 

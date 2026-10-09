@@ -30,3 +30,19 @@ Replace the `retrieve` bullet with: "`retrieve`: returns verbatim passages from 
 
 ## Final grep
 README.md: no remaining `no confident match`/abstain/confident staleness. docs/ (excl. adr/): remaining hits are the blocked ARCHITECTURE lines above. Not touched: INV text, LOCAL_COMMANDS.md, code, ADRs.
+
+## ARCHITECTURE.md applied (Architect, under APPROVAL_RECORD-8)
+
+Verified against code: `search.py` `retrieve` "Never abstains", `RetrievalResult.top_score = max(sims)` (best dense similarity), `reference` "diagnostic only"; `evaluate.py` gates answerable only, unanswerable "diagnostic only, not gated". Line numbers are before the edit.
+
+- L22-23: "ranks passages and decides confidence" -> "ranks passages, and it never writes text."
+- L27: `RetrievalResult (≤5 passages | no confident match)` -> `RetrievalResult (top 5 files, passages, top score)`
+- L39: "dense-confidence calibration" -> "reference-similarity calibration (diagnostic)"
+- L85-87: `dense top-1 ≥ τ ?` test and `none[no confident match]` node removed -> node "· never abstains", single edge to `hits[top 5 files, best passages ... top score]`
+- L109-112: "confident only if ... ≥ τ ... `no confident match` and no passages" -> top-five-files passages with provenance plus top score (best dense similarity, a correction to the TW text); never abstains; τ printed as reference similarity, decides nothing
+- L132-134: "If there is no confident match, it escalates." -> drafter cannot rely on retrieval to say the docs do not answer; how it decides not to draft is open work (abstention not built)
+- L141-142: `or "no confident match" with none` -> "and does not abstain"; "A model may only rank passages and decide confidence" kept, matching INV-4
+- L147-148: "Grounded or silent. Below the calibrated threshold, nothing is shown" -> "Not silent when the docs do not answer. Retrieval always returns the top files ... Abstention is not built."
+- After L192 (Decisions list): added ADR 0007 pointer, "abstention by a local answerability judge. Rejected; abstention is not built." ADR 0002/0003 summaries left as history.
+
+Not applied (stale but outside the approved line list; need a new approval or the next slice): L7-11 header ("implementation pending ... code is still v1"); L106-109 "ranks passages by RRF ... at most 2 passages per file and 5 in total" (code ranks files); L90 eval node and L113-114 "exits 1 if either is below 80%" (code gates answerable only); L21 "one local model" omits the optional reranker; L79-80/L103 "calibrate τ" wording.
