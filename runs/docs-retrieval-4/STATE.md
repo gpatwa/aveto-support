@@ -3,7 +3,7 @@
 - **Ask:** Make file-rrf-v1 the default ranking, fix the shutdown crash (exit 134), run Security Review and the Release Gate once (intents/docs-retrieval-4.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Release Gate (step 1 done; budget decision needed before step 2)
+- **Current stage:** Release Gate (step 2: QA run)
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the aveto-support main checkout)
 - **Telemetry:** self-reported
@@ -34,11 +34,11 @@
 
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
-- **Budget:** 520k tokens  ·  **Depth:** standard
-- **Spent:** 467k (90%)  ·  **Remaining:** 53k
-- **Next stage:** Release Gate step 2, QA fourth-set run (build) est. 30k → **STOP-AND-ASK** (467 + 30 + RM verdict 30 + Close-out 25 = 552k > 520k)
+- **Budget:** 560k tokens  ·  **Depth:** standard
+- **Spent:** 467k (83%)  ·  **Remaining:** 93k
+- **Next stage:** Release Gate step 2, QA fourth-set run (build) est. 30k → **PROCEED** (467 + 30 = 497k ≤ 560k; then RM verdict 30k + Close-out 25k: 552k)
 
-Budget raised 400k to 520k by the owner, 2026-10-08, in this session (chosen from three options; his words: "budget is approved", then selected "520k, full plan"). Remaining plan: R1 fix 20k + Security re-check 35k + Release Gate 70k + Close-out 30k = 155k; headroom 7k. Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+70+30); the Engineering Manager confirms or compresses at Scope Review. Security Review runs at adversarial depth for the download path and INV-4 / INV-5 by the owner's instruction.
+Budget raised again 520k to 560k by the owner, 2026-10-08 (his words: "Option 1, raise to 560k"). Earlier: raised 400k to 520k by the owner, 2026-10-08, in this session (chosen from three options; his words: "budget is approved", then selected "520k, full plan"). Remaining plan: R1 fix 20k + Security re-check 35k + Release Gate 70k + Close-out 30k = 155k; headroom 7k. Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+70+30); the Engineering Manager confirms or compresses at Scope Review. Security Review runs at adversarial depth for the download path and INV-4 / INV-5 by the owner's instruction.
 
 ## Failure budget
 
@@ -68,7 +68,7 @@ Budget raised 400k to 520k by the owner, 2026-10-08, in this session (chosen fro
 
 ## Next action
 
-STOP-AND-ASK (budget). The bar is committed (06-release-gate-plan.md, 23d233c) but step 1 peaked at 59k vs a 15k estimate. Spent 467k of 520k; remaining 53k. Still needed: QA fourth-set run ~30k + RM verdict ~30k + Close-out ~25k = ~85k, ~32k over. Owner decides; no agent raises the budget; the Release Gate is not compressed. Do not spawn until the owner answers.
+Spawn qa-evidence (fresh) to execute 06-release-gate-plan.md section 3 exactly: default ranking on evals/retrieval-heldout-4.toml ONCE, full regression, diagnostics sets once each. Then a fresh release-manager for the verdict, then Close-out. Check spent + estimate against 560k before each spawn.
 
 ## Implementation notes (resumable)
 
