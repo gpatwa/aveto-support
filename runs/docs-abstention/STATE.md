@@ -3,8 +3,8 @@
 - **Ask:** Make retrieval able to say "the docs don't answer this": baseline a threshold/margin first, model only if it fails, fifth held-out set, two bars (intents/docs-abstention.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Architecture done; awaiting the owner's licence decision and rule 4/5 approvals
-- **Status:** blocked-on-approval
+- **Current stage:** Implementation
+- **Status:** in-progress
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the worktree of this repo)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 3b07317211f22e38c0111cd2fd40e021710c8b5c (main; includes pack v15 commit 894881a)
@@ -20,7 +20,7 @@
 | Scope | Engineering Manager | done | runs/docs-abstention/01-scope.md | accept; clarifications C1-C10 and owner questions Q1-Q5 open |
 | Baseline | QA Evidence | done | runs/docs-abstention/02-baseline.md | measurement only; no cell of any rule family meets the Q2 definition (see artefact section 5) |
 | Architecture | Software Architect | done (sections 1-11 by the interrupted pass; section 12, 3.4 from support Reply 1, Appendix B and ADR 0007 fact table by the completion pass) | runs/docs-abstention/02-tech-spec.md; docs/adr/0007-answerability-judge.md (proposed) | owner's licence decision (ADR 0007), then rule 5 (8.4) and rule 4 INV-4/INV-5 (8.1, 8.2) approvals |
-| Implementation | Backend Architect | pending | — | — |
+| Implementation | AI Engineer | in-progress | — | — |
 | Freeze | Orchestrator | pending | — | method commit recorded |
 | Label review | QA Evidence (fresh) | pending | — | — |
 | Scoring | QA Evidence (fresh, different) | pending | — | both bars |
@@ -35,9 +35,9 @@
 | Confirm intent and plan | plan confirmation | yes | approved | Gopal Patwa | 2026-10-09T06:32:12Z | runs/docs-abstention/APPROVAL_RECORD-1.md |
 | Budget raise 650k to 780k | budget raise (owner only) | yes | approved | Gopal Patwa | 2026-10-09T16:45:05Z | runs/docs-abstention/APPROVAL_RECORD-3.md |
 | Licence decision for qnli-electra-base (ADR 0007 option 1) | owner decision (precondition for rule 5) | yes | approved ("accept the model card's Apache-2.0") | Gopal Patwa | 2026-10-09T16:55:27Z | runs/docs-abstention/APPROVAL_RECORD-4.md |
-| Rule 5: download/use qnli-electra-base @ c7dea87c | 5 | yes (this message) | PENDING | — | — | — |
-| Rule 4: INV-4 items 4-i and 4-ii | 4 | yes (this message) | PENDING | — | — | — |
-| Rule 4: INV-5 three-model change (+ optional A1 line) | 4 | yes (this message) | PENDING | — | — | — |
+| Rule 5: download/use qnli-electra-base @ c7dea87c | 5 | yes | approved | Gopal Patwa | 2026-10-09T17:05:20Z | runs/docs-abstention/APPROVAL_RECORD-5.md |
+| Rule 4: INV-4 items 4-i and 4-ii | 4 | yes | approved | Gopal Patwa | 2026-10-09T17:05:20Z | runs/docs-abstention/APPROVAL_RECORD-5.md |
+| Rule 4: INV-5 three-model change + A1 line | 4 | yes | approved | Gopal Patwa | 2026-10-09T17:05:20Z | runs/docs-abstention/APPROVAL_RECORD-5.md |
 | Scope Q1-Q5 decisions (order, 90%/LOSO, abort rule, counts, INV-4 timing) | owner decision | yes | approved ("as recommended") | Gopal Patwa | 2026-10-09T06:45:47Z | runs/docs-abstention/APPROVAL_RECORD-2.md |
 
 ## Budget
@@ -46,7 +46,7 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 780k tokens  ·  **Depth:** standard (Security adversarial)
 - **Spent:** 308k (39.5%)  ·  **Remaining:** 472k
-- **Next stage:** Implementation (build) est. 130k (worst 178k) → **STOP-AND-ASK** after the owner's licence decision and rule 4/5 approvals (308k+130k+340k slice B reserve = 778k of 780k; fails at A4 > 132k)
+- **Next stage:** Implementation (build) est. 130k → **PROCEED** (308k+130k=438k of 780k; with slice B reserve ~340k = 778k; stop-and-ask if A4 would exceed 132k)
 
 Note: raised from 650k to 780k by the owner at 2026-10-09T16:45:05Z (APPROVAL_RECORD-3.md); the owner set the total only, not a new A/B split. The earlier split text below describes the original 650k plan. The budget is split at the freeze, as peak context per spawn. Slice A (Scope, Baseline, Architecture, approvals, Implementation, freeze) is 330k, planned at 310k. Slice B (label review, scoring, Security, Release Gate, close-out) is 320k, planned at 310k. Only the owner can raise the budget.
 
