@@ -34,6 +34,10 @@
 |--------|------|-----------|----------|----------|-----------|--------|
 | Confirm intent and plan | plan confirmation | yes | approved | Gopal Patwa | 2026-10-09T06:32:12Z | runs/docs-abstention/APPROVAL_RECORD-1.md |
 | Budget raise 650k to 780k | budget raise (owner only) | yes | approved | Gopal Patwa | 2026-10-09T16:45:05Z | runs/docs-abstention/APPROVAL_RECORD-3.md |
+| Licence decision for qnli-electra-base (ADR 0007 option 1) | owner decision (precondition for rule 5) | yes | approved ("accept the model card's Apache-2.0") | Gopal Patwa | 2026-10-09T16:55:27Z | runs/docs-abstention/APPROVAL_RECORD-4.md |
+| Rule 5: download/use qnli-electra-base @ c7dea87c | 5 | yes (this message) | PENDING | — | — | — |
+| Rule 4: INV-4 items 4-i and 4-ii | 4 | yes (this message) | PENDING | — | — | — |
+| Rule 4: INV-5 three-model change (+ optional A1 line) | 4 | yes (this message) | PENDING | — | — | — |
 | Scope Q1-Q5 decisions (order, 90%/LOSO, abort rule, counts, INV-4 timing) | owner decision | yes | approved ("as recommended") | Gopal Patwa | 2026-10-09T06:45:47Z | runs/docs-abstention/APPROVAL_RECORD-2.md |
 
 ## Budget
