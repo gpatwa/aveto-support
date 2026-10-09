@@ -21,7 +21,7 @@
 | INV-5 sentence approval (rule 4) | Human | requested | runs/docs-retrieval-4/02-approval-request.md | owner's own words |
 | Implementation | backend-architect | done | runs/docs-retrieval-4/03-implementation.md | full regression green; 20 exit-0 runs per mode |
 | Security Review | security-privacy | done: PASS with advisories after re-check (retry 1, 2026-10-08); R1 resolved, A4 resolved, A1/A2/A3/A5 carried (not blocking); 0 blockers; no code/test/INV change since 4419650; 168 passed | runs/docs-retrieval-4/04-security-review.md (section "Re-check (retry 1)") | no blocker |
-| Release Gate | qa-evidence, release-manager | pending | — | all gates for tier 2 |
+| Release Gate | qa-evidence, release-manager | in-progress: step 1 (gate plan and regression bar, before any run) done; step 2 (QA run) and step 3 (verdict) pending | runs/docs-retrieval-4/06-release-gate-plan.md | all gates for tier 2 |
 | Close-out | post-launch-learning | pending | — | n/a |
 
 ## Approvals
