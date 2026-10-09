@@ -1,0 +1,4 @@
+retrieval exit 1
+heldout exit 1
+heldout-3 exit 1
+heldout-4 exit 0

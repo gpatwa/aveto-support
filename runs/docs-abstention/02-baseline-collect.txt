@@ -1,0 +1,2 @@
+wrote 93 rows
+uv run --offline python $R/02-baseline-sweep.py collect --out-dir $R  3.21s user 0.21s system 88% cpu 3.883 total
