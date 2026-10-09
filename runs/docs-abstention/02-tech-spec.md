@@ -1,13 +1,13 @@
 # Tech Spec — docs-abstention (Architecture, A3)
 
 > Owner: Software Architect Agent. Depth: standard.
-> Status: **ready for owner decision, not yet for implementation.** Implementation (A4) may start only after (1) the owner's stop-and-ask on the model-path cost (section 12), (2) the model verification spawn (section 3.4) has recorded its facts in ADR 0007, and (3) the owner's rule 5 approval (named model + exact revision) and two rule 4 approvals (INV-4, INV-5) are recorded.
+> Status: **complete; ready for owner decisions, not yet for implementation.** Implementation (A4) may start only after these are recorded, in this order: (1) the owner's decision on the open training-data licence question in ADR 0007 (SQuAD CC BY-SA 4.0 behind QNLI); (2) the owner's rule 5 approval of `cross-encoder/qnli-electra-base` at revision `c7dea87c98b2269a935686c31336e97e837cbbeb`, exact text in 8.4; (3) the two rule 4 approvals, INV-4 (8.1, items 4-i and 4-ii approved separately) and INV-5 (8.2). The model facts behind (2) are the support session's Reply 1, not verified by me (3.4). Cost: section 12 (low 700k, high 818k against 780k); the Orchestrator's per-spawn check decides whether A4 needs a new stop-and-ask.
 > Sources: `runs/docs-abstention/intent.md` (source of truth), `01-scope.md` (C1-C10 binding), `APPROVAL_RECORD-2.md` (Q1-Q5), `02-baseline.md` + `02-baseline-questions.csv` (measured facts), `.agentic/SAFETY_INVARIANTS.md`, `.agentic/LOCAL_COMMANDS.md`, `aveto_support/{search,rerank,evaluate,__main__}.py` (interfaces read, nothing changed), ADR 0006. No fifth (gate) set was read or looked for. No other run was read.
 > Pack v15 terms: "baseline a defect first", "method commit", "freeze", "seen set", "gate set", "fail closed".
 
 ## Summary
 
-Retrieval today never abstains (measured; section 1). This slice adds one abstention rule to `retrieve` and `eval`: a local, non-generative **answerability judge** (a cross-encoder classifier, ONNX Runtime + numpy, pinned by revision and sha256) reads the question with each passage that retrieval would show (the five returned files, at most two passages each, so at most 10 pairs) and returns one score per pair. If no shown passage scores at or above the model's own decision boundary (probability 0.5, fixed now, not fitted), the command prints exactly `no confident match`, no passages, names the deciding signal, and exits 0. Otherwise the output is today's output, unchanged, plus one line stating the judge's verdict. The judge cannot add, drop, reorder or alter a passage; it can only turn a result into an abstention. A missing, unreadable, hash-failing or erroring judge is an error (exit 2), never an abstention and never a pass-through. First-stage ranking, the corpus and the embedding model are unchanged. The `eval` exit-code rule is unchanged; the two bars, the end-to-end figure and the comparators are printed. I recommend this model path over reusing the reranker, over shipping the best simple rule, and, only if no candidate passes verification, over stopping (section 3). The model is not named with certainty: I name a leading candidate from memory and give binding selection criteria; every fact about it (existence, revision, licence, training data, ONNX files, hashes) is unverified and must be recorded in ADR 0007 by a verification spawn before the owner is asked. **The model path overruns the 650k budget (estimate 700k-780k, section 12); the Orchestrator must stop and ask before A4.**
+Retrieval today never abstains (measured; section 1). This slice adds one abstention rule to `retrieve` and `eval`: a local, non-generative **answerability judge** (a cross-encoder classifier, ONNX Runtime + numpy, pinned by revision and sha256) reads the question with each passage that retrieval would show (the five returned files, at most two passages each, so at most 10 pairs) and returns one score per pair. If no shown passage scores at or above the model's own decision boundary (probability 0.5, fixed now, not fitted), the command prints exactly `no confident match`, no passages, names the deciding signal, and exits 0. Otherwise the output is today's output, unchanged, plus one line stating the judge's verdict. The judge cannot add, drop, reorder or alter a passage; it can only turn a result into an abstention. A missing, unreadable, hash-failing or erroring judge is an error (exit 2), never an abstention and never a pass-through. First-stage ranking, the corpus and the embedding model are unchanged. The `eval` exit-code rule is unchanged; the two bars, the end-to-end figure and the comparators are printed. I recommend this model path over reusing the reranker, over shipping the best simple rule, and, only if no candidate passes verification, over stopping (section 3). The candidate, `cross-encoder/qnli-electra-base`, was named from memory against binding selection criteria; its facts (revision, licence, training data, head, files, hashes) are now recorded in ADR 0007 from the support session's Reply 1, which I have not verified (3.4). The ONNX input names stay open until the file is loaded in A4, and the training-data licence is a question for the owner before the rule 5 request. **Model-path cost: 700k-818k against the 780k budget (section 12); the high case does not fit.**
 
 ## 1. What was observed (baseline on the unchanged code)
 
@@ -40,7 +40,7 @@ All figures are from `02-baseline.md` (A2, 93 seen questions, worktree at produc
 | **(a) Reuse the reranker as judge** | `cross-encoder/ms-marco-MiniLM-L6-v2` @ `233902d2...`, already pinned in `rerank.py`, scores (question, shown passage); abstain below some logit | No new download; adapter, pins, hash checks and tests already exist | (1) It was trained to **rank** passages for a query (MS MARCO passage ranking); its logit orders passages within one question, and nothing in that objective gives a boundary that means "this passage answers" across questions. A threshold on it would have to be fitted, on 20 unanswerable questions. (2) It would move the open MS MARCO licence question (ADR 0005/0006) onto the **default path**, which ADR 0006 removed it from. (3) The intent's "Out of scope" lists "Re-opening the reranker". (4) Slice 4 measured it doing no better than `file-rrf-v1` on ranking (ADR 0006); that is not a measurement of answerability and I do not argue from it. | **Yes, rule 5 and rule 4 even though no new file is fetched.** Its slice-3 approval covered an opt-in ranking method. Making it a default-path dependency that decides a safety-controlled output is a new use of a real model (rule 5), and it falsifies INV-5's "the default path fetches only the embedding model's files" (rule 4), and supersedes ADR 0006 decision 2 (new ADR). So (a) is not cheaper on approvals; it only skips a download. |
 | **(b) One purpose-built answerability cross-encoder** (recommended) | A non-generative sequence classifier trained on (question, passage) -> "this passage contains the answer"; local, ONNX Runtime + numpy, pinned 40-hex revision, sha256 per file, no PyTorch, no `trust_remote_code` | Its training objective is the decision we need, so it comes with a native decision boundary (probability 0.5) that need not be fitted on the 20 seen unanswerable questions. Reuses the existing WordPiece tokenizer, `encode_pair`, `verify_file` and the ONNX session pattern if it meets the criteria in 3.2 | A new download path (adversarial Security), a new licence and training-data question, a third ONNX session in `file-rerank-v1` mode (the unexplained exit-134 history, ADR 0006), latency, and domain shift (see 3.3). The candidate is unverified. | Rule 5 for the named model at its exact revision (after ADR 0007 records licence and training data); rule 4 for INV-5 ("exactly two" -> three); rule 4 for INV-4 |
 | **(c) No model: ship the best simple rule honestly** | Threshold t=0.67 on the primary signal, labelled low-confidence | No new model, INV-5 untouched, smallest A4 | Seen-set pooled 13/20 and 37/56; LOSO 0 of 4 folds pass. The gate run is predicted to fail both bars, and running it **consumes the fifth set** (it becomes a seen set) to confirm what the seen sets already show. Drafting stays blocked. | Rule 4 for INV-4 (the stale clause must still be corrected) |
-| **(d) Stop** | Record the baseline as the slice's finding; correct INV-4's stale clause; close out | Cheapest (about 221k total, section 12). The fifth set is not consumed and stays available for a later method | No abstention; drafting stays blocked; the whole-pipeline figure cannot be stated | Rule 4 for INV-4's correction only (wording in section 8.3) |
+| **(d) Stop** | Record the baseline as the slice's finding; correct INV-4's stale clause; close out | Cheapest (about 320-390k total, section 12). The fifth set is not consumed and stays available for a later method | No abstention; drafting stays blocked; the whole-pipeline figure cannot be stated | Rule 4 for INV-4's correction only (wording in section 8.3) |
 
 **Recommendation: (b).** It is the only option whose decision boundary does not have to be fitted to 20 seen questions, and the only one whose training task is the decision the bars measure. (a) is rejected on general grounds (a relevance objective, a licence question moved onto the default path, and explicitly out of scope), not on a measurement. (c) is rejected because it spends the gate set to confirm a predicted failure. **If no candidate passes the criteria in 3.2, the recommendation becomes (d), not (c).**
 
@@ -75,17 +75,35 @@ Candidate task families for a non-generative classifier that reads the question 
 - the output head shape and `id2label` (criterion 2);
 - that its `vocab.txt` is an uncased BERT WordPiece vocabulary (I believe ELECTRA uses BERT's; unverified) and the ONNX input names (criterion 3).
 
+**Update after Reply 1 (3.4):** each item above is now answered in ADR 0007 by the support session's report, which I have not verified, except the ONNX input names (open until A4 loads the file). What it changes here: the head is reported as **one logit**, so the pin is `head = "sigmoid1"`, `positive_index = 0` (section 4, step 4: p = sigmoid(logit)); `vocab.txt` is reported byte-identical to the embedding model's, so `embed.WordPiece` is reused as planned; the pinned ONNX file is the fp32 `onnx/model.onnx` (reported 438,212,375 bytes, inside criterion 6), not an int8 variant. The candidate stays unverified by me, and the training-data licence is open for the owner.
+
 Known general risk for this family, not a measurement: QNLI pairs are a question and **one sentence**; our passages are whole sections truncated at 512 tokens. Section-length input is a domain shift whose effect is unknown until measured (section 4).
 
-I do **not** name a second candidate: I cannot recall one that I believe meets criteria 1-4 together. If the leading candidate fails, the verification spawn lists any other models it finds that meet all of 3.2, with the same facts; the choice among them follows criterion 7; if none, the slice takes option (d).
+I do **not** name a second candidate: I cannot recall one that I believe meets criteria 1-4 together. If the leading candidate fails (the owner rejects it on the licence question, or the A4 load check fails criterion 3), any other candidate needs the same facts recorded and its own rule 5 request; Reply 1 did not search for one. If none, the slice takes option (d).
 
-### 3.4 Model verification spawn (before any approval request)
+### 3.4 Model verification (replaced by the support session's Reply 1)
 
-- **Role:** research (Market/Technical Research brief) or the Orchestrator itself; read-only web access. **Est. 30-40k.**
-- **May read:** Hugging Face model pages, the public API metadata for the repo's file tree at a revision (names, sizes, LFS sha256), and small text files (`README.md` model card, `config.json`, `tokenizer_config.json`). **Must not download** `onnx/model.onnx` or any weights, install anything, or read any eval set.
-- **Writes:** `runs/docs-abstention/02b-model-verification.md` with, for each candidate, every fact listed in 3.3 against criteria 1-6, each with the URL and revision it was read from, and a pass/fail per criterion. It recommends nothing beyond applying criterion 7.
-- **Approval note:** this reads public metadata only and calls no model; I do not consider it a rule 5 action, but because it is the slice's first network use by an agent, the Orchestrator should include it in the stop-and-ask at this stage's exit (section 12) rather than infer permission.
-- **Then:** ADR 0007 (draft in `docs/adr/0007-answerability-judge.md`, section 9) has its fact slots filled from `02b-model-verification.md` (by a short Architect pass or the Orchestrator, est. 10k), **then** the rule 5 request is made for that model at that revision, with INV-5's exact text (section 8.2) filled in with the same values.
+**The verification spawn is not run.** It is replaced by Reply 1 in `runs/docs-abstention/SUPPORT_REPLIES.md`, written by the support session ("Aveto AI SDLC") on 2026-10-09 from public Hugging Face metadata and small text files, with no weights downloaded and no eval set read. Reply 1 stands in for `02b-model-verification.md`; no separate file is written. **These are claims from another session. I have not verified them and cannot (no network in this stage).** ADR 0007's fact table now carries them, each row marked "reported by the support session, not independently verified by the Architect".
+
+**What Reply 1 establishes, if its claims are accurate:**
+- `cross-encoder/qnli-electra-base` exists, public and not gated, at revision `c7dea87c98b2269a935686c31336e97e837cbbeb` (criterion 4).
+- Model card licence `apache-2.0`; base model `google/electra-base-discriminator`, `apache-2.0` (the model half of criterion 5).
+- Task: "can the question be answered by the paragraph?", `ElectraForSequenceClassification`, trained on GLUE QNLI (criterion 1).
+- **One-logit head**, `id2label` `{"0": "LABEL_0"}`, the card applies `sigmoid` (criterion 2, `sigmoid1` form).
+- `vocab.txt` uncased, sha256 `07eced37…38a3`, which Reply 1 says is identical to the embedding model's `vocab_sha256` in `docs-source.toml` (the vocabulary half of criterion 3).
+- `onnx/model.onnx` present upstream, 438,212,375 bytes, LFS sha256 `595b3754…61d9`; no custom code files (criteria 4 and 6, the size narrowly).
+
+What protects us if a reported value is wrong: `ensure_judge_files` requests the pinned revision and checks each downloaded file's sha256 before use, deleting it and failing (exit 3) on a mismatch (6.2), so a wrong hash or revision fails closed at the first `ingest`. A wrong reported hash cannot become a trusted file.
+
+**What Reply 1 does not establish (each open until stated):**
+1. **ONNX input names.** Unverified. They can be read only by loading `onnx/model.onnx`, which happens only after the rule 5 approval. `OnnxJudge.load` asserts the inputs equal `embed.INPUT_NAMES` and the output shape is `[batch, 1]`, and `test_judge_onnx_signature_matches_pin` (model-marked) checks the real file in A4. **If the check fails, the candidate fails criterion 3: A4 stops and the Orchestrator asks the owner (option (d) or a new candidate in a new request). No tokenizer or graph is adapted to make it fit.**
+2. **Whether the training-data licence reaches the weights.** SQuAD is CC BY-SA 4.0 (share-alike), QNLI is derived from it, and the model is trained on QNLI; the card says Apache-2.0. That is a legal question for the owner, not a technical fact. Criterion 5 forbids leaving it open on the default path, so it is put to the owner in ADR 0007 ("Open question for the owner") **before** the rule 5 request.
+3. **Any other ONNX file in the repo.** The int8 files (`model_qint8_*.onnx`, `model_quint8_avx2.onnx`) and the O1-O4 variants are different artefacts with different scores. The 0.5 boundary was argued for the fp32 model, and nothing in Reply 1 verifies them. **Decision: the pinned file is `onnx/model.onnx` (fp32).** int8 is recorded in ADR 0007 as a rejected alternative; using it would need its own rule 5 request and its own pre-registered seen-set check.
+4. **How the judge behaves on our passages** (the domain shift in 3.3). Only the seen-set confirmation (4.1) and the gate run measure that.
+
+Reply 1 did not search for a second candidate, so criterion 7 does not arise.
+
+**Then:** the owner decides the licence question in ADR 0007; **then** the Orchestrator makes the rule 5 request (8.4) for the model at the revision above, together with the rule 4 requests (8.1, 8.2), all with the values filled in.
 
 ## 4. Decision rule, fixed now (method `abstain-judge-v1`)
 
@@ -321,16 +339,16 @@ Full INV-4 after both items (for review; the bold sentence and the existing test
 
 ### 8.2 INV-5 (model path only) — a separate rule 4 item, plus one optional line
 
-The slots `<JUDGE_MODEL_ID>` and `<JUDGE_REVISION>` are filled **only** from ADR 0007 after the verification spawn; the owner is shown the text with real values, never with slots.
+The values are filled from ADR 0007 (as reported by the support session, Reply 1; see 3.4). If the owner's licence decision rejects this model, this item is withdrawn, not re-slotted.
 
 Replace INV-5 (b) and the sentence after it with:
 
-> (b) the pinned files of exactly three local models — the configured embedding model (`docs-source.toml`), the answerability judge `<JUDGE_MODEL_ID>` pinned in `aveto_support/judge.py`, and the reranker model pinned in `aveto_support/rerank.py` — each requested from `huggingface.co` at its own full 40-hex revision, with redirects only to hosts under `hf.co` (for example `us.aws.cdn.hf.co`).
+> (b) the pinned files of exactly three local models — the configured embedding model (`docs-source.toml`), the answerability judge `cross-encoder/qnli-electra-base` pinned in `aveto_support/judge.py`, and the reranker model pinned in `aveto_support/rerank.py` — each requested from `huggingface.co` at its own full 40-hex revision, with redirects only to hosts under `hf.co` (for example `us.aws.cdn.hf.co`).
 > Of the three models, the default path fetches the embedding model's and the judge's files: **`ingest`** fetches the reranker's files only when run with **`--with-reranker`**.
 
 The rest of INV-5 is unchanged. Append to its test list: `test_judge_revision_must_be_40_hex`, `test_judge_hash_mismatch_rejected_and_deleted`, `test_judge_cached_file_rehashed_before_use`, `test_judge_redirect_outside_hf_co_refused`, `test_default_ingest_fetches_and_rehashes_judge`, `test_retrieve_is_offline_with_cached_judge`, `test_judge_absent_fails_closed_without_download`.
 
-(The revision is recorded in `judge.py` and ADR 0007, not in INV-5's prose, matching how the two existing models are named. If the owner wants the revision in the invariant, add ` at revision <JUDGE_REVISION>` after the model ID.)
+(The revision is recorded in `judge.py` and ADR 0007, not in INV-5's prose, matching how the two existing models are named. If the owner wants the revision in the invariant, add ` at revision c7dea87c98b2269a935686c31336e97e837cbbeb` after the model ID.)
 
 **Optional line (slice 4 advisory A1, due at this INV-5 touch; add only if the owner approves this exact text):**
 
@@ -344,13 +362,15 @@ Replace the first sentence of INV-4 with:
 
 No new sentence; INV-5 untouched; slice 4's A1 stays carried forward.
 
-### 8.4 Rule 5 request (model path), shape only
+### 8.4 Rule 5 request (model path), exact text
 
-"Approve downloading and using `<JUDGE_MODEL_ID>` at revision `<JUDGE_REVISION>`, files `onnx/model.onnx` (sha256 `<…>`) and `vocab.txt` (sha256 `<…>`), licence `<…>`, training data `<…>` as recorded in `docs/adr/0007-answerability-judge.md`, as the default-path answerability judge." Made only after ADR 0007's fact table is complete. Not made by me.
+Made by the Orchestrator only **after** the owner has answered ADR 0007's licence question with option 1 (accept the model card's Apache-2.0). Not made by me. Values are from ADR 0007, as reported by the support session and not verified by the Architect; `ingest` checks both sha256 values before use and fails closed on a mismatch.
+
+> Approve downloading and using `cross-encoder/qnli-electra-base` at revision `c7dea87c98b2269a935686c31336e97e837cbbeb`, files `onnx/model.onnx` (438,212,375 bytes, sha256 `595b37541289472b7b784ed2af05bcad6000991a2657aeee4f92f68b42ae61d9`) and `vocab.txt` (231,508 bytes, sha256 `07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3`), model licence Apache-2.0, trained on GLUE QNLI (derived from SQuAD, CC BY-SA 4.0; licence question decided by the owner as recorded), as recorded in `docs/adr/0007-answerability-judge.md`, as the default-path answerability judge fetched by every `ingest`. Its ONNX input names are checked when it is first loaded; if they do not match, it is not used.
 
 ## 9. ADR
 
-Written as a draft at `docs/adr/0007-answerability-judge.md` (the write was allowed). Status **draft — facts not yet verified**: its model-fact table has open slots that only the verification spawn (3.4) can fill. It must be complete, and its status moved to **proposed**, before the rule 5 request. It records the decision, the alternatives (including reusing the reranker), and the consequences, and claims nothing about whether the judge works. If the slice stops, it is marked **rejected** with the reason.
+Written at `docs/adr/0007-answerability-judge.md`. Status **proposed**: its model-fact table is filled from the support session's Reply 1, every row marked as reported and not independently verified by the Architect (3.4); the ONNX input names are open until A4 loads the file; the owner's training-data licence question is stated in the ADR so the owner sees it before the rule 5 request. Marking it proposed approves nothing. It records the decision, the alternatives (including reusing the reranker), and the consequences, and claims nothing about whether the judge works. If the slice stops, it is marked **rejected** with the reason.
 
 `docs/ARCHITECTURE.md` is not edited now: it describes the system as it stands, and the judge does not exist yet. The delta is Appendix B, applied at the method commit.
 
@@ -378,4 +398,43 @@ Executable from this spec alone:
 6. Write a new ADR that supersedes ADR 0007 (if it was accepted) recording why; do not edit 0007.
 7. Verify: `uv sync --locked && uv run mypy && uv run ruff check && uv run pytest`; `retrieve` lists five files for any question again.
 
-<!-- next -->
+## 12. Model-path cost (peak context per spawn; numbers only, the Orchestrator decides)
+
+Budget **780k** (`APPROVAL_RECORD-3.md`; the owner set the total only, no A/B split). **Spent 245k** (Scope 39k, Baseline 82k, Architecture interrupted 124k; `STATE.md` trace). Estimates below are peak context per spawn, not tokens processed.
+
+| Stage | Low | High | Basis |
+|---|---|---|---|
+| Spent to date | 245k | 245k | `STATE.md` trace |
+| Architecture completion (this pass) | 25k | 25k | the Orchestrator's estimate in `STATE.md`; the actual comes from the harness, not from me |
+| Model verification (3.4) and ADR 0007 fill | 0 | 0 | verification replaced by the support session's Reply 1 (not a spawn of this slice); the ADR fill is done in this pass |
+| A4 Implementation (10 files, at the limit; includes the seen-set confirmation runs, 4.1) | 130k | 178k | `RUN_ECONOMICS.md` build figures: typical 130k, worst seen 178k |
+| Freeze (Orchestrator) | 0 | 0 | no spawn |
+| **Slice A subtotal** | **400k** | **448k** | |
+| B1 Label review (fresh QA, tight read list) | 50k | 60k | review stage |
+| B3 Security, adversarial, model path (**before** Scoring, owner's Q1) | 100k | 130k | adversarial on a model path |
+| B2 Scoring (fresh, different QA) | 50k | 60k | review stage |
+| Release Gate | 50k | 60k | review stage |
+| Close-out | 50k | 60k | review stage |
+| **Slice B subtotal** | **300k** | **370k** | |
+| **Total** | **700k** | **818k** | |
+
+**Against 780k:** the low case fits, with 80k to spare. **The high case does not fit: 818k is 38k over.**
+
+**First stage that would trigger a new stop-and-ask:**
+- Under the check `APPROVAL_RECORD-3.md` describes for slice A spawns (spent + estimate + slice B reserve <= 780k), at A4: 270k + A4 estimate + 340k reserve <= 780k holds only for an A4 estimate up to **170k**. At the typical 130k it passes (740k); at the worst-seen 178k it fails (788k). If the reserve is set to this section's slice B high (370k), the A4 limit is 140k. So **A4 is the first stage that can trigger a stop-and-ask**, depending on the estimate the Orchestrator uses for it.
+- If A4 proceeds and lands at its high (178k, spent 448k), the plain per-spawn check (spent + estimate <= 780k) passes Label review (508k), Security (638k), Scoring (698k) and Release Gate (758k), and first fails at **Close-out** (758k + 60k = 818k).
+- If A4 lands at 130k, the high slice B (370k) gives 770k: fits, with 10k left.
+
+**Not included in either total:** a retry under `FAILURE_LOOP.md` (one review-stage retry is about 50-60k: the low case's 80k headroom covers one, the high case covers none); a decision-code fix that Security requires, with its re-freeze (section 10), which is an A4-type spawn: any fix pass over 80k does not fit even the low case.
+
+**Option (d), for comparison (section 2):** 245k + 25k (this pass) + Close-out 50-60k = **320-330k**; **370-390k** if a Release Gate is run on the INV-4 correction. Fits either way, and leaves the fifth set unspent.
+
+## Appendix B. `docs/ARCHITECTURE.md` delta (applied at the method commit, model path only)
+
+Written by the completion pass from this spec alone; `docs/ARCHITECTURE.md` was not read in that pass, so whoever applies it (the Orchestrator at the method commit, or a short Architect pass) places each item in the existing section that covers it and replaces, not appends, any sentence saying retrieval never abstains. No figure from any eval set goes into it.
+
+1. **Components:** add `aveto_support/judge.py`, the answerability judge adapter (`Judge` protocol, `OnnxJudge`, `PlaceholderJudge` that raises), pinned to `cross-encoder/qnli-electra-base` at its 40-hex revision with a sha256 per file (ADR 0007).
+2. **Data flow (`retrieve` / `eval`):** question -> first stage (`retrieve`, unchanged ranking: `file-rrf-v1` default or `file-rerank-v1`) -> five files with at most two shown passages each -> judge scores (question, shown passage) pairs -> `best >= 0.5` prints the first-stage output plus a `Judge:` line; `best < 0.5` prints exactly `no confident match` and the deciding signal, no passages; any judge failure exits 2 with no passages (`search.respond`).
+3. **Model adapter boundaries:** three local models: embedding (default path), judge (default path, fetched by every `ingest`), reranker (opt-in, `ingest --with-reranker`). The judge returns only scores; it cannot add, drop, reorder or alter passages.
+4. **Diagram:** add a judge box between "first-stage result" and "output", with two exits (answer / `no confident match`) and a fail-closed edge to "error, exit 2".
+5. **Decisions:** add ADR 0007 to the list of records.
