@@ -159,3 +159,62 @@ No blocker-severity finding.
 - No audit line was weakened, and no placeholder became a real client.
 
 The slice goes back for the ADR 0006 wording only. After the fix, a re-check limited to the section 7 R1 scope can turn this into **PASS with advisories** (A1-A5) without re-running the code review. No-go to the Release Gate until then.
+
+## Re-check (retry 1)
+
+Security & Privacy Agent, fresh spawn, 2026-10-08. The scope is the section 7 R1 re-check only, not a re-review. Reviewed head: 89748bf. Inputs: this file, `05-r1-fix.md`, `git diff 4ad5732 HEAD`, the crash-evidence exit-code files and `03-implementation.md` (counts only). No network call. No eval set run.
+
+### Scope held
+
+| Check | Evidence | Result |
+|-------|----------|--------|
+| Only doc and run-artefact changes since the reviewed code | `git diff --stat 4ad5732 HEAD`: `docs/adr/0006-default-rrf-reranker-opt-in.md`, `runs/docs-retrieval-4/05-r1-fix.md`, `runs/docs-retrieval-4/STATE.md` | holds |
+| No code, test or INV change since 4419650 | `git diff --stat 4419650 HEAD -- aveto_support tests .agentic` is **empty**. Everything else since 4419650 is under `runs/docs-retrieval-4/` (04, 05, STATE, trace.json) plus the ADR | holds |
+
+### R1: resolved
+
+| R1 item | Now | Result |
+|---------|-----|--------|
+| Line 31: "Exit codes are no longer at the mercy of teardown order." | Removed. Restated as a property of the code: the adapters are closed in reverse order before interpreter shutdown, proven by `test_main_closes_loaded_adapters_in_reverse_order`. The ADR adds: "This is a property of the code, not a claim about exit codes." | resolved |
+| Line 33: "reports it as explained, not fixed" | Removed. Now reads "the close discipline is not shown to fix the abort", and the new status line ends "Slice 4 reports the abort as not reproduced, neither fixed nor explained." | resolved |
+| Line 26: "hides the lifetime defect" | Now reads "it would skip teardown rather than manage it". No defect is asserted | resolved |
+| NOT REPRODUCED stated, with counts | New line 34: "Status of the exit-134 abort: NOT REPRODUCED." The counts are given below | resolved |
+| Counts match the evidence | My tally of the exit-code files (one line per run) is in the table after this one. It agrees with `03-implementation.md`: unfixed 220, fixed 440, zero exit-134, and no exit code other than 0 or 1. The ADR's per-loop figures (unfixed eval 20 and retrieve 200; fixed 20 and 200 per mode) match | holds |
+| No unobserved defect asserted | The spec's mechanism is stated as "not observed". The ONNX Runtime-internal lock is called "a reading and not a finding". Line 12 keeps the slice 3 observation (an intermittent abort at teardown), which is historical fact, not a slice 4 outcome | holds |
+
+**Crash-evidence tally:**
+
+| File | Runs | Exit codes |
+|------|------|------------|
+| `prefix-unfixed-rerank-eval.txt` | 20 | 20 × exit 1 |
+| `prefix-unfixed-rerank-retrieve200.txt` | 200 | 200 × exit 0 |
+| `fixed-rrf-eval.txt` | 20 | 20 × exit 1 |
+| `fixed-rerank-eval.txt` | 20 | 20 × exit 1 |
+| `fixed-rrf-retrieve200.txt` | 200 | 200 × exit 0 |
+| `fixed-rerank-retrieve200.txt` | 200 | 200 × exit 0 |
+
+Exit 1 on `eval` is the dev set missing its bar, as `03-implementation.md` records. It is not an abort.
+
+**A4: resolved.** ADR 0006 now says the MS MARCO licence question "does not apply to the default path; it stays open for anyone who opts in (`--with-reranker`)".
+
+### Grep of README.md, .agentic/ and docs/
+
+- **Crash / abort / teardown / explained / reproduced / fixed / "at the mercy":**
+  - Hits in ADR 0006 at lines 12, 19, 26, 33 and 34. All are consistent with NOT REPRODUCED.
+  - Line 19 (Decision): "Session lifetime no longer depends on Python finalisation order…". It describes session lifetime under the close discipline and makes no claim about exit codes or the abort, so it is acceptable.
+  - `docs/ARCHITECTURE.md:66`: the close discipline is described as a code property.
+  - The other "fixed" hits ("fixed corpus", "fixed list", "owner fixed the stack", "fixed … threshold") are unrelated.
+  - No document says the crash is fixed or explained.
+- **releasable / released / announce:**
+  - `README.md:3`: "Status: retrieval only; Security Review and Release Gate pending; not announced."
+  - `README.md:7`: "Nothing here is released."
+  - `.agentic/CURRENT_MVP_STATUS.md:35-36`: "nothing is released or announced".
+  - All of these are negations. There is no "releasable" hit anywhere.
+
+### Suite
+
+`uv run pytest -q` (offline, autouse network block): **168 passed, 10 deselected**. This matches the original review.
+
+### Updated verdict
+
+**PASS with advisories.** R1 is resolved. A4 is resolved by the ADR sentence. A1, A2, A3 and A5 carry forward unchanged as advisories, for the EM to fold into a later slice. None blocks. The section 9 residual risks stand unchanged, including risk 1: the exit-134 abort stays open as NOT REPRODUCED, and whether that meets the intent is for the Release Manager and the owner to decide, not a security finding. There is no blocker and no required-fix. **Go to the Release Gate.**

@@ -3,7 +3,7 @@
 - **Ask:** Make file-rrf-v1 the default ranking, fix the shutdown crash (exit 134), run Security Review and the Release Gate once (intents/docs-retrieval-4.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Security Review retry 1 (R1 fix)
+- **Current stage:** Security Review done (PASS with advisories, retry 1); next Release Gate
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the aveto-support main checkout)
 - **Telemetry:** self-reported
@@ -20,7 +20,7 @@
 | Architecture | software-architect | done | runs/docs-retrieval-4/02-tech-spec.md; runs/docs-retrieval-4/02-approval-request.md; docs/adr/0006-default-rrf-reranker-opt-in.md (proposed) | spec argued before any run |
 | INV-5 sentence approval (rule 4) | Human | requested | runs/docs-retrieval-4/02-approval-request.md | owner's own words |
 | Implementation | backend-architect | done | runs/docs-retrieval-4/03-implementation.md | full regression green; 20 exit-0 runs per mode |
-| Security Review | security-privacy | blocked: FAIL, 1 required-fix (R1, doc-only: ADR 0006 crash wording), 0 blockers, 5 advisories; code passes; re-check limited to the R1 scope | runs/docs-retrieval-4/04-security-review.md | no blocker |
+| Security Review | security-privacy | done: PASS with advisories after re-check (retry 1, 2026-10-08); R1 resolved, A4 resolved, A1/A2/A3/A5 carried (not blocking); 0 blockers; no code/test/INV change since 4419650; 168 passed | runs/docs-retrieval-4/04-security-review.md (section "Re-check (retry 1)") | no blocker |
 | Release Gate | qa-evidence, release-manager | pending | — | all gates for tier 2 |
 | Close-out | post-launch-learning | pending | — | n/a |
 
