@@ -3,7 +3,7 @@
 - **Ask:** Make file-rrf-v1 the default ranking, fix the shutdown crash (exit 134), run Security Review and the Release Gate once (intents/docs-retrieval-4.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Close-out (Release Gate step 3 done: internally releasable, not announced)
+- **Current stage:** Close-out
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the aveto-support main checkout)
 - **Telemetry:** self-reported
@@ -34,11 +34,11 @@
 
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
-- **Budget:** 560k tokens  ·  **Depth:** standard
-- **Spent:** 555k (99%)  ·  **Remaining:** 5k
-- **Next stage:** Close-out (post-launch-learning) est. 25k → **STOP-AND-ASK** (555 + 25 = 580k > 560k)
+- **Budget:** 585k tokens  ·  **Depth:** standard
+- **Spent:** 555k (95%)  ·  **Remaining:** 30k
+- **Next stage:** Close-out (post-launch-learning) est. 25k → **PROCEED** (555 + 25 = 580k ≤ 585k)
 
-Budget raised again 520k to 560k by the owner, 2026-10-08 (his words: "Option 1, raise to 560k"). Earlier: raised 400k to 520k by the owner, 2026-10-08, in this session (chosen from three options; his words: "budget is approved", then selected "520k, full plan"). Remaining plan: R1 fix 20k + Security re-check 35k + Release Gate 70k + Close-out 30k = 155k; headroom 7k. Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+70+30); the Engineering Manager confirms or compresses at Scope Review. Security Review runs at adversarial depth for the download path and INV-4 / INV-5 by the owner's instruction.
+Budget raised a third time, 560k to 585k, by the owner, 2026-10-08 (his words: "Option 1, raise to 585k"). Earlier: 520k to 560k by the owner, 2026-10-08 (his words: "Option 1, raise to 560k"). Earlier: raised 400k to 520k by the owner, 2026-10-08, in this session (chosen from three options; his words: "budget is approved", then selected "520k, full plan"). Remaining plan: R1 fix 20k + Security re-check 35k + Release Gate 70k + Close-out 30k = 155k; headroom 7k. Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+70+30); the Engineering Manager confirms or compresses at Scope Review. Security Review runs at adversarial depth for the download path and INV-4 / INV-5 by the owner's instruction.
 
 ## Failure budget
 
@@ -70,7 +70,7 @@ Budget raised again 520k to 560k by the owner, 2026-10-08 (his words: "Option 1,
 
 ## Next action
 
-Release Gate verdict given: internally releasable, not announced (06-release-checklist.md); README line 3 flipped by the Orchestrator per the Release Manager. STOP-AND-ASK (budget): Close-out needs ~25k, 5k remains. Owner decides: raise the budget (to ~585k) for the post-launch-learning spawn, or close the slice with a short close-out note written by the Orchestrator from the existing artefacts, or leave it open. The owner reads the Release Manager's crash call (checklist section 4) and may overrule it, which would make the verdict "not releasable". The owner pushes, opens the PR and merges; nothing is approved for push, merge, PR, deploy or announcement.
+Close-out: fresh post-launch-learning spawn, tight read list, writes 07-close-out.md; then the Orchestrator regenerates nothing else, updates Status to done only after it lands. The owner pushes, opens the PR and merges.
 
 ## Implementation notes (resumable)
 
