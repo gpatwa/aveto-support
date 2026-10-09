@@ -4,7 +4,7 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
 - **Current stage:** Architecture (Baseline done; Q1-Q5 answered in APPROVAL_RECORD-2)
-- **Status:** in-progress
+- **Status:** blocked-on-approval
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the worktree of this repo)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 3b07317211f22e38c0111cd2fd40e021710c8b5c (main; includes pack v15 commit 894881a)
@@ -19,7 +19,7 @@
 | Intake | Orchestrator | done | runs/docs-abstention/00-slice-plan.md | owner confirmed 2026-10-09T06:32:12Z |
 | Scope | Engineering Manager | done | runs/docs-abstention/01-scope.md | accept; clarifications C1-C10 and owner questions Q1-Q5 open |
 | Baseline | QA Evidence | done | runs/docs-abstention/02-baseline.md | measurement only; no cell of any rule family meets the Q2 definition (see artefact section 5) |
-| Architecture | Software Architect | pending | — | rule 4 (and 5) approvals |
+| Architecture | Software Architect | interrupted (infra), spec sections 1-11 on disk | — | rule 4 (and 5) approvals |
 | Implementation | Backend Architect | pending | — | — |
 | Freeze | Orchestrator | pending | — | method commit recorded |
 | Label review | QA Evidence (fresh) | pending | — | — |
@@ -40,8 +40,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 650k tokens  ·  **Depth:** standard (Security adversarial)
-- **Spent:** 121k (18.6%)  ·  **Remaining:** 529k
-- **Next stage:** Architecture (review) est. 70k → **PROCEED** (slice A: 121k+70k=191k of 330k) 
+- **Spent:** 245k (37.7%)  ·  **Remaining:** 405k
+- **Next stage:** Implementation (build) est. 130k → **STOP-AND-ASK** (slice A: 245k+130k=375k > 330k; model-path whole slice about 685-763k > 650k)
 
 Note: the budget is split at the freeze, as peak context per spawn. Slice A (Scope, Baseline, Architecture, approvals, Implementation, freeze) is 330k, planned at 310k. Slice B (label review, scoring, Security, Release Gate, close-out) is 320k, planned at 310k. Only the owner can raise the budget.
 
@@ -55,7 +55,7 @@ Note: the budget is split at the freeze, as peak context per spawn. Slice A (Sco
 
 | Stage | Cause | Class | Partial artefact reached | Resumed |
 |-------|-------|-------|--------------------------|---------|
-| (none) | | | | |
+| Architecture (software-architect) | usage limit (HTTP 429) near the end of the stage | infra | 02-tech-spec.md sections 1-11 plus ADR 0007 draft written; section 12 (model-path cost) and the STATE row missing | no; not re-spawned yet, awaiting the owner's budget decision |
 
 ## Trace
 
@@ -64,7 +64,8 @@ Note: the budget is split at the freeze, as peak context per spawn. Slice A (Sco
 | Intake (Orchestrator) | — | — | 2026-10-09T06:20:00Z | 2026-10-09T06:25:00Z | — | — | — | 0 |
 | Scope Review (engineering-manager) | sonnet-5-5 | declared: frontmatter default (medium) | — | 2026-10-09 | 2:00 | 232k processed (peak ctx 39k vs 50k est.) | 15 | 0 |
 | Baseline (qa-evidence) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-09 | 4:07 | 1.11M processed (peak ctx 82k vs 60k est.) | 22 | 0 |
-| **Total** | | | | | | 1.34M processed (peak ctx sum 121k) | 37 | |
+| Architecture (software-architect), interrupted | opus-5-5 | declared: frontmatter default | — | 2026-10-09 | — | 1.70M processed (peak ctx 124k vs 70k est.) | 21 | 0 (infra interruption, not a retry) |
+| **Total** | | | | | | 3.04M processed (peak ctx sum 245k) | 58 | |
 
 ## Next action
 
