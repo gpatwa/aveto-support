@@ -50,7 +50,7 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 780k tokens  ·  **Depth:** standard (Security adversarial)
 - **Spent:** 613k (78.6%)  ·  **Remaining:** 167k
-- **Next stage:** Close-out (post-launch-learning) est. 25k → **PROCEED** after the owner's call on .agentic/CURRENT_MVP_STATUS.md (613k+25k=638k of 780k)
+- **Next stage:** Tech Writer for .agentic/CURRENT_MVP_STATUS.md (pack v17) est. 25k → **PROCEED** (613k+25k=638k of 780k); then Close-out est. 25k
 
 Note: raised from 650k to 780k by the owner at 2026-10-09T16:45:05Z (APPROVAL_RECORD-3.md); the owner set the total only, not a new A/B split. The earlier split text below describes the original 650k plan. The budget is split at the freeze, as peak context per spawn. Slice A (Scope, Baseline, Architecture, approvals, Implementation, freeze) is 330k, planned at 310k. Slice B (label review, scoring, Security, Release Gate, close-out) is 320k, planned at 310k. Only the owner can raise the budget.
 

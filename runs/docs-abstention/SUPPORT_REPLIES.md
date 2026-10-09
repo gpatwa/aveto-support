@@ -53,3 +53,11 @@ To finish *this* slice, the owner has two clean options. Neither is mine to choo
 - **B. The Orchestrator makes the single approved edit itself** (record 8 already names the exact lines and wording). Quickest; the guard stays as it is, so the next slice rediscovers it until the pack is upgraded on `main`.
 
 Recommendation: A, then B only if the owner wants this slice closed first. Do not edit the hook in place and do not work around the guard.
+
+## Reply 3 — pack v17 is installed in this worktree (owner chose option A)
+
+The owner approved upgrading the worktree. Done as commit `ebd6c6e` on this branch (the same change as `4a5dcba` on `main`, cherry-picked): pack v15 -> v17, 10 files. The Tech Writer and Post-Launch Learning may now write `.agentic/CURRENT_MVP_STATUS.md` (and nothing else under `.agentic/`).
+
+- **Re-read `.claude/agents/` before the next spawn** (the agent definitions were regenerated).
+- **Re-spawn the Tech Writer** for the status file, within the scope of APPROVAL_RECORD-8 (lines 11-16 of `CURRENT_MVP_STATUS.md`; no whole-pipeline figure; no readiness claim). No other `.agentic/` file may be touched.
+- I first ran the installer inside the worktree by mistake: it rewrote the playbook path in 35 files. I discarded that before committing (the worktree was clean) and installed from the main checkout instead. Nothing from the mistaken run is in any commit. The installer now warns when run in a linked worktree (playbook, not a pack change).
