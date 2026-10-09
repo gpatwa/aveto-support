@@ -3,7 +3,7 @@
 - **Ask:** Make retrieval able to say "the docs don't answer this": baseline a threshold/margin first, model only if it fails, fifth held-out set, two bars (intents/docs-abstention.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Security Review
+- **Current stage:** Release Gate
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the worktree of this repo)
 - **Telemetry:** self-reported
@@ -24,7 +24,7 @@
 | Freeze | Orchestrator | pending | — | method commit recorded |
 | Label review | QA Evidence (fresh) | pending | — | — |
 | Scoring | QA Evidence (fresh, different) | pending | — | both bars |
-| Security | Security-Privacy (adversarial) | pending | — | — |
+| Security | Security-Privacy (standard, per option 1 plan) | done: PASS with advisories (0 blockers, 0 required-fix, 4 advisories) | runs/docs-abstention/04-security-review.md | go to Release Gate |
 | Release Gate | Release Manager | pending | — | — |
 | Close-out | Post-Launch Learning | pending | — | — |
 
@@ -48,8 +48,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 780k tokens  ·  **Depth:** standard (Security adversarial)
-- **Spent:** 439k (56.3%)  ·  **Remaining:** 341k
-- **Next stage:** Security Review (security-privacy, standard) est. 50k → **PROCEED** (439k+50k=489k of 780k)
+- **Spent:** 487k (62.4%)  ·  **Remaining:** 293k
+- **Next stage:** Release Gate (release-manager, standard) est. 55k → **PROCEED** (487k+55k=542k of 780k)
 
 Note: raised from 650k to 780k by the owner at 2026-10-09T16:45:05Z (APPROVAL_RECORD-3.md); the owner set the total only, not a new A/B split. The earlier split text below describes the original 650k plan. The budget is split at the freeze, as peak context per spawn. Slice A (Scope, Baseline, Architecture, approvals, Implementation, freeze) is 330k, planned at 310k. Slice B (label review, scoring, Security, Release Gate, close-out) is 320k, planned at 310k. Only the owner can raise the budget.
 
@@ -75,7 +75,8 @@ Note: raised from 650k to 780k by the owner at 2026-10-09T16:45:05Z (APPROVAL_RE
 | Architecture (software-architect), interrupted | opus-5-5 | declared: frontmatter default | — | 2026-10-09 | — | 1.70M processed (peak ctx 124k vs 70k est.) | 21 | 0 (infra interruption, not a retry) |
 | Architecture completion (software-architect, fresh pass) | opus-5-5 | declared: frontmatter default | — | 2026-10-09 | 3:29 | 639k processed (peak ctx 63k vs 25k est.) | 26 | 0 (continues the infra interruption) |
 | Implementation (ai-engineer) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-09 | 21:44 | 3.15M processed (peak ctx 131k vs 130k est.) | 36 | 0 |
-| **Total** | | | | | | 6.83M processed (peak ctx sum 439k) | 120 | |
+| Security Review (security-privacy, standard) | opus-5-5 | declared: frontmatter default | — | 2026-10-09 | 2:19 | 489k processed (peak ctx 48k vs 50k est.) | 18 | 0 |
+| **Total** | | | | | | 7.31M processed (peak ctx sum 487k) | 138 | |
 
 ## Next action
 
