@@ -3,8 +3,8 @@
 - **Ask:** Make retrieval able to say "the docs don't answer this": baseline a threshold/margin first, model only if it fails, fifth held-out set, two bars (intents/docs-abstention.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Release Gate done: NO-GO (not releasable); awaiting owner go on the stale-text pass
-- **Status:** blocked-on-approval
+- **Current stage:** Stale-text pass (tech-writer)
+- **Status:** in-progress
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the worktree of this repo)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 3b07317211f22e38c0111cd2fd40e021710c8b5c (main; includes pack v15 commit 894881a)
@@ -41,6 +41,7 @@
 | Option 1: stop the model path, drop candidate code | owner decision | yes | approved | Gopal Patwa | 2026-10-09T17:49:16Z | runs/docs-abstention/APPROVAL_RECORD-6.md |
 | (lapsed) rule 5 model + rule 4 INV-4 4-i/4-ii + INV-5 + A1 line from APPROVAL_RECORD-5 | 4, 5 | n/a | LAPSED, unused (owner chose option 1) | Gopal Patwa | 2026-10-09T17:49:16Z | runs/docs-abstention/APPROVAL_RECORD-6.md |
 | Rule 4: INV-4 correction, spec 8.3 text | 4 | yes | approved | Gopal Patwa | 2026-10-09T17:50:52Z | runs/docs-abstention/APPROVAL_RECORD-7.md |
+| Stale-text pass incl. .agentic/CURRENT_MVP_STATUS.md | owner approval (status-doc edit) | yes | approved | Gopal Patwa | 2026-10-09T20:41:46Z | runs/docs-abstention/APPROVAL_RECORD-8.md |
 | Scope Q1-Q5 decisions (order, 90%/LOSO, abort rule, counts, INV-4 timing) | owner decision | yes | approved ("as recommended") | Gopal Patwa | 2026-10-09T06:45:47Z | runs/docs-abstention/APPROVAL_RECORD-2.md |
 
 ## Budget
@@ -49,7 +50,7 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 780k tokens  ·  **Depth:** standard (Security adversarial)
 - **Spent:** 550k (70.5%)  ·  **Remaining:** 230k
-- **Next stage:** stale-text pass (tech-writer, README/ARCHITECTURE/.agentic status) est. 30k, then Close-out est. 25k → **PROCEED** after the owner's go on touching `.agentic/CURRENT_MVP_STATUS.md` (550k+55k=605k of 780k)
+- **Next stage:** Stale-text pass (tech-writer) est. 30k → **PROCEED** (550k+30k=580k of 780k); then Close-out est. 25k
 
 Note: raised from 650k to 780k by the owner at 2026-10-09T16:45:05Z (APPROVAL_RECORD-3.md); the owner set the total only, not a new A/B split. The earlier split text below describes the original 650k plan. The budget is split at the freeze, as peak context per spawn. Slice A (Scope, Baseline, Architecture, approvals, Implementation, freeze) is 330k, planned at 310k. Slice B (label review, scoring, Security, Release Gate, close-out) is 320k, planned at 310k. Only the owner can raise the budget.
 
