@@ -20,6 +20,7 @@ from conftest import (
     REPO,
     REVISION,
     FakeEmbedder,
+    FakeJudge,
     FakeOpener,
     FakeReranker,
     as_opener,
@@ -43,6 +44,7 @@ from aveto_support.ingest import (
     _hf_host_allowed,
     _HostRestrictedRedirect,
     download_model_file,
+    ensure_judge_files,
     ensure_model_files,
     ensure_reranker_files,
     fetch_archive,
@@ -50,6 +52,7 @@ from aveto_support.ingest import (
     read_markdown,
     run_ingest,
 )
+from aveto_support.judge import JudgeParams, OnnxJudge, judge_dir
 from aveto_support.rerank import OnnxReranker, RerankParams, reranker_dir
 
 
@@ -774,3 +777,118 @@ def test_live_ingest_byte_identical() -> None:
         )
     finally:
         out.unlink(missing_ok=True)
+
+
+# --- the pinned answerability judge ----------------------------------------
+
+JD_REVISION = "e" * 40
+
+
+def _jd_params() -> JudgeParams:
+    return JudgeParams(
+        model="acme/tiny-judge",
+        revision=JD_REVISION,
+        onnx_sha256=hashlib.sha256(ONNX_BYTES).hexdigest(),
+        vocab_sha256=hashlib.sha256(VOCAB_BYTES).hexdigest(),
+    )
+
+
+def test_default_ingest_fetches_and_rehashes_judge(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+    seen: list[object] = []
+
+    def fetch(params: object, *a: object, **k: object) -> str:
+        seen.append(params)
+        calls.append("fetch-judge")
+        return "downloaded"
+
+    monkeypatch.setattr("aveto_support.ingest.ensure_judge_files", fetch)
+    monkeypatch.setattr(
+        "aveto_support.ingest.OnnxJudge.load", _record(calls, "load-judge", _Closable(calls, "judge"))
+    )
+    report = run_ingest(
+        _cfg(tmp_path, _base()), tmp_path / "i.json", opener=as_opener(FakeOpener(make_archive(DOCS))),
+        models_dir=tmp_path / "models", embedder=FAKE,
+    )
+    assert calls == ["fetch-judge", "load-judge", "close-judge"] and report.judge_status == "downloaded"
+    assert seen == [JudgeParams()]  # the pinned default, on every ingest (no flag)
+    params = _jd_params()
+    opener = _model_opener()
+    assert ensure_judge_files(params, tmp_path / "m2", opener=as_opener(opener)) == "downloaded"
+    assert sorted(opener.urls) == sorted(
+        [
+            f"https://huggingface.co/acme/tiny-judge/resolve/{JD_REVISION}/onnx/model.onnx",
+            f"https://huggingface.co/acme/tiny-judge/resolve/{JD_REVISION}/vocab.txt",
+        ]
+    )
+    base = judge_dir(tmp_path / "m2", params)
+    assert (base / ONNX_FILE).read_bytes() == ONNX_BYTES and (base / VOCAB_FILE).read_bytes() == VOCAB_BYTES
+    again = FakeOpener(error=RuntimeError("must not be called"))
+    assert ensure_judge_files(params, tmp_path / "m2", opener=as_opener(again)) == "cached"
+    assert again.urls == []
+
+
+def test_judge_hash_mismatch_rejected_and_deleted(tmp_path: Path) -> None:
+    bad = FakeOpener(routes={"/onnx/model.onnx": b"tampered", "/vocab.txt": VOCAB_BYTES})
+    models = tmp_path / "models"
+    with pytest.raises(FetchError, match="pinned sha256"):
+        ensure_judge_files(_jd_params(), models, opener=as_opener(bad))
+    assert [p for p in models.rglob("*") if p.is_file()] == []
+
+
+def test_judge_redirect_outside_hf_co_refused() -> None:
+    handler = _HostRestrictedRedirect(_hf_host_allowed)
+    req = Request(f"https://huggingface.co/acme/tiny-judge/resolve/{JD_REVISION}/onnx/model.onnx")
+    for target in ("https://evilhf.co/x", "https://hf.co.evil.example/x", "http://us.aws.cdn.hf.co/x"):
+        with pytest.raises(FetchError, match="disallowed host"):
+            handler.redirect_request(req, io.BytesIO(), 302, "Found", HTTPMessage(), target)
+    assert handler.redirect_request(
+        req, io.BytesIO(), 302, "Found", HTTPMessage(), "https://us.aws.cdn.hf.co/repos/x"
+    ) is not None
+
+
+def test_retrieve_is_offline_with_cached_judge(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    # The autouse fixture blocks every socket for this test; a connection would raise RuntimeError.
+    cfg = _cfg(tmp_path, _base())
+    out = tmp_path / "i.json"
+    _ingest(cfg, out, FakeOpener(make_archive(DOCS)), tmp_path)
+    question = "Usage Launch the widget from the menu."
+    assert main(["retrieve", "--index", str(out), question], embedder=FAKE, judge=FakeJudge(1.0)) == 0
+    text = capsys.readouterr().out
+    assert "guide/usage.md" in text and "Judge: answers" in text
+    assert main(["retrieve", "--index", str(out), question], embedder=FAKE) == 0  # judge loaded from cache
+    assert "Judge: answers" in capsys.readouterr().out
+
+
+def test_index_bytes_unchanged_by_judge_fetch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    cfg = _cfg(tmp_path, _base())
+    opener = FakeOpener(make_archive(DOCS))
+    outs = []
+    for status in ("downloaded", "cached"):
+        monkeypatch.setattr("aveto_support.ingest.ensure_judge_files", lambda *a, _s=status, **k: _s)
+        path = tmp_path / f"{status}.json"
+        run_ingest(cfg, path, opener=as_opener(opener), models_dir=tmp_path / "models", embedder=FAKE)
+        outs.append(path.read_bytes())
+    assert outs[0] == outs[1]
+
+
+def test_ingest_cli_prints_judge_line(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr("aveto_support.ingest.fetch_archive", lambda *a, **k: make_archive(DOCS))
+    cfg = _cfg(tmp_path, _base())
+    assert main(["ingest", "--config", str(cfg), "--out", str(tmp_path / "i.json")], embedder=FAKE) == 0
+    assert "judge files: cached (sha256 verified before use)" in capsys.readouterr().out
+
+
+def test_judge_cached_file_rehashed_before_use_ingest_path(tmp_path: Path) -> None:
+    params = _jd_params()
+    base = judge_dir(tmp_path / "models", params)
+    (base / "onnx").mkdir(parents=True)
+    (base / ONNX_FILE).write_bytes(b"corrupted")
+    (base / VOCAB_FILE).write_bytes(VOCAB_BYTES)
+    opener = _model_opener()
+    assert ensure_judge_files(params, tmp_path / "models", opener=as_opener(opener)) == "downloaded"
+    assert (base / ONNX_FILE).read_bytes() == ONNX_BYTES
+    assert opener.urls == [f"https://huggingface.co/acme/tiny-judge/resolve/{JD_REVISION}/onnx/model.onnx"]
+    assert OnnxJudge is not None

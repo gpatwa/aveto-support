@@ -4,9 +4,9 @@ import json
 from pathlib import Path
 
 import pytest
-from conftest import FakeEmbedder, embed_all
+from conftest import FakeEmbedder, FakeJudge, FakeReranker, embed_all
 
-from aveto_support.__main__ import format_result
+from aveto_support.__main__ import format_abstention, format_result, main
 from aveto_support.embed import (
     DIM,
     INPUT_NAMES,
@@ -28,13 +28,18 @@ from aveto_support.index import (
     RetrievalParams,
     split_passages,
 )
+from aveto_support.judge import DEFAULT_PARAMS as JP
 from aveto_support.search import (
+    Abstention,
+    Answer,
     FileHit,
     PassageMatch,
     QuestionError,
     RetrievalResult,
     Searcher,
     calibrate,
+    judge_result,
+    respond,
     retrieve,
     rrf,
     stem,
@@ -508,3 +513,153 @@ def test_verify_file_rehashes_and_deletes_on_mismatch(tmp_path: Path) -> None:
 def test_model_dir_layout() -> None:
     p = EmbeddingParams()
     assert model_dir(Path("m"), p) == Path("m") / "BAAI--bge-small-en-v1.5" / p.revision
+
+
+# --- answerability judge (abstain-judge-v1) ----------------------------------
+
+JDOCS = {
+    "a.md": "# Alpha\nalpha beta gamma\n## Sub\nalpha delta\n",
+    "b.md": "# Bravo\nbravo charlie\n",
+    "c.md": "# Charlie\ncharlie delta echo\n",
+}
+JQ = "alpha charlie delta"
+
+
+def jsearch() -> Searcher:
+    return build(JDOCS, threshold=0.3)
+
+
+def shown(result: RetrievalResult) -> list[str]:
+    return [passage_input(m.passage) for f in result.files for m in f.passages]
+
+
+def test_abstains_when_no_shown_passage_reaches_threshold() -> None:
+    out = respond(jsearch(), FakeJudge(0.49), JP, JQ)
+    assert isinstance(out, Abstention) and not out.verdict.answers
+    assert out.verdict.best < 0.5 and out.verdict.pairs >= 1
+
+
+def test_answers_when_one_shown_passage_reaches_threshold() -> None:
+    first = retrieve(jsearch(), JQ)
+    target = shown(first)[-1]
+    one = respond(jsearch(), FakeJudge(lambda q, p: 0.9 if p == target else 0.0), JP, JQ)
+    assert isinstance(one, Answer) and one.verdict.best > 0.89
+    edge = respond(jsearch(), FakeJudge(0.5), JP, JQ)  # best == 0.5 answers
+    assert isinstance(edge, Answer) and edge.verdict.best == 0.5
+
+
+def test_abstention_carries_no_passages() -> None:
+    import dataclasses
+
+    out = respond(jsearch(), FakeJudge(0.0), JP, JQ)
+    assert isinstance(out, Abstention)
+    assert {f.name for f in dataclasses.fields(Abstention)} == {"question", "ranking_mode", "verdict"}
+    text = format_abstention(out, jsearch().index, JP)
+    for p in jsearch().index.passages:
+        assert p.path not in text and "github.com" not in text and p.text.strip() not in text
+    assert "lines " not in text and "Heading" not in text and "|" not in text
+
+
+def test_abstention_output_is_exactly_no_confident_match(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    from aveto_support.index import write_index
+
+    idx = tmp_path / "i.json"
+    write_index(jsearch().index, idx)
+    assert main(["retrieve", "--index", str(idx), JQ], embedder=FAKE, judge=FakeJudge(0.0)) == 0
+    lines = capsys.readouterr().out.rstrip("\n").split("\n")
+    assert lines[3] == "no confident match" and len(lines) == 5
+    assert lines[0] == f"Sources for: {JQ}"
+
+
+def test_abstention_names_deciding_signal() -> None:
+    out = respond(jsearch(), FakeJudge(0.25), JP, JQ)
+    assert isinstance(out, Abstention)
+    last = format_abstention(out, jsearch().index, JP).split("\n")[-1]
+    assert last == (
+        "Decided by: answerability judge cross-encoder/qnli-electra-base@"
+        f"c7dea87c98b2269a935686c31336e97e837cbbeb (abstain-judge-v1: best of {out.verdict.pairs} "
+        "shown passages p=0.250 < 0.50)"
+    )
+    assert out.verdict.signal.endswith(":abstain-judge-v1")
+
+
+def test_judge_reads_only_question_and_shown_passages() -> None:
+    judge = FakeJudge(1.0)
+    out = respond(jsearch(), judge, JP, JQ)
+    assert isinstance(out, Answer)
+    assert judge.calls == [(JQ, text) for text in shown(out.result)]
+    assert out.verdict.pairs == len(judge.calls) <= 10
+    assert all(q == JQ for q, _ in judge.calls)
+
+
+def test_judge_never_changes_shown_files_or_order() -> None:
+    s = jsearch()
+    base = retrieve(s, JQ)
+    out = respond(s, FakeJudge(0.8), JP, JQ)
+    assert isinstance(out, Answer) and out.result == base
+    plain = format_result(base, s.index).split("\n")
+    judged = format_result(out.result, s.index, out.verdict, JP).split("\n")
+    assert [line for line in judged if not line.startswith("Judge: ")] == plain
+    assert sum(line.startswith("Judge: answers (abstain-judge-v1: best of ") for line in judged) == 1
+    assert "ingest reference 0.300, reported only)" in plain[3]
+
+
+def test_judged_hits_are_verbatim_passages() -> None:
+    s = jsearch()
+    out = respond(s, FakeJudge(0.9), JP, JQ)
+    assert isinstance(out, Answer)
+    known = {(p.path, p.line_start, p.text) for p in s.index.passages}
+    for f in out.result.files:
+        for m in f.passages:
+            assert (m.passage.path, m.passage.line_start, m.passage.text) in known
+
+
+class RaisingJudge:
+    def logits(self, question: str, passage_text: str) -> tuple[float, ...]:
+        raise ModelError("judge session failed")
+
+
+class OddJudge:
+    def __init__(self, value: object) -> None:
+        self.value = value
+
+    def logits(self, question: str, passage_text: str) -> tuple[float, ...]:
+        return self.value  # type: ignore[return-value]
+
+
+@pytest.mark.parametrize(
+    "judge",
+    [RaisingJudge(), OddJudge((float("nan"),)), OddJudge((float("inf"),)), OddJudge("an invented sentence"),
+     OddJudge((1.0, 2.0)), OddJudge(("x",))],
+)
+def test_judge_error_shows_no_passages_and_exits_2(
+    judge: object, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    from aveto_support.index import write_index
+
+    idx = tmp_path / "i.json"
+    write_index(jsearch().index, idx)
+    with pytest.raises(ModelError):
+        judge_result(judge, JP, retrieve(jsearch(), JQ))  # type: ignore[arg-type]
+    assert main(["retrieve", "--index", str(idx), JQ], embedder=FAKE, judge=judge) == 2  # type: ignore[arg-type]
+    captured = capsys.readouterr()
+    assert captured.out == "" and captured.err.startswith("error: ")
+
+
+def test_judge_applies_on_reranked_path(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    from aveto_support.index import write_index
+
+    s = jsearch()
+    s_rr = Searcher(s.index, FAKE, FakeReranker())
+    judge = FakeJudge(0.0)
+    out = respond(s_rr, judge, JP, JQ)
+    assert isinstance(out, Abstention) and out.ranking_mode.startswith("file-rerank-v1")
+    shown_rr = shown(retrieve(s_rr, JQ))
+    assert [t for _, t in judge.calls] == shown_rr
+    idx = tmp_path / "i.json"
+    write_index(s.index, idx)
+    assert main(["retrieve", "--index", str(idx), "--ranking", "file-rerank-v1", JQ],
+                embedder=FAKE, reranker=FakeReranker(), judge=FakeJudge(1.0)) == 0
+    assert "Judge: answers" in capsys.readouterr().out

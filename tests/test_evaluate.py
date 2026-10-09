@@ -7,6 +7,7 @@ from conftest import (
     COMMIT,
     REPO,
     FakeEmbedder,
+    FakeJudge,
     FakeOpener,
     FakeReranker,
     as_opener,
@@ -19,12 +20,13 @@ from aveto_support.__main__ import main
 from aveto_support.evaluate import (
     EvalFormatError,
     EvalQuestion,
+    EvalReport,
     EvalSet,
     check_commit,
     format_report,
     load_eval_set,
-    score,
 )
+from aveto_support.evaluate import score as _score
 from aveto_support.index import (
     Index,
     RetrievalParams,
@@ -33,6 +35,7 @@ from aveto_support.index import (
     write_index,
 )
 from aveto_support.ingest import run_ingest
+from aveto_support.judge import DEFAULT_PARAMS
 from aveto_support.search import Searcher
 
 DOCS = {
@@ -57,6 +60,10 @@ def searcher(threshold: float = 0.3, commit: str = COMMIT) -> Searcher:
     passages.sort(key=lambda p: (p.path, p.line_start))
     index = Index(REPO, commit, len(DOCS), (), tuple(embed_all(passages)), threshold, RetrievalParams())
     return Searcher(index, FAKE)
+
+
+def score(s: Searcher, es: EvalSet, judge: FakeJudge | None = None) -> EvalReport:
+    return _score(s, es, judge or FakeJudge(1.0), DEFAULT_PARAMS)
 
 
 def answerable(i: int, question: str, source: str) -> EvalQuestion:
@@ -140,9 +147,12 @@ def test_format_report_summary_lines() -> None:
     report = score(s, EvalSet(COMMIT, es.questions + (unanswerable(1, "quantum spaceship"),)))
     lines = format_report(report, "e.toml", s.index).split("\n")
     assert "ranking: file-rrf-v1" in lines[0] and "(diagnostic)" in lines[0]
-    assert lines[-4].startswith("u01  DIAG")
-    assert lines[-3].startswith("answerable:   20/24 (83.3%)  required >= 80%  PASS")
-    assert lines[-2] == "unanswerable: 1 (diagnostic only, not gated)"
+    assert lines[-7].startswith("u01  DIAG") and lines[-7].endswith("judge p=1.00")
+    assert lines[-6].startswith("answerable:   20/24 (83.3%)  required >= 80%  PASS")
+    assert lines[-5] == "abstention bar 1: 0/1 unanswerable abstained  required >= 1  FAIL"
+    assert lines[-4] == "abstention bar 2: 20/20 top-5 hits not abstained  required >= 16  PASS"
+    assert lines[-3] == "end-to-end (top 5): 20/25  end-to-end (top 1): 20/25"
+    assert lines[-2].startswith("unanswerable: 1 (abstention bars reported above;")
     assert lines[-1] == "eval: PASS"
 
 
@@ -319,6 +329,9 @@ def test_main_closes_loaded_adapters_in_reverse_order(
     monkeypatch.setattr(
         "aveto_support.rerank.OnnxReranker.load", lambda *a, **k: _Tracked(log, "reranker", FakeReranker())
     )
+    monkeypatch.setattr(
+        "aveto_support.judge.OnnxJudge.load", staticmethod(lambda *a, **k: _Tracked(log, "judge", FakeJudge()))
+    )
     idx, ev = _write(tmp_path, 0.3, A_CATS)
     miss = tmp_path / "miss.toml"
     miss.write_text(ev.read_text().replace("pets/cats.md", "zzz/last.md"))
@@ -326,13 +339,115 @@ def test_main_closes_loaded_adapters_in_reverse_order(
     for eval_file, expected in ((ev, 0), (miss, 1), (tmp_path / "absent.toml", 2)):
         log.clear()
         assert main([*base, str(eval_file)]) == expected
-        assert log == ["reranker", "embedder"]
+        assert log == ["judge", "reranker", "embedder"]
     log.clear()
     assert main(["retrieve", "--index", str(idx), "cats"]) == 0
-    assert log == ["embedder"]  # default ranking: no reranker was loaded
+    assert log == ["judge", "embedder"]  # default ranking: no reranker was loaded
     capsys.readouterr()
     # Injected adapters belong to the caller and are never closed.
     log.clear()
     injected = _Tracked(log, "injected", FAKE)
     assert main(["retrieve", "--index", str(idx), "cats"], embedder=injected) == 0  # type: ignore[arg-type]
-    assert log == []
+    assert log == ["judge"]  # only the judge was loaded here; the injected embedder is not closed
+
+
+# --- abstention bars --------------------------------------------------------
+
+
+def _bar_set() -> EvalSet:
+    ans = tuple(answerable(i, "cats purr", "pets/cats.md") for i in range(5))
+    una = tuple(unanswerable(i, "quantum spaceship") for i in range(3))
+    return EvalSet(COMMIT, ans + una)
+
+
+def test_always_abstain_judge_fails_bar_two() -> None:
+    es = _bar_set()
+    report = score(searcher(), es, FakeJudge(0.0))
+    assert report.bar1_abstained == report.unanswerable_total == 3
+    assert report.bar2_kept == 0
+    assert report.bar2_denominator == 5
+    assert report.bar2_passed is False
+    s = searcher()
+    lines = format_report(report, "e.toml", s.index).split("\n")
+    bar2 = next(line for line in lines if line.startswith("abstention bar 2:"))
+    assert bar2.endswith("FAIL")
+
+
+def test_never_abstain_judge_fails_bar_one() -> None:
+    report = score(searcher(), _bar_set(), FakeJudge(1.0))
+    assert report.unanswerable_total > 0
+    assert report.bar1_abstained == 0 and report.bar1_passed is False
+    assert report.bar2_kept == report.bar2_denominator and report.bar2_passed
+
+
+def test_bar_two_denominator_is_pre_abstention_hits() -> None:
+    # Abstain on exactly one answerable question: it stays in the denominator.
+    def p(question: str, passage: str) -> float:
+        return 0.0 if question == "dogs bark" else 1.0
+
+    qs = (
+        answerable(1, "cats purr", "pets/cats.md"),
+        answerable(2, "dogs bark", "pets/dogs.md"),
+        answerable(3, "cats purr", "zzz/last.md"),  # a miss: not in the denominator
+    )
+    report = score(searcher(), EvalSet(COMMIT, qs), FakeJudge(p))
+    assert (report.bar2_denominator, report.bar2_kept, report.answerable_hits) == (2, 1, 2)
+    assert [o.abstained for o in report.outcomes] == [False, True, False]
+    assert report.outcomes[1].hit  # `hit` keeps its pre-abstention meaning
+
+
+def test_bar_thresholds_are_ceil_eighty_percent() -> None:
+    def report(count: int, n: int) -> EvalReport:
+        return EvalReport((), 0, 0, n, bar1_abstained=count, bar2_kept=count, bar2_denominator=n)
+
+    for n, need in ((20, 16), (24, 20), (56, 45), (21, 17)):
+        assert report(need, n).bar1_passed and report(need, n).bar2_passed
+        assert not report(need - 1, n).bar1_passed and not report(need - 1, n).bar2_passed
+    s = searcher()
+    text = format_report(report(16, 20), "e.toml", s.index)
+    assert "abstention bar 1: 16/20 unanswerable abstained  required >= 16  PASS" in text
+    assert "abstention bar 2: 16/20 top-5 hits not abstained  required >= 16  PASS" in text
+
+
+def test_end_to_end_counts_top5_and_top1() -> None:
+    qs = (
+        answerable(1, "cats purr", "pets/cats.md"),  # hit at rank 1
+        answerable(2, "cats purr", "zzz/last.md"),  # miss
+        unanswerable(3, "quantum spaceship"),
+    )
+    answered = score(searcher(), EvalSet(COMMIT, qs), FakeJudge(1.0))
+    assert (answered.end_to_end_top5, answered.end_to_end_top1) == (1, 1)
+    abstained = score(searcher(), EvalSet(COMMIT, qs), FakeJudge(0.0))
+    assert (abstained.end_to_end_top5, abstained.end_to_end_top1) == (1, 1)  # the abstained unanswerable
+    text = format_report(abstained, "e.toml", searcher().index)
+    assert "end-to-end (top 5): 1/3  end-to-end (top 1): 1/3" in text
+
+
+def test_eval_exit_code_unchanged_by_abstention(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    idx, ev = _write(tmp_path, 0.3, A_CATS)
+    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE, judge=FakeJudge(0.0)) == 0
+    out = capsys.readouterr().out
+    assert "ABSTAINED" in out and "abstention bar 2: 0/1" in out and out.rstrip().endswith("eval: PASS")
+    idx2, ev2 = _write(tmp_path, 0.3, A_CATS.replace("pets/cats.md", "zzz/last.md"))
+    assert main(["eval", "--index", str(idx2), "--eval-file", str(ev2)], embedder=FAKE, judge=FakeJudge(0.0)) == 1
+    assert capsys.readouterr().out.rstrip().endswith("eval: FAIL")
+
+
+@pytest.mark.parametrize("bad", ["raise", "nan"])
+def test_eval_judge_error_aborts_with_exit_2_and_no_report(
+    bad: str, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    class Bad:
+        def logits(self, question: str, passage_text: str) -> tuple[float, ...]:
+            if bad == "raise":
+                from aveto_support.embed import ModelError
+
+                raise ModelError("judge session failed")
+            return (float("nan"),)
+
+    idx, ev = _write(tmp_path, 0.3, A_CATS)
+    assert main(["eval", "--index", str(idx), "--eval-file", str(ev)], embedder=FAKE, judge=Bad()) == 2
+    captured = capsys.readouterr()
+    assert captured.out == "" and captured.err.startswith("error: ")

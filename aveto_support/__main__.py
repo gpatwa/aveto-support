@@ -12,8 +12,15 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from aveto_support.embed import Embedder
     from aveto_support.index import Index
+    from aveto_support.judge import Judge, JudgeParams
     from aveto_support.rerank import Reranker
-    from aveto_support.search import FileHit, PassageMatch, RetrievalResult
+    from aveto_support.search import (
+        Abstention,
+        FileHit,
+        JudgeVerdict,
+        PassageMatch,
+        RetrievalResult,
+    )
 
 DEFAULT_CONFIG = "docs-source.toml"
 DEFAULT_INDEX = "index/docs-index.json"
@@ -48,21 +55,52 @@ def _format_file(hit: FileHit) -> str:
     return "\n".join(parts)
 
 
-def format_result(result: RetrievalResult, index: Index) -> str:
+def _judge_detail(verdict: JudgeVerdict, params: JudgeParams) -> str:
+    return f"{params.method}: best of {verdict.pairs} shown passages p={verdict.best:.3f}"
+
+
+def format_result(
+    result: RetrievalResult,
+    index: Index,
+    verdict: JudgeVerdict | None = None,
+    params: JudgeParams | None = None,
+) -> str:
     parts = [
         f"Sources for: {result.question}",
         f"Docs: {index.repo} @ {index.commit}",
         f"Ranking: {result.ranking_mode}  no text generated",
         (
             f"Top score: {result.top_score:.3f} (best passage similarity; ingest reference "
-            f"{result.reference:.3f}, reported only: retrieval does not decide whether the docs answer)"
+            f"{result.reference:.3f}, reported only)"
         ),
-        "",
     ]
+    if verdict is not None and params is not None:
+        parts.append(
+            f"Judge: answers ({_judge_detail(verdict, params)} >= {verdict.threshold:.2f}; "
+            f"{params.model}@{params.revision})"
+        )
+    parts.append("")
     parts.extend(_format_file(f) for f in result.files)
     parts.append("")
     parts.append("These are sources, not an answer.")
     return "\n".join(parts)
+
+
+def format_abstention(abstention: Abstention, index: Index, params: JudgeParams) -> str:
+    """Exactly: header, `no confident match`, the deciding signal. No file or passage."""
+    verdict = abstention.verdict
+    return "\n".join(
+        [
+            f"Sources for: {abstention.question}",
+            f"Docs: {index.repo} @ {index.commit}",
+            f"Ranking: {abstention.ranking_mode}  no text generated",
+            "no confident match",
+            (
+                f"Decided by: answerability judge {params.model}@{params.revision} "
+                f"({_judge_detail(verdict, params)} < {verdict.threshold:.2f})"
+            ),
+        ]
+    )
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -97,14 +135,17 @@ def _dispatch(
     args: argparse.Namespace,
     embedder: Embedder | None,
     reranker: Reranker | None,
+    judge: Judge | None,
     models_dir: Path,
 ) -> int:
     from aveto_support.embed import OnnxEmbedder
     from aveto_support.evaluate import check_commit, format_report, load_eval_set, score
     from aveto_support.index import load_index
     from aveto_support.ingest import run_ingest
+    from aveto_support.judge import DEFAULT_PARAMS as judge_params
+    from aveto_support.judge import OnnxJudge
     from aveto_support.rerank import OnnxReranker
-    from aveto_support.search import Searcher, ranking_mode, retrieve
+    from aveto_support.search import Abstention, Searcher, ranking_mode, respond
 
     if args.command == "ingest":
         report = run_ingest(
@@ -130,6 +171,7 @@ def _dispatch(
             f"diagnostic, retrieval does not abstain)"
         )
         print(f"model files: {report.model_status} (sha256 verified before use)")
+        print(f"judge files: {report.judge_status} (sha256 verified before use)")
         if report.reranker_status == "not fetched":
             print(
                 "reranker files: not fetched (optional; ingest --with-reranker fetches them "
@@ -140,9 +182,10 @@ def _dispatch(
         print(f"wrote {args.out}  sha256 {report.sha256}")
         return 0
     index = load_index(Path(args.index))
-    # Adapters this function loads are closed here, reranker first; injected ones belong to the caller.
+    # Adapters this function loads are closed here, judge first; injected ones belong to the caller.
     loaded_embedder: OnnxEmbedder | None = None
     loaded_reranker: OnnxReranker | None = None
+    loaded_judge: OnnxJudge | None = None
     try:
         active = embedder
         if active is None:
@@ -152,19 +195,29 @@ def _dispatch(
             active_reranker = reranker
             if active_reranker is None:
                 active_reranker = loaded_reranker = OnnxReranker.load(models_dir)
+        active_judge = judge
+        if active_judge is None:
+            active_judge = loaded_judge = OnnxJudge.load(models_dir, judge_params)
         searcher = Searcher(index, active, active_reranker)
         if args.command == "retrieve":
-            print(format_result(retrieve(searcher, " ".join(args.question)), index))
+            # Output is built only after the judge has scored every shown passage (INV-4).
+            outcome = respond(searcher, active_judge, judge_params, " ".join(args.question))
+            if isinstance(outcome, Abstention):
+                print(format_abstention(outcome, index, judge_params))
+            else:
+                print(format_result(outcome.result, index, outcome.verdict, judge_params))
             return 0
         eval_set = load_eval_set(Path(args.eval_file))
         check_commit(index, eval_set)
-        print(f"Ranking: {ranking_mode(searcher)}")
-        report_eval = score(searcher, eval_set)
+        report_eval = score(searcher, eval_set, active_judge, judge_params)
         text = format_report(report_eval, args.eval_file, index)
-        # evaluate.py (frozen) labels its header file-rrf-v1; name the method that actually ran.
+        print(f"Ranking: {ranking_mode(searcher)}")
+        # evaluate.py labels its header file-rrf-v1; name the method that actually ran.
         print(text.replace("ranking: file-rrf-v1", f"ranking: {args.ranking}", 1))
         return 0 if report_eval.passed else 1
     finally:
+        if loaded_judge is not None:
+            loaded_judge.close()
         if loaded_reranker is not None:
             loaded_reranker.close()
         if loaded_embedder is not None:
@@ -176,6 +229,7 @@ def main(
     *,
     embedder: Embedder | None = None,
     reranker: Reranker | None = None,
+    judge: Judge | None = None,
     models_dir: Path = Path(DEFAULT_MODELS),
 ) -> int:
     try:
@@ -189,7 +243,7 @@ def main(
     from aveto_support.ingest import ConfigError, FetchError
 
     try:
-        return _dispatch(args, embedder, reranker, models_dir)
+        return _dispatch(args, embedder, reranker, judge, models_dir)
     except (ConfigError, IndexFormatError, EvalFormatError, ModelError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

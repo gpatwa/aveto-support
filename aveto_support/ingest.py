@@ -37,6 +37,7 @@ from aveto_support.index import (
     split_sections,
     write_index,
 )
+from aveto_support.judge import JudgeParams, OnnxJudge, judge_dir
 from aveto_support.rerank import OnnxReranker, RerankParams, reranker_dir
 from aveto_support.search import calibrate, eligible_passages_by_file
 
@@ -44,6 +45,7 @@ ALLOWED_HOSTS = frozenset({"github.com", "codeload.github.com"})
 HF_HOST = "huggingface.co"
 HF_SUFFIX = ".hf.co"
 MODEL_MAX_BYTES = 200_000_000
+JUDGE_MAX_BYTES = 500_000_000  # the pinned judge graph is about 438 MB (fp32)
 _HEX40 = re.compile(r"^[0-9a-f]{40}$")
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
 _REPO = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
@@ -90,6 +92,7 @@ class IngestReport:
     tau_offtopic: float | None = None
     model_status: str = ""
     reranker_status: str = ""
+    judge_status: str = ""
 
 
 def _load_embedding(raw: object) -> tuple[EmbeddingParams, str | None]:
@@ -371,6 +374,29 @@ def ensure_reranker_files(
     return "downloaded" if downloaded else "cached"
 
 
+def ensure_judge_files(
+    params: JudgeParams,
+    models_dir: Path,
+    *,
+    opener: urllib.request.OpenerDirector | None = None,
+) -> str:
+    """Make sure the judge's two pinned files are cached and match their sha256."""
+    base = judge_dir(models_dir, params)
+    pins = ((params.onnx_file, params.onnx_sha256), (params.vocab_file, params.vocab_sha256))
+    downloaded = False
+    for name, expected in pins:
+        target = base / name
+        if target.is_file():
+            if sha256_file(target) == expected:
+                continue
+            target.unlink()
+        download_model_file(
+            params, name, target, expected, opener=opener, max_bytes=JUDGE_MAX_BYTES
+        )
+        downloaded = True
+    return "downloaded" if downloaded else "cached"
+
+
 def read_markdown(
     archive: bytes, source: SourceConfig
 ) -> tuple[list[DocFile], list[tuple[str, str]]]:
@@ -454,6 +480,8 @@ def run_ingest(
     else:
         model_status = "injected"
     try:
+        judge_status = ensure_judge_files(JudgeParams(), models_dir, opener=model_opener)
+        OnnxJudge.load(models_dir).close()  # load-check only; released at once
         if with_reranker:
             reranker_status = ensure_reranker_files(RerankParams(), models_dir, opener=model_opener)
             OnnxReranker.load(models_dir).close()  # load-check only; released at once
@@ -507,6 +535,7 @@ def run_ingest(
             tau_offtopic=calibration.tau_offtopic,
             model_status=model_status,
             reranker_status=reranker_status,
+            judge_status=judge_status,
         )
     finally:
         if loaded is not None:
