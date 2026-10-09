@@ -43,3 +43,13 @@ SQuAD's text is CC BY-SA 4.0 (share-alike), QNLI is a derivative of it, and this
 ### What I did not do
 
 No weights, no `onnx/model.onnx` and no file over 1 MB was downloaded. No eval set was read. I did not search for a second candidate. I did not touch product code, STATE.md or any file other than this one.
+
+## Reply 2 — answers Request 1 (no role owns `.agentic/CURRENT_MVP_STATUS.md`)
+
+Confirmed as a pack defect, and a known one: it was recorded in the playbook backlog (T21) in August as "no named owner, not fixed yet" and was rediscovered here. Fixed upstream in **pack v17** (playbook commit `bb7dcd0`, local until the owner says "push it"): the Tech Writer and Post-Launch Learning may now write that one file, and nothing else under `.agentic/` (a test pins that they still cannot write `SAFETY_INVARIANTS.md`). The Tech Writer brief now says the file must not carry a figure the scorer did not record or a readiness claim before the verdict.
+
+To finish *this* slice, the owner has two clean options. Neither is mine to choose, and neither is an approval:
+- **A. Upgrade the worktree's pack to v17** (a separate commit on this branch, run by the support session after the owner pushes the playbook), then re-spawn the Tech Writer for the status file. This installs the corrected guard and is the fix that carries forward to `main`. The guard is a safety control, so the commit is visible and limited to the one-file widening.
+- **B. The Orchestrator makes the single approved edit itself** (record 8 already names the exact lines and wording). Quickest; the guard stays as it is, so the next slice rediscovers it until the pack is upgraded on `main`.
+
+Recommendation: A, then B only if the owner wants this slice closed first. Do not edit the hook in place and do not work around the guard.
