@@ -25,7 +25,6 @@ from aveto_support.index import (
     Passage,
     RetrievalParams,
 )
-from aveto_support.judge import Judge, JudgeParams, probability
 from aveto_support.rerank import Reranker, RerankParams
 
 SENTINEL_THRESHOLD = 1_000_000.0
@@ -453,8 +452,7 @@ def ranking_mode(searcher: Searcher) -> str:
 def retrieve(searcher: Searcher, question: str) -> RetrievalResult:
     """Rank files: file-rrf-v1, or file-rerank-v1 when the searcher has a reranker.
 
-    First stage only: runs the embedder on the question, locally, and never abstains.
-    Abstention is `respond`, which adds the answerability judge. No text is generated."""
+    Runs the embedder on the question, locally. Never abstains. No text is generated."""
     embedder = searcher.embedder
     if not question.strip() or embedder.token_count(question) == 0:
         raise QuestionError("the question has no searchable words")
@@ -494,79 +492,6 @@ def retrieve(searcher: Searcher, question: str) -> RetrievalResult:
             FileHit(rank, path, score, file_permalink(index.repo, index.commit, path), matches)
         )
     return RetrievalResult(question, tuple(files), max(sims), index.threshold, ranking_mode(searcher))
-
-
-# --- answerability judge (abstain-judge-v1) --------------------------------
-
-
-@dataclass(frozen=True)
-class JudgeVerdict:
-    answers: bool
-    best: float
-    pairs: int
-    threshold: float
-    signal: str  # judge:<model>@<revision>:<method>
-
-    def __post_init__(self) -> None:
-        if not 0.0 <= self.best <= 1.0:
-            raise ValueError("a verdict's best score must be in [0, 1]")
-        if self.pairs < 1:
-            raise ValueError("a verdict needs at least one judged pair")
-        if self.answers != (self.best >= self.threshold):
-            raise ValueError("a verdict must follow its threshold")
-
-
-@dataclass(frozen=True)
-class Abstention:
-    """No files and no passages by construction (INV-4)."""
-
-    question: str
-    ranking_mode: str
-    verdict: JudgeVerdict
-
-    def __post_init__(self) -> None:
-        if self.verdict.answers:
-            raise ValueError("an Abstention needs a verdict that does not answer")
-
-
-@dataclass(frozen=True)
-class Answer:
-    result: RetrievalResult
-    verdict: JudgeVerdict
-
-    def __post_init__(self) -> None:
-        if not self.verdict.answers:
-            raise ValueError("an Answer needs a verdict that answers")
-
-
-def judge_result(judge: Judge, params: JudgeParams, result: RetrievalResult) -> JudgeVerdict:
-    """Score exactly the shown passages of the returned files, in rank order, once each."""
-    best: float | None = None
-    pairs = 0
-    for hit in result.files:
-        for match in hit.passages:
-            raw = judge.logits(result.question, passage_input(match.passage))
-            if not isinstance(raw, tuple):
-                raise ModelError("the judge returned a non-numeric score")
-            p = probability(raw, params)
-            pairs += 1
-            if best is None or p > best:
-                best = p
-    if best is None:
-        raise ModelError("no shown passages to judge")
-    signal = f"judge:{params.model}@{params.revision}:{params.method}"
-    return JudgeVerdict(best >= params.threshold, best, pairs, params.threshold, signal)
-
-
-def respond(
-    searcher: Searcher, judge: Judge, params: JudgeParams, question: str
-) -> Answer | Abstention:
-    """First stage, then the judge. Abstains iff no shown passage reaches the threshold."""
-    result = retrieve(searcher, question)
-    verdict = judge_result(judge, params, result)
-    if not verdict.answers:
-        return Abstention(result.question, result.ranking_mode, verdict)
-    return Answer(result, verdict)
 
 
 # --- calibration -----------------------------------------------------------

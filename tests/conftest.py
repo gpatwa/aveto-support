@@ -3,11 +3,10 @@ from __future__ import annotations
 import dataclasses
 import hashlib
 import io
-import math
 import re
 import socket
 import tarfile
-from collections.abc import Callable, Iterator
+from collections.abc import Iterator
 from typing import Any, Self, cast
 from urllib.request import OpenerDirector
 
@@ -15,7 +14,6 @@ import pytest
 
 from aveto_support.embed import DIM, passage_input, quantise
 from aveto_support.index import Passage
-from aveto_support.judge import OnnxJudge
 
 REPO = "acme/docs"
 COMMIT = "0123456789abcdef0123456789abcdef01234567"
@@ -171,43 +169,3 @@ class FakeReranker:
         self.calls.append((question, passage_text))
         q = set(re.findall(r"\w+", question.lower()))
         return float(len(q & set(re.findall(r"\w+", passage_text.lower()))))
-
-
-def _logit(p: float) -> float:
-    if p <= 0.0:
-        return -50.0
-    if p >= 1.0:
-        return 50.0
-    return math.log(p / (1.0 - p))
-
-
-class FakeJudge:
-    """Fixed or per-pair probabilities with a call log: no model, no network, no key."""
-
-    def __init__(self, p: float | Callable[[str, str], float] = 1.0) -> None:
-        self.p = p
-        self.calls: list[tuple[str, str]] = []
-
-    def logits(self, question: str, passage_text: str) -> tuple[float, ...]:
-        self.calls.append((question, passage_text))
-        p = self.p(question, passage_text) if callable(self.p) else self.p
-        return (_logit(p),)
-
-    def close(self) -> None:
-        return None
-
-
-def pytest_configure(config: pytest.Config) -> None:
-    config.addinivalue_line(
-        "markers", "real_judge_load: use the real OnnxJudge.load (default: an always-answers fake)"
-    )
-
-
-@pytest.fixture(autouse=True)
-def _fake_judge_load(request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch) -> None:
-    """CLI tests that do not inject a judge get an always-answers fake, so their output keeps
-    its shape; the judge fetch in ingest is likewise stubbed (no 438 MB download in tests)."""
-    if request.node.get_closest_marker("real_judge_load"):
-        return
-    monkeypatch.setattr(OnnxJudge, "load", staticmethod(lambda *a, **k: FakeJudge(1.0)))
-    monkeypatch.setattr("aveto_support.ingest.ensure_judge_files", lambda *a, **k: "cached")
