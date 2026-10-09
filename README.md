@@ -1,7 +1,12 @@
 # Aveto Support
 
-> **Status: retrieval only; Security Review and Release Gate run, internally releasable, not announced.** It lists
-> the docs files for a question and generates no answers. The default ranking
+> **Status: retrieval only; not released and not announced.** It lists
+> the docs files for a question and generates no answers. It never abstains:
+> a question the docs do not answer still returns files. Abstention is not
+> built; the slice `docs-abstention` found no score-threshold or margin rule
+> that separates unanswerable from answerable questions on the seen sets, and a
+> local judge model it tried failed its seen-set check and was not adopted.
+> There is no end-to-end result. The default ranking
 > (`file-rrf-v1`) scored 14/16 on the latest held-out set (earlier sets 11/16
 > and 12/17); an optional reranker is off by default and showed no
 > demonstrated gain. Nothing here is released. The record of
@@ -46,8 +51,10 @@ uv run python -m aveto_support retrieve "how do I install it"
 uv run python -m aveto_support eval            # score against evals/retrieval.toml
 ```
 
-`retrieve` prints verbatim passages with their path, heading, line range and a
-permalink, or `no confident match`. It never writes an answer. Exit codes are
+`retrieve` prints verbatim passages from the top five files, each with path,
+heading, line range and permalink, plus the top score. It never abstains (a
+question the docs do not answer still returns files) and never writes an
+answer. Exit codes are
 listed in `.agentic/LOCAL_COMMANDS.md`.
 
 ### The local model
@@ -69,9 +76,9 @@ never generates or changes text.
   `vocab.txt`. The model must be a BERT-style WordPiece encoder with a 384-dimension CLS
   output, as this one is. Changing the pin is a new download; get it approved.
 - **Calibration list.** `offtopic_path` and `offtopic_sha256` name a fixed list of
-  fluent questions the docs do not answer, used to calibrate "no confident
-  match". Without one, `ingest` warns that abstention is calibrated on word
-  salads only and is likely too permissive.
+  fluent questions the docs do not answer, used to compute a reference
+  similarity that `ingest` prints for information. It decides nothing:
+  retrieval does not abstain.
 
 ## Point it at your own docs
 

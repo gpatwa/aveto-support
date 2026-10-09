@@ -1,0 +1,29 @@
+Ranking: file-rrf-v1:hybrid:BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a
+eval: evals/retrieval-heldout-4.toml  index: gpatwa/agentic-sdlc-playbook @ 3a83b669…  ranking: file-rrf-v1  reference similarity: 0.702 (diagnostic)
+f01  HIT   agents/product-manager.md (rank 5)  top score 0.71  judge p=1.00 answered
+f02  HIT   templates/COMPLIANCE_REVIEW_TEMPLATE.md (rank 1)  top score 0.69  judge p=0.99 answered
+f03  HIT   templates/COST_BUDGET_TEMPLATE.md (rank 1)  top score 0.66  judge p=0.99 answered
+f04  MISS  expected templates/RELEASE_CHECKLIST_TEMPLATE.md | prompts/release-gate.md | agents/release-manager.md | docs/RELEASE_GATES.md; got examples/saved-items-bulk-delete/artefacts/03-feature-spec.md, examples/saved-items-bulk-delete/artefacts/04-ux-spec.md, templates/EXPERIMENT_SPEC_TEMPLATE.md, examples/saved-items-bulk-delete/artefacts/05-tech-spec.md, examples/saved-items-bulk-delete/artefacts/02-prd.md  top score 0.67  judge p=1.00 answered
+f05  HIT   agents/backend-architect.md (rank 1)  top score 0.69  judge p=0.99 answered
+f06  HIT   templates/UX_SPEC_TEMPLATE.md (rank 1)  top score 0.71  judge p=1.00 answered
+f07  HIT   agents/customer-success.md (rank 1)  top score 0.69  judge p=1.00 answered
+f08  HIT   agents/market-researcher.md (rank 1)  top score 0.68  judge p=1.00 answered
+f09  HIT   templates/TECH_SPEC_TEMPLATE.md (rank 1)  top score 0.69  judge p=1.00 answered
+f10  HIT   agents/security-privacy.md (rank 1)  top score 0.69  judge p=0.99 answered
+f11  HIT   agents/analytics-engineer.md (rank 1)  top score 0.66  judge p=1.00 answered
+f12  MISS  expected agents/post-launch-learning.md | templates/POST_LAUNCH_REVIEW_TEMPLATE.md | agents/data-analyst.md; got agents/customer-success.md, agents/production-verification.md, agents/on-call-engineer.md, agents/release-manager.md, docs/GETTING_STARTED.md  top score 0.65  judge p=1.00 answered
+f13  HIT   agents/orchestrator.md (rank 1)  top score 0.63  judge p=0.93 answered
+f14  HIT   project-packs/enterprise-saas-future.md (rank 1)  top score 0.64  judge p=0.92 answered
+f15  HIT   agents/ai-engineer.md (rank 1)  top score 0.66  judge p=1.00 answered
+f16  HIT   docs/PIPELINE_ANALYTICS.md (rank 1)  top score 0.69  judge p=0.98 answered
+fu01  DIAG  top file examples/saved-items-bulk-delete/README.md  top score 0.61  judge p=0.99
+fu02  DIAG  top file docs/DEPLOYMENT.md  top score 0.74  judge p=0.99
+fu03  DIAG  top file execution/README.md  top score 0.65  judge p=0.99
+fu04  DIAG  top file agents/tech-writer.md  top score 0.66  judge p=0.97
+answerable:   14/16 (87.5%)  required >= 80%  PASS
+abstention bar 1: 0/4 unanswerable abstained  required >= 4  FAIL
+abstention bar 2: 14/14 top-5 hits not abstained  required >= 12  PASS
+end-to-end (top 5): 14/20  end-to-end (top 1): 13/20
+unanswerable: 4 (abstention bars reported above; eval exit code reflects the retrieval gate only)
+eval: PASS
+exit 0

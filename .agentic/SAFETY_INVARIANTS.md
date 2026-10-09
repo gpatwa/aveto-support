@@ -29,9 +29,10 @@
 ## Retrieval and network
 
 - **INV-4** — Retrieval returns only verbatim passages from the configured
-  source at its pinned commit, each with path, heading and line range, or "no
-  confident match" with no passages. It never returns generated or reworded
-  text. **A model may be used only to rank passages and to decide confidence. It
+  source at its pinned commit, each with path, heading and line range; it does
+  not abstain (a question the docs do not answer still returns its top files,
+  and `eval` reports unanswerable questions as a diagnostic). It never returns
+  generated or reworded text. **A model may be used only to rank passages and to decide confidence. It
   never produces, selects fragments of, or alters the text returned.**
   *(Enforced by `test_result_invariant_enforced`,
   `test_retrieved_text_is_verbatim_slice_of_file`,

@@ -1,0 +1,211 @@
+{
+ "schema": "agentic-sdlc/trace@2",
+ "slice": "docs-abstention",
+ "tier": 2,
+ "overlay": false,
+ "landed": false,
+ "started": "2026-10-09T06:20:00Z",
+ "operator": "Gopal Patwa",
+ "leastPrivilegeEnforced": true,
+ "leastPrivilegeNote": "Role subagents loaded from this repo's .claude/agents/ (session rooted in the slice worktree). Pack v17 was installed mid-slice by the support session (commit ebd6c6e).",
+ "telemetrySource": "self-reported",
+ "approvals": [
+  {
+   "action": "Plan confirmation",
+   "rule": "plan confirmation",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-09T06:32:12Z",
+   "decidedAt": "2026-10-09T06:32:12Z",
+   "record": "runs/docs-abstention/APPROVAL_RECORD-1.md"
+  },
+  {
+   "action": "Scope Q1-Q5 decisions",
+   "rule": "owner decision",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-09",
+   "decidedAt": "2026-10-09",
+   "record": "runs/docs-abstention/APPROVAL_RECORD-2.md"
+  },
+  {
+   "action": "Budget raise 650k to 780k",
+   "rule": "budget raise",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-09",
+   "decidedAt": "2026-10-09",
+   "record": "runs/docs-abstention/APPROVAL_RECORD-3.md"
+  },
+  {
+   "action": "Licence decision, qnli-electra-base",
+   "rule": "owner decision",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-09",
+   "decidedAt": "2026-10-09",
+   "record": "runs/docs-abstention/APPROVAL_RECORD-4.md"
+  },
+  {
+   "action": "Rule 5 model + INV-4 4-i/4-ii + INV-5 + A1 line (LAPSED unused)",
+   "rule": "4, 5",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-09",
+   "decidedAt": "2026-10-09",
+   "record": "runs/docs-abstention/APPROVAL_RECORD-5.md"
+  },
+  {
+   "action": "Stop the model path, drop candidate code",
+   "rule": "owner decision",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-09",
+   "decidedAt": "2026-10-09",
+   "record": "runs/docs-abstention/APPROVAL_RECORD-6.md"
+  },
+  {
+   "action": "INV-4 correction (spec 8.3)",
+   "rule": "4",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-09",
+   "decidedAt": "2026-10-09",
+   "record": "runs/docs-abstention/APPROVAL_RECORD-7.md"
+  },
+  {
+   "action": "Stale-text pass incl. CURRENT_MVP_STATUS.md",
+   "rule": "owner approval",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-09",
+   "decidedAt": "2026-10-09",
+   "record": "runs/docs-abstention/APPROVAL_RECORD-8.md"
+  }
+ ],
+ "gateCatches": [
+  {
+   "gate": "Pre-registered seen-set condition (spec 4.1)",
+   "verdict": "fail",
+   "severity": "blocker",
+   "finding": "judge pooled Bar 1 2/20 vs >=16/20; method stopped before the one-shot fifth set was spent"
+  },
+  {
+   "gate": "Baseline",
+   "verdict": "fail",
+   "severity": "advisory",
+   "finding": "baseline on the unchanged code showed retrieve never abstains while INV-4, README and status said it did"
+  },
+  {
+   "gate": "Release Gate",
+   "verdict": "fail",
+   "severity": "blocker",
+   "finding": "NO-GO: bars never evaluated; model path stopped"
+  }
+ ],
+ "stages": [
+  {
+   "stage": "Intake",
+   "executor": "orchestrator"
+  },
+  {
+   "stage": "Scope Review",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 232000,
+   "toolCalls": 15,
+   "retries": 0
+  },
+  {
+   "stage": "Baseline",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 1110000,
+   "toolCalls": 22,
+   "retries": 0
+  },
+  {
+   "stage": "Architecture (interrupted by usage limit)",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 1700000,
+   "toolCalls": 21,
+   "retries": 0
+  },
+  {
+   "stage": "Architecture completion",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 639000,
+   "toolCalls": 26,
+   "retries": 0
+  },
+  {
+   "stage": "Implementation (candidate, reverted)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 3150000,
+   "toolCalls": 36,
+   "retries": 0
+  },
+  {
+   "stage": "Security Review",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 489000,
+   "toolCalls": 18,
+   "retries": 0
+  },
+  {
+   "stage": "Release Gate",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 483000,
+   "toolCalls": 26,
+   "retries": 0
+  },
+  {
+   "stage": "Stale-text pass (README)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 179000,
+   "toolCalls": 29,
+   "retries": 0
+  },
+  {
+   "stage": "ARCHITECTURE.md edit",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 236000,
+   "toolCalls": 27,
+   "retries": 0
+  },
+  {
+   "stage": "Status-file edit",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 63000,
+   "toolCalls": 9,
+   "retries": 0
+  },
+  {
+   "stage": "Close-out",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 126000,
+   "toolCalls": 11,
+   "retries": 0
+  }
+ ]
+}

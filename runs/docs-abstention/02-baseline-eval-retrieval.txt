@@ -1,0 +1,35 @@
+Ranking: file-rrf-v1:hybrid:BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a
+eval: evals/retrieval.toml  index: gpatwa/agentic-sdlc-playbook @ 3a83b669…  ranking: file-rrf-v1  reference similarity: 0.702 (diagnostic)
+a01  MISS  expected docs/GETTING_STARTED.md; got docs/DEPLOYMENT.md, execution/pack/commands/agentic-slice.md, README.md, execution/pack/AGENTS.md, execution/pack/commands/agentic-resume.md  top score 0.75
+a02  MISS  expected README.md; got docs/GETTING_STARTED.md, execution/README.md, docs/VALIDATION_MATRIX.md, execution/pack/CLAUDE.md, docs/HUMAN_APPROVAL_RULES.md  top score 0.75
+a03  HIT   docs/GETTING_STARTED.md (rank 1)  top score 0.72
+a04  HIT   execution/pack/protocols/RUN_ECONOMICS.md (rank 1)  top score 0.72
+a05  HIT   templates/INTENT_TEMPLATE.md (rank 1)  top score 0.69
+a06  HIT   docs/AGENTIC_SDLC.md (rank 3)  top score 0.73
+a07  HIT   docs/HUMAN_APPROVAL_RULES.md (rank 2)  top score 0.65
+a08  HIT   execution/pack/protocols/FAILURE_LOOP.md (rank 1)  top score 0.74
+a09  HIT   execution/pack/protocols/RUN_ECONOMICS.md (rank 1)  top score 0.71
+a10  MISS  expected execution/pack/protocols/RUN_ECONOMICS.md; got templates/CHANGE_REQUEST_TEMPLATE.md, execution/pack/protocols/PIPELINE_SLOS.md, docs/STANDARDS_WATCH.md, templates/ADR_TEMPLATE.md, docs/RELEASE_GATES.md  top score 0.66
+a11  MISS  expected docs/GETTING_STARTED.md; got execution/pack/protocols/PIPELINE_SLOS.md, docs/PIPELINE_ANALYTICS.md, agents/post-launch-learning.md, execution/pack/protocols/RUN_ECONOMICS.md, execution/pack/protocols/TELEMETRY.md  top score 0.76
+a12  HIT   execution/pack/protocols/MODEL_ROUTING.md (rank 1)  top score 0.63
+a13  HIT   templates/QA_EVIDENCE_TEMPLATE.md (rank 5)  top score 0.70
+a14  HIT   execution/pack/AGENTS.md (rank 1)  top score 0.70
+a15  HIT   agents/cloud-deployment.md (rank 1)  top score 0.72
+a16  MISS  expected templates/ADR_TEMPLATE.md; got execution/pack/protocols/RUN_ECONOMICS.md, docs/GETTING_STARTED.md, docs/HUMAN_APPROVAL_RULES.md, agents/data-analyst.md, templates/INTENT_TEMPLATE.md  top score 0.67
+a17  HIT   agents/on-call-engineer.md (rank 1)  top score 0.76
+a18  HIT   agents/customer-support.md (rank 1)  top score 0.78
+a19  HIT   docs/RELEASE_GATES.md (rank 1)  top score 0.66
+a20  HIT   docs/STANDARDS_WATCH.md (rank 2)  top score 0.73
+a21  HIT   docs/VALIDATION_MATRIX.md (rank 3)  top score 0.70
+a22  HIT   project-packs/ai-agent-product.md (rank 2)  top score 0.72
+a23  HIT   agents/tech-writer.md (rank 1)  top score 0.74
+a24  HIT   docs/AGENT_ROLES.md (rank 3)  top score 0.68
+u01  DIAG  top file templates/COST_BUDGET_TEMPLATE.md  top score 0.55
+u02  DIAG  top file docs/DEPLOYMENT.md  top score 0.72
+u03  DIAG  top file agents/on-call-engineer.md  top score 0.70
+u04  DIAG  top file execution/README.md  top score 0.66
+u05  DIAG  top file docs/DEPLOYMENT.md  top score 0.63
+u06  DIAG  top file execution/pack/protocols/APPROVAL_PROTOCOL.md  top score 0.70
+answerable:   19/24 (79.2%)  required >= 80%  FAIL
+unanswerable: 6 (diagnostic only, not gated)
+eval: FAIL

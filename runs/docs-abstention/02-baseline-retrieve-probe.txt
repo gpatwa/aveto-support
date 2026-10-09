@@ -1,0 +1,137 @@
+### retrieve: How do I deploy the agent to production on Kubernetes with autoscaling?
+Sources for: How do I deploy the agent to production on Kubernetes with autoscaling?
+Docs: gpatwa/agentic-sdlc-playbook @ 3a83b669a8b53dfdff869a1bbe361bdb156e3a13
+Ranking: file-rrf-v1:hybrid:BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a  no text generated
+Top score: 0.715 (best passage similarity; ingest reference 0.702, reported only: retrieval does not decide whether the docs answer)
+
+1. docs/DEPLOYMENT.md  (score 0.0323)
+   https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/DEPLOYMENT.md
+   a. lines 1-6  Heading: Deployment — the public site
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/DEPLOYMENT.md?plain=1#L1-L6
+      | `aveto.dev` is served from Cloudflare Pages, deployed by
+      | `.github/workflows/deploy-site.yml`. The pipeline is built so an **agent runs
+      | it and a human only approves**, which is the same shape this playbook
+   b. lines 61-69  Heading: Deployment — the public site > Human steps: one, once, ever > The one decision: approving the deploy
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/DEPLOYMENT.md?plain=1#L61-L69
+      | Promoting to a live domain is `HUMAN_APPROVAL_RULES.md` rule 3 — an
+      | external-effect change. The `production` environment is that rule expressed in
+      | CI: the job pauses, a named human approves, and GitHub records **who** and
+2. agents/cloud-deployment.md  (score 0.0318)
+   https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/cloud-deployment.md
+   a. lines 71-79  Heading: Cloud Deployment Agent > Decisions the Cloud Deployment Agent does NOT own
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/cloud-deployment.md?plain=1#L71-L79
+      | - **Setting `Validated` status** — only `azure-validate` sets this, ever.
+      |   Manually setting it to save a round trip is the one thing this role is
+      |   explicitly forbidden from doing, by the wrapped skill's own rule and by
+   b. lines 108-112  Heading: Cloud Deployment Agent > Handoff
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/cloud-deployment.md?plain=1#L108-L112
+      | - Deployed (human-approved) → **Production Verification Agent**.
+      | - A gap the wrapped skills don't cover, or a recurring pattern → **SRE**,
+      |   as a runbook update.
+3. agents/production-verification.md  (score 0.0310)
+   https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/production-verification.md
+   a. lines 78-84  Heading: Production Verification Agent > Operating constraints
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/production-verification.md?plain=1#L78-L84
+      | - Read-only against the live environment: `azure-diagnostics` and
+      |   `azure-reliability` query and report; they do not change configuration.
+      | - Azure only, today — same constraint as `agents/cloud-deployment.md`.
+   b. lines 3-12  Heading: Production Verification Agent > Mission
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/production-verification.md?plain=1#L3-L12
+      | Answer one question for real, right after a deploy lands: **is the live
+      | service actually healthy under real traffic, against its own safety
+      | invariants and success criteria** — not just "did the process start."
+4. docs/GETTING_STARTED.md  (score 0.0283)
+   https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/GETTING_STARTED.md
+   a. lines 70-89  Heading: Getting Started > Setting up the autonomous path > 1. Give the product repo a `.agentic/` folder
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/GETTING_STARTED.md?plain=1#L70-L89
+      | Every agent reads this first. It is **not generated** — there is no
+      | scaffolding tool yet (a real gap, not an oversight; nothing here should
+      | imply otherwise). The fastest honest start is copying a real one and
+   b. lines 99-107  Heading: Getting Started > Setting up the autonomous path > 3. Install the pack
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/GETTING_STARTED.md?plain=1#L99-L107
+      | ```sh
+      | node <playbook>/execution/install.mjs <product-repo>
+      | ```
+5. README.md  (score 0.0280)
+   https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/README.md
+   a. lines 1-41  Heading: Aveto
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/README.md?plain=1#L1-L41
+      | **The AI-native SDLC, in one install.**
+      | Ship like FAANG. No badge required. Great software shouldn't need a big company.
+      | At FAANG scale, nothing reaches production until an architect, an independent
+   b. lines 43-163  Heading: Aveto > What's here
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/README.md?plain=1#L43-L163
+      | ```
+      | agentic-sdlc/
+      |   README.md                        ← you are here
+
+These are sources, not an answer.
+exit 0
+### retrieve: purple elephant bicycle quantum banana
+Sources for: purple elephant bicycle quantum banana
+Docs: gpatwa/agentic-sdlc-playbook @ 3a83b669a8b53dfdff869a1bbe361bdb156e3a13
+Ranking: file-rrf-v1:hybrid:BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a  no text generated
+Top score: 0.528 (best passage similarity; ingest reference 0.702, reported only: retrieval does not decide whether the docs answer)
+
+1. README.md  (score 0.0164)
+   https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/README.md
+   a. lines 43-163  Heading: Aveto > What's here
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/README.md?plain=1#L43-L163
+      | ```
+      | agentic-sdlc/
+      |   README.md                        ← you are here
+   b. lines 217-234  Heading: Aveto > Real runs, not just a worked example
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/README.md?plain=1#L217-L234
+      | [`examples/saved-items-bulk-delete/`](examples/saved-items-bulk-delete/) is
+      | a *fictional* worked example — every template filled in, but no agent
+      | actually ran it.
+2. execution/pack/protocols/PIPELINE_SLOS.md  (score 0.0161)
+   https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/execution/pack/protocols/PIPELINE_SLOS.md
+   a. lines 80-90  Heading: Protocol: Pipeline SLOs > Density by archetype (2026-07-26) > What this reclassifies
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/execution/pack/protocols/PIPELINE_SLOS.md?plain=1#L80-L90
+      | - **email-digest's recorded Tier-3 "miss" was a false alarm.** 629k across 7
+      |   stages is 90k/stage — dead-on typical, and inside the 700k envelope. (The
+      |   earlier "504k vs 400k" figure counted the six pre-merge stages; the
+   b. lines 34-51  Heading: Protocol: Pipeline SLOs > Token budget: the per-stage model > Evidence (per-stage tokens, three runs)
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/execution/pack/protocols/PIPELINE_SLOS.md?plain=1#L34-L51
+      | | Run | Tier | Stages | Total | Per-stage avg | Max stage | > 150k? |
+      | |-----|------|--------|-------|---------------|-----------|---------|
+      | | run-1 (bulk-delete) | 2 | 4 | ~110k | ~28k | — | none |
+3. templates/EXPERIMENT_SPEC_TEMPLATE.md  (score 0.0159)
+   https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/EXPERIMENT_SPEC_TEMPLATE.md
+   a. lines 7-13  Heading: Experiment Spec — <slice name> > Hypothesis
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/EXPERIMENT_SPEC_TEMPLATE.md?plain=1#L7-L13
+      | One sentence. Of the form: "If we change X, then primary metric Y will
+      | move by at least Z, because <mechanism>."
+      | The mechanism matters: it's what tells you whether the result generalises
+   b. lines 1-5  Heading: Experiment Spec — <slice name>
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/EXPERIMENT_SPEC_TEMPLATE.md?plain=1#L1-L5
+      | > Owner: Data Analyst Agent (with PM)
+      | > Status: <draft / pre-registered / running / read-out>
+      | > Source PRD: <path>
+4. examples/saved-items-bulk-delete/artefacts/06-qa-evidence.md  (score 0.0156)
+   https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/examples/saved-items-bulk-delete/artefacts/06-qa-evidence.md
+   a. lines 45-48  Heading: QA Evidence — Bulk-delete saved items > Recommendation
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/examples/saved-items-bulk-delete/artefacts/06-qa-evidence.md?plain=1#L45-L48
+      | **Pass to Security & Privacy.** All gates green; all touched invariants
+      | verified by observation, not intent.
+   b. lines 30-38  Heading: QA Evidence — Bulk-delete saved items > Safety invariant verification
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/examples/saved-items-bulk-delete/artefacts/06-qa-evidence.md?plain=1#L30-L38
+      | | Invariant | Verified how | Result |
+      | |-----------|--------------|--------|
+      | | 1 Soft + recoverable | DB shows `deletedAt` set, rows present; restore works | ✅ |
+5. docs/STANDARDS_WATCH.md  (score 0.0154)
+   https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/STANDARDS_WATCH.md
+   a. lines 27-35  Heading: Standards & Ecosystem Watch > Watch (no action yet — building now would be rework)
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/STANDARDS_WATCH.md?plain=1#L27-L35
+      | | Development | Status | Re-evaluate when |
+      | |-------------|--------|------------------|
+      | | **NIST COSAiS — SP 800-53 control overlays for AI**, two of the five use cases targeting agentic systems directly (**single-agent and multi-agent**) | Not ye…
+   b. lines 8-15  Heading: Standards & Ecosystem Watch > Applied (already folded in)
+      https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/STANDARDS_WATCH.md?plain=1#L8-L15
+      | | Development | What we did | Where |
+      | |-------------|-------------|-------|
+      | | EU AI Act — **enforcement now LIVE (2 Aug 2026)**, no longer a future date | Cited enforcement dates + GPAI Code of Practice as the compliance-demonstration …
+
+These are sources, not an answer.
+exit 0
