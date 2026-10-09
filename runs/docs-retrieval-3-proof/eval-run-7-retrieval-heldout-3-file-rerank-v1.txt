@@ -1,0 +1,25 @@
+Ranking: file-rerank-v1:hybrid:BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a+ce:cross-encoder/ms-marco-MiniLM-L6-v2@233902d25c440f23af6f7d6e94d2946bac0bee0a:n20
+eval: evals/retrieval-heldout-3.toml  index: gpatwa/agentic-sdlc-playbook @ 3a83b669…  ranking: file-rerank-v1  reference similarity: 0.702 (diagnostic)
+t01  HIT   agents/release-manager.md (rank 1)  top score 0.62
+t02  HIT   templates/MIGRATION_PLAN_TEMPLATE.md (rank 2)  top score 0.65
+t03  HIT   templates/MODEL_CARD_TEMPLATE.md (rank 4)  top score 0.73
+t04  MISS  expected templates/VENDOR_RISK_TEMPLATE.md; got prompts/qa-evidence.md, agents/qa-evidence.md, agents/security-privacy.md, docs/GETTING_STARTED.md, agents/on-call-engineer.md  top score 0.65
+t05  HIT   templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md (rank 1)  top score 0.66
+t06  MISS  expected agents/ux-researcher.md; got agents/tech-writer.md, project-packs/ai-agent-product.md, project-packs/enterprise-saas-future.md, project-packs/b2c-saas.md, docs/GETTING_STARTED.md  top score 0.69
+t07  HIT   templates/CUSTOMER_ISSUE_RESOLUTION_TEMPLATE.md (rank 2)  top score 0.74
+t08  HIT   execution/pack/protocols/RUN_INVENTORY.md (rank 1)  top score 0.74
+t09  HIT   execution/pack/protocols/TELEMETRY.md (rank 1)  top score 0.74
+t10  HIT   docs/DEPLOYMENT.md (rank 2)  top score 0.74
+t11  HIT   project-packs/b2c-saas.md (rank 1)  top score 0.64
+t12  HIT   agents/ai-governance.md (rank 1)  top score 0.74
+t13  HIT   templates/CHANGE_REQUEST_TEMPLATE.md (rank 5)  top score 0.69
+t14  HIT   agents/ml-engineer.md (rank 1)  top score 0.72
+t15  MISS  expected execution/SECURITY.md; got README.md, execution/pack/AGENTS.md, docs/AGENTIC_SDLC.md, execution/README.md, docs/DEPLOYMENT.md  top score 0.67
+t16  HIT   docs/OPERATING_MODEL.md (rank 1)  top score 0.80
+tu01  DIAG  top file agents/customer-support.md  top score 0.70
+tu02  DIAG  top file docs/VALIDATION_MATRIX.md  top score 0.59
+tu03  DIAG  top file docs/AGENTIC_SDLC.md  top score 0.81
+tu04  DIAG  top file README.md  top score 0.67
+answerable:   13/16 (81.2%)  required >= 80%  PASS
+unanswerable: 4 (diagnostic only, not gated)
+eval: PASS

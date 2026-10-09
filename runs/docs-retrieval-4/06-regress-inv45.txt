@@ -1,0 +1,38 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/gopalpatwa/opt/aveto-support/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/gopalpatwa/opt/aveto-support
+configfile: pyproject.toml
+testpaths: tests
+collecting ... collected 178 items / 151 deselected / 27 selected
+
+tests/test_index.py::test_retrieved_text_is_verbatim_slice_of_file PASSED [  3%]
+tests/test_ingest.py::test_short_sha_rejected PASSED                     [  7%]
+tests/test_ingest.py::test_model_revision_must_be_40_hex PASSED          [ 11%]
+tests/test_ingest.py::test_redirect_to_other_host_refused PASSED         [ 14%]
+tests/test_ingest.py::test_hf_redirect_outside_hf_co_refused PASSED      [ 18%]
+tests/test_ingest.py::test_model_hash_mismatch_rejected_and_deleted PASSED [ 22%]
+tests/test_ingest.py::test_cached_file_rehashed_before_use PASSED        [ 25%]
+tests/test_ingest.py::test_reranker_revision_must_be_40_hex_for_download PASSED [ 29%]
+tests/test_ingest.py::test_reranker_hash_mismatch_rejected_and_deleted PASSED [ 33%]
+tests/test_ingest.py::test_reranker_cached_file_rehashed_before_use PASSED [ 37%]
+tests/test_ingest.py::test_reranker_redirect_outside_hf_co_refused PASSED [ 40%]
+tests/test_ingest.py::test_default_ingest_fetches_no_reranker PASSED     [ 44%]
+tests/test_ingest.py::test_default_ingest_makes_no_reranker_request PASSED [ 48%]
+tests/test_ingest.py::test_ingest_with_reranker_fetches_and_rehashes PASSED [ 51%]
+tests/test_ingest.py::test_retrieve_is_offline_with_cached_reranker PASSED [ 55%]
+tests/test_ingest.py::test_retrieve_is_offline_with_cached_model PASSED  [ 59%]
+tests/test_rerank.py::test_reranker_revision_must_be_40_hex[abc123] PASSED [ 62%]
+tests/test_rerank.py::test_reranker_revision_must_be_40_hex[AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA] PASSED [ 66%]
+tests/test_rerank.py::test_reranker_revision_must_be_40_hex[main] PASSED [ 70%]
+tests/test_rerank.py::test_reranker_revision_must_be_40_hex[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] PASSED [ 74%]
+tests/test_rerank.py::test_reranker_revision_must_be_40_hex[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] PASSED [ 77%]
+tests/test_rerank.py::test_reranked_hits_are_verbatim_passages PASSED    [ 81%]
+tests/test_rerank.py::test_reranked_result_invariant_enforced PASSED     [ 85%]
+tests/test_rerank.py::test_reranker_returns_only_scores PASSED           [ 88%]
+tests/test_rerank.py::test_reranker_absent_fails_closed_without_download PASSED [ 92%]
+tests/test_search.py::test_hybrid_hits_are_verbatim_passages PASSED      [ 96%]
+tests/test_search.py::test_result_invariant_enforced PASSED              [100%]
+
+====================== 27 passed, 151 deselected in 1.48s ======================
+exit 0

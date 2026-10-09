@@ -11,7 +11,7 @@ import unicodedata
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 
 import numpy as np
 import numpy.typing as npt
@@ -253,13 +253,24 @@ class OnnxEmbedder:
         verify_file(vocab_path, params.vocab_sha256)
         return cls(onnx_path, vocab_path)
 
+    def close(self) -> None:
+        """Release the ONNX session now rather than at interpreter teardown. Idempotent."""
+        self._session = None
+
+    def _live(self) -> Any:
+        if self._session is None:
+            raise ModelError("embedder is closed")
+        return self._session
+
     def signature(self) -> GraphSignature:
-        outputs = self._session.get_outputs()
+        session = self._live()
+        outputs = session.get_outputs()
         return GraphSignature(
-            frozenset(i.name for i in self._session.get_inputs()), tuple(outputs[0].shape)
+            frozenset(i.name for i in session.get_inputs()), tuple(outputs[0].shape)
         )
 
     def _embed(self, text: str) -> bytes:
+        session = self._live()
         ids = self.tokenizer.encode(text)
         n = len(ids)
         feeds = {
@@ -267,7 +278,7 @@ class OnnxEmbedder:
             "attention_mask": np.ones((1, n), dtype=np.int64),
             "token_type_ids": np.zeros((1, n), dtype=np.int64),
         }
-        hidden = self._session.run(None, feeds)[0]
+        hidden = session.run(None, feeds)[0]
         cls_vector = np.asarray(hidden[0][0], dtype=np.float64)
         if cls_vector.shape != (DIM,):
             raise ModelError(f"unexpected embedding shape {cls_vector.shape}; expected ({DIM},)")

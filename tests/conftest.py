@@ -157,3 +157,15 @@ class FakeEmbedder:
 def embed_all(passages: list[Passage], embedder: FakeEmbedder | None = None) -> list[Passage]:
     fake = embedder or FakeEmbedder()
     return [dataclasses.replace(p, embedding=fake.embed_passage(passage_input(p))) for p in passages]
+
+
+class FakeReranker:
+    """Deterministic token-overlap scores with a call log: no model, no network, no key."""
+
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, str]] = []
+
+    def score(self, question: str, passage_text: str) -> float:
+        self.calls.append((question, passage_text))
+        q = set(re.findall(r"\w+", question.lower()))
+        return float(len(q & set(re.findall(r"\w+", passage_text.lower()))))

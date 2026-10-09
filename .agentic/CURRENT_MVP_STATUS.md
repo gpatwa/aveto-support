@@ -16,8 +16,15 @@
   ingest from word salads and a frozen off-topic question list.
 - `eval`: scores retrieval against an eval file and exits non-zero below 80% on
   either group.
-- The model (`BAAI/bge-small-en-v1.5`, ONNX, CPU) only ranks and gates. It never
-  writes or alters text. Questions never leave the machine; `retrieve` and
+- The default ranking is `file-rrf-v1` (the first stage alone: hybrid dense and lexical
+  rank fusion over all files). `--ranking file-rerank-v1` is opt-in: a local cross-encoder
+  (`cross-encoder/ms-marco-MiniLM-L6-v2`, ONNX, CPU) re-scores the top 20 files' shown
+  passages (MaxP) and orders them; it needs `ingest --with-reranker` first. Recorded
+  scores: `file-rrf-v1` 14/16 on the fourth held-out set (11/16 and 12/17 on earlier
+  ones; 19/24 = 79.2% on the dev set, below the 80% bar); `file-rerank-v1` 13/16 on the
+  fourth. The reranker showed no demonstrated gain (slice 3 close-out).
+- The models (`BAAI/bge-small-en-v1.5` and the reranker, ONNX, CPU) only rank. They never
+  write or alter text. Questions never leave the machine; `retrieve` and
   `eval` are offline.
 - Runtime dependencies: `onnxruntime` and `numpy` only.
 
@@ -25,8 +32,8 @@
 
 - `tests/fixtures/wordpiece_golden.json` (QA) is missing, so
   `test_wordpiece_matches_golden` fails until it lands.
-- No `eval` has been run on this variant. The freeze-first ordering applies:
-  the fresh held-out set is scored once, after the freeze.
+- Retrieval has not passed its held-out gate as a released feature; nothing is released
+  or announced, and no answers are generated.
 
 ## Out of scope (not built)
 

@@ -1,0 +1,35 @@
+Ranking: file-rerank-v1:hybrid:BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a+ce:cross-encoder/ms-marco-MiniLM-L6-v2@233902d25c440f23af6f7d6e94d2946bac0bee0a:n20
+eval: evals/retrieval.toml  index: gpatwa/agentic-sdlc-playbook @ 3a83b669…  ranking: file-rerank-v1  reference similarity: 0.702 (diagnostic)
+a01  MISS  expected docs/GETTING_STARTED.md; got execution/pack/commands/agentic-slice.md, README.md, execution/pack/AGENTS.md, docs/AGENTIC_SDLC.md, docs/DEPLOYMENT.md  top score 0.75
+a02  MISS  expected README.md; got execution/pack/CLAUDE.md, docs/GETTING_STARTED.md, templates/AGENT_HANDOFF_TEMPLATE.md, docs/VALIDATION_MATRIX.md, execution/pack/AGENTS.md  top score 0.75
+a03  HIT   execution/pack/commands/agentic-slice.md (rank 1)  top score 0.72
+a04  HIT   execution/pack/protocols/RUN_ECONOMICS.md (rank 1)  top score 0.72
+a05  MISS  expected templates/INTENT_TEMPLATE.md; got execution/pack/commands/agentic-slice.md, agents/ui-designer.md, agents/tech-writer.md, agents/frontend-developer.md, prompts/developer-task.md  top score 0.69
+a06  MISS  expected docs/AGENTIC_SDLC.md | agents/engineering-manager.md; got prompts/market-research.md, agents/ux-researcher.md, prompts/ux-audit.md, examples/saved-items-bulk-delete/README.md, agents/market-researcher.md  top score 0.73
+a07  HIT   docs/HUMAN_APPROVAL_RULES.md (rank 2)  top score 0.65
+a08  HIT   execution/pack/protocols/FAILURE_LOOP.md (rank 2)  top score 0.74
+a09  HIT   execution/pack/protocols/RUN_ECONOMICS.md (rank 3)  top score 0.71
+a10  MISS  expected execution/pack/protocols/RUN_ECONOMICS.md; got templates/CHANGE_REQUEST_TEMPLATE.md, templates/AI_RISK_ASSESSMENT_TEMPLATE.md, execution/pack/protocols/MODEL_ROUTING.md, docs/RELEASE_GATES.md, templates/VENDOR_RISK_TEMPLATE.md  top score 0.66
+a11  HIT   docs/GETTING_STARTED.md (rank 1)  top score 0.76
+a12  HIT   execution/pack/protocols/MODEL_ROUTING.md (rank 1)  top score 0.63
+a13  HIT   agents/qa-evidence.md (rank 1)  top score 0.70
+a14  HIT   execution/ADAPTERS.md (rank 1)  top score 0.70
+a15  HIT   agents/cloud-deployment.md (rank 1)  top score 0.72
+a16  MISS  expected templates/ADR_TEMPLATE.md; got prompts/market-research.md, execution/pack/commands/agentic-slice.md, templates/INTENT_TEMPLATE.md, agents/data-analyst.md, docs/GETTING_STARTED.md  top score 0.67
+a17  HIT   agents/on-call-engineer.md (rank 1)  top score 0.76
+a18  HIT   agents/customer-support.md (rank 1)  top score 0.78
+a19  HIT   docs/RELEASE_GATES.md (rank 1)  top score 0.66
+a20  MISS  expected docs/STANDARDS_WATCH.md; got agents/compliance-reviewer.md, README.md, agents/ai-governance.md, project-packs/ai-agent-product.md, prompts/compliance-review.md  top score 0.73
+a21  MISS  expected docs/VALIDATION_MATRIX.md; got agents/finops.md, README.md, project-packs/ai-agent-product.md, skills/tdd-fail-first/SKILL.md, docs/RELEASE_GATES.md  top score 0.70
+a22  MISS  expected project-packs/ai-agent-product.md; got agents/ai-engineer.md, prompts/ml-training.md, prompts/developer-task.md, execution/pack/protocols/PIPELINE_SLOS.md, agents/compliance-reviewer.md  top score 0.72
+a23  HIT   agents/tech-writer.md (rank 5)  top score 0.74
+a24  MISS  expected docs/AGENT_ROLES.md; got prompts/product-brief.md, agents/engineering-manager.md, agents/product-manager.md, prompts/em-scope-review.md, prompts/market-research.md  top score 0.68
+u01  DIAG  top file templates/COST_BUDGET_TEMPLATE.md  top score 0.55
+u02  DIAG  top file README.md  top score 0.72
+u03  DIAG  top file execution/pack/protocols/APPROVAL_PROTOCOL.md  top score 0.70
+u04  DIAG  top file project-packs/browser-automation-product.md  top score 0.66
+u05  DIAG  top file execution/pack/commands/agentic-slice.md  top score 0.63
+u06  DIAG  top file execution/pack/protocols/APPROVAL_PROTOCOL.md  top score 0.70
+answerable:   14/24 (58.3%)  required >= 80%  FAIL
+unanswerable: 6 (diagnostic only, not gated)
+eval: FAIL

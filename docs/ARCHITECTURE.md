@@ -37,6 +37,7 @@ question ─► [1 classify] ─►│ [2 retrieve] ─► RetrievalResult (≤5
 | Index | `aveto_support/index.py` | Splits markdown into heading passages with exact line ranges, and serialises and loads the canonical JSON index (`index@3`: passages plus int8 embeddings) |
 | Embed | `aveto_support/embed.py` | **The model adapter boundary.** The `Embedder` protocol; `OnnxEmbedder` (`BAAI/bge-small-en-v1.5` at revision `5c38ec7c…`, ONNX Runtime on CPU); `PlaceholderEmbedder`, which throws by default; plain-Python WordPiece; int8 quantisation |
 | Search | `aveto_support/search.py` | Lexical ranking (v2: Porter stemming, passage + file BM25), dense ranking, Reciprocal Rank Fusion, dense-confidence calibration, and `retrieve()` |
+| Rerank | `aveto_support/rerank.py` | **The second model adapter boundary, optional.** `OnnxReranker` (`cross-encoder/ms-marco-MiniLM-L6-v2`, pinned revision and sha256s, ONNX Runtime on CPU) returns one float per question/passage pair and never text; `PlaceholderReranker` throws by default. It is used only with `--ranking file-rerank-v1`; absent files fail closed (exit 2), nothing is downloaded by `retrieve` or `eval` |
 | Evaluate | `aveto_support/evaluate.py` | Scores retrieval against an eval file (`--eval-file`) using integer ≥80% thresholds |
 
 **Configuration** lives in `docs-source.toml`: the docs repo and its full
@@ -54,6 +55,15 @@ model cache at `models/BAAI--bge-small-en-v1.5/<revision>/`.
   and never read by the roles that build retrieval
 - the owner's fresh held-out set, which gates the ≥80% bar and is committed
   only after the implementation is frozen
+
+**Ranking modes and model lifetime (slice docs-retrieval-4).** The default ranking is
+`file-rrf-v1`, the first stage alone, which needs only the embedding model.
+`--ranking file-rerank-v1` re-scores its top 20 files with the reranker and needs
+`ingest --with-reranker` first; by default `ingest` fetches only the embedding model's
+files, so the default path loads no reranker file. The index is byte-identical either way.
+Whoever loads an ONNX adapter closes it (`close()`, reranker before embedder) in a
+`finally` before the process ends, so no inference session is left to interpreter
+teardown; adapters injected by a caller are the caller's to close.
 
 ## Data flow
 

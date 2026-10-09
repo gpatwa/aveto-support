@@ -6,6 +6,7 @@ import json
 import random
 import tarfile
 import urllib.error
+from collections.abc import Callable
 from http.client import HTTPMessage
 from pathlib import Path
 from urllib.request import Request
@@ -20,6 +21,7 @@ from conftest import (
     REVISION,
     FakeEmbedder,
     FakeOpener,
+    FakeReranker,
     as_opener,
     make_archive,
 )
@@ -42,11 +44,13 @@ from aveto_support.ingest import (
     _HostRestrictedRedirect,
     download_model_file,
     ensure_model_files,
+    ensure_reranker_files,
     fetch_archive,
     load_source_config,
     read_markdown,
     run_ingest,
 )
+from aveto_support.rerank import OnnxReranker, RerankParams, reranker_dir
 
 
 def _src(*include: str, exclude: tuple[str, ...] = ()) -> SourceConfig:
@@ -407,6 +411,219 @@ def test_cached_file_rehashed_before_use(tmp_path: Path) -> None:
     assert opener.urls == [f"https://huggingface.co/{MODEL}/resolve/{REVISION}/onnx/model.onnx"]
 
 
+# --- the pinned reranker download ------------------------------------------
+
+RR_REVISION = "d" * 40
+
+
+def _rr_params() -> RerankParams:
+    return RerankParams(
+        model="acme/tiny-rerank",
+        revision=RR_REVISION,
+        onnx_sha256=hashlib.sha256(ONNX_BYTES).hexdigest(),
+        vocab_sha256=hashlib.sha256(VOCAB_BYTES).hexdigest(),
+    )
+
+
+def _rr_cached(models: Path, params: RerankParams) -> Path:
+    base = reranker_dir(models, params)
+    (base / "onnx").mkdir(parents=True)
+    (base / ONNX_FILE).write_bytes(ONNX_BYTES)
+    (base / VOCAB_FILE).write_bytes(VOCAB_BYTES)
+    return base
+
+
+def test_reranker_download_requests_pinned_urls_and_caches(tmp_path: Path) -> None:
+    params = _rr_params()
+    opener = _model_opener()
+    assert ensure_reranker_files(params, tmp_path / "models", opener=as_opener(opener)) == "downloaded"
+    assert sorted(opener.urls) == sorted(
+        [
+            f"https://huggingface.co/acme/tiny-rerank/resolve/{RR_REVISION}/onnx/model.onnx",
+            f"https://huggingface.co/acme/tiny-rerank/resolve/{RR_REVISION}/vocab.txt",
+        ]
+    )
+    base = reranker_dir(tmp_path / "models", params)
+    assert (base / ONNX_FILE).read_bytes() == ONNX_BYTES and (base / VOCAB_FILE).read_bytes() == VOCAB_BYTES
+    again = FakeOpener(error=RuntimeError("must not be called"))
+    assert ensure_reranker_files(params, tmp_path / "models", opener=as_opener(again)) == "cached"
+    assert again.urls == []
+
+
+def test_reranker_revision_must_be_40_hex_for_download() -> None:
+    with pytest.raises(ValueError, match="40-hex"):
+        RerankParams(revision="main")
+
+
+def test_reranker_hash_mismatch_rejected_and_deleted(tmp_path: Path) -> None:
+    bad = FakeOpener(routes={"/onnx/model.onnx": b"tampered", "/vocab.txt": VOCAB_BYTES})
+    models = tmp_path / "models"
+    with pytest.raises(FetchError, match="pinned sha256"):
+        ensure_reranker_files(_rr_params(), models, opener=as_opener(bad))
+    assert [p for p in models.rglob("*") if p.is_file()] == []
+    assert main(["ingest", "--config", str(tmp_path / "missing.toml")]) == 2
+
+
+def test_reranker_cached_file_rehashed_before_use(tmp_path: Path) -> None:
+    params = _rr_params()
+    base = _rr_cached(tmp_path / "models", params)
+    (base / ONNX_FILE).write_bytes(b"corrupted after download")
+    with pytest.raises(ModelError, match="does not match"):
+        OnnxReranker.load(tmp_path / "models", params)
+    assert not (base / ONNX_FILE).exists()
+    (base / ONNX_FILE).write_bytes(b"corrupted again")
+    opener = _model_opener()
+    assert ensure_reranker_files(params, tmp_path / "models", opener=as_opener(opener)) == "downloaded"
+    assert (base / ONNX_FILE).read_bytes() == ONNX_BYTES
+
+
+def test_reranker_redirect_outside_hf_co_refused() -> None:
+    handler = _HostRestrictedRedirect(_hf_host_allowed)
+    req = Request(f"https://huggingface.co/acme/tiny-rerank/resolve/{RR_REVISION}/onnx/model.onnx")
+    for target in ("https://evilhf.co/x", "https://hf.co.evil.example/x", "http://us.aws.cdn.hf.co/x"):
+        with pytest.raises(FetchError, match="disallowed host"):
+            handler.redirect_request(req, io.BytesIO(), 302, "Found", HTTPMessage(), target)
+    assert handler.redirect_request(
+        req, io.BytesIO(), 302, "Found", HTTPMessage(), "https://us.aws.cdn.hf.co/repos/x"
+    ) is not None
+
+
+def _record(calls: list[str], name: str, result: object) -> Callable[..., object]:
+    def inner(*args: object, **kwargs: object) -> object:
+        calls.append(name)
+        return result
+
+    return inner
+
+
+class _Closable(FakeEmbedder):
+    def __init__(self, calls: list[str], name: str) -> None:
+        super().__init__()
+        self.calls, self.name = calls, name
+
+    def close(self) -> None:
+        self.calls.append(f"close-{self.name}")
+
+
+def _no_reranker(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fail(*args: object, **kwargs: object) -> object:
+        raise AssertionError("the reranker must not be fetched or loaded on the default path")
+
+    monkeypatch.setattr("aveto_support.ingest.ensure_reranker_files", fail)
+    monkeypatch.setattr("aveto_support.ingest.OnnxReranker.load", fail)
+
+
+def test_default_ingest_fetches_no_reranker(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+    monkeypatch.setattr("aveto_support.ingest.ensure_model_files", _record(calls, "fetch-embed", "cached"))
+    monkeypatch.setattr("aveto_support.ingest.OnnxEmbedder.load", _record(calls, "load-embed", _Closable(calls, "embed")))
+    _no_reranker(monkeypatch)
+    cfg = _cfg(tmp_path, _base())
+    opener = FakeOpener(make_archive(DOCS))
+    report = run_ingest(cfg, tmp_path / "i.json", opener=as_opener(opener), models_dir=tmp_path / "models")
+    assert calls == ["fetch-embed", "load-embed", "close-embed"] and report.reranker_status == "not fetched"
+
+
+def test_default_ingest_cli_line_says_not_fetched(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _no_reranker(monkeypatch)
+    cfg = _cfg(tmp_path, _base())
+    monkeypatch.setattr(
+        "aveto_support.ingest.fetch_archive", lambda *a, **k: make_archive(DOCS)
+    )
+    assert main(["ingest", "--config", str(cfg), "--out", str(tmp_path / "i.json")], embedder=FAKE) == 0
+    assert "reranker files: not fetched" in capsys.readouterr().out
+
+
+def test_default_ingest_makes_no_reranker_request(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    opener = _model_opener()
+    monkeypatch.setattr("aveto_support.ingest.OnnxEmbedder.load", lambda *a, **k: _Closable([], "e"))
+    p = _params()
+    embedding = (
+        f'[embedding]\nmodel = "{MODEL}"\nrevision = "{REVISION}"\n'
+        f'onnx_sha256 = "{p.onnx_sha256}"\nvocab_sha256 = "{p.vocab_sha256}"\n'
+    )
+    cfg = _cfg(tmp_path, _base(), embedding=embedding)
+    run_ingest(
+        cfg, tmp_path / "i.json", opener=as_opener(FakeOpener(make_archive(DOCS))),
+        model_opener=as_opener(opener), models_dir=tmp_path / "models",
+    )
+    assert opener.urls and not any("cross-encoder/ms-marco-MiniLM-L6-v2" in u for u in opener.urls)
+
+
+def test_ingest_with_reranker_fetches_and_rehashes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+    monkeypatch.setattr("aveto_support.ingest.ensure_reranker_files", _record(calls, "fetch-rr", "downloaded"))
+    monkeypatch.setattr(
+        "aveto_support.ingest.OnnxReranker.load", _record(calls, "load-rr", _Closable(calls, "rr"))
+    )
+    cfg = _cfg(tmp_path, _base())
+    report = run_ingest(
+        cfg, tmp_path / "i.json", opener=as_opener(FakeOpener(make_archive(DOCS))),
+        models_dir=tmp_path / "models", embedder=FAKE, with_reranker=True,
+    )
+    assert calls == ["fetch-rr", "load-rr", "close-rr"] and report.reranker_status == "downloaded"
+
+
+def test_reranker_opt_in_does_not_change_index(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    cfg = _cfg(tmp_path, _base())
+    opener = FakeOpener(make_archive(DOCS))
+    off = _ingest(cfg, tmp_path / "off.json", opener, tmp_path)
+    calls: list[str] = []
+    monkeypatch.setattr("aveto_support.ingest.ensure_reranker_files", _record(calls, "fetch-rr", "cached"))
+    monkeypatch.setattr(
+        "aveto_support.ingest.OnnxReranker.load", _record(calls, "load-rr", _Closable(calls, "rr"))
+    )
+    on = run_ingest(
+        cfg, tmp_path / "on.json", opener=as_opener(opener), models_dir=tmp_path / "models",
+        embedder=FAKE, with_reranker=True,
+    )
+    assert calls and (tmp_path / "off.json").read_bytes() == (tmp_path / "on.json").read_bytes()
+    assert off.sha256 == on.sha256
+
+
+def test_ingest_closes_embedder_it_loaded(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+    monkeypatch.setattr("aveto_support.ingest.ensure_model_files", _record(calls, "fetch-embed", "cached"))
+    monkeypatch.setattr(
+        "aveto_support.ingest.OnnxEmbedder.load", _record(calls, "load-embed", _Closable(calls, "embed"))
+    )
+    cfg = _cfg(tmp_path, _base())
+    run_ingest(
+        cfg, tmp_path / "i.json", opener=as_opener(FakeOpener(make_archive(DOCS))),
+        models_dir=tmp_path / "models",
+    )
+    assert calls == ["fetch-embed", "load-embed", "close-embed"]
+    calls.clear()
+    injected = _Closable(calls, "inj")
+    run_ingest(
+        cfg, tmp_path / "j.json", opener=as_opener(FakeOpener(make_archive(DOCS))),
+        models_dir=tmp_path / "models", embedder=injected,
+    )
+    assert calls == []  # the caller owns an injected embedder
+
+
+def test_retrieve_is_offline_with_cached_reranker(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    # The autouse fixture blocks every socket for this test; a connection would raise RuntimeError.
+    cfg = _cfg(tmp_path, _base())
+    out = tmp_path / "i.json"
+    _ingest(cfg, out, FakeOpener(make_archive(DOCS)), tmp_path)
+    question = "Usage Launch the widget from the menu."
+    assert main(["retrieve", "--index", str(out), "--ranking", "file-rerank-v1", question], embedder=FAKE, reranker=FakeReranker()) == 0
+    assert "Ranking: file-rerank-v1" in capsys.readouterr().out
+
+
+@pytest.mark.network
+def test_live_reranker_download_verifies_hashes(tmp_path: Path) -> None:
+    params = RerankParams()
+    assert ensure_reranker_files(params, tmp_path / "models") == "downloaded"
+    base = reranker_dir(tmp_path / "models", params)
+    assert (base / ONNX_FILE).stat().st_size == 91_011_230
+    assert (base / VOCAB_FILE).stat().st_size == 231_508
+    assert ensure_reranker_files(params, tmp_path / "models") == "cached"
+
+
 # --- ingest ----------------------------------------------------------------
 
 
@@ -515,7 +732,7 @@ def test_retrieve_is_offline_with_cached_model(tmp_path: Path, capsys: pytest.Ca
     out = tmp_path / "i.json"
     _ingest(cfg, out, FakeOpener(make_archive(DOCS)), tmp_path)
     question = "Usage Launch the widget from the menu."
-    assert main(["retrieve", "--index", str(out), question], embedder=FAKE) == 0
+    assert main(["retrieve", "--index", str(out), "--ranking", "file-rerank-v1", question], embedder=FAKE, reranker=FakeReranker()) == 0
     assert "guide/usage.md" in capsys.readouterr().out
 
 

@@ -1,8 +1,10 @@
 # Aveto Support
 
-> **Status: retrieval has not yet passed its held-out gate.** Best so far:
-> about 70% top-5 recall on unseen questions, against an 80% bar (two
-> held-out sets, 11/16 and 12/17). Nothing here is released. The record of
+> **Status: retrieval only; Security Review and Release Gate run, internally releasable, not announced.** It lists
+> the docs files for a question and generates no answers. The default ranking
+> (`file-rrf-v1`) scored 14/16 on the latest held-out set (earlier sets 11/16
+> and 12/17); an optional reranker is off by default and showed no
+> demonstrated gain. Nothing here is released. The record of
 > each attempt, including what failed and why, is under
 > [`runs/docs-retrieval-2-proof/`](runs/docs-retrieval-2-proof/02-close-out.md)
 > and [`runs/docs-retrieval/`](runs/docs-retrieval/08-close-out.md).

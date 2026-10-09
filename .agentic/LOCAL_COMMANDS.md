@@ -11,12 +11,17 @@ Only commands that have been run are listed.
 | Test (default, offline) | `uv run pytest` | blocked by an autouse fixture |
 | Test (live fetch) | `uv run pytest -m network` | the pinned GitHub fetch and the pinned Hugging Face files only |
 | Test (cached model) | `uv run pytest -m model` | none; needs the model cache that `ingest` fills |
-| Ingest | `uv run python -m aveto_support ingest [--config docs-source.toml] [--out index/docs-index.json]` | the pinned GitHub archive, plus the two pinned model files on first run (cached in `models/`, sha256-checked before use) |
-| Retrieve (lists the top 5 files, each with its best passages and the top score; never abstains; exit 0) | `uv run python -m aveto_support retrieve [--index index/docs-index.json] <question words...>` | none |
-| Eval score (gate: a correct file in the top 5 for at least 80% of answerable questions; unanswerable is a printed diagnostic; exit 0 pass, 1 below 80%). Exercised in this slice only against synthetic files inside the tests; not run against `evals/` by the implementer | `uv run python -m aveto_support eval [--index index/docs-index.json] [--eval-file evals/retrieval.toml]` | none |
+| Ingest | `uv run python -m aveto_support ingest [--config docs-source.toml] [--out index/docs-index.json]` | the pinned GitHub archive, plus the pinned files of the embedding model (two) on first run; the reranker's are fetched only with `--with-reranker` (cached in `models/`, sha256-checked before use) |
+| Ingest, with the optional reranker | `uv run python -m aveto_support ingest --with-reranker [--config ...] [--out ...]` | as Ingest, plus the reranker's two pinned files (cached in `models/`, sha256-checked before use) |
+| Retrieve (lists the top 5 files, each with its best passages and the top score; never abstains; exit 0) | `uv run python -m aveto_support retrieve [--index index/docs-index.json] [--ranking file-rrf-v1|file-rerank-v1] <question words...>` (default `file-rrf-v1`; `file-rerank-v1` needs `ingest --with-reranker` first, else exit 2) | none |
+| Eval score (gate: a correct file in the top 5 for at least 80% of answerable questions; unanswerable is a printed diagnostic; exit 0 pass, 1 below 80%). Exercised in this slice only against synthetic files inside the tests; not run against `evals/` by the implementer | `uv run python -m aveto_support eval [--index index/docs-index.json] [--eval-file evals/retrieval.toml] [--ranking file-rrf-v1|file-rerank-v1]` (default `file-rrf-v1`; the dev set scores 19/24 = 79.2% on it, so `eval` may exit 1 by design) | none |
 
 `ingest` takes about 80 seconds on a laptop (embedding 890 passages on CPU). `retrieve` and
-`eval` load the cached model from `models/` and never use the network.
+`eval` load the cached models from `models/` and never use the network. The default
+ranking is `file-rrf-v1` (the first stage alone; no reranker files needed);
+`--ranking file-rerank-v1` adds a local cross-encoder over its top 20 files and needs `ingest --with-reranker` first. Measured on
+non-eval questions: about 2.3 to 3.8 s per `retrieve` process with the reranker (model load
+included) against about 0.9 s for `file-rrf-v1`.
 
 Full local regression: `uv sync --locked && uv run mypy && uv run ruff check && uv run pytest`.
 

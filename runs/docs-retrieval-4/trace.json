@@ -1,0 +1,130 @@
+{
+ "schema": "agentic-sdlc/trace@2",
+ "slice": "docs-retrieval-4",
+ "tier": 2,
+ "overlay": false,
+ "landed": false,
+ "started": "2026-10-03T06:26:00Z",
+ "operator": "Gopal Patwa",
+ "leastPrivilegeEnforced": true,
+ "leastPrivilegeNote": "Role subagents load from this repo's .claude/agents/; session rooted in the aveto-support main checkout.",
+ "telemetrySource": "self-reported",
+ "approvals": [
+  {
+   "action": "INV-5 one-sentence clarification (owner's wording) + 4 test names + ingest --with-reranker default",
+   "rule": "4",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-03T06:40:00Z",
+   "decidedAt": "2026-10-03T06:42:53Z",
+   "record": "runs/docs-retrieval-4/APPROVAL_RECORD-1.md"
+  }
+ ],
+ "gateCatches": [
+  {
+   "gate": "Security",
+   "verdict": "fail",
+   "severity": "required-fix",
+   "finding": "ADR 0006 states crash outcomes the evidence does not support (crash not reproduced)"
+  }
+ ],
+ "stages": [
+  {
+   "stage": "Intake",
+   "executor": "orchestrator"
+  },
+  {
+   "stage": "Scope Review",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 194000,
+   "toolCalls": 18,
+   "retries": 0
+  },
+  {
+   "stage": "Architecture",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 825000,
+   "toolCalls": 30,
+   "retries": 0
+  },
+  {
+   "stage": "Implementation",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 4320000,
+   "toolCalls": 64,
+   "retries": 0
+  },
+  {
+   "stage": "Security Review",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 2860000,
+   "toolCalls": 43,
+   "retries": 0
+  },
+  {
+   "stage": "R1 fix (Security retry 1)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 53000,
+   "toolCalls": 5,
+   "retries": 1
+  },
+  {
+   "stage": "Security re-check (retry 1)",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 238000,
+   "toolCalls": 12,
+   "retries": 1
+  },
+  {
+   "stage": "Release Gate step 1 (plan and bar)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 223000,
+   "toolCalls": 14,
+   "retries": 0
+  },
+  {
+   "stage": "Release Gate step 2 (QA run)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 604000,
+   "toolCalls": 23,
+   "retries": 0
+  },
+  {
+   "stage": "Release Gate step 3 (verdict)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 305000,
+   "toolCalls": 17,
+   "retries": 0
+  },
+  {
+   "stage": "Close-out",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 62000,
+   "toolCalls": 6,
+   "retries": 0
+  }
+ ],
+ "notes": {
+  "landed": "Closed internally releasable, not announced; not pushed, merged or announced, so landed stays false."
+ }
+}

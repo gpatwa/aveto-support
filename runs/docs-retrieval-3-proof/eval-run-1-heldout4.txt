@@ -1,0 +1,26 @@
+Ranking: file-rerank-v1:hybrid:BAAI/bge-small-en-v1.5@5c38ec7c405ec4b44b94cc5a9bb96e735b38267a+ce:cross-encoder/ms-marco-MiniLM-L6-v2@233902d25c440f23af6f7d6e94d2946bac0bee0a:n20
+eval: evals/retrieval-heldout-4.toml  index: gpatwa/agentic-sdlc-playbook @ 3a83b669…  ranking: file-rerank-v1  reference similarity: 0.702 (diagnostic)
+f01  MISS  expected templates/PRD_TEMPLATE.md | agents/product-manager.md | prompts/product-brief.md | templates/INTENT_TEMPLATE.md; got agents/software-architect.md, templates/FEATURE_SPEC_TEMPLATE.md, agents/tech-writer.md, README.md, prompts/ai-risk-review.md  top score 0.71
+f02  HIT   agents/compliance-reviewer.md (rank 1)  top score 0.69
+f03  HIT   templates/COST_BUDGET_TEMPLATE.md (rank 2)  top score 0.66
+f04  HIT   agents/release-manager.md (rank 5)  top score 0.67
+f05  HIT   agents/backend-architect.md (rank 2)  top score 0.69
+f06  HIT   agents/ui-designer.md (rank 2)  top score 0.71
+f07  HIT   agents/customer-success.md (rank 1)  top score 0.69
+f08  HIT   agents/market-researcher.md (rank 1)  top score 0.68
+f09  HIT   agents/software-architect.md (rank 2)  top score 0.69
+f10  HIT   agents/security-privacy.md (rank 1)  top score 0.69
+f11  HIT   agents/analytics-engineer.md (rank 1)  top score 0.66
+f12  MISS  expected agents/post-launch-learning.md | templates/POST_LAUNCH_REVIEW_TEMPLATE.md | agents/data-analyst.md; got execution/pack/protocols/APPROVAL_PROTOCOL.md, docs/AGENTIC_SDLC.md, docs/GETTING_STARTED.md, agents/qa-evidence.md, agents/release-manager.md  top score 0.65
+f13  MISS  expected agents/orchestrator.md | prompts/orchestrator.md | execution/pack/commands/agentic-slice.md; got execution/pack/protocols/RUN_ECONOMICS.md, agents/analytics-engineer.md, docs/AGENT_ROLES.md, templates/AGENT_HANDOFF_TEMPLATE.md, agents/qa-evidence.md  top score 0.63
+f14  HIT   project-packs/enterprise-saas-future.md (rank 1)  top score 0.64
+f15  HIT   agents/ml-engineer.md (rank 1)  top score 0.66
+f16  HIT   docs/PIPELINE_ANALYTICS.md (rank 1)  top score 0.69
+fu01  DIAG  top file docs/VALIDATION_MATRIX.md  top score 0.61
+fu02  DIAG  top file docs/DEPLOYMENT.md  top score 0.74
+fu03  DIAG  top file README.md  top score 0.65
+fu04  DIAG  top file prompts/doc-update.md  top score 0.66
+answerable:   13/16 (81.2%)  required >= 80%  PASS
+unanswerable: 4 (diagnostic only, not gated)
+eval: PASS
+libc++abi: terminating due to uncaught exception of type std::__1::system_error: recursive_mutex lock failed: Invalid argument
