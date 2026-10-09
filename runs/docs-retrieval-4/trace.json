@@ -113,6 +113,18 @@
    "tokens": 305000,
    "toolCalls": 17,
    "retries": 0
+  },
+  {
+   "stage": "Close-out",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared: frontmatter default",
+   "tokens": 62000,
+   "toolCalls": 6,
+   "retries": 0
   }
- ]
+ ],
+ "notes": {
+  "landed": "Closed internally releasable, not announced; not pushed, merged or announced, so landed stays false."
+ }
 }

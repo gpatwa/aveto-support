@@ -3,8 +3,8 @@
 - **Ask:** Make file-rrf-v1 the default ranking, fix the shutdown crash (exit 134), run Security Review and the Release Gate once (intents/docs-retrieval-4.md)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2 (proposed; Release Manager confirms)
-- **Current stage:** Close-out
-- **Status:** in-progress
+- **Current stage:** Closed — internally releasable, not announced (runs/docs-retrieval-4/07-close-out.md)
+- **Status:** done
 - **Least-privilege:** enforced — role subagents load from this repo's .claude/agents/ (session rooted in the aveto-support main checkout)
 - **Telemetry:** self-reported
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 931650b
@@ -22,7 +22,7 @@
 | Implementation | backend-architect | done | runs/docs-retrieval-4/03-implementation.md | full regression green; 20 exit-0 runs per mode |
 | Security Review | security-privacy | done: PASS with advisories after re-check (retry 1, 2026-10-08); R1 resolved, A4 resolved, A1/A2/A3/A5 carried (not blocking); 0 blockers; no code/test/INV change since 4419650; 168 passed | runs/docs-retrieval-4/04-security-review.md (section "Re-check (retry 1)") | no blocker |
 | Release Gate | qa-evidence, release-manager | in-progress: step 1 (gate plan and regression bar, before any run) done; step 2 (QA run) done, see runs/docs-retrieval-4/06-qa-result.md (fourth set at bar 14/16, misses f04 f12, exit 0; regression green); step 3 (verdict) done: "internally releasable, not announced", see runs/docs-retrieval-4/06-release-checklist.md (crash item open, not reproduced; intent box 3 not met as written) | runs/docs-retrieval-4/06-release-gate-plan.md; runs/docs-retrieval-4/06-qa-result.md; runs/docs-retrieval-4/06-release-checklist.md | all gates for tier 2 |
-| Close-out | post-launch-learning | pending | — | n/a |
+| Close-out | post-launch-learning | done | runs/docs-retrieval-4/07-close-out.md | n/a |
 
 ## Approvals
 
@@ -35,8 +35,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 585k tokens  ·  **Depth:** standard
-- **Spent:** 555k (95%)  ·  **Remaining:** 30k
-- **Next stage:** Close-out (post-launch-learning) est. 25k → **PROCEED** (555 + 25 = 580k ≤ 585k)
+- **Spent:** 581k (99%)  ·  **Remaining:** 4k
+- **Next stage:** none — slice closed
 
 Budget raised a third time, 560k to 585k, by the owner, 2026-10-08 (his words: "Option 1, raise to 585k"). Earlier: 520k to 560k by the owner, 2026-10-08 (his words: "Option 1, raise to 560k"). Earlier: raised 400k to 520k by the owner, 2026-10-08, in this session (chosen from three options; his words: "budget is approved", then selected "520k, full plan"). Remaining plan: R1 fix 20k + Security re-check 35k + Release Gate 70k + Close-out 30k = 155k; headroom 7k. Note: units are peak context per spawn. Plan estimates total 390k (50+70+100+70+70+30); the Engineering Manager confirms or compresses at Scope Review. Security Review runs at adversarial depth for the download path and INV-4 / INV-5 by the owner's instruction.
 
@@ -66,11 +66,12 @@ Budget raised a third time, 560k to 585k, by the owner, 2026-10-08 (his words: "
 | Release Gate step 1 (release-manager) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-08 (commit 23d233c) | 1:45 | 223k processed (peak ctx 59k vs 15k est.) | 14 | 0 |
 | Release Gate step 2 (qa-evidence) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-08 (commit 70c9ece) | 2:27 | 604k processed (peak ctx 40k) | 23 | 0 |
 | Release Gate step 3 (release-manager, verdict) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-08 | 1:35 | 305k processed (peak ctx 47k) | 17 | 0 |
-| **Total** | | | | | | 9.62M processed (peak ctx sum 555k) | 226 | |
+| Close-out (post-launch-learning) | sonnet-5-5 | declared: frontmatter default | — | 2026-10-08 | 0:26 | 62k processed (peak ctx 26k vs 25k est.) | 6 | 0 |
+| **Total** | | | | | | 9.68M processed (peak ctx sum 581k) | 232 | |
 
 ## Next action
 
-Close-out: fresh post-launch-learning spawn, tight read list, writes 07-close-out.md; then the Orchestrator regenerates nothing else, updates Status to done only after it lands. The owner pushes, opens the PR and merges.
+None for the run. The owner reviews the branch claude/docs-retrieval-4 (not pushed), reads the Release Manager's crash call (06-release-checklist.md section 4), and does the push, PR and merge. Nothing is approved for push, merge, PR, deploy or announcement.
 
 ## Implementation notes (resumable)
 
