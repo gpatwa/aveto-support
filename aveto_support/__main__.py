@@ -1,11 +1,14 @@
-"""Command line: ingest | retrieve | eval. Exit codes: 0 ok, 1 eval below 80%, 2 input, 3 fetch."""
+"""Command line: ingest | retrieve | eval | judge-input | judge-apply.
+
+Exit codes: 0 ok, 1 eval below 80%, 2 input, 3 fetch, 4 judge error (judge-apply only).
+"""
 
 from __future__ import annotations
 
 import argparse
 import os
 import sys
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -13,7 +16,7 @@ if TYPE_CHECKING:
     from aveto_support.embed import Embedder
     from aveto_support.index import Index
     from aveto_support.rerank import Reranker
-    from aveto_support.search import FileHit, PassageMatch, RetrievalResult
+    from aveto_support.search import FileHit, PassageMatch, RetrievalResult, Searcher
 
 DEFAULT_CONFIG = "docs-source.toml"
 DEFAULT_INDEX = "index/docs-index.json"
@@ -84,6 +87,21 @@ def _parser() -> argparse.ArgumentParser:
     ev.add_argument("--index", default=DEFAULT_INDEX)
     ev.add_argument("--eval-file", default=DEFAULT_EVAL)
     ev.add_argument("--ranking", choices=RANKINGS, default=DEFAULT_RANKING)
+    ev.add_argument(
+        "--verdicts",
+        default=None,
+        help="also score the answerability bars from a judge verdicts file (reported, not gated)",
+    )
+    ji = sub.add_parser("judge-input", help="print the answerability judge's payload for a question")
+    ji.add_argument("--index", default=DEFAULT_INDEX)
+    ji.add_argument("--question-file", default=None)
+    ji.add_argument("question", nargs="*")
+    ja = sub.add_parser("judge-apply", help="apply one judge verdict to that same payload")
+    ja.add_argument("--index", default=DEFAULT_INDEX)
+    ja.add_argument("--question-file", default=None)
+    ja.add_argument("--input-sha256", required=True)
+    ja.add_argument("--verdict-file", required=True)
+    ja.add_argument("question", nargs="*")
     return parser
 
 
@@ -91,6 +109,105 @@ def _limit_threads() -> None:
     """Single-threaded numeric libraries, set before numpy is first imported."""
     for name in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
         os.environ[name] = "1"
+
+
+def _with_searcher[T](
+    index_path: str,
+    embedder: Embedder | None,
+    models_dir: Path,
+    fn: Callable[[Searcher, Index], T],
+) -> T:
+    """Load the index and embedder, run `fn` with the default ranking, close what was loaded."""
+    from aveto_support.embed import OnnxEmbedder
+    from aveto_support.index import load_index
+    from aveto_support.search import Searcher
+
+    index = load_index(Path(index_path))
+    loaded: OnnxEmbedder | None = None
+    try:
+        active = embedder
+        if active is None:
+            active = loaded = OnnxEmbedder.load(models_dir, index.params.embedding)
+        return fn(Searcher(index, active), index)
+    finally:
+        if loaded is not None:
+            loaded.close()
+
+
+def _raw_question(args: argparse.Namespace) -> str:
+    from aveto_support.judge import QuestionFormatError, read_question_file
+
+    if (args.question_file is None) == (not args.question):
+        raise QuestionFormatError("give exactly one of --question-file or the question words")
+    if args.question_file is not None:
+        return read_question_file(Path(args.question_file))
+    return " ".join(args.question)
+
+
+def _judge_input(args: argparse.Namespace, embedder: Embedder | None, models_dir: Path) -> int:
+    from aveto_support import judge
+
+    judge.remove_stale_reply()
+    raw = _raw_question(args)
+    block = _with_searcher(
+        args.index,
+        embedder,
+        models_dir,
+        lambda searcher, _: judge.format_judge_input(judge.retrieve_for_judge(searcher, raw)),
+    )
+    sys.stdout.write(block)
+    print(f"input sha256: {judge.input_sha256(block)}", file=sys.stderr)
+    return 0
+
+
+def _apply_verdict(
+    args: argparse.Namespace, embedder: Embedder | None, models_dir: Path
+) -> tuple[str, int]:
+    """Steps 1-5 of judge-apply. Returns (stdout text, exit code 0) or raises."""
+    from aveto_support import judge
+
+    safe, category = judge.transport_file(Path(args.verdict_file))
+    if safe is None:
+        raise judge.JudgeError(category or judge.OUTSIDE)
+    reply = judge.read_reply(safe)
+    raw = _raw_question(args)
+
+    def build(searcher: Searcher, index: Index) -> tuple[RetrievalResult, Index]:
+        return judge.retrieve_for_judge(searcher, raw), index
+
+    result, index = _with_searcher(args.index, embedder, models_dir, build)
+    if judge.input_sha256(judge.format_judge_input(result)) != args.input_sha256:
+        raise judge.JudgeError(judge.DIFFERENT_INPUT)
+    verdict = judge.parse_verdict(reply, judge.BLOCK_ID)
+    return judge.render_applied(verdict, result, index), 0
+
+
+def _judge_apply(args: argparse.Namespace, embedder: Embedder | None, models_dir: Path) -> int:
+    """Compute, then delete the transport files, then print (so a deletion failure never
+    follows an already-printed judged result). Runs the deletion on every path."""
+    from aveto_support import judge
+
+    out, code = "", 0
+    err = ""
+    pending: Exception | None = None
+    try:
+        out, code = _apply_verdict(args, embedder, models_dir)
+    except judge.JudgeError as exc:
+        out, err, code = "judge error\n", f"judge error: {exc.category}\n", 4
+    except Exception as exc:  # noqa: BLE001  re-raised below, after the transport files are gone
+        pending = exc
+    files = [Path(args.verdict_file)]
+    if args.question_file is not None:
+        files.append(Path(args.question_file))
+    if not judge.delete_transport_files(files):
+        sys.stdout.write("judge error\n")
+        sys.stderr.write(f"judge error: {judge.NOT_DELETED}\n")
+        return 4
+    if pending is not None:
+        raise pending
+    sys.stdout.write(out)
+    sys.stderr.write(err)
+    return code
 
 
 def _dispatch(
@@ -106,6 +223,16 @@ def _dispatch(
     from aveto_support.rerank import OnnxReranker
     from aveto_support.search import Searcher, ranking_mode, retrieve
 
+    if args.command == "judge-input":
+        return _judge_input(args, embedder, models_dir)
+    if args.command == "judge-apply":
+        return _judge_apply(args, embedder, models_dir)
+    if args.command == "eval" and args.verdicts is not None and args.ranking != DEFAULT_RANKING:
+        from aveto_support.judge_eval import VerdictsFormatError
+
+        raise VerdictsFormatError(
+            f"--verdicts needs --ranking {DEFAULT_RANKING}: the judge was measured on that ranking only"
+        )
     if args.command == "ingest":
         report = run_ingest(
             Path(args.config),
@@ -158,11 +285,18 @@ def _dispatch(
             return 0
         eval_set = load_eval_set(Path(args.eval_file))
         check_commit(index, eval_set)
+        judge_text = None
+        if args.verdicts is not None:  # built before any output, so a bad file prints no report
+            from aveto_support.judge_eval import judge_section
+
+            judge_text = judge_section(searcher, eval_set, Path(args.verdicts))
         print(f"Ranking: {ranking_mode(searcher)}")
         report_eval = score(searcher, eval_set)
         text = format_report(report_eval, args.eval_file, index)
         # evaluate.py (frozen) labels its header file-rrf-v1; name the method that actually ran.
         print(text.replace("ranking: file-rrf-v1", f"ranking: {args.ranking}", 1))
+        if judge_text is not None:
+            print(judge_text)
         return 0 if report_eval.passed else 1
     finally:
         if loaded_reranker is not None:
@@ -187,10 +321,25 @@ def main(
     from aveto_support.evaluate import EvalFormatError
     from aveto_support.index import IndexFormatError
     from aveto_support.ingest import ConfigError, FetchError
+    from aveto_support.judge import (
+        PayloadMarkerError,
+        QuestionFormatError,
+        TransportError,
+    )
+    from aveto_support.judge_eval import VerdictsFormatError
 
     try:
         return _dispatch(args, embedder, reranker, models_dir)
-    except (ConfigError, IndexFormatError, EvalFormatError, ModelError) as exc:
+    except (
+        ConfigError,
+        IndexFormatError,
+        EvalFormatError,
+        ModelError,
+        QuestionFormatError,
+        PayloadMarkerError,
+        TransportError,
+        VerdictsFormatError,
+    ) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
     except FetchError as exc:
