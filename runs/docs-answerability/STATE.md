@@ -48,7 +48,7 @@
 
 - **Budget:** 950k tokens  ·  **Depth:** adversarial
 - **Ceiling (owner-typed, APPROVAL_RECORD-1):** 1.4M
-- **Spent:** 558k (58.7% of plan; 39.9% of ceiling)  ·  **Remaining:** 392k
+- **Spent:** 595k (62.6% of plan; 42.5% of ceiling)  ·  **Remaining:** 355k
 - **Next stage:** Refusal probe: judge spawn 1 of 2, then QA audit est. 35k → **STOP-AND-ASK**
 
 Note: pass 1 ran 134k peak vs 80k est; the projection to the end is about 1.0M against the 950k plan, under the 1.4M ceiling. 950k is the confirmed plan total; 1.4M the owner's ceiling. The intent's own figure is about 700k (A 300k, B 400k); measured ratios give A 425k + B 510k. Units are peak context per spawn. Depth is adversarial only for Security; other stages standard (see plan).
@@ -79,7 +79,8 @@ The judge subagent type is not registered in the driving session (agent types ar
 | Implementation 3a | sonnet-5-5 (harness log) | medium (declared) | 05:15 | 05:24 | 7:56 | 139k peak (3.19M processed) | 36 | 0 |
 | Architecture addendum (3b) | opus-5-5 (harness log) | high (declared) | 05:33 | 05:40 | 6:13 | 77k peak (805k processed) | 26 | 0 |
 | Implementation 3b | sonnet-5-5 (harness log) | medium (declared) | 06:05 | 06:08 | 1:39 | 47k peak (408k processed) | 13 | 0 |
-| **Total** | | | | | | 559k | 174 | |
+| Refusal probe setup (QA pass A) | sonnet-5-5 (harness log) | high (declared) | 06:11 | 06:13 | 1:01 | 37k peak (307k processed) | 12 | 0 |
+| **Total** | | | | | | 596k | 186 | |
 
 ## Next action
 
