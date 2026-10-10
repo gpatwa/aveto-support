@@ -10,6 +10,7 @@
 - **Started:** 2026-10-10T04:32Z  ·  **Updated:** 2026-10-10 (Implementation 3a end; this role has no clock, Orchestrator to stamp the time)
 
 - **Branch:** claude/aveto-docs-answerability-85eb6d (worktree off main at 56b4723)
+- **Pack:** v17 → v18 by cherry-pick of main 77e6462 (commit a3bcfa6) at the clean boundary after 3a (5d1ca47), on the support session's advice (SUPPORT_REPLIES.md Reply 3); installer not run in the worktree.
 - **Playbook:** /Users/gopalpatwa/opt/agentic-sdlc-playbook @ 00d491ac2de0418bd29bd17f9890d814b2260dcd (main), clean. Pack v17.
 - **Method commit (freeze):** not yet recorded
 - **Judge prompt sha256 (spec 3.2; line 104 of the pilot doc @ 00d491a, quotes stripped, one trailing newline):** 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427 (computed by the Orchestrator)
@@ -47,7 +48,7 @@
 - **Budget:** 950k tokens  ·  **Depth:** adversarial
 - **Ceiling (owner-typed, APPROVAL_RECORD-1):** 1.4M
 - **Spent:** 435k (45.8% of plan; 31.1% of ceiling)  ·  **Remaining:** 515k
-- **Next stage:** Implementation 3b (build) est. 50k → **PROCEED** (blocked on support research and owner direction; see Next action)
+- **Next stage:** Architecture addendum 3b (review) est. 40k → **PROCEED**
 
 Note: pass 1 ran 134k peak vs 80k est; the projection to the end is about 1.0M against the 950k plan, under the 1.4M ceiling. 950k is the confirmed plan total; 1.4M the owner's ceiling. The intent's own figure is about 700k (A 300k, B 400k); measured ratios give A 425k + B 510k. Units are peak context per spawn. Depth is adversarial only for Security; other stages standard (see plan).
 
@@ -75,4 +76,4 @@ Note: pass 1 ran 134k peak vs 80k est; the projection to the end is about 1.0M a
 
 ## Next action
 
-Owner chooses how the Claude Code facts (SUPPORT_REQUESTS.md request 1) are settled; then spawn Implementation 3b (AI Engineer, fresh, est. 50k): judge agent pinned to claude-haiku-5-5, /aveto-judge, artefact tests including a test that a tool call is refused (APPROVAL_RECORD-5). 3a is complete and uncommitted in the working tree.
+Spawn the Architect addendum (fresh, est. 40k) to settle spec 8.1/8.2/8.5/8.6/8.14 from SUPPORT_REPLIES.md Reply 2 and design the zero-tool refusal test; then Implementation 3b. Anything beyond packet 3.3's artefacts goes back to the owner.
