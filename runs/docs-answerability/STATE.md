@@ -4,10 +4,10 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 2
 - **Current stage:** Implementation 3a
-- **Status:** in-progress
+- **Status:** blocked-on-approval
 - **Least-privilege:** enforced (to verify at first spawn: agents discovered from this worktree's `.claude/agents/`) — see "Least-privilege tier"
 - **Telemetry:** self-reported until `usage.mjs` is run; model names will come from the harness log
-- **Started:** 2026-10-10T04:32Z  ·  **Updated:** 2026-10-10 (Architecture 3b addendum end; this role has no clock, Orchestrator to stamp the time)
+- **Started:** 2026-10-10T04:32Z  ·  **Updated:** 2026-10-10T05:45Z (QA refusal probe setup, pass A)
 
 - **Branch:** claude/aveto-docs-answerability-85eb6d (worktree off main at 56b4723)
 - **Pack:** v17 → v18 by cherry-pick of main 77e6462 (commit a3bcfa6) at the clean boundary after 3a (5d1ca47), on the support session's advice (SUPPORT_REPLIES.md Reply 3); installer not run in the worktree.
@@ -25,7 +25,7 @@
 | Scope | Engineering Manager | done | runs/docs-answerability/01-scope.md | accepted; Q1 closed by APPROVAL_RECORD-3 (keep skipped) |
 | Architecture (2 passes + 3b addendum) | Software Architect | done (pass 1, pass 2, 3b addendum) | runs/docs-answerability/02-tech-spec.md; runs/docs-answerability/02b-approval-packet.md; docs/adr/0008-operator-run-answerability-judge.md (Proposed); runs/docs-answerability/02c-3b-addendum.md | rule 4/5 approved; split trigger fired (11 files → 3a/3b, spec 7.2); addendum settles 8.1/8.2/8.5/8.6/8.14 and has 3 items needing owner approval before 3b (addendum section 8) |
 | Implementation | AI Engineer | 3a done (files 1-8); 3b done (files 9-11, skill not command) | runs/docs-answerability/03a-implementation.md; runs/docs-answerability/03b-implementation.md | regression green (267 passed); live refusal probe still pending (QA) |
-| Seen-set check | QA Evidence | pending | — | pooled >= 16/20 and 45/56 |
+| Seen-set check | QA Evidence | pending (refusal probe setup done, pass A; spawn and audit pass B next) | runs/docs-answerability/03b-refusal-probe-setup.md | pooled >= 16/20 and 45/56 |
 | Freeze | Orchestrator | pending | — | method commit recorded |
 | Label review | QA Evidence | pending | — | — |
 | Scoring | QA Evidence | pending | — | both bars |
@@ -49,9 +49,13 @@
 - **Budget:** 950k tokens  ·  **Depth:** adversarial
 - **Ceiling (owner-typed, APPROVAL_RECORD-1):** 1.4M
 - **Spent:** 558k (58.7% of plan; 39.9% of ceiling)  ·  **Remaining:** 392k
-- **Next stage:** Refusal probe setup (QA) est. 30k → **PROCEED**
+- **Next stage:** Refusal probe: judge spawn 1 of 2, then QA audit est. 35k → **STOP-AND-ASK**
 
 Note: pass 1 ran 134k peak vs 80k est; the projection to the end is about 1.0M against the 950k plan, under the 1.4M ceiling. 950k is the confirmed plan total; 1.4M the owner's ceiling. The intent's own figure is about 700k (A 300k, B 400k); measured ratios give A 425k + B 510k. Units are peak context per spawn. Depth is adversarial only for Security; other stages standard (see plan).
+
+## Open stop (Amendment 2, addendum 3.5 'cannot be run')
+
+The judge subagent type is not registered in the driving session (agent types are loaded at session start; the file was added by 3b mid-session). The spawn call failed before any model ran: 0 judge spawns used. Nothing was run with a substitute agent (a general-purpose agent has every tool and would test nothing).
 
 ## Failure budget
 
@@ -79,4 +83,4 @@ Note: pass 1 ran 134k peak vs 80k est; the projection to the end is about 1.0M a
 
 ## Next action
 
-QA pass A sets up the refusal probe (canaries, verbatim prompt file); Orchestrator spawns the judge ONCE with that prompt (<=2 judge spawns total, owner cap); QA pass B (fresh) audits the transcript and writes 03b-refusal-probe.md. FAIL or cannot-run = stop and ask the owner.
+Owner decides how to load .claude/agents/aveto-answerability-judge.md into a session that can spawn it (this session cannot: 'Agent type not found'; judge spawns used: 0 of 2). Then spawn the judge ONCE with probe-prompt.txt (sha256 0615e164...86d3), then QA pass B (fresh) audits and writes 03b-refusal-probe.md. No workaround with another agent type.
