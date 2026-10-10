@@ -88,4 +88,4 @@ Seen-set check cannot start under the budget rule. Plan estimate was 100k for th
 
 ## Next action
 
-Await owner's typed decision on the seen-set check budget basis (see Open stop). Do not spawn judges until then.
+Owner chose `lean` (typed, 2026-10-10): measurement only, no ceiling change, nothing approved. A new session with this worktree as project root and MCP servers off runs exactly 2 one-question judge spawns on seen-set questions (measurement-only, not seen-set verdicts; all 93 still run fresh later), runs usage.mjs, and reports per-spawn peak and in-equiv, the tool count the judge was offered, and a 93-spawn projection with a derived ceiling. Judge spawns for the refusal probe: 1 of 2 used, separate. This session spawns nothing further until the numbers come back and the owner decides the budget basis.
