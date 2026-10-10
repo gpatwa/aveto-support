@@ -4,7 +4,7 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 2
 - **Current stage:** Implementation 3a
-- **Status:** blocked-on-approval
+- **Status:** in-progress
 - **Least-privilege:** enforced (to verify at first spawn: agents discovered from this worktree's `.claude/agents/`) — see "Least-privilege tier"
 - **Telemetry:** self-reported until `usage.mjs` is run; model names will come from the harness log
 - **Started:** 2026-10-10T04:32Z  ·  **Updated:** 2026-10-10 (Architecture 3b addendum end; this role has no clock, Orchestrator to stamp the time)
@@ -41,6 +41,7 @@
 | Plan, intent, ceiling 1.4M, decisions 3 and 4 | plan confirmation | yes | approved | Gopal Patwa | 2026-10-10T04:42:04Z | runs/docs-answerability/APPROVAL_RECORD-1.md |
 | Data processor: Anthropic via the operator's own Claude Code session | 6 | yes | approved | Gopal Patwa | 2026-10-10T04:42:04Z | runs/docs-answerability/APPROVAL_RECORD-2.md |
 | INV-4 / INV-5 exact words | 4 | yes (02b section 2) | approved | Gopal Patwa | 2026-10-10T05:13:28Z | runs/docs-answerability/APPROVAL_RECORD-4.md |
+| 3b design: frontmatter, live probe (<=2 judge spawns), A-counts with mcp__ attempt, no probe agent, skill instead of command | 5 (follow-up) | yes (02c section 8) | approved | Gopal Patwa | 2026-10-10T05:42:01Z | runs/docs-answerability/APPROVAL_RECORD-7.md |
 | Judge in a previously deterministic path | 5 | yes (02b section 3) | approved with 2 conditions: model pinned to full ID claude-haiku-5-5 (not alias); stop-and-ask unless a test shows a tool call refused | Gopal Patwa | 2026-10-10T05:13:28Z | runs/docs-answerability/APPROVAL_RECORD-5.md |
 
 ## Budget
@@ -48,7 +49,7 @@
 - **Budget:** 950k tokens  ·  **Depth:** adversarial
 - **Ceiling (owner-typed, APPROVAL_RECORD-1):** 1.4M
 - **Spent:** 512k (53.9% of plan; 36.6% of ceiling)  ·  **Remaining:** 438k
-- **Next stage:** Implementation 3b (build) est. 50k → **PROCEED** (after owner answers 02c section 8 items 1-3 and the tool list arrives)
+- **Next stage:** Implementation 3b (build) est. 60k → **PROCEED**
 
 Note: pass 1 ran 134k peak vs 80k est; the projection to the end is about 1.0M against the 950k plan, under the 1.4M ceiling. 950k is the confirmed plan total; 1.4M the owner's ceiling. The intent's own figure is about 700k (A 300k, B 400k); measured ratios give A 425k + B 510k. Units are peak context per spawn. Depth is adversarial only for Security; other stages standard (see plan).
 
@@ -77,4 +78,4 @@ Note: pass 1 ran 134k peak vs 80k est; the projection to the end is about 1.0M a
 
 ## Next action
 
-Addendum written: runs/docs-answerability/02c-3b-addendum.md. Before Implementation 3b: (1) put addendum section 8 items 1-3 to the owner (deny-list form instead of `tools: none`; the live refusal probe as a judge use; whether "tool never offered" counts as "refused"; item 4 only if B is required); (2) get the docs-sourced built-in tool-name list from the support session (addendum 2.1); (3) check whether the QA agent's tools include Agent (addendum 3.2, 4.2). Then 3b builds files 9-11 from addendum 7.1-7.3, and QA runs the refusal probe (03b-refusal-probe.md) before the seen-set check.
+Spawn Implementation 3b (AI Engineer, fresh): judge agent (claude-haiku-5-5, disallowedTools from 02d, hook), skill .claude/skills/aveto-judge/SKILL.md with disable-model-invocation, artefact tests; then QA refusal probe (<=2 judge spawns, incl. an mcp__ attempt), then apply the approved INV words (Architect), then the seen-set check.
