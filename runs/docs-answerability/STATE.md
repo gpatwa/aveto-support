@@ -24,7 +24,7 @@
 | Intake | Orchestrator | done, plan confirmed | runs/docs-answerability/00-slice-plan.md | confirmed (APPROVAL_RECORD-1) |
 | Scope | Engineering Manager | done | runs/docs-answerability/01-scope.md | accepted; Q1 closed by APPROVAL_RECORD-3 (keep skipped) |
 | Architecture (2 passes + 3b addendum) | Software Architect | done (pass 1, pass 2, 3b addendum) | runs/docs-answerability/02-tech-spec.md; runs/docs-answerability/02b-approval-packet.md; docs/adr/0008-operator-run-answerability-judge.md (Proposed); runs/docs-answerability/02c-3b-addendum.md | rule 4/5 approved; split trigger fired (11 files → 3a/3b, spec 7.2); addendum settles 8.1/8.2/8.5/8.6/8.14 and has 3 items needing owner approval before 3b (addendum section 8) |
-| Implementation | AI Engineer | 3a done (files 1-8; 3b pending) | runs/docs-answerability/03a-implementation.md | regression green (259 passed) |
+| Implementation | AI Engineer | 3a done (files 1-8); 3b done (files 9-11, skill not command) | runs/docs-answerability/03a-implementation.md; runs/docs-answerability/03b-implementation.md | regression green (267 passed); live refusal probe still pending (QA) |
 | Seen-set check | QA Evidence | pending | — | pooled >= 16/20 and 45/56 |
 | Freeze | Orchestrator | pending | — | method commit recorded |
 | Label review | QA Evidence | pending | — | — |
@@ -48,8 +48,8 @@
 
 - **Budget:** 950k tokens  ·  **Depth:** adversarial
 - **Ceiling (owner-typed, APPROVAL_RECORD-1):** 1.4M
-- **Spent:** 512k (53.9% of plan; 36.6% of ceiling)  ·  **Remaining:** 438k
-- **Next stage:** Implementation 3b (build) est. 60k → **PROCEED**
+- **Spent:** 558k (58.7% of plan; 39.9% of ceiling)  ·  **Remaining:** 392k
+- **Next stage:** Refusal probe setup (QA) est. 30k → **PROCEED**
 
 Note: pass 1 ran 134k peak vs 80k est; the projection to the end is about 1.0M against the 950k plan, under the 1.4M ceiling. 950k is the confirmed plan total; 1.4M the owner's ceiling. The intent's own figure is about 700k (A 300k, B 400k); measured ratios give A 425k + B 510k. Units are peak context per spawn. Depth is adversarial only for Security; other stages standard (see plan).
 
@@ -74,8 +74,9 @@ Note: pass 1 ran 134k peak vs 80k est; the projection to the end is about 1.0M a
 | Architecture pass 2 | opus-5-5 (harness log) | high (declared) | 05:10 | 05:16 | 5:51 | 99k peak (1.04M processed) | 26 | 0 |
 | Implementation 3a | sonnet-5-5 (harness log) | medium (declared) | 05:15 | 05:24 | 7:56 | 139k peak (3.19M processed) | 36 | 0 |
 | Architecture addendum (3b) | opus-5-5 (harness log) | high (declared) | 05:33 | 05:40 | 6:13 | 77k peak (805k processed) | 26 | 0 |
-| **Total** | | | | | | 512k | 161 | |
+| Implementation 3b | sonnet-5-5 (harness log) | medium (declared) | 06:05 | 06:08 | 1:39 | 47k peak (408k processed) | 13 | 0 |
+| **Total** | | | | | | 559k | 174 | |
 
 ## Next action
 
-Spawn Implementation 3b (AI Engineer, fresh): judge agent (claude-haiku-5-5, disallowedTools from 02d, hook), skill .claude/skills/aveto-judge/SKILL.md with disable-model-invocation, artefact tests; then QA refusal probe (<=2 judge spawns, incl. an mcp__ attempt), then apply the approved INV words (Architect), then the seen-set check.
+QA pass A sets up the refusal probe (canaries, verbatim prompt file); Orchestrator spawns the judge ONCE with that prompt (<=2 judge spawns total, owner cap); QA pass B (fresh) audits the transcript and writes 03b-refusal-probe.md. FAIL or cannot-run = stop and ask the owner.
