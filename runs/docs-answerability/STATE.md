@@ -88,4 +88,4 @@ Seen-set check cannot start under the budget rule. Plan estimate was 100k for th
 
 ## Next action
 
-Lean measurement done (05-lean-measurement.md); scratch agent deleted. Awaiting the owner's decision on the budget basis and on whether to bring an exact diff of the committed judge agent that denies the MCP tool names (wildcard per server worked on the scratch). Nothing approved; no ceiling change; no judge spawns for the seen-set check yet; fifth set untouched. Committed agent and hook unchanged.
+Measurement only; nothing approved; no ceiling change. Bare `mcp__*` test: scratch agent `.claude/agents/aveto-judge-scratch.md` (untracked, in info/exclude, `disallowedTools` = committed list + `mcp__*`, nothing else changed) is written but not loadable until the session restarts in this worktree. After restart: one spawn, read the offered count from its prefix.json and the first-request size from the transcript, delete the scratch agent, report. Committed agent and hook unchanged. Proposed diff to the committed agent is in the owner's hands (not applied).
