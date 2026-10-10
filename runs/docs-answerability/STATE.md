@@ -4,7 +4,7 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 2
 - **Current stage:** Architecture (INV-4/INV-5 words, packet 2.4)
-- **Status:** running
+- **Status:** blocked-on-approval
 - **Least-privilege:** enforced (to verify at first spawn: agents discovered from this worktree's `.claude/agents/`) — see "Least-privilege tier"
 - **Telemetry:** self-reported until `usage.mjs` is run; model names will come from the harness log
 - **Started:** 2026-10-10T04:32Z  ·  **Updated:** 2026-10-10 (refusal probe PASS; judge spawn 1 of 2, QA pass B)
@@ -49,13 +49,15 @@
 - **Budget:** 950k tokens  ·  **Depth:** adversarial
 - **Ceiling (owner-typed, APPROVAL_RECORD-1):** 1.4M
 - **Spent:** 717k (75.5% of plan; 51.2% of ceiling), from usage.mjs  ·  **Remaining:** 233k
-- **Next stage:** Architect (fresh) applies owner-approved INV-4/INV-5 words to .agentic/SAFETY_INVARIANTS.md (est. 40k)
+- **Next stage:** Seen-set check: 93 judge spawns, **STOP-AND-ASK** (budget basis; see Open stop)
 
 Note: pass 1 ran 134k peak vs 80k est; the projection to the end is about 1.0M against the 950k plan, under the 1.4M ceiling. 950k is the confirmed plan total; 1.4M the owner's ceiling. The intent's own figure is about 700k (A 300k, B 400k); measured ratios give A 425k + B 510k. Units are peak context per spawn. Depth is adversarial only for Security; other stages standard (see plan).
 
 ## Open stop
 
-None. Refusal probe resolved: judge spawn 1 of 2 used, QA pass B verdict PASS (03b-refusal-probe.md). Live hook refusal (outcome B) seen 5 times, all on mcp__ tools; built-ins never offered (outcome A). Judge offered 141 tools (134 mcp__ + 7 harness tools not on the deny list), so the hook is the only barrier for those: Release Gate must note it. SubagentHandback/EndConversation not exercised.
+INV-4/INV-5 words applied verbatim (a8c9604; test renamed on default, STANDING_INSTRUCTIONS #3). Spent now ~717k + Architect ~42k = ~759k (usage.mjs to be rerun).
+
+Seen-set check cannot start under the budget rule. Plan estimate was 100k for this stage. The ledger sums peak context per spawn, and the probe judge peaked at 76k (the deferred-tool list the harness gives it, 141 tools) with 113k in-equiv. 93 one-question spawns (spec 5.2, thresholds fixed) are about 93 x 76k = ~7M peak-sum (~10M in-equiv), against 950k plan / 1.4M ceiling. Owner decision needed; nothing spawned.
 
 ## Failure budget
 
@@ -86,4 +88,4 @@ None. Refusal probe resolved: judge spawn 1 of 2 used, QA pass B verdict PASS (0
 
 ## Next action
 
-Spawn the Architect (fresh) to apply the owner-approved INV-4/INV-5 words exactly as in 02b-approval-packet.md section 2 to .agentic/SAFETY_INVARIANTS.md, then commit; then seen-set integration check.
+Await owner's typed decision on the seen-set check budget basis (see Open stop). Do not spawn judges until then.
