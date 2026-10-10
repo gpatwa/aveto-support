@@ -13,3 +13,4 @@ Not an approval of any rule 1-6 action. Recorded so a cold session follows it.
 |---|------|----------|--------------|
 | 1 | 2026-10-10 | Seen-set check driven from the top-level session (QA has no Agent tool; no general-purpose driver, which would lose least-privilege) | 02c section 4 / spec 5.2 |
 | 2 | 2026-10-10 | Mixed-in doc facts (02d): outcome of the SubagentHandback/EndConversation wrinkle goes into the probe's criteria rather than back to the owner, unless the probe fails | 02d |
+| 3 | 2026-10-10 | INV-5 cites `test_command_definition`; 3b's test was `test_skill_definition`. Renamed the test (docstring notes the skill form); approved words unchanged. Alternative (new rule 4 request to cite the skill name) not taken. | recommended default; no wording change |

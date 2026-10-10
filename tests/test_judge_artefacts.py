@@ -141,7 +141,8 @@ def test_deny_hook_refuses_every_input(tmp_path: Path) -> None:
         assert proc.stdout == b"", data
 
 
-def test_skill_definition() -> None:
+def test_command_definition() -> None:
+    """The /aveto-judge command, shipped as a skill (APPROVAL_RECORD-7)."""
     assert not (ROOT / ".claude" / "commands" / "aveto-judge.md").exists()
     text = SKILL.read_text(encoding="utf-8")
     assert text.startswith(SKILL_FRONTMATTER)
