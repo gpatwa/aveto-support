@@ -33,7 +33,6 @@ UNREADABLE = "verdict file unreadable"
 TOO_LONG = "reply too long"
 NOT_UTF8 = "reply not UTF-8"
 EMPTY = "empty reply"
-MULTI_LINE = "more than one line"
 CONTROL = "control or format character"
 MALFORMED = "malformed verdict line"
 WRONG_ID = "wrong block id"
@@ -43,7 +42,7 @@ NOT_DELETED = "transport file not deleted"
 
 _MARKERS = ("=== ", "--- passage ", "--- end passage ")
 _VERDICT_LINE = re.compile(
-    r"(?P<id>[^ ]+) (?P<token>ANSWERABLE|NOT_ANSWERABLE)(?: (?P<reason>\S.*))?"
+    r"(?P<id>[^ ]+) (?P<token>ANSWERABLE|NOT_ANSWERABLE):?(?: (?P<reason>\S.*))?"
 )
 
 
@@ -143,14 +142,18 @@ def input_sha256(block: str) -> str:
 
 
 def parse_verdict(reply: str, block_id: str) -> Verdict:
-    """Accept exactly one line `<id> <token> [reason]`; keep the token, drop the reason."""
-    s = reply.strip()
-    if not s:
+    """Read the verdict from the LAST non-empty line (`<id> <token> [reason]`); keep the token.
+
+    Earlier lines are ignored: never returned, logged, printed or stored. Any Cc/Cf
+    character anywhere in the reply, other than the line terminators \\n and \\r, is
+    rejected (APPROVAL_RECORD-10)."""
+    lines = [ln.strip() for ln in re.split(r"\r\n|\n|\r", reply)]
+    non_empty = [ln for ln in lines if ln]
+    if not non_empty:
         raise JudgeError(EMPTY)
-    if "\n" in s or "\r" in s:
-        raise JudgeError(MULTI_LINE)
-    if _has_hidden_chars(s):
+    if _has_hidden_chars(reply.replace("\n", "").replace("\r", "")):
         raise JudgeError(CONTROL)
+    s = non_empty[-1]
     m = _VERDICT_LINE.fullmatch(s)
     if m is None:
         raise JudgeError(MALFORMED)

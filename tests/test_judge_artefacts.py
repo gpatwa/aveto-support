@@ -34,7 +34,7 @@ DENY_LIST = (
     "NotebookEdit, PowerShell, PushNotification, ReadMcpResourceTool, RemoteTrigger, "
     "ReportFindings, ScheduleWakeup, SendFeedback, SendMessage, SendUserFile, "
     "ShareOnboardingGuide, Skill, SubagentHandback, TaskCreate, TaskGet, TaskList, "
-    "TaskOutput, TaskStop, TaskUpdate, TodoWrite, ToolSearch, WaitForMcpServers, Workflow"
+    "TaskOutput, TaskStop, TaskUpdate, TodoWrite, ToolSearch, WaitForMcpServers, Workflow, mcp__*"
 )
 HOOK_COMMAND = 'echo "aveto-answerability-judge has no tools" >&2; exit 2'
 FRONTMATTER = f"""---
