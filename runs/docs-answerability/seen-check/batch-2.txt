@@ -1,0 +1,16 @@
+r017 Can I make the reviews lighter for low-risk changes and stricter for risky ones?
+r018 Once it's installed, how do I actually ask it to build something?
+r019 If a release needs sign-off from a change board, what do we fill in?
+r020 Which kinds of release get the most checks before going out?
+r021 Who checks a release against frameworks like SOC 2 or ISO 27001?
+r022 What has actually been tested on real projects, and what hasn't?
+r023 Which roles run on the bigger, more expensive model?
+r024 Who makes sure we handle people's personal data and where it's stored properly?
+r025 Who keeps an eye on how much the product costs to run?
+r026 Once something is deployed, who checks that it really works for users?
+r027 Can the token and timing numbers come from real instrumentation instead of the agents' own reports?
+r028 Who talks to users to find out how they actually use the product?
+r029 Can the agents write all their documents in Spanish?
+r030 What's the difference between the SRE agent and the on-call agent?
+r031 Where do we think through how an attacker might abuse a new feature?
+r032 How do I work out what a new feature will cost to run each month?

@@ -1,0 +1,559 @@
+# Seen-set check key. Driver and judges must never read this file.
+
+[r001]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "tu01"
+answerable = false
+hard_negative = false
+
+[r002]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h15"
+answerable = true
+hard_negative = false
+
+[r003]
+eval_file = "evals/retrieval.toml"
+eval_id = "a04"
+answerable = true
+hard_negative = false
+
+[r004]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f15"
+answerable = true
+hard_negative = false
+
+[r005]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "tu02"
+answerable = false
+hard_negative = false
+
+[r006]
+eval_file = "evals/retrieval.toml"
+eval_id = "u05"
+answerable = false
+hard_negative = false
+
+[r007]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t01"
+answerable = true
+hard_negative = false
+
+[r008]
+eval_file = "evals/retrieval.toml"
+eval_id = "a02"
+answerable = true
+hard_negative = false
+
+[r009]
+eval_file = "evals/retrieval.toml"
+eval_id = "a15"
+answerable = true
+hard_negative = false
+
+[r010]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t14"
+answerable = true
+hard_negative = false
+
+[r011]
+eval_file = "evals/retrieval.toml"
+eval_id = "a20"
+answerable = true
+hard_negative = false
+
+[r012]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "hu02"
+answerable = false
+hard_negative = false
+
+[r013]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "tu04"
+answerable = false
+hard_negative = false
+
+[r014]
+eval_file = "evals/retrieval.toml"
+eval_id = "a09"
+answerable = true
+hard_negative = false
+
+[r015]
+eval_file = "evals/retrieval.toml"
+eval_id = "a16"
+answerable = true
+hard_negative = false
+
+[r016]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h17"
+answerable = true
+hard_negative = false
+
+[r017]
+eval_file = "evals/retrieval.toml"
+eval_id = "a10"
+answerable = true
+hard_negative = false
+
+[r018]
+eval_file = "evals/retrieval.toml"
+eval_id = "a03"
+answerable = true
+hard_negative = false
+
+[r019]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t13"
+answerable = true
+hard_negative = false
+
+[r020]
+eval_file = "evals/retrieval.toml"
+eval_id = "a19"
+answerable = true
+hard_negative = false
+
+[r021]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f02"
+answerable = true
+hard_negative = false
+
+[r022]
+eval_file = "evals/retrieval.toml"
+eval_id = "a21"
+answerable = true
+hard_negative = false
+
+[r023]
+eval_file = "evals/retrieval.toml"
+eval_id = "a12"
+answerable = true
+hard_negative = false
+
+[r024]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h11"
+answerable = true
+hard_negative = false
+
+[r025]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h03"
+answerable = true
+hard_negative = false
+
+[r026]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h10"
+answerable = true
+hard_negative = false
+
+[r027]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t09"
+answerable = true
+hard_negative = false
+
+[r028]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t06"
+answerable = true
+hard_negative = false
+
+[r029]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "hu04"
+answerable = false
+hard_negative = false
+
+[r030]
+eval_file = "evals/retrieval.toml"
+eval_id = "a17"
+answerable = true
+hard_negative = false
+
+[r031]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h16"
+answerable = true
+hard_negative = false
+
+[r032]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f03"
+answerable = true
+hard_negative = false
+
+[r033]
+eval_file = "evals/retrieval.toml"
+eval_id = "a01"
+answerable = true
+hard_negative = false
+
+[r034]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t10"
+answerable = true
+hard_negative = false
+
+[r035]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f16"
+answerable = true
+hard_negative = false
+
+[r036]
+eval_file = "evals/retrieval.toml"
+eval_id = "a08"
+answerable = true
+hard_negative = false
+
+[r037]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t04"
+answerable = true
+hard_negative = false
+
+[r038]
+eval_file = "evals/retrieval.toml"
+eval_id = "a07"
+answerable = true
+hard_negative = false
+
+[r039]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t11"
+answerable = true
+hard_negative = false
+
+[r040]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f04"
+answerable = true
+hard_negative = false
+
+[r041]
+eval_file = "evals/retrieval.toml"
+eval_id = "u04"
+answerable = false
+hard_negative = false
+
+[r042]
+eval_file = "evals/retrieval.toml"
+eval_id = "a23"
+answerable = true
+hard_negative = false
+
+[r043]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h08"
+answerable = true
+hard_negative = false
+
+[r044]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h05"
+answerable = true
+hard_negative = false
+
+[r045]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h01"
+answerable = true
+hard_negative = false
+
+[r046]
+eval_file = "evals/retrieval.toml"
+eval_id = "a14"
+answerable = true
+hard_negative = false
+
+[r047]
+eval_file = "evals/retrieval.toml"
+eval_id = "a06"
+answerable = true
+hard_negative = false
+
+[r048]
+eval_file = "evals/retrieval.toml"
+eval_id = "u03"
+answerable = false
+hard_negative = false
+
+[r049]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h02"
+answerable = true
+hard_negative = false
+
+[r050]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f08"
+answerable = true
+hard_negative = false
+
+[r051]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t12"
+answerable = true
+hard_negative = false
+
+[r052]
+eval_file = "evals/retrieval.toml"
+eval_id = "a24"
+answerable = true
+hard_negative = false
+
+[r053]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f09"
+answerable = true
+hard_negative = false
+
+[r054]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h06"
+answerable = true
+hard_negative = false
+
+[r055]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "tu03"
+answerable = false
+hard_negative = false
+
+[r056]
+eval_file = "evals/retrieval.toml"
+eval_id = "a22"
+answerable = true
+hard_negative = false
+
+[r057]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "hu01"
+answerable = false
+hard_negative = false
+
+[r058]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h12"
+answerable = true
+hard_negative = false
+
+[r059]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "hu06"
+answerable = false
+hard_negative = true
+
+[r060]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "fu01"
+answerable = false
+hard_negative = false
+
+[r061]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t02"
+answerable = true
+hard_negative = false
+
+[r062]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f05"
+answerable = true
+hard_negative = false
+
+[r063]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h07"
+answerable = true
+hard_negative = false
+
+[r064]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f14"
+answerable = true
+hard_negative = false
+
+[r065]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t03"
+answerable = true
+hard_negative = false
+
+[r066]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t05"
+answerable = true
+hard_negative = false
+
+[r067]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "fu03"
+answerable = false
+hard_negative = true
+
+[r068]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "hu05"
+answerable = false
+hard_negative = true
+
+[r069]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f07"
+answerable = true
+hard_negative = false
+
+[r070]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t15"
+answerable = true
+hard_negative = false
+
+[r071]
+eval_file = "evals/retrieval.toml"
+eval_id = "a05"
+answerable = true
+hard_negative = false
+
+[r072]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t08"
+answerable = true
+hard_negative = false
+
+[r073]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f01"
+answerable = true
+hard_negative = false
+
+[r074]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "hu03"
+answerable = false
+hard_negative = false
+
+[r075]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f12"
+answerable = true
+hard_negative = false
+
+[r076]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h09"
+answerable = true
+hard_negative = false
+
+[r077]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h14"
+answerable = true
+hard_negative = false
+
+[r078]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f06"
+answerable = true
+hard_negative = false
+
+[r079]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h04"
+answerable = true
+hard_negative = false
+
+[r080]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f10"
+answerable = true
+hard_negative = false
+
+[r081]
+eval_file = "evals/retrieval.toml"
+eval_id = "a13"
+answerable = true
+hard_negative = false
+
+[r082]
+eval_file = "evals/retrieval.toml"
+eval_id = "u06"
+answerable = false
+hard_negative = false
+
+[r083]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "fu02"
+answerable = false
+hard_negative = false
+
+[r084]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t16"
+answerable = true
+hard_negative = false
+
+[r085]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f11"
+answerable = true
+hard_negative = false
+
+[r086]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "fu04"
+answerable = false
+hard_negative = false
+
+[r087]
+eval_file = "evals/retrieval.toml"
+eval_id = "u01"
+answerable = false
+hard_negative = true
+
+[r088]
+eval_file = "evals/retrieval.toml"
+eval_id = "a11"
+answerable = true
+hard_negative = false
+
+[r089]
+eval_file = "evals/retrieval-heldout.toml"
+eval_id = "h13"
+answerable = true
+hard_negative = false
+
+[r090]
+eval_file = "evals/retrieval.toml"
+eval_id = "a18"
+answerable = true
+hard_negative = false
+
+[r091]
+eval_file = "evals/retrieval-heldout-3.toml"
+eval_id = "t07"
+answerable = true
+hard_negative = false
+
+[r092]
+eval_file = "evals/retrieval.toml"
+eval_id = "u02"
+answerable = false
+hard_negative = true
+
+[r093]
+eval_file = "evals/retrieval-heldout-4.toml"
+eval_id = "f13"
+answerable = true
+hard_negative = false

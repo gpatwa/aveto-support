@@ -1,0 +1,12 @@
+# Driver: Orchestrator top-level session (QA has no Agent tool). Verdict derived from judge-apply exit code and stdout only.
+# In progress: r001, r002 done.
+
+[r001]
+input_sha256 = "6ed92cda33adb7655011e310f502a44e95f47dbe276e0f32726b2dc8f5728e23"
+exit = 4
+verdict = "JUDGE_ERROR"
+
+[r002]
+input_sha256 = "d92ecd033af69f76070a9f10898ad6c62404f26a23a520db9535f0cffffd1421"
+exit = 0
+verdict = "ANSWERABLE"

@@ -1,0 +1,273 @@
+{
+  "schema": "agentic-sdlc/trace@2",
+  "slice": "docs-answerability",
+  "tier": 2,
+  "overlay": false,
+  "landed": false,
+  "started": "2026-10-10T04:32:00Z",
+  "operator": "Gopal Patwa",
+  "leastPrivilegeEnforced": true,
+  "leastPrivilegeNote": "Role subagents loaded from this worktree's .claude/agents/. The judge agent's own deny list needed bare mcp__* (APPROVAL_RECORD-8) after probe 1 showed 141 tools offered; hook-only coverage of 7 harness tools, unexercised live on the final definition. Forked judge spawns are not listed by usage.mjs.",
+  "telemetrySource": "self-reported",
+  "telemetryNote": "Stages up to the refusal probe audit: peak-context figures from the STATE Trace table (717k). Seen-set check and later spend: about 1.76M by transcript peak-sum, NOT in usage.mjs (forked judge spawns not counted). Total about 2.5M peak-sum against plan 950k, intent about 700k, owner ceiling 2.6M. Per-stage split of the 1.76M is not recorded; it is carried on the seen-set check row.",
+  "approvals": [
+    {
+      "action": "Plan, intent, ceiling 1.4M, decisions 3 and 4",
+      "rule": "plan confirmation",
+      "decision": "approved",
+      "approver": "Gopal Patwa",
+      "requestedAt": "2026-10-10T04:42:04Z",
+      "decidedAt": "2026-10-10T04:42:04Z",
+      "record": "runs/docs-answerability/APPROVAL_RECORD-1.md"
+    },
+    {
+      "action": "Data processor: Anthropic via the operator's own Claude Code session",
+      "rule": "6",
+      "decision": "approved",
+      "approver": "Gopal Patwa",
+      "requestedAt": "2026-10-10T04:42:04Z",
+      "decidedAt": "2026-10-10T04:42:04Z",
+      "record": "runs/docs-answerability/APPROVAL_RECORD-2.md"
+    },
+    {
+      "action": "Stakes override: skipped stages kept skipped",
+      "rule": "owner decision",
+      "decision": "approved",
+      "approver": "Gopal Patwa",
+      "requestedAt": "2026-10-10",
+      "decidedAt": "2026-10-10",
+      "record": "runs/docs-answerability/APPROVAL_RECORD-3.md"
+    },
+    {
+      "action": "INV-4 / INV-5 exact words",
+      "rule": "4",
+      "decision": "approved",
+      "approver": "Gopal Patwa",
+      "requestedAt": "2026-10-10",
+      "decidedAt": "2026-10-10T05:13:28Z",
+      "record": "runs/docs-answerability/APPROVAL_RECORD-4.md"
+    },
+    {
+      "action": "Judge in a previously deterministic path (model pinned to claude-haiku-5-5, stop-and-ask condition)",
+      "rule": "5",
+      "decision": "approved",
+      "approver": "Gopal Patwa",
+      "requestedAt": "2026-10-10",
+      "decidedAt": "2026-10-10T05:13:28Z",
+      "record": "runs/docs-answerability/APPROVAL_RECORD-5.md"
+    },
+    {
+      "action": "Design questions D1-D6, defaults accepted",
+      "rule": "owner decision",
+      "decision": "approved",
+      "approver": "Gopal Patwa",
+      "requestedAt": "2026-10-10",
+      "decidedAt": "2026-10-10",
+      "record": "runs/docs-answerability/APPROVAL_RECORD-6.md"
+    },
+    {
+      "action": "3b design, live probe (<=2 judge spawns), skill instead of command",
+      "rule": "5",
+      "decision": "approved",
+      "approver": "Gopal Patwa",
+      "requestedAt": "2026-10-10",
+      "decidedAt": "2026-10-10T05:42:01Z",
+      "record": "runs/docs-answerability/APPROVAL_RECORD-7.md"
+    },
+    {
+      "action": "mcp__* on judge deny list, ceiling 2.6M, probe respawn, seen-set check",
+      "rule": "5, budget raise",
+      "decision": "approved",
+      "approver": "Gopal Patwa",
+      "requestedAt": "2026-10-10",
+      "decidedAt": "2026-10-10",
+      "record": "runs/docs-answerability/APPROVAL_RECORD-8.md"
+    },
+    {
+      "action": "Re-registration: optional colon in grammar, harness-prefix payload layout",
+      "rule": "owner decision",
+      "decision": "approved",
+      "approver": "Gopal Patwa",
+      "requestedAt": "2026-10-10",
+      "decidedAt": "2026-10-10",
+      "record": "runs/docs-answerability/APPROVAL_RECORD-9.md"
+    },
+    {
+      "action": "Re-registration: verdict read from the last non-empty line",
+      "rule": "owner decision",
+      "decision": "approved",
+      "approver": "Gopal Patwa",
+      "requestedAt": "2026-10-10",
+      "decidedAt": "2026-10-10",
+      "record": "runs/docs-answerability/APPROVAL_RECORD-10.md"
+    }
+  ],
+  "gateCatches": [
+    {
+      "gate": "Pre-registered seen-set condition (spec 5.4)",
+      "verdict": "fail",
+      "severity": "blocker",
+      "finding": "pooled Bar 1 20/20 met; pooled Bar 2 44/56 below 45/56; stopped before the fifth set, which was never read"
+    },
+    {
+      "gate": "Budget check before spend",
+      "verdict": "fail",
+      "severity": "advisory",
+      "finding": "93 judge spawns estimated about 7M peak-sum as built vs 950k plan / 1.4M ceiling; stop-and-ask, ceiling raised to 2.6M by owner"
+    },
+    {
+      "gate": "Refusal probe 1",
+      "verdict": "fail",
+      "severity": "advisory",
+      "finding": "judge offered 141 tools; one live hook refusal seen; mcp__* denied afterwards"
+    },
+    {
+      "gate": "Release Gate",
+      "verdict": "fail",
+      "severity": "blocker",
+      "finding": "not run; slice closed NOT RELEASABLE by owner decision after the seen-set Bar 2 miss"
+    }
+  ],
+  "stages": [
+    {
+      "stage": "Intake",
+      "executor": "orchestrator"
+    },
+    {
+      "stage": "Scope",
+      "executor": "subagent",
+      "model": "sonnet-5-5",
+      "effort": "declared: medium",
+      "tokens": 63000,
+      "toolCalls": 35,
+      "retries": 0
+    },
+    {
+      "stage": "Architecture pass 1",
+      "executor": "subagent",
+      "model": "opus-5-5",
+      "effort": "declared: high",
+      "tokens": 134000,
+      "toolCalls": 38,
+      "retries": 0
+    },
+    {
+      "stage": "Architecture pass 2",
+      "executor": "subagent",
+      "model": "opus-5-5",
+      "effort": "declared: high",
+      "tokens": 99000,
+      "toolCalls": 26,
+      "retries": 0
+    },
+    {
+      "stage": "Implementation 3a",
+      "executor": "subagent",
+      "model": "sonnet-5-5",
+      "effort": "declared: medium",
+      "tokens": 139000,
+      "toolCalls": 36,
+      "retries": 0
+    },
+    {
+      "stage": "Architecture addendum (3b)",
+      "executor": "subagent",
+      "model": "opus-5-5",
+      "effort": "declared: high",
+      "tokens": 77000,
+      "toolCalls": 26,
+      "retries": 0
+    },
+    {
+      "stage": "Implementation 3b",
+      "executor": "subagent",
+      "model": "sonnet-5-5",
+      "effort": "declared: medium",
+      "tokens": 47000,
+      "toolCalls": 13,
+      "retries": 0
+    },
+    {
+      "stage": "Refusal probe setup (QA pass A)",
+      "executor": "subagent",
+      "model": "sonnet-5-5",
+      "effort": "declared: high",
+      "tokens": 37000,
+      "toolCalls": 12,
+      "retries": 0
+    },
+    {
+      "stage": "Judge probe (spawn 1 of 2)",
+      "executor": "subagent",
+      "model": "haiku-5-5",
+      "tokens": 76000,
+      "toolCalls": 5,
+      "retries": 0
+    },
+    {
+      "stage": "Refusal probe audit (QA pass B)",
+      "executor": "subagent",
+      "model": "sonnet-5-5",
+      "effort": "declared: high",
+      "tokens": 46000,
+      "toolCalls": 11,
+      "retries": 0
+    },
+    {
+      "stage": "Architecture (INV-4/INV-5 apply, packet 2.4)",
+      "executor": "subagent",
+      "model": "opus-5-5",
+      "effort": "declared: high",
+      "tokens": 42000,
+      "retries": 0,
+      "note": "approximate, per STATE Open stop; usage.mjs not rerun"
+    },
+    {
+      "stage": "Probe 2, judge spawn 2 of 2, lean measurement, seen-set check (93 judge spawns, driver, QA scorer)",
+      "executor": "subagent",
+      "model": "haiku-5-5 (judge); sonnet-5-5 (QA)",
+      "tokens": 1760000,
+      "retries": 2,
+      "note": "transcript-based peak-sum for the last session, NOT in usage.mjs (forked judge spawns not counted); retries are the two owner-approved re-registrations (APPROVAL_RECORD-9, -10); discarded attempts under seen-check/discarded/; driver was the Orchestrator top-level session, not a fresh context"
+    },
+    {
+      "stage": "Freeze",
+      "executor": "orchestrator",
+      "status": "not started by owner decision"
+    },
+    {
+      "stage": "Label review",
+      "executor": "orchestrator",
+      "status": "not started by owner decision"
+    },
+    {
+      "stage": "Scoring",
+      "executor": "orchestrator",
+      "status": "not started by owner decision"
+    },
+    {
+      "stage": "Security Review (adversarial)",
+      "executor": "orchestrator",
+      "status": "not started by owner decision"
+    },
+    {
+      "stage": "Release Gate",
+      "executor": "orchestrator",
+      "status": "not started by owner decision"
+    },
+    {
+      "stage": "Docs",
+      "executor": "orchestrator",
+      "status": "not started by owner decision"
+    },
+    {
+      "stage": "Close-out",
+      "executor": "subagent",
+      "model": "sonnet-5-5",
+      "effort": "declared: frontmatter default",
+      "retries": 0,
+      "tokens": 57000,
+      "toolCalls": 14
+    }
+  ]
+}

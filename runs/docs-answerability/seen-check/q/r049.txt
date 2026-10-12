@@ -1,0 +1,1 @@
+How does one agent make sure it has given the next one everything it needs?

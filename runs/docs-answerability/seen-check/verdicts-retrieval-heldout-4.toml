@@ -1,0 +1,103 @@
+format = "aveto-judge-verdicts-v1"
+prompt_sha256 = "24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427"
+
+[[verdict]]
+id = "f01"
+verdict = "ANSWERABLE"
+input_sha256 = "12888aa728dca65f9ae44a098583b121067ebd8c77671e18cb7cb58f6bb67643"
+
+[[verdict]]
+id = "f02"
+verdict = "ANSWERABLE"
+input_sha256 = "41290adc797976c7b2cf8ff6f596e08332b95623883358f5305662602e398abc"
+
+[[verdict]]
+id = "f03"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "b0206f92c6d51a41e95722cef5c6d3d268a33d9e0d7745c91533ea66c9bb0d7f"
+
+[[verdict]]
+id = "f04"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "f91d7a9ab3a15159a4d1149a81bf98d9eabaed62fccba1a9d98d1622eb660a9c"
+
+[[verdict]]
+id = "f05"
+verdict = "ANSWERABLE"
+input_sha256 = "7cc33feae50db0a504c628663832386e2b5e431514e7812cd63ca732a47232d2"
+
+[[verdict]]
+id = "f06"
+verdict = "ANSWERABLE"
+input_sha256 = "9cba4a3f7850c95cdaf361b25609a92824c33c1a1523357f1f75c46ddca8a130"
+
+[[verdict]]
+id = "f07"
+verdict = "ANSWERABLE"
+input_sha256 = "cb77557a9c18fccf1b5bba8cab8cc0a6552a1fe4c491053f1cfdc1b36efd7d98"
+
+[[verdict]]
+id = "f08"
+verdict = "ANSWERABLE"
+input_sha256 = "76c4123109d6c99d072d2f79fc5d12edbcce9e7c9e2f07bcf4b510c42eb44c16"
+
+[[verdict]]
+id = "f09"
+verdict = "ANSWERABLE"
+input_sha256 = "1b377a07a99d9ebb4fb534218132da7b80fc463044a185e15c272bd0d8b3c374"
+
+[[verdict]]
+id = "f10"
+verdict = "ANSWERABLE"
+input_sha256 = "ddce5848f3ef14a97b38bd8083810cd420d71a31932f25ec1b046a7dfbe764f2"
+
+[[verdict]]
+id = "f11"
+verdict = "ANSWERABLE"
+input_sha256 = "7fa4dabcb16434ca55590498e2b398b5d3bd53e69c1617e98c7f23fb72a3b9a0"
+
+[[verdict]]
+id = "f12"
+verdict = "ANSWERABLE"
+input_sha256 = "1f1627c8ae86bd24e1e5c1299675c52ef6d2075caffd4582154b8013dab6b1fa"
+
+[[verdict]]
+id = "f13"
+verdict = "JUDGE_ERROR"
+input_sha256 = "f86287b3caedf04d4287a926367e0b761094767832eae7df8d1a536af3534d39"
+
+[[verdict]]
+id = "f14"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "c26c63375db49d635a9af87a48ac34eb476f8aaad51c125ff572d7503ea3eeff"
+
+[[verdict]]
+id = "f15"
+verdict = "ANSWERABLE"
+input_sha256 = "0c676e1cd7b85e1049ab475532444cd27bede36788dd60ed61122ec478da83b3"
+
+[[verdict]]
+id = "f16"
+verdict = "ANSWERABLE"
+input_sha256 = "a80f06564adbc7d5b1023b9cbacc0e2dfe2d89686329acbfc8cbc6611a3761e8"
+
+[[verdict]]
+id = "fu01"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "781b552398a3d635c09c950721e1658090a35049b7e0a94738948eba96c77492"
+
+[[verdict]]
+id = "fu02"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "2c9c5ad6aeda0bf34b9d1e8d0fb8c444af60ddfe3d23112d87aa215b98b8f0da"
+
+[[verdict]]
+id = "fu03"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "3b608a0242a6791e61a7322c02cc5aa017dc624b03acba202f87eb9ce38a3436"
+
+[[verdict]]
+id = "fu04"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "9044ae729fe9f4ceba344c4daf5c47c2979d53839e832b3d6ab52f3114319379"
+

@@ -1,0 +1,16 @@
+r001 Can I get approval requests in Microsoft Teams?
+r002 When a feature changes, how do the docs get updated to match?
+r003 My run stopped halfway because I hit my usage limit. Do I have to start again from scratch?
+r004 Who writes the prompts and wires up the model calls in an AI feature?
+r005 Is there a free trial?
+r006 How do I reset my Aveto account password?
+r007 Who gives the final go or no-go before something is released?
+r008 What files does my own repo need before the agents can work on it?
+r009 Can it deploy to AWS?
+r010 Who keeps a model's training data and retraining in order?
+r011 Does it follow any security guidance written specifically for AI agents?
+r012 Does it create tickets in Jira?
+r013 Is there a Discord community for Aveto users?
+r014 How does it stop a run from burning through too many tokens?
+r015 How should we write down why we picked one database over another?
+r016 Which agent builds the screens and buttons people click on?

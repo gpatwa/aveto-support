@@ -1,0 +1,1 @@
+If my session closes halfway through, where does the run keep track of how far it got?

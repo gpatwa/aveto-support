@@ -1,0 +1,1 @@
+I'm building a tool that clicks through websites for people. Is there guidance for that kind of product?

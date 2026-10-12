@@ -1,0 +1,1 @@
+Can I make the reviews lighter for low-risk changes and stricter for risky ones?

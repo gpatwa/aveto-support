@@ -1,0 +1,1 @@
+Can the token and timing numbers come from real instrumentation instead of the agents' own reports?

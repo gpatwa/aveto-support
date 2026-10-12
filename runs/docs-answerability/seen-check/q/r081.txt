@@ -1,0 +1,1 @@
+How does QA know the feature is actually what I asked for, not just that the tests pass?

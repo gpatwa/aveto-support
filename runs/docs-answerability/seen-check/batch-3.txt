@@ -1,0 +1,16 @@
+r033 How do I add Aveto to a project I already have?
+r034 How is the Aveto website itself published?
+r035 Can I see how my runs have gone over time, as a report or dashboard?
+r036 What happens if a stage keeps failing over and over?
+r037 We want to start using an outside service. How do we check whether it's safe to rely on?
+r038 Which things will the agents never do without asking me first?
+r039 I'm building a consumer app with sign-ups and payments. Which guidance applies?
+r040 What do we tick off right before shipping, including how to undo it?
+r041 Is there a VS Code extension I can install?
+r042 Can the documentation agent change my code by mistake?
+r043 I'm building a tool that clicks through websites for people. Is there guidance for that kind of product?
+r044 How can I see where a run is at without reading all its files?
+r045 If my session closes halfway through, where does the run keep track of how far it got?
+r046 Can I use this with Cursor or Codex instead of Claude Code?
+r047 Do I have to go through market research and a PRD for a small, clear feature?
+r048 Can I use it with GitLab merge requests?

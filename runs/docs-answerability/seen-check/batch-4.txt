@@ -1,0 +1,15 @@
+r049 How does one agent make sure it has given the next one everything it needs?
+r050 Who checks there's real evidence a problem exists before we build anything?
+r051 Who decides how risky an AI feature is and what rules it has to follow?
+r052 Why isn't there a project manager agent?
+r053 Where is the technical design for a feature written down?
+r054 After an outage, what should we write up so it doesn't happen again?
+r055 How do I deploy Aveto on Kubernetes?
+r056 When I build an AI feature, do I have to call the model straight away?
+r057 Can I run Aveto on a Raspberry Pi?
+r058 I want to try two versions of a page and see which one does better. How should I set that up?
+r059 How do I cancel my Aveto subscription?
+r060 Does it work with Bitbucket?
+r061 I need to change my database tables. What should I plan before doing it?
+r062 Who builds the server side — the APIs, services and data changes?
+r063 How do I know a test for a bug fix would actually have caught the bug?

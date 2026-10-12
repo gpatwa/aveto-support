@@ -1,0 +1,15 @@
+r079 Is there a complete example of one feature going through the whole process?
+r080 Who looks for security holes and privacy leaks in a change before release?
+r081 How does QA know the feature is actually what I asked for, not just that the tests pass?
+r082 Can approvals come through Slack instead of GitHub?
+r083 Is Aveto listed on the GitHub Marketplace?
+r084 What are the everyday working rules the agent team follows?
+r085 Who makes sure the product sends the events we need to measure success?
+r086 Are the docs available in Japanese?
+r087 What is the monthly licence price for a team of ten?
+r088 How can I see how many tokens each stage really used?
+r089 Are there targets for how fast and how reliably the process itself should run?
+r090 Will the support agent reply to my customers by itself?
+r091 When a customer reports a problem, how is the fix written up for them?
+r092 Does Aveto run on Windows?
+r093 Which agent hands out the work to all the others during a run?

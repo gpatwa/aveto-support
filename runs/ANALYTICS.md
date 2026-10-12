@@ -1,13 +1,13 @@
 # Pipeline Analytics — generated
 
-_Generated 2026-10-09T21:44:57Z. **Do not edit by hand** — regenerate with `node <playbook>/execution/analyze.mjs .` from the repo root._
+_Generated 2026-10-12T17:37:53Z. **Do not edit by hand** — regenerate with `node <playbook>/execution/analyze.mjs .` from the repo root._
 
 ## Fleet
 
-- Runs traced: **7**
-- Stages: **49** · Tokens: **27,468,328** · Tool calls: **1,116**
-- **Untraced stages: 6** across 4 run(s) — executed by the Orchestrator rather than spawned, so they carry no tokens or tool calls
-- Envelope breaches: **4/7** · Stage outliers: **26**
+- Runs traced: **8**
+- Stages: **61** · Tokens: **30,045,328** · Tool calls: **NaN**
+- **Untraced stages: 13** across 5 run(s) — executed by the Orchestrator rather than spawned, so they carry no tokens or tool calls
+- Envelope breaches: **5/8** · Stage outliers: **28**
 
 ## Per run
 
@@ -20,6 +20,7 @@ _Generated 2026-10-09T21:44:57Z. **Do not edit by hand** — regenerate with `no
 | docs-retrieval-3-proof | 2 | 4 | 2,345,000 | 51 | 200,000 | ❌ over 2145k |
 | docs-retrieval-4 | 2 | 11 | 9,684,000 | 232 | 1,000,000 | ❌ over 8684k |
 | docs-abstention | 2 | 12 | 8,407,000 | 240 | 1,100,000 | ❌ over 7307k |
+| docs-answerability | 2 | 19 | 2,577,000 | NaN | 1,200,000 | ❌ over 1377k |
 
 ## Pipeline completeness
 
@@ -38,6 +39,7 @@ this table) can say whether a given skip was earned.
 | docs-retrieval-3-proof | ⚠ Scope Review, Implementation, Release Gate | Market Research, Discovery, UX Research, UI Design, Architecture, QA Evidence, Security Review, Post-Launch | Label review, Scoring, Close-out |
 | docs-retrieval-4 | — | Market Research, Discovery, UX Research, UI Design, QA Evidence, Post-Launch | Close-out |
 | docs-abstention | — | Market Research, Discovery, UX Research, UI Design, QA Evidence, Post-Launch | Baseline, Stale-text pass (README), Status-file edit, Close-out |
+| docs-answerability | — | Market Research, Discovery, UX Research, UI Design, Post-Launch | Judge probe (spawn 1 of 2), Freeze, Label review, Scoring, Docs, Close-out |
 
 ## DORA
 
@@ -48,7 +50,7 @@ Per `PIPELINE_SLOS.md` § DORA mapping. **Only metrics the traces ground are rep
 | Lead time (median) | — | intake → landed, 0/0 slices dated |
 | Deployment frequency | — | 0 landed over the traced span |
 | Change failure rate | — | 0 post-landing fixes + 0 reverts ÷ 0 landed |
-| Rework rate | — | 2 stage retries + 0 post-landing fixes ÷ 0 landed |
+| Rework rate | — | 4 stage retries + 0 post-landing fixes ÷ 0 landed |
 | Failed-deployment recovery time | **not captured** | needs `detectedAt`/`resolvedAt` on a `gateCatches` entry; no run has recorded them |
 
 ## Density by archetype
@@ -57,7 +59,7 @@ Tokens per tool call, measured against each archetype's own cap.
 
 | Archetype | What it does | Cap | Observed (n) | Range | Avg |
 |-----------|--------------|-----|--------------|-------|-----|
-| **review** | read artefacts → verdict | 8,000 | 21 | 654–7,000 | 2,435 |
+| **review** | read artefacts → verdict | 8,000 | 30 | 654–7,000 | 2,735 |
 | **build** | heavy file / test I/O | 5,000 | 2 | 3,420–3,828 | 3,624 |
 
 ## Per stage
@@ -113,6 +115,18 @@ Tokens per tool call, measured against each archetype's own cap.
 | docs-abstention | ARCHITECTURE.md edit | review | opus-5-5 | declared: frontmatter default | 236,000 | 27 | 8,741 | 109% | ⚠ over cap, ⚠ density |
 | docs-abstention | Status-file edit | review | sonnet-5-5 | declared: frontmatter default | 63,000 | 9 | 7,000 | 88% | — |
 | docs-abstention | Close-out | review | sonnet-5-5 | declared: frontmatter default | 126,000 | 11 | 11,455 | 143% | ⚠ density |
+| docs-answerability | Scope | review | sonnet-5-5 | declared: medium | 63,000 | 35 | 1,800 | 23% | — |
+| docs-answerability | Architecture pass 1 | review | opus-5-5 | declared: high | 134,000 | 38 | 3,526 | 44% | — |
+| docs-answerability | Architecture pass 2 | review | opus-5-5 | declared: high | 99,000 | 26 | 3,808 | 48% | — |
+| docs-answerability | Implementation 3a | review | sonnet-5-5 | declared: medium | 139,000 | 36 | 3,861 | 48% | — |
+| docs-answerability | Architecture addendum (3b) | review | opus-5-5 | declared: high | 77,000 | 26 | 2,962 | 37% | — |
+| docs-answerability | Implementation 3b | review | sonnet-5-5 | declared: medium | 47,000 | 13 | 3,615 | 45% | — |
+| docs-answerability | Refusal probe setup (QA pass A) | review | sonnet-5-5 | declared: high | 37,000 | 12 | 3,083 | 39% | — |
+| docs-answerability | Judge probe (spawn 1 of 2) | review | haiku-5-5 | — | 76,000 | 5 | 15,200 | 190% | ⚠ density |
+| docs-answerability | Refusal probe audit (QA pass B) | review | sonnet-5-5 | declared: high | 46,000 | 11 | 4,182 | 52% | — |
+| docs-answerability | Architecture (INV-4/INV-5 apply, packet 2.4) | review | opus-5-5 | declared: high | 42,000 | undefined | — | — | — |
+| docs-answerability | Probe 2, judge spawn 2 of 2, lean measurement, seen-set check (93 judge spawns, driver, QA scorer) | review | haiku-5-5 (judge); sonnet-5-5 (QA) | — | 1,760,000 | undefined | — | — | ⚠ over cap |
+| docs-answerability | Close-out | review | sonnet-5-5 | declared: frontmatter default | 57,000 | 14 | 4,071 | 51% | — |
 
 ## Untraced stages
 
@@ -128,13 +142,20 @@ excludes them** — treat slice costs as a floor, not a total.
 | docs-retrieval-3-proof | Close-out | `executor` (trace@2) |
 | docs-retrieval-4 | Intake | `executor` (trace@2) |
 | docs-abstention | Intake | `executor` (trace@2) |
+| docs-answerability | Intake | `executor` (trace@2) |
+| docs-answerability | Freeze | `executor` (trace@2) |
+| docs-answerability | Label review | `executor` (trace@2) |
+| docs-answerability | Scoring | `executor` (trace@2) |
+| docs-answerability | Security Review (adversarial) | `executor` (trace@2) |
+| docs-answerability | Release Gate | `executor` (trace@2) |
+| docs-answerability | Docs | `executor` (trace@2) |
 
 ## Gate catches
 
 Defects the gates caught before they shipped — the pipeline earning its keep.
 **A floor, not a total:** 5 run(s) predate the `gateCatches` field (docs-retrieval, docs-retrieval-2, docs-retrieval-2-proof, docs-retrieval-3, docs-retrieval-3-proof) and recorded catches only in prose, so a real block — e.g. Security stopping the http-layer bind — is not counted here.
 
-**Structured catches: 4**
+**Structured catches: 8**
 
 | Run | Gate | Verdict | Severity | Finding | Recovery |
 |-----|------|---------|----------|--------|----------|
@@ -142,6 +163,10 @@ Defects the gates caught before they shipped — the pipeline earning its keep.
 | docs-abstention | Pre-registered seen-set condition (spec 4.1) | fail | blocker | judge pooled Bar 1 2/20 vs >=16/20; method stopped before the one-shot fifth set was spent | — |
 | docs-abstention | Baseline | fail | advisory | baseline on the unchanged code showed retrieve never abstains while INV-4, README and status said it did | — |
 | docs-abstention | Release Gate | fail | blocker | NO-GO: bars never evaluated; model path stopped | — |
+| docs-answerability | Pre-registered seen-set condition (spec 5.4) | fail | blocker | pooled Bar 1 20/20 met; pooled Bar 2 44/56 below 45/56; stopped before the fifth set, which was never read | — |
+| docs-answerability | Budget check before spend | fail | advisory | 93 judge spawns estimated about 7M peak-sum as built vs 950k plan / 1.4M ceiling; stop-and-ask, ceiling raised to 2.6M by owner | — |
+| docs-answerability | Refusal probe 1 | fail | advisory | judge offered 141 tools; one live hook refusal seen; mcp__* denied afterwards | — |
+| docs-answerability | Release Gate | fail | blocker | not run; slice closed NOT RELEASABLE by owner decision after the seen-set Bar 2 miss | — |
 
 
 ## Outliers
@@ -172,6 +197,8 @@ Defects the gates caught before they shipped — the pipeline earning its keep.
 - **Stale-text pass (README)** (docs-abstention, review): 179,000 tok / 29 calls — 1.2× the 150k per-stage token cap
 - **ARCHITECTURE.md edit** (docs-abstention, review): 236,000 tok / 27 calls — 1.6× the 150k per-stage token cap; 1.1× the 8.0k review-density cap
 - **Close-out** (docs-abstention, review): 126,000 tok / 11 calls — 1.4× the 8.0k review-density cap
+- **Judge probe (spawn 1 of 2)** (docs-answerability, review): 76,000 tok / 5 calls — 1.9× the 8.0k review-density cap
+- **Probe 2, judge spawn 2 of 2, lean measurement, seen-set check (93 judge spawns, driver, QA scorer)** (docs-answerability, review): 1,760,000 tok / undefined calls — 11.7× the 150k per-stage token cap
 
 ## Baselines
 

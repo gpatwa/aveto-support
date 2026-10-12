@@ -1,0 +1,1 @@
+I need to change my database tables. What should I plan before doing it?

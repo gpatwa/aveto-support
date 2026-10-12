@@ -43,3 +43,46 @@ Source: the official [Tools reference](https://code.claude.com/docs/en/tools-ref
 **3. MCP wildcard.** The tools reference page does not mention `mcp__*` or any wildcard for subagent `tools` or `disallowedTools` (I searched the page text and found no match). The hooks reference does say that a *hook matcher* containing other characters is a regular expression, for example `mcp__memory__.*`, and that a bare server name such as `mcp__memory` "matches nothing". So for MCP the supported control is the match-all hook, not a name in a list. I did not verify any wildcard form in `disallowedTools`; do not rely on one.
 
 **4. `disable-model-invocation` on `.claude/commands/` files: not confirmed.** The [skills and commands page](https://code.claude.com/docs/en/slash-commands) says `.claude/commands/x.md` and `.claude/skills/x/SKILL.md` "both create `/x` and work the same way", and lists "frontmatter to control whether you or Claude invokes them" among the things *skills add*. It documents `disable-model-invocation: true` on skills (example: a `deploy` skill) and does not say a command file honours it. I did not find a sentence that settles it. **Safest reading:** the documented place for that flag is a skill, `.claude/skills/aveto-judge/SKILL.md`, which still gives the operator `/aveto-judge`. If the Architect moves the artefact from a command file to a skill, that changes the path of an artefact the owner approved under rule 5 (record 5 names "the command `/aveto-judge`"); the behaviour approved (runs only when the operator types it) is the same, but the owner should be told rather than discover it. Whether to ask is the Orchestrator's call.
+
+## Reply 5 — how to drive the seen-set check (design decisions; nothing here is an approval)
+
+> Writer: the support session. The owner asked (2026-10-10) that the support session take the design decisions and leave the budget to them. Every item below is a **recommended default under SI-1** (a design choice, not rules 1–6, not a budget change, not a credential, not push/merge/deploy). The Orchestrator adopts them, lists them in the next digest, and the owner vetoes by exception. A budget item below is marked **OWNER** and is not decided here.
+
+**Basis (read from the official skills page, 2026-10-10):** `context: fork` plus `agent: <type>` runs the skill content as the prompt of a subagent of that type; a `` !`command` `` line is run by Claude Code *before* the content is sent, and its output replaces the placeholder, so no model retypes the payload. Output past the Bash tool's inline ceiling arrives as a file path plus a short preview (the ceiling's number is on a page I did not read).
+
+**D1. Drive the seen-set check with a forked skill that injects `judge-input` for a committed question ID.** No model retypes a payload. This answers the r003 failure.
+**D2. The check variant is eval-only.** It takes a question ID, not free text, and refuses any ID that is not in the committed key (fail closed). It never takes a question as text, so nothing user-typed can reach a shell command line. The operator-facing `/aveto-judge` stays user-invoked only and is not changed.
+**D3. The variant may be invoked by the Orchestrator** (it does not carry `disable-model-invocation: true`). Reason: the data it sends is the committed seen sets, which the pilots already sent to the same provider; the operator path is untouched. Record this as a design decision in the digest, and tell the Security Review it exists.
+**D4. A test pins that the largest seen-set payload is injected inline** (not as a file path plus preview). If any payload exceeds the inline ceiling, stop and report; do not truncate.
+**D5. Rerun batch 1 once, as spec 5.3 allows, with the new driver.** Do not change the verdict grammar. `NOT_ANSWERABLE:` stays a judge error that counts against both bars, as registered. Loosening a parser after seeing a failure moves the bar.
+**D6. One batch at a time; stop at the first anomaly** (judge error rate, a truncated payload, a tool call by the judge). Report the counts per batch in the digest.
+**D7. Security brief gains three inputs:** free text must never be placed in a shell command line (the product path needs a file, not `$ARGUMENTS`); the judge sees the session's CLAUDE.md, user email and git status (probe 2 observation 1), so INV-5's sentence may be incomplete (report to the owner, change nothing); the 7 harness tools are covered only by the hook.
+**D8. If the fix fails its test, stop and bring the failure to the owner; do not fall back to retyping.**
+
+**OWNER (not decided here): the budget.** The fix is probably 60 to 80k; the margin to the 2.6M ceiling was about 6%. Any spend above 2.6M, and any change to the ceiling, stays a stop-and-ask.
+
+## Reply 6 — D5 is withdrawn; two method points that need the owner (nothing here is an approval)
+
+> Writer: the support session.
+
+**D5 (do not change the verdict grammar) is withdrawn.** I wrote it before the evidence. The evidence is in `seen-check/replies-batch-1-attempt1-VOID.md` and the Update 2 note: the verbatim pilot prompt asks for `<id> <TOKEN> <reason>`, and Haiku writes `Q1 NOT_ANSWERABLE: reason` (a colon after the token) when it gives a reason, and `Q1 ANSWERABLE reason` (no colon) for the other verdict. Section 4.1's regex `(?P<id>[^ ]+) (?P<token>ANSWERABLE|NOT_ANSWERABLE)(?: (?P<reason>\S.*))?` rejects the colon form. So **every correct abstention that carries a colon scores as a judge error and counts against Bar 1**: the grammar would fail the check for a mechanical reason, not a judgement one. r001 did this twice. That is a method defect to find at the seen-set integration check, which is exactly what the check is for, and it must be fixed before the freeze, not after the fifth set is scored.
+
+**What I recommend (a re-registration, so it is the owner's):**
+1. Accept an optional colon directly after the token (`TOKEN` or `TOKEN:`, then end or a space and the reason). Nothing else is loosened: the id, the case, the single-line rule, the injection rules and both bars stay. Add tests (colon accepted; colon without a following space or reason accepted; `TOKEN::`, `TOKEN;`, a colon before the token, and a second token still rejected).
+2. The fork skill puts a 150-character harness prefix (`Base directory for this skill: <path>`) in front of the payload. Spec 5.2 says verbatim, no labels, and 5.4 says a layout change after the first verdict is a new pre-registration. The payload is byte-identical and the same prefix will be present in any forked skill the operator runs, so registering "harness prefix, then payload" describes the real conditions. Register it, with its length, instead of fighting it.
+3. Discard all earlier seen-set attempts (they are already VOID) and run the check once from r001 under the registered method. Keep the pre-registered pass threshold (at least 16 of 20 and at least 45 of 56). Report the judge-error count as its own number.
+
+**Not mine to decide:** the re-registration (items 1 and 2), and any budget effect.
+
+## Reply 7 — r010 and r012: the judge sometimes thinks aloud (nothing here is an approval)
+
+> Writer: the support session.
+
+**What the ledger shows (`seen-check/ledger-run1.md`, r001 to r012):** the colon fix worked. 10 of 12 replies parsed. The 2 judge errors are the same pattern: the judge wrote a first line, then "Wait, I need to be more careful" (r010) or a correction (r012), then a final line that is a valid verdict (`Q1 ANSWERABLE ...`, `Q1 NOT_ANSWERABLE ...`). The parser's "exactly one line" rule turned a self-correcting reply into `judge error`. That is a 17% error rate on 12, against a pilot rate near zero in batch form. A judge error counts against both bars, so this alone can fail the check for a format reason.
+
+**Recommendation (a re-registration, so the owner's; pre-freeze, on seen sets, which is what this check is for):**
+1. The verdict is read from the **last non-empty line**, which must match the existing line grammar (colon tolerance included). Earlier lines are ignored, never shown, never stored outside the ledger. If the last line fails the grammar, it is still a judge error. Nothing else is loosened; the bars and thresholds are unchanged. Tests: last line wins; a valid earlier line followed by an invalid last line is an error; blank lines ignored; an injected verdict word in an earlier line cannot override the last line.
+2. Re-apply the new parser **offline to the 12 stored raw replies** (no new spawns; the raw text is the judge's output, independent of the parser) and disclose that r001 to r012 were produced under the previous grammar. Then continue r013 to r093 under the new grammar, one run.
+3. The honest limit: this rule was chosen after seeing two failures. The protection is the fifth set, which no rule has seen; the freeze happens before it is touched.
+
+**Budget (OWNER, not decided here):** spend is about 1.0M. The remaining 81 spawns are about 14k each (about 1.1M), so the check ends near 2.1M; the later stages are about 0.5 to 0.66M. The slice would finish between 2.6M and 2.8M, so the 2.6M ceiling will probably bind. The owner may want to decide the ceiling now, or accept one more stop.

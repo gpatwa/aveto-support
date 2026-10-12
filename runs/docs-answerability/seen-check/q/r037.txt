@@ -1,0 +1,1 @@
+We want to start using an outside service. How do we check whether it's safe to rely on?

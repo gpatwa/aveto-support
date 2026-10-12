@@ -1,0 +1,15 @@
+r064 Is there guidance for selling to large companies that need SSO and audit trails?
+r065 Where do I describe what a trained model is for and where it shouldn't be used?
+r066 What logging and alerts should a new service have from day one?
+r067 Is Aveto itself SOC 2 certified?
+r068 What response-time SLA do you promise for paid support?
+r069 How do patterns in customer complaints turn into ideas for what to build next?
+r070 How is Aveto itself protected against an agent going rogue or being tricked?
+r071 What should I write down before starting a new feature?
+r072 Is there one place that lists every run, what's blocked and what shipped?
+r073 What should the requirements doc for a feature cover before anyone designs it?
+r074 Is there a phone app for approving runs on the go?
+r075 What happens after a release to check whether it actually did what we hoped?
+r076 When I say yes to something the agents asked about, how is that written down?
+r077 How does it stop an agent from losing track on a really big task?
+r078 Where are a screen's empty, loading and error states written down for the developer?

@@ -1,0 +1,1 @@
+I'm building a consumer app with sign-ups and payments. Which guidance applies?
