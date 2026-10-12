@@ -1,10 +1,14 @@
 # Intent: Know when the docs don't answer, second attempt: a Sonnet-class judge, registered up front
 
-> **Draft, not confirmed.** Drafted 2026-10-12 by Claude in the playbook session
-> from slice 6's close-out (`docs-answerability`, closed not releasable) and
-> the pilots. Nothing here is an approval: rule 4, rule 5 and rule 6 and the
-> budget are taken from the owner in the Orchestrator's session, in the owner's
-> own words. Start from a fresh worktree off `main`.
+> **Confirmed 2026-10-12.** Drafted by Claude in the playbook session from
+> slice 6's close-out (`docs-answerability`, closed not releasable) and the
+> pilots. The owner chose, in the support session, the Sonnet judge and the
+> sample integration check as recommended ("let's go with Sonnet and your
+> recommendation"), after asking whether to retry Haiku 5.5 (the answer: slice 6
+> already was Haiku 5.5, and it is marginal). **This commit is not an approval
+> of anything:** rule 4, rule 5 and rule 6 and the budget figures are taken from
+> the owner in the Orchestrator's session, in the owner's own words. Start from
+> a fresh worktree off `main`.
 
 ## What I want
 
