@@ -4,6 +4,7 @@ import ast
 import hashlib
 import os
 import re
+import socket
 import subprocess
 from pathlib import Path
 
@@ -552,6 +553,10 @@ def test_unjudged_outputs_never_look_judged(work: Path, capsys: pytest.CaptureFi
 
 def test_program_offline_no_model(work: Path, capsys: pytest.CaptureFixture[str],
                                   monkeypatch: pytest.MonkeyPatch) -> None:
+    # The autouse socket guard is active: this test fails if the guard is ever removed.
+    with pytest.raises(RuntimeError, match="network disabled"):
+        socket.create_connection(("192.0.2.1", 80))
+
     def forbidden(*args: object, **kwargs: object) -> None:
         raise AssertionError("the program must not start a process")
 

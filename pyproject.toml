@@ -14,7 +14,7 @@ package = false
 [tool.mypy]
 strict = true
 python_version = "3.12"
-files = ["aveto_support", "tests"]
+files = ["aveto_support", "tests", "tools"]
 
 [[tool.mypy.overrides]]
 module = ["onnxruntime"]

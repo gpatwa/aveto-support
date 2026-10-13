@@ -1,0 +1,49 @@
+r001 Once it's installed, how do I actually ask it to build something?
+r002 What should I write down before starting a new feature?
+r003 Which things will the agents never do without asking me first?
+r004 How does it stop a run from burning through too many tokens?
+r005 How does QA know the feature is actually what I asked for, not just that the tests pass?
+r006 Can it deploy to AWS?
+r007 Will the support agent reply to my customers by itself?
+r008 Does it follow any security guidance written specifically for AI agents?
+r009 When I build an AI feature, do I have to call the model straight away?
+r010 Why isn't there a project manager agent?
+r011 What is the monthly licence price for a team of ten?
+r012 Does Aveto run on Windows?
+r013 Can I use it with GitLab merge requests?
+r014 Is there a VS Code extension I can install?
+r015 How do I reset my Aveto account password?
+r016 Can approvals come through Slack instead of GitHub?
+r017 Who keeps an eye on how much the product costs to run?
+r018 After an outage, what should we write up so it doesn't happen again?
+r019 I'm building a tool that clicks through websites for people. Is there guidance for that kind of product?
+r020 Once something is deployed, who checks that it really works for users?
+r021 I want to try two versions of a page and see which one does better. How should I set that up?
+r022 Where do we think through how an attacker might abuse a new feature?
+r023 Can I run Aveto on a Raspberry Pi?
+r024 Does it create tickets in Jira?
+r025 Is there a phone app for approving runs on the go?
+r026 Can the agents write all their documents in Spanish?
+r027 What response-time SLA do you promise for paid support?
+r028 How do I cancel my Aveto subscription?
+r029 I need to change my database tables. What should I plan before doing it?
+r030 What logging and alerts should a new service have from day one?
+r031 Is there one place that lists every run, what's blocked and what shipped?
+r032 How is the Aveto website itself published?
+r033 Who keeps a model's training data and retraining in order?
+r034 Can I get approval requests in Microsoft Teams?
+r035 Is there a free trial?
+r036 How do I deploy Aveto on Kubernetes?
+r037 Is there a Discord community for Aveto users?
+r038 What should the requirements doc for a feature cover before anyone designs it?
+r039 How do I work out what a new feature will cost to run each month?
+r040 Where are a screen's empty, loading and error states written down for the developer?
+r041 Who checks there's real evidence a problem exists before we build anything?
+r042 Who looks for security holes and privacy leaks in a change before release?
+r043 Which agent hands out the work to all the others during a run?
+r044 Who writes the prompts and wires up the model calls in an AI feature?
+r045 Does it work with Bitbucket?
+r046 Is Aveto listed on the GitHub Marketplace?
+r047 Is Aveto itself SOC 2 certified?
+r048 Are the docs available in Japanese?
+r049 My run stopped halfway because I hit my usage limit. Do I have to start again from scratch?

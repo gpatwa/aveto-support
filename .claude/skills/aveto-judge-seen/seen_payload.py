@@ -1,13 +1,14 @@
 """Print the answerability judge's payload for one committed seen-set question.
 
-Eval-only helper of the aveto-judge-seen skill. Input: one run id (r001..r093).
+Eval-only helper of the aveto-judge-seen skill. Input: a run id in the key
+(r001..r049 at the sample, r101 upwards for the gate set).
 Fail closed: an id that does not match ^r[0-9]{3}$, or is not a table in
-seen-check/key/key.toml, or has no line in a batch file, prints one refusal
+judge-check/key/key.toml, or has no line in a batch file, prints one refusal
 line to stdout and stderr and exits 2 (a non-zero exit aborts the skill, so no
 judge starts). It reads key.toml for membership only, never an answer field.
 
 On success it writes the question (from the batch line, id stripped) to
-seen-check/q/<id>.txt and prints `judge-input --question-file` stdout, unchanged.
+judge-check/q/<id>.txt and prints `judge-input --question-file` stdout, unchanged.
 The `input sha256:` line on judge-input's stderr is discarded here: stderr
 would be merged into the injected text.
 """
@@ -21,7 +22,7 @@ import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-SEEN = ROOT / "runs" / "docs-answerability" / "seen-check"
+SEEN = ROOT / "runs" / "docs-answerability-2" / "judge-check"
 ID_RE = re.compile(r"^r[0-9]{3}$")  # matched with fullmatch on a str without newline
 
 

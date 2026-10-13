@@ -22,7 +22,7 @@ ROOT = Path(__file__).parent.parent
 SKILL_DIR = ROOT / ".claude" / "skills" / "aveto-judge-seen"
 SKILL = SKILL_DIR / "SKILL.md"
 HELPER = SKILL_DIR / "seen_payload.py"
-SEEN = ROOT / "runs" / "docs-answerability" / "seen-check"
+SEEN = ROOT / "runs" / "docs-answerability-2" / "judge-check"
 
 # Bash tool inline ceiling: "Inline up to roughly 30,000 characters by default"
 # (https://code.claude.com/docs/en/tools-reference#output-limits).
@@ -50,9 +50,9 @@ def seen(tmp_path: Path) -> Path:
     return tmp_path
 
 
-def _batch_ids() -> list[str]:
+def _batch_ids(batch_glob: str = "batch-*.txt") -> list[str]:
     ids: list[str] = []
-    for batch in sorted(SEEN.glob("batch-*.txt")):
+    for batch in sorted(SEEN.glob(batch_glob)):
         for line in batch.read_text(encoding="utf-8").splitlines():
             ids.append(line.split(" ", 1)[0])
     return ids
@@ -60,11 +60,19 @@ def _batch_ids() -> list[str]:
 
 def test_ids_match_key() -> None:
     with (SEEN / "key" / "key.toml").open("rb") as handle:
-        key = set(tomllib.load(handle))
+        key = tomllib.load(handle)
     ids = _batch_ids()
-    assert len(ids) == 93 and len(set(ids)) == 93
-    assert set(ids) == key
+    assert len(ids) == len(set(ids))
+    assert set(ids) == set(key)
     assert all(re.fullmatch(r"r[0-9]{3}", i) for i in ids)
+    assert _batch_ids("batch-1.txt") == [f"r{n:03d}" for n in range(1, 50)]
+    if (SEEN / "batch-2.txt").exists():
+        assert all(int(i[1:]) >= 101 for i in _batch_ids("batch-2.txt"))
+    for run_id, table in key.items():
+        assert set(table) == {"set", "id"}, run_id
+        with (ROOT / table["set"]).open("rb") as handle:
+            eval_ids = {q["id"] for q in tomllib.load(handle)["question"]}
+        assert table["id"] in eval_ids, run_id
 
 
 def test_skill_frontmatter_and_body() -> None:
@@ -138,7 +146,12 @@ def test_refuses_wrong_argument_count() -> None:
 def test_prepare_writes_question_only(seen: Path) -> None:
     path = helper.prepare("r001", seen)
     assert path == seen / "q" / "r001.txt"
-    assert path.read_text(encoding="utf-8") == "Can I get approval requests in Microsoft Teams?"
+    with (seen / "key" / "key.toml").open("rb") as handle:
+        table = tomllib.load(handle)["r001"]
+    with (ROOT / table["set"]).open("rb") as handle:
+        entry = next(q for q in tomllib.load(handle)["question"] if q["id"] == table["id"])
+    assert path.read_text(encoding="utf-8") == entry["question"]
+    assert path.read_text(encoding="utf-8") == " ".join(entry["question"].split())
 
 
 @pytest.mark.model
@@ -155,7 +168,33 @@ def test_largest_payload_is_below_inline_ceiling(seen: Path) -> None:
         assert done.returncode == 0, (run_id, done.stderr)
         assert b"input sha256: " in done.stderr
         sizes[run_id] = len(done.stdout.decode("utf-8"))
-    assert len(sizes) == 93
+    with (SEEN / "key" / "key.toml").open("rb") as handle:
+        assert len(sizes) == len(tomllib.load(handle))
     worst = max(sizes, key=lambda k: sizes[k])
     print(f"largest payload: {worst} {sizes[worst]} chars")
     assert sizes[worst] < INLINE_CEILING, (worst, sizes[worst])
+
+
+@pytest.mark.model
+def test_sample_derivation_reproducible(tmp_path: Path) -> None:
+    """The committed key, batch and sample-eval are what `derive_sample` writes, byte for byte."""
+    import hashlib
+
+    from aveto_support.embed import OnnxEmbedder
+    from aveto_support.evaluate import load_eval_set
+    from aveto_support.index import load_index
+    from aveto_support.search import Searcher
+    from tools import judge_run
+
+    index_path = ROOT / "index" / "docs-index.json"
+    index = load_index(index_path)
+    embedder = OnnxEmbedder.load(ROOT / "models", index.params.embedding)
+    try:
+        rows = judge_run.derive_sample(Searcher(index, embedder), ROOT)
+    finally:
+        embedder.close()
+    commit = load_eval_set(ROOT / judge_run.KEY_ORDER[0]).pinned_commit
+    digest = hashlib.sha256(index_path.read_bytes()).hexdigest()
+    judge_run.write_check_dir(rows, tmp_path, digest, commit)
+    for name in ("key/key.toml", "batch-1.txt", "sample-eval.toml"):
+        assert (tmp_path / name).read_bytes() == (SEEN / name).read_bytes(), name

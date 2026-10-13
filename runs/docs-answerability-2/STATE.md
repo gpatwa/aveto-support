@@ -3,7 +3,7 @@
 - **Ask:** docs-answerability-2 from intents/docs-answerability-2.md (confirmed 2026-10-12)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2
-- **Current stage:** Implementation (stage 4)
+- **Current stage:** D1 decision, then smoke and stage 5 (fresh-load session)
 - **Status:** in-progress
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
@@ -20,7 +20,8 @@
 | Architecture pass 1 | Software Architect | done | runs/docs-answerability-2/02-tech-spec.md | method registered (R1-R8); 11 scope gaps closed; SI-1 defaults A1-A13 listed; owner items in 14.3 |
 | Architecture pass 2 | Software Architect | done | runs/docs-answerability-2/02b-approval-packet.md, 02c-rule6-question.md, docs/adr/0008-operator-run-answerability-judge.md, docs/ARCHITECTURE.md | INV-4/INV-5 exact words drafted (not applied); 13 flags (F1-F13) where the intent's phrasing could not be backed as written; rule 6 question raised; ADR 0008 Proposed |
 | Rule 4 approval (INV-4/INV-5) | Owner | pending | runs/docs-answerability-2/02b-approval-packet.md | owner's own words; rule 6 question (02c) answered separately |
-| Implementation | AI Engineer | next | — | tech spec 12; smoke waits for the rule 4 approval |
+| Implementation | AI Engineer | done | runs/docs-answerability-2/03-implementation.md, 03a-d1-proposed-diff.md | regression 375 passed (+9 model); derivation 20/56 split as registered; A10 reproduced 13/20 and 37/56; D1 diff written, not applied |
+| D1 decision | Owner | pending | runs/docs-answerability-2/03a-d1-proposed-diff.md | owner's own words; before the smoke |
 
 ## Approvals
 
@@ -36,8 +37,8 @@
 ## Budget
 
 - **Budget:** 2600k plan · ceiling 3400k (stop and ask above it; no hard cap) · unit: peak context summed per spawn  ·  **Depth:** standard (Security: adversarial, bound by the intent)
-- **Spent:** 479k (18%)  ·  **Remaining:** 2121k
-- **Next stage:** Implementation (AI Engineer) est. 130k → **PROCEED**
+- **Spent:** 633k (24%)  ·  **Remaining:** 1967k
+- **Next stage:** Smoke + Stage 5 seen-check (owner-started fresh-load session, after the D1 decision) est. 700k (spec section 10: about 350k with D1, 684k without, plus the smoke) → **PROCEED**
 
 Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 90k estimate (314k + ~90k + 130k, well under the 2600k plan); the Orchestrator records pass 2's actual spend. The stage is gated by the rule 4 approval, not by budget.
 
@@ -62,7 +63,8 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 | Scope | sonnet-5-5 (harness log) | medium (declared) | — | — | 4:26 | 107k peak (1.34M processed; est. was 60k) | 61 | 0 |
 | Architecture pass 1 | opus-5-5 (harness log) | high (declared) | — | — | 43:51 | 178k peak (4.90M processed; est. was 130k) | 78 | 0 |
 | Architecture pass 2 | opus-5-5 (harness log) | high (declared) | — | — | 9:25 | 165k peak (4.19M processed; est. was 90k) | 69 | 0 |
-| **Total** | | | | | | 479k peak-sum (stage 1 29k from transcripts; usage.mjs does not list forked spawns) | 139 | |
+| Implementation (stage 4) | sonnet-5-5 (harness log) | medium (declared) | — | — | 10:04 | 154k peak (4.83M processed; est. was 130k) | 47 | 0 |
+| **Total** | | | | | | 633k peak-sum (stage 1 29k from transcripts; usage.mjs does not list forked spawns) | 139 | |
 
 ## Next action
 
