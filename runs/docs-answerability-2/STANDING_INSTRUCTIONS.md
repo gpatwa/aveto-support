@@ -17,3 +17,9 @@
 | D1 | The first commit cannot be a plain `git cherry-pick 37c21d2` (it is a delta on slice 6's 3a/3b commits, main lacks the base files: modify/delete conflicts). | Take the files 37c21d2 touches, plus the files they need to run (`judge_eval.py`, `__main__.py`, prompt, `/aveto-judge` skill, tests, `.gitignore`), at their 37c21d2 state, in one commit (5eb2a8a). Left out: a8c9604, ADR 0008, `.agentic/LOCAL_COMMANDS.md`, all `runs/`. |
 | D2 | Stage 1 needs a seen-check directory for the forked skill (its path is hardcoded). | Created `runs/docs-answerability/seen-check/` with only two rows (r001, r002; public eval-set questions) and a key with membership only, no answers. Not slice 6's records; stage 4 rebuilds it for the 48 sample. |
 | D3 | The worktree had no `index/` or `models/` (gitignored). | Copied both from the main checkout (local copy, no network). |
+| D2' | Reply 1 D2: the harness prefix is the `Base directory for this skill: <path>` line, not the 94-char cliPrefix. | Adopted under SI-2 (owner, 2026-10-12). Stage 3 states the line's length as measured in this worktree; never uses 94. |
+| D3' | Reply 1 D3: INV-5's wording lists what the judge receives (question and passages; CLAUDE.md/AGENTS.md from the main checkout path; user email; git branch, user, five recent commit subjects; environment lines). | Adopted under SI-2 as the content to draft from. The words themselves are the owner's at rule 4 (end of stage 3b). |
+| D4' | Reply 1 D4: no budget change from stage 1. | Adopted under SI-2. Plan 2.6M and ceiling 3.4M unchanged. |
+
+## Not adopted under SI-1/SI-2 (owner decides)
+- **Reply 1 D1** (add the seven harness tools to the judge's `disallowedTools`): it edits the agent file (a safety control, rule 5 territory). Per the owner (2026-10-12): bring the exact diff at stage 4 before applying; the owner approves then. Needs a fresh-load session afterwards.

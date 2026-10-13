@@ -3,8 +3,8 @@
 - **Ask:** docs-answerability-2 from intents/docs-answerability-2.md (confirmed 2026-10-12)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2
-- **Current stage:** Stage 1 measurement (waiting on the owner's fresh session; SESSION_REQUEST-1.md)
-- **Status:** in-progress (waiting-on-session: nothing is being asked of the owner but starting the session)
+- **Current stage:** Scope Review
+- **Status:** in-progress
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
 - **Started:** 2026-10-12  ·  **Updated:** 2026-10-12
@@ -15,8 +15,8 @@
 |-------|-------|--------|----------|------|
 | Intent | Human | confirmed (APPROVAL_RECORD-1) | runs/docs-answerability-2/intent.md | human confirms |
 | Intake | Orchestrator | done | runs/docs-answerability-2/00-slice-plan.md | n/a |
-| Stage 1 measurement | Owner-started fresh session | waiting-on-session | runs/docs-answerability-2/SESSION_REQUEST-1.md → 01-measurement.md | — |
-| Scope | Engineering Manager | pending (after stage 1 record) | — | — |
+| Stage 1 measurement | Owner-started fresh session | done | runs/docs-answerability-2/01-measurement.md | 2 spawns, 7 tools, 0 tool calls; Sonnet 5.5 as logged |
+| Scope | Engineering Manager | in-progress | — | — |
 
 ## Approvals
 
@@ -31,8 +31,8 @@
 ## Budget
 
 - **Budget:** 2600k plan · ceiling 3400k (stop and ask above it; no hard cap) · unit: peak context summed per spawn  ·  **Depth:** standard (Security: adversarial, bound by the intent)
-- **Spent:** 0k (0%)  ·  **Remaining:** 2600k
-- **Next stage:** Stage 1 measurement (2 spawns, owner-started session) est. 100k → **PROCEED**
+- **Spent:** 29k (1%)  ·  **Remaining:** 2571k
+- **Next stage:** Scope Review (review) est. 60k → **PROCEED**
 
 ## Failure budget
 
@@ -50,8 +50,10 @@
 
 | Stage | Model | Effort | Start (UTC) | End (UTC) | Wall | Tokens | Tool calls | Retry # |
 |-------|-------|--------|-------------|-----------|------|--------|------------|---------|
-| **Total** | | | | | | 0 | 0 | |
+| Stage 1 judge spawn 1 (r001) | sonnet-5-5 (harness log, from transcript) | n/a | — | — | — | 14.2k peak (in-equiv 17.8k) | 0 | 0 |
+| Stage 1 judge spawn 2 (r002) | sonnet-5-5 (harness log, from transcript) | n/a | — | — | — | 14.3k peak (in-equiv 9.4k) | 0 | 0 |
+| **Total** | | | | | | 29k (forked spawns are not listed by usage.mjs; from the stage 1 transcripts) | 0 | |
 
 ## Next action
 
-Owner starts the fresh session per `SESSION_REQUEST-1.md`; it writes `01-measurement.md`; then Scope Review.
+Scope Review done, then Architecture pass 1 (adopting Reply 1 D2/D3/D4; D1 diff goes to the owner at stage 4).
