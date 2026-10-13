@@ -3,8 +3,8 @@
 - **Ask:** docs-answerability-2 from intents/docs-answerability-2.md (confirmed 2026-10-12)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2
-- **Current stage:** Rule 4 approval (INV-4/INV-5 words, `02b-approval-packet.md`), then Implementation
-- **Status:** blocked-on-approval
+- **Current stage:** Implementation (stage 4)
+- **Status:** in-progress
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
 - **Started:** 2026-10-12  ·  **Updated:** 2026-10-12
@@ -30,7 +30,8 @@
 | Judge model claude-sonnet-5-5 | 5 | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-2.md |
 | Anthropic as data processor, attended | 6 | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-3.md |
 | Stage 1: two public questions before INV words | 4 (sequencing) | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-4.md |
-| INV-4/INV-5 exact words | 4 | not yet | PENDING (end of stage 3b) | — | — | — |
+| INV-4/INV-5 exact words (+ two-line NOT_ANSWERABLE output, F10) | 4 | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-5.md |
+| Session context named (extends record 3) | 6 | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-6.md |
 
 ## Budget
 
