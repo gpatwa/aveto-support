@@ -15,3 +15,5 @@
 | # | Decision | Default taken |
 |---|----------|---------------|
 | D1 | The first commit cannot be a plain `git cherry-pick 37c21d2` (it is a delta on slice 6's 3a/3b commits, main lacks the base files: modify/delete conflicts). | Take the files 37c21d2 touches, plus the files they need to run (`judge_eval.py`, `__main__.py`, prompt, `/aveto-judge` skill, tests, `.gitignore`), at their 37c21d2 state, in one commit (5eb2a8a). Left out: a8c9604, ADR 0008, `.agentic/LOCAL_COMMANDS.md`, all `runs/`. |
+| D2 | Stage 1 needs a seen-check directory for the forked skill (its path is hardcoded). | Created `runs/docs-answerability/seen-check/` with only two rows (r001, r002; public eval-set questions) and a key with membership only, no answers. Not slice 6's records; stage 4 rebuilds it for the 48 sample. |
+| D3 | The worktree had no `index/` or `models/` (gitignored). | Copied both from the main checkout (local copy, no network). |

@@ -41,7 +41,7 @@ FRONTMATTER = f"""---
 name: aveto-answerability-judge
 description: Product-local answerability judge, used only by the /aveto-judge command. Never delegate to it otherwise. Not a pack role.
 disallowedTools: {DENY_LIST}
-model: claude-haiku-5-5
+model: claude-sonnet-5-5
 hooks:
   PreToolUse:
     - matcher: "*"
@@ -101,7 +101,7 @@ def test_agent_definition() -> None:
     names = DENY_LIST.split(", ")
     assert "Agent" in names and "Task" in names
     assert len(names) == len(set(names))
-    assert "model: claude-haiku-5-5\n" in text
+    assert "model: claude-sonnet-5-5\n" in text
     assert "model: haiku" not in text
     assert "\ntools:" not in text.split("\n---\n", 1)[0]
 
@@ -158,7 +158,7 @@ def test_command_definition() -> None:
         "judge-input",
         "judge-apply",
         ".aveto-judge/",
-        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
         "$ARGUMENTS",
         "do not pass a `model` parameter",
         BUDGET_SENTENCE,
