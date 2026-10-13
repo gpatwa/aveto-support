@@ -1,0 +1,1 @@
+Does it follow any security guidance written specifically for AI agents?

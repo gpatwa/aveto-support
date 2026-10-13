@@ -22,7 +22,8 @@
 | Rule 4 approval (INV-4/INV-5) | Owner | pending | runs/docs-answerability-2/02b-approval-packet.md | owner's own words; rule 6 question (02c) answered separately |
 | Implementation | AI Engineer | done | runs/docs-answerability-2/03-implementation.md, 03a-d1-proposed-diff.md | regression 375 passed (+9 model); derivation 20/56 split as registered; A10 reproduced 13/20 and 37/56; D1 diff written, not applied |
 | D1 decision | Owner | done (APPROVAL_RECORD-7; applied in 1bb6f4e) | runs/docs-answerability-2/03a-d1-proposed-diff.md | owner's own words |
-| Smoke r049 + Stage 5 driver | Owner-started fresh session | waiting-on-session | SESSION_REQUEST-2.md -> 05a-smoke.md, 05b-driver-log.md | smoke pass, then r001-r048 |
+| Smoke r049 + Stage 5 driver | Owner-started fresh session | done (driver log: no anomaly; smoke criteria met after APPROVAL_RECORD-8) | SESSION_REQUEST-2.md -> 05a-smoke.md, 05b-driver-log.md | smoke pass, then r001-r048 |
+| Stage 5 scoring | QA Evidence (fresh) | done | runs/docs-answerability-2/05-seen-check.md | record valid (48 spawns, 0 offered tools, 0 tool_use); bar 1 20/20 MET, bar 2 24/28 MET, judge errors 0; overall MET (registered 16/20 and 23/28) |
 
 ## Approvals
 
@@ -39,8 +40,8 @@
 ## Budget
 
 - **Budget:** 2600k plan · ceiling 3400k (stop and ask above it; no hard cap) · unit: peak context summed per spawn  ·  **Depth:** standard (Security: adversarial, bound by the intent)
-- **Spent:** 633k (24%)  ·  **Remaining:** 1967k
-- **Next stage:** Smoke + Stage 5 seen-check (owner-started fresh-load session; D1 applied) est. 700k (spec section 10: about 350k with D1, 684k without, plus the smoke) → **PROCEED**
+- **Spent:** 1062k (41%)  ·  **Remaining:** 1538k
+- **Next stage:** Freeze commit per spec R8 (Orchestrator; stage 5 MET), then the fifth-set handover est. 0k (a commit, no spawn; the fifth-set stages are budgeted separately) → **PROCEED**
 
 Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 90k estimate (314k + ~90k + 130k, well under the 2600k plan); the Orchestrator records pass 2's actual spend. The stage is gated by the rule 4 approval, not by budget.
 
@@ -66,7 +67,9 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 | Architecture pass 1 | opus-5-5 (harness log) | high (declared) | — | — | 43:51 | 178k peak (4.90M processed; est. was 130k) | 78 | 0 |
 | Architecture pass 2 | opus-5-5 (harness log) | high (declared) | — | — | 9:25 | 165k peak (4.19M processed; est. was 90k) | 69 | 0 |
 | Implementation (stage 4) | sonnet-5-5 (harness log) | medium (declared) | — | — | 10:04 | 154k peak (4.83M processed; est. was 130k) | 47 | 0 |
-| **Total** | | | | | | 633k peak-sum (stage 1 29k from transcripts; usage.mjs does not list forked spawns) | 139 | |
+| Smoke r049 + stage 5 judge spawns (49) | sonnet-5-5 (harness log, from transcripts) | n/a | — | — | — | 386k peak-sum (7.8k + 378.7k; in-equiv 449k); est. was 350k | 0 | 0 |
+| Stage 5 scoring QA | sonnet-5-5 (harness log) | medium (declared) | — | — | 1:17 | 42k peak (291k processed) | 10 | 0 |
+| **Total** | | | | | | 1062k peak-sum (stage 1 29k from transcripts; usage.mjs does not list forked spawns) | 139 | |
 
 ## Next action
 

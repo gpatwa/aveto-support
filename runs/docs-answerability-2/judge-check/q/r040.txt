@@ -1,0 +1,1 @@
+Where are a screen's empty, loading and error states written down for the developer?
