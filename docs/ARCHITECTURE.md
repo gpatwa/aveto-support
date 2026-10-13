@@ -4,40 +4,56 @@
 > is updated each slice rather than appended to. The history of *why* lives in
 > [`docs/adr/`](adr/). Per-slice detail lives in `runs/<slice-id>/`.
 >
-> **Current as of:** docs-retrieval-core, retrieval **variant embed-v3** (hybrid:
-> a local embedding model fused with BM25). It is accepted in
-> [ADR 0003](adr/0003-hybrid-embedding-retrieval.md) and **implementation is
-> pending**. The code in the repo is still v1. This file describes the design
-> being built.
-> Tech spec: `runs/docs-retrieval/02-tech-spec.md`, section "Retrieval — variant embed-v3".
+> **Current as of:** docs-answerability-2, Architecture pass 2 (2026-10-12), on
+> branch `claude/docs-answerability-2`, **not merged**. Retrieval is the hybrid
+> ranking of [ADR 0003](adr/0003-hybrid-embedding-retrieval.md) at file level
+> ([ADR 0004](adr/0004-file-level-ranking-and-fixed-corpus.md)), default
+> `file-rrf-v1` ([ADR 0006](adr/0006-default-rrf-reranker-opt-in.md)). This
+> branch also carries an **attended answerability judge step** (`judge-input`,
+> `judge-apply`, `eval --verdicts`, the `/aveto-judge` skill), proposed in
+> [ADR 0008](adr/0008-operator-run-answerability-judge.md). It is built and
+> **not yet measured**: no seen-set or gate result exists for it, and the
+> INV-4/INV-5 words that would cover it await the owner's approval
+> (`runs/docs-answerability-2/02b-approval-packet.md`).
+> Tech specs: `runs/docs-retrieval/02-tech-spec.md` (retrieval);
+> `runs/docs-answerability-2/02-tech-spec.md` (the judge step).
 
 ## What exists
 
 Aveto Support will be a support agent that drafts grounded replies to GitHub
 issues and Discussions from a product's own docs, and never posts without a
 person's approval. Today, only **step 2 of the pipeline, retrieval, exists**, as a
-command-line tool. It has no server and no database.
+command-line tool, plus, on this branch, an **attended judge step** that can turn
+a retrieval result into `no confident match`. It has no server and no database.
 
-It uses **one local, non-generative model**, a small embedding model that runs
-on the CPU. The model ranks passages, and it never writes text.
+The program runs **only local, non-generative models**: a small embedding model
+on the CPU, and optionally a cross-encoder reranker. They rank passages and never
+write text. The judge step's model is **not run by the program**: it is a
+subagent in the operator's own Claude Code session, which returns one verdict
+token that the program applies.
 
 ```
-                    ┌──────────────── today (docs-retrieval-core) ────────────────┐
-question ─► [1 classify] ─►│ [2 retrieve] ─► RetrievalResult (top 5 files, passages, top score) │─► [3 draft] ─► [4 check] ─► [5 person approves] ─► post
-             not built     └──────────────────────────────────────────────────────────────┘    not built     not built      not built
+                    ┌──────────────── today ───────────────────────────────────────────────┐
+question ─► [1 classify] ─►│ [2 retrieve] ─► RetrievalResult (top 5 files, passages, top score)   │─► [3 draft] ─► [4 check] ─► [5 person approves] ─► post
+             not built     │      └─► [2b judge step, attended, operator's session; this branch, │    not built     not built      not built
+                           │           not yet measured] ─► same output, or `no confident match`  │
+                           └──────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Components
 
 | Component | Module | Responsibility |
 |-----------|--------|----------------|
-| CLI | `aveto_support/__main__.py` | `ingest`, `retrieve` and `eval` subcommands, and the exit codes. It pins numeric libraries to one thread for determinism and has no logic of its own |
+| CLI | `aveto_support/__main__.py` | `ingest`, `retrieve`, `eval` (with optional `--verdicts`), `judge-input` and `judge-apply` subcommands, and the exit codes (0 ok, 1 eval below 80%, 2 input, 3 fetch, 4 judge error, `judge-apply` only). It pins numeric libraries to one thread for determinism and has no logic of its own |
 | Ingest | `aveto_support/ingest.py` | **All network code.** Fetches the pinned GitHub docs archive and the pinned model files, verifies the archive commit and every model file's sha256 **before use**, reads `.md` files in memory, and orchestrates index building |
 | Index | `aveto_support/index.py` | Splits markdown into heading passages with exact line ranges, and serialises and loads the canonical JSON index (`index@3`: passages plus int8 embeddings) |
 | Embed | `aveto_support/embed.py` | **The model adapter boundary.** The `Embedder` protocol; `OnnxEmbedder` (`BAAI/bge-small-en-v1.5` at revision `5c38ec7c…`, ONNX Runtime on CPU); `PlaceholderEmbedder`, which throws by default; plain-Python WordPiece; int8 quantisation |
 | Search | `aveto_support/search.py` | Lexical ranking (v2: Porter stemming, passage + file BM25), dense ranking, Reciprocal Rank Fusion, reference-similarity calibration (diagnostic), and `retrieve()` |
 | Rerank | `aveto_support/rerank.py` | **The second model adapter boundary, optional.** `OnnxReranker` (`cross-encoder/ms-marco-MiniLM-L6-v2`, pinned revision and sha256s, ONNX Runtime on CPU) returns one float per question/passage pair and never text; `PlaceholderReranker` throws by default. It is used only with `--ranking file-rerank-v1`; absent files fail closed (exit 2), nothing is downloaded by `retrieve` or `eval` |
 | Evaluate | `aveto_support/evaluate.py` | Scores retrieval against an eval file (`--eval-file`) using integer ≥80% thresholds |
+| Judge (offline half) | `aveto_support/judge.py` | **This branch, not yet measured.** Builds the judge payload from `retrieve`'s result at the default ranking (question, then each shown file and passage in full with heading and line range; no scores, URLs or commit) and its sha256; parses a reply (`parse_verdict`: last non-empty line, `Q1 <TOKEN>` with an optional colon and reason, fail closed on any control or format character, keeps the token only); renders the applied result; handles the transport files in `.aveto-judge/` (gitignored, deleted on every `judge-apply`). Calls no model, opens no socket, starts no process |
+| Judge scoring | `aveto_support/judge_eval.py` | **This branch.** `eval --verdicts <file>`: reads a verdicts file (one token per eval question, bound by payload sha256 and prompt sha256) and prints the two abstention bars, judge errors, hard negatives and the end-to-end figure. The `eval` exit code stays the retrieval gate |
+| Judge agent and skills | `.claude/agents/aveto-answerability-judge.md`, `.claude/skills/aveto-judge/`, `.claude/skills/aveto-judge-seen/`, `prompts/answerability-judge-v1.txt` | **Not part of the program; run by Claude Code.** The agent pins `claude-sonnet-5-5`, has no `tools` entry, a deny list ending in `mcp__*` and a hook that refuses every tool call; its prompt is hash-pinned. `/aveto-judge` (operator path) runs only when the operator types it. `/aveto-judge-seen` (eval only) is a forked skill whose helper injects the payload for a run id listed in its key file and refuses anything else |
 
 **Configuration** lives in `docs-source.toml`: the docs repo and its full
 40-hex commit, plus an `[embedding]` table holding the model repo, revision and
@@ -86,6 +102,17 @@ flowchart LR
   idx --> evalc[eval - offline]
   evals[eval file via --eval-file<br/>fresh held-out set gates · dev set diagnostic] --> evalc
   evalc --> score[answerable · unanswerable<br/>exit 0 pass / 1 miss]
+  subgraph judge [judge step - this branch, attended, not yet measured]
+    jin[judge-input - offline<br/>payload of retrieve's result + sha256] --> sess
+    sess[operator's Claude Code session<br/>/aveto-judge, typed by the operator] --> agent[aveto-answerability-judge<br/>claude-sonnet-5-5 · deny list + refuse-all hook]
+    agent --> reply[reply text<br/>.aveto-judge/reply.txt]
+    reply --> japp[judge-apply - offline<br/>sha256 binding · last-line token only]
+  end
+  idx --> jin
+  q --> jin
+  sess -. question, payload, reply, session context .-> provider[(model provider of<br/>the operator's session)]
+  japp --> jout[ANSWERABLE: retrieve output + signal line<br/>NOT_ANSWERABLE: no confident match + signal line<br/>unusable reply: judge error, exit 4]
+  verdicts[verdicts file<br/>eval only] --> evalc
 ```
 
 1. **`ingest`** makes the only two network requests.
@@ -110,7 +137,35 @@ flowchart LR
    returns files. The ingest-time τ is printed as a reference similarity and
    decides nothing.
 3. **`eval`** is fully offline. It runs every question in the given file through
-   `retrieve`, prints both scores, and exits 1 if either is below 80%.
+   `retrieve`, prints both scores, and exits 1 if either is below 80%. With
+   `--verdicts <file>` it also prints the judge's two abstention bars from a
+   verdicts file; the exit code is still the retrieval gate.
+4. **The judge step** (this branch; not yet measured; ADR 0008, proposed) runs
+   only when the operator types `/aveto-judge <question>` in their own Claude
+   Code session:
+   - `judge-input` (offline) prints the payload: the question and the passages
+     `retrieve` would show at the default ranking, in full, with path, heading
+     and line range. Its sha256 goes to stderr. The operator can run it alone
+     to inspect what would be sent.
+   - The session passes the payload to the `aveto-answerability-judge`
+     subagent, which replies with one line `Q1 ANSWERABLE` or
+     `Q1 NOT_ANSWERABLE`, optionally with a short reason.
+   - `judge-apply` (offline) re-derives the payload, refuses a reply bound to a
+     different payload, keeps only the token from the reply's last non-empty
+     line, deletes the transport files, and prints `retrieve`'s output plus a
+     deciding-signal line (`ANSWERABLE`), or `no confident match` plus that
+     line (`NOT_ANSWERABLE`), or `judge error` with exit 4.
+   - **Data leaves the machine here, through the operator's session, not the
+     program:** the question, the payload, the reply and the session context the
+     harness attaches go to that session's model provider. What is attached was
+     measured in `runs/docs-answerability-2/01-measurement.md`; the INV-5 words
+     that would state it are pending (see Safety stance).
+   - For evaluation, the forked skill `/aveto-judge-seen <run id>` has the
+     harness inject the payload of a key-listed eval question, so no model
+     retypes it. The planned eval-only tool `tools/judge_run.py` (tech spec
+     4.3; **not built yet**) will turn replies into tokens through the
+     product's own `judge-apply` and audit the transcripts; `eval --verdicts`
+     scores them.
 
 The reasoning is in [ADR 0003](adr/0003-hybrid-embedding-retrieval.md), which
 supersedes the ranking and confidence parts of
@@ -130,22 +185,45 @@ supersedes the ranking and confidence parts of
   - **Classify (step 1)** runs *before* `retrieve()`, with rules first.
   - **Draft (step 3)** consumes `RetrievalResult` unchanged. Retrieval never
     says the docs do not answer, so the drafter cannot rely on it for that; how
-    a drafter decides not to draft is open work (abstention is not built). Its
-    bounded tool loop searches by calling `retrieve()`.
+    a drafter decides not to draft is open work. The attended judge step on
+    this branch (below) is not yet measured and is not wired to any drafter.
+    Its bounded tool loop searches by calling `retrieve()`.
   - **Check (step 4)** uses a different model from the drafter.
+- **Answerability judge (step 2b, this branch, not yet measured): no adapter in
+  the program.** The program has no model client for it, so there is nothing to
+  placeholder: `judge-input` and `judge-apply` are deterministic and offline,
+  and the model runs as a subagent in the operator's own Claude Code session.
+  A missing, empty or unusable reply is `judge error` (exit 4), never passages
+  and never a pass-through. Tests feed reply bytes directly; they need no
+  model, network or key.
 - **FastAPI** routes, once an HTTP surface is needed, wrap the same service
   functions.
 
 ## Safety stance (this slice)
 
+> **Pending, docs-answerability-2.** The INV-4 and INV-5 bullets below
+> summarise the text currently approved in `.agentic/SAFETY_INVARIANTS.md`.
+> The judge step on this branch contradicts parts of that text (marked
+> **stale on this branch** below): `judge-apply` can print
+> `no confident match`, and the operator's session sends the question and
+> passages to its model provider. Replacement words are awaiting the owner's
+> rule 4 approval (`runs/docs-answerability-2/02b-approval-packet.md`); until
+> then no judge spawn beyond stage 1's two may run. This section is rewritten
+> to the approved words, not before.
+
 - **Sources, never answers (INV-4).** Retrieval returns only verbatim passages
-  and does not abstain. A model may **only** rank passages and
+  and does not abstain (still true of `retrieve`). A model may **only** rank passages and
   decide confidence. It never produces, selects fragments of, or alters the
-  text returned.
+  text returned. **Stale on this branch:** the judge also returns a verdict
+  that decides whether `retrieve`'s whole output or `no confident match` is
+  printed; it never produces, selects among or alters shown text.
 - **Provenance is always visible.** A passage can only be printed together with
   its path, heading, line range and commit permalink.
 - **Not silent when the docs do not answer.** Retrieval always returns the top
-  files, even for a question the docs do not answer. Abstention is not built.
+  files, even for a question the docs do not answer. **Stale on this branch:**
+  "abstention is not built". An attended judge step that can print
+  `no confident match` is built here (ADR 0008, proposed) and has **no
+  measured result yet**; it is not released.
 - **Bounded network surface (INV-5, amended under APPROVAL_RECORD-4).** Egress
   is limited to two read-only HTTPS GETs, both made only by `ingest`:
   - the configured docs archive at a full commit (redirects only to GitHub
@@ -156,7 +234,14 @@ supersedes the ranking and confidence parts of
   Trust rests on the committed sha256, checked before use, never on the host.
   No credentials are sent. **No question, passage or user text ever leaves the
   machine.** `retrieve`, `eval` and the default test suite make no network
-  calls, and tests block the network by default.
+  calls, and tests block the network by default. **Stale on this branch:**
+  still true of the program (`retrieve`, `eval`, `eval --verdicts`,
+  `judge-input` and `judge-apply` make no network call and start no process,
+  `test_program_offline_no_model`), but not of the operator's session: when
+  the operator runs the judge step, the question, the payload, the reply and
+  the session context the harness attaches go to that session's model
+  provider (Anthropic, approved as data processor for this slice, attended
+  only).
 - **Nothing posts.** There is no GitHub write client and no credential of any
   kind (INV-1).
 
@@ -189,6 +274,18 @@ score is printed on the `eval` step's stdout, and CI gates on the **exit code**.
   fallback.
 - [ADR 0003](adr/0003-hybrid-embedding-retrieval.md): hybrid retrieval with a
   local `bge-small-en-v1.5` (ONNX/CPU) fused with BM25, and dense confidence.
-  *Accepted, implementation pending.*
+  *Accepted; partly superseded by 0004 (passage-level ranking, dense
+  confidence as a gate).* The hybrid ranking is in the code (`search.py`,
+  default `file-rrf-v1`); the record's own status line still reads
+  "implementation pending" and is not edited.
+- [ADR 0004](adr/0004-file-level-ranking-and-fixed-corpus.md): file-level
+  ranking and a fixed corpus. *Proposed (per its status line).*
+- [ADR 0005](adr/0005-cross-encoder-reranker.md): cross-encoder reranker.
+  *Proposed; kept, off by default, opt-in (per its status note).*
+- [ADR 0006](adr/0006-default-rrf-reranker-opt-in.md): default `file-rrf-v1`,
+  reranker opt-in. *Proposed (per its status line).*
 - [ADR 0007](adr/0007-answerability-judge.md): abstention by a local answerability judge.
-  *Rejected; abstention is not built.*
+  *Rejected* (pooled Bar 1 2/20 against 16/20).
+- [ADR 0008](adr/0008-operator-run-answerability-judge.md): abstention by an
+  operator-run `claude-sonnet-5-5` judge, method registered before it runs.
+  *Proposed; built on branch `claude/docs-answerability-2`, no result yet.*
