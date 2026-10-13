@@ -4,7 +4,7 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 2
 - **Current stage:** D1 decision, then smoke and stage 5 (fresh-load session)
-- **Status:** in-progress
+- **Status:** in-progress (waiting-on-session)
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
 - **Started:** 2026-10-12  ·  **Updated:** 2026-10-12
@@ -38,7 +38,7 @@
 
 - **Budget:** 2600k plan · ceiling 3400k (stop and ask above it; no hard cap) · unit: peak context summed per spawn  ·  **Depth:** standard (Security: adversarial, bound by the intent)
 - **Spent:** 633k (24%)  ·  **Remaining:** 1967k
-- **Next stage:** Smoke + Stage 5 seen-check (owner-started fresh-load session, after the D1 decision) est. 700k (spec section 10: about 350k with D1, 684k without, plus the smoke) → **PROCEED**
+- **Next stage:** Smoke + Stage 5 seen-check (owner-started fresh-load session; D1 applied) est. 700k (spec section 10: about 350k with D1, 684k without, plus the smoke) → **PROCEED**
 
 Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 90k estimate (314k + ~90k + 130k, well under the 2600k plan); the Orchestrator records pass 2's actual spend. The stage is gated by the rule 4 approval, not by budget.
 
@@ -68,4 +68,4 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 
 ## Next action
 
-Architecture pass 2 done. Orchestrator: put `02b-approval-packet.md` (sections 0-3 and the flags in 4) before the owner as the rule 4 request, and `02c-rule6-question.md` as a separate question; wait for the owner's own words; record as the next APPROVAL_RECORD; then paste the approved blocks verbatim into `.agentic/SAFETY_INVARIANTS.md` (packet section 7). Flag F10 is the owner's chance to veto A9 (two-line NOT_ANSWERABLE output). Then Implementation (AI Engineer), est. 130k. Note: `HUMAN_APPROVAL_RULES.md` rule 4 says approval comes "before implementation begins", which is stricter than tech spec 11.2's "before the smoke (not before the code)"; the Orchestrator should take the approval before stage 4 starts. Spent is left for the Orchestrator to record.
+Owner starts the fresh session per `SESSION_REQUEST-2.md` (smoke r049, then stage 5 driver r001-r048 if the smoke passes). It writes `05a-smoke.md` and `05b-driver-log.md`. Then the Orchestrator spawns a fresh QA to score with `--expect-tools none`. If the smoke fails (zero-tool agent does not launch or no reply): revert D1 per APPROVAL_RECORD-7 and report to the owner.
