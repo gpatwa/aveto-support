@@ -122,7 +122,8 @@
   checkout's path (a different checkout sends different text); the user's
   email address; the git branch, git user name, working-tree status and five
   most recent commit subjects; and environment lines (working directory,
-  platform, shell, scratchpad path, model ID, date and organisation ID). The
+  platform, OS version, shell, scratchpad path, whether the folder is a git
+  repository or a worktree, model ID, date and organisation ID). The
   question, the payload and the judge's reply also enter the session's main
   conversation, which sends to the same provider whatever that session
   carries. The list is as measured and is not complete: about 2.7k of the
