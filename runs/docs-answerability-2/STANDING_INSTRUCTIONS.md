@@ -23,3 +23,7 @@
 
 ## Not adopted under SI-1/SI-2 (owner decides)
 - **Reply 1 D1** (add the seven harness tools to the judge's `disallowedTools`): it edits the agent file (a safety control, rule 5 territory). Per the owner (2026-10-12): bring the exact diff at stage 4 before applying; the owner approves then. Needs a fresh-load session afterwards.
+
+## Digest: Architecture pass 1 defaults adopted under SI-1 (owner may veto; detail in `02-tech-spec.md` section 14.2)
+A1 reply text kept only for rows that differ from the key or are judge errors · A2 smoke row r049 (never scored) · A3 one whole-batch rerun at stage 5 as well as 7 · A4 one continuation after a stop that affected no spawn · A5 no change to the product's "counted as failures on both bars" label · A6 seen-check data moves to `runs/docs-answerability-2/judge-check/` · A7 the gate set later served as r101 upwards by the same frozen helper · A8 new eval-only `tools/judge_run.py`, routed through `judge-apply` · A9 `judge-apply` keeps its two-line output (stated in INV-4 content, approved with the words) · A10 best-score rule `top1 < 0.67`, must first reproduce 13/20 and 37/56 on the seen sets · A11 one assertion added to the offline test · A12 `LOCAL_COMMANDS.md` updated at stage 4 · A13 no model reads transcripts (the audit is deterministic).
+Also decided by the Architect, in the spec: payload layout line is 137 chars in this worktree (path-dependent; checked by form, any other length voids a batch); both grammar strictness details kept; sample order and parity registered (positions 1,3,…,55 of the 56).
