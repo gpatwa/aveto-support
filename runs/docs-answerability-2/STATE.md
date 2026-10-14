@@ -3,8 +3,8 @@
 - **Ask:** docs-answerability-2 from intents/docs-answerability-2.md (confirmed 2026-10-12)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2
-- **Current stage:** Label review of the fifth set (method FROZEN at bca0e403a69a5cda7826ea36897734bc63dc7b87; set committed b692ffc)
-- **Status:** in-progress
+- **Current stage:** Stage 7 driver (waiting-on-session: SESSION_REQUEST-3.md); method FROZEN at bca0e403a69a5cda7826ea36897734bc63dc7b87
+- **Status:** in-progress (waiting-on-session)
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
 - **Started:** 2026-10-12  ·  **Updated:** 2026-10-12
@@ -43,7 +43,7 @@
 
 - **Budget:** 2600k plan · ceiling 3400k (stop and ask above it; no hard cap) · unit: peak context summed per spawn  ·  **Depth:** standard (Security: adversarial, bound by the intent)
 - **Spent:** 1288k (50%)  ·  **Remaining:** 1312k
-- **Next stage:** Stage 7 scoring (QA Evidence, fresh, one judge spawn per question, tool-use audit) est. 800k → **PROCEED** once the owner decides gu09 (E1) and the Orchestrator applies and commits the label edits in 06-label-review.md section 6
+- **Next stage:** Stage 7 driver r101-r148 (owner-started fresh-load session) then scoring QA, est. 450k → **PROCEED**
 
 Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 90k estimate (314k + ~90k + 130k, well under the 2600k plan); the Orchestrator records pass 2's actual spend. The stage is gated by the rule 4 approval, not by budget.
 
@@ -84,4 +84,4 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 
 ## Next action
 
-Frozen. The owner has the placement instructions in `SUPPORT_REQUESTS.md` for the support session. When the fifth set is placed (uncommitted, at the stated paths) the owner tells the Orchestrator; the Orchestrator commits the files unopened, then spawns the fresh label-review QA (stage 6), adversarial on unanswerable. The Orchestrator does not ask for or open the set.
+Owner starts the fresh session per `SESSION_REQUEST-3.md` (r101 to r148). It writes `07a-driver-log.md`. Then the Orchestrator spawns a different fresh QA to score once with `--expect-tools none`. Known: `test_sample_derivation_reproducible` (model-marked) now fails because it compares the whole key file byte for byte and the registered gate rows were appended after the freeze; the sample prefix of the key is byte-identical to the frozen file; the test is frozen and is not edited (disclose in the release gate).
