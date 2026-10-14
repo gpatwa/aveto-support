@@ -3,7 +3,7 @@
 - **Ask:** docs-answerability-2 from intents/docs-answerability-2.md (confirmed 2026-10-12)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2
-- **Current stage:** smoke and stage 5 (fresh-load session; D1 applied)
+- **Current stage:** Label review of the fifth set (method FROZEN at bca0e403a69a5cda7826ea36897734bc63dc7b87; set committed b692ffc)
 - **Status:** in-progress
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
