@@ -222,7 +222,7 @@ hard_negative = true
 
 [[question]]
 id = "gu09"
-question = "Can the Release Manager require two people to approve a release?"
+question = "Can I export a run's trace as a spreadsheet?"
 answerable = false
 hard_negative = true
 
