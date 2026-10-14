@@ -4,7 +4,7 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 2
 - **Current stage:** smoke and stage 5 (fresh-load session; D1 applied)
-- **Status:** in-progress (waiting-on-session)
+- **Status:** in-progress
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
 - **Started:** 2026-10-12  ·  **Updated:** 2026-10-12
@@ -16,6 +16,7 @@
 | Intent | Human | confirmed (APPROVAL_RECORD-1) | runs/docs-answerability-2/intent.md | human confirms |
 | Intake | Orchestrator | done | runs/docs-answerability-2/00-slice-plan.md | n/a |
 | Stage 1 measurement | Owner-started fresh session | done | runs/docs-answerability-2/01-measurement.md | 2 spawns, 7 tools, 0 tool calls; Sonnet 5.5 as logged |
+| **Freeze** | Orchestrator | **frozen** | method commit `bca0e403a69a5cda7826ea36897734bc63dc7b87` (2026-10-13); see Freeze record below | stage 5 both bars MET (05-seen-check.md) |
 | Scope | Engineering Manager | done | runs/docs-answerability-2/01-scope.md | one slice, no split; 11 gaps for the Architect; approvals A-E listed |
 | Architecture pass 1 | Software Architect | done | runs/docs-answerability-2/02-tech-spec.md | method registered (R1-R8); 11 scope gaps closed; SI-1 defaults A1-A13 listed; owner items in 14.3 |
 | Architecture pass 2 | Software Architect | done | runs/docs-answerability-2/02b-approval-packet.md, 02c-rule6-question.md, docs/adr/0008-operator-run-answerability-judge.md, docs/ARCHITECTURE.md | INV-4/INV-5 exact words drafted (not applied); 13 flags (F1-F13) where the intent's phrasing could not be backed as written; rule 6 question raised; ADR 0008 Proposed |
@@ -41,7 +42,7 @@
 
 - **Budget:** 2600k plan · ceiling 3400k (stop and ask above it; no hard cap) · unit: peak context summed per spawn  ·  **Depth:** standard (Security: adversarial, bound by the intent)
 - **Spent:** 1062k (41%)  ·  **Remaining:** 1538k
-- **Next stage:** Freeze commit per spec R8 (Orchestrator; stage 5 MET), then the fifth-set handover est. 0k (a commit, no spawn; the fifth-set stages are budgeted separately) → **PROCEED**
+- **Next stage:** Label review (review, adversarial on unanswerable) est. 110k → **PROCEED** once the fifth set is placed and committed
 
 Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 90k estimate (314k + ~90k + 130k, well under the 2600k plan); the Orchestrator records pass 2's actual spend. The stage is gated by the rule 4 approval, not by budget.
 
@@ -71,6 +72,14 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 | Stage 5 scoring QA | sonnet-5-5 (harness log) | medium (declared) | — | — | 1:17 | 42k peak (291k processed) | 10 | 0 |
 | **Total** | | | | | | 1062k peak-sum (stage 1 29k from transcripts; usage.mjs does not list forked spawns) | 139 | |
 
+## Freeze record (R8)
+
+- **Method commit:** `bca0e403a69a5cda7826ea36897734bc63dc7b87` (the commit holding the stage 5 records). Recorded 2026-10-13 on the owner's word that stage 5 passed (Bar 1 20/20, Bar 2 24/28).
+- **Last change to any method file:** `ef9ad1e` (INV-5 environment list, APPROVAL_RECORD-8), committed before r001 ran. No method file changed after it.
+- **Checked at the freeze** (`git diff --stat bca0e40 -- <list>` empty, `git status` for the list empty; regression 375 passed, mypy and ruff clean): the judge agent file (after D1), `prompts/answerability-judge-v1.txt`, both judge skills and `seen_payload.py`, `aveto_support/` (judge.py, judge_eval.py, __main__.py), `tools/`, `tests/`, `pyproject.toml`, `uv.lock`, `.agentic/SAFETY_INVARIANTS.md` (INV-4/INV-5 as approved, records 5 and 8), the sample key/batch/sample-eval, and `02-tech-spec.md`.
+- **Outside the method, disclosed:** `.claude/settings.local.json` (gitignored, not committed) holds one owner-specified permission rule for the helper command, written by the stage 5 session. It changes no method file.
+- **After the freeze only data is added:** the fifth set's files, `batch-2.txt` and key rows, verdicts, audit outputs and run records. Any change to a method file voids the freeze. Placement instructions: `SUPPORT_REQUESTS.md`.
+
 ## Next action
 
-Owner starts the fresh session per `SESSION_REQUEST-2.md` (smoke r049, then stage 5 driver r001-r048 if the smoke passes). It writes `05a-smoke.md` and `05b-driver-log.md`. Then the Orchestrator spawns a fresh QA to score with `--expect-tools none`. If the smoke fails (zero-tool agent does not launch or no reply): revert D1 per APPROVAL_RECORD-7 and report to the owner.
+Frozen. The owner has the placement instructions in `SUPPORT_REQUESTS.md` for the support session. When the fifth set is placed (uncommitted, at the stated paths) the owner tells the Orchestrator; the Orchestrator commits the files unopened, then spawns the fresh label-review QA (stage 6), adversarial on unanswerable. The Orchestrator does not ask for or open the set.
