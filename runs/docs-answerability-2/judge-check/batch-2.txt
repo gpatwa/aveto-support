@@ -1,0 +1,48 @@
+r101 Does saying "looks good" to an agent count as approving something?
+r102 Roughly how many tokens will one slice use?
+r103 Can I keep a long-lived feature branch going while the agents work on it?
+r104 If a deploy of the Aveto website goes wrong, how do I undo it?
+r105 Will every agent keep sending me progress updates while it works?
+r106 Do I have to tell my users they are talking to an AI?
+r107 If CI is all green, can a release go out without anyone signing off?
+r108 Has more than one person ever run this on a real project?
+r109 Is there a command that creates the project's .agentic folder for me?
+r110 How do I uninstall the pack from my repo?
+r111 When an experiment ends, who reads out the result and what are the possible outcomes?
+r112 I already have a PRD. Who turns it into personas and user journeys?
+r113 A feature looks too big to build in one go. Who decides whether to split it, and into how many pieces?
+r114 We trained our own model. When is it allowed to ship?
+r115 Who keeps the AI test suite representative as the product changes?
+r116 What is an error budget, and what happens when it is used up?
+r117 How much of the codebase should a developer agent read before it starts a task?
+r118 In the worked example, what happens if one delete in a batch fails?
+r119 In the worked example, can a user get deleted items back?
+r120 Why should an agent avoid long pauses in the middle of a slice?
+r121 Which standards does the AI risk assessment follow?
+r122 In the worked example, how is the feature switched off if something goes wrong?
+r123 What is the difference between a standard, a normal and an emergency change?
+r124 What can the agents do without asking me first?
+r125 Which cloud region does the Aveto website run in?
+r126 What uptime does the Aveto website guarantee?
+r127 Does the Security agent run penetration tests against my live site?
+r128 How long does Aveto keep my run records before deleting them?
+r129 What time zone do scheduled runs use?
+r130 How do I send run alerts to PagerDuty?
+r131 Can I connect Sentry for error tracking?
+r132 Is there a Grafana dashboard for the pipeline analytics?
+r133 Can I export a run's trace as a spreadsheet?
+r134 Can I get the analytics report as a PDF?
+r135 What is the Aveto pack's own test coverage percentage?
+r136 Can I vote on what goes on the Aveto roadmap?
+r137 How do I add my own custom role to the 28 agents?
+r138 How many experiments can I run at the same time?
+r139 Who founded Aveto?
+r140 Does it work in a monorepo?
+r141 Can I run the agents inside Docker?
+r142 Does it support right-to-left languages?
+r143 Is there a nonprofit discount?
+r144 How do I report a bug in Aveto itself?
+r145 How many people contribute to Aveto?
+r146 Can I give the Orchestrator voice commands?
+r147 Is there a mobile version of the Aveto website?
+r148 Which Node.js version does the installer need?

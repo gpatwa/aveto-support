@@ -150,3 +150,148 @@ id = "fu04"
 [r049]
 set = "evals/retrieval.toml"
 id = "a04"
+# Gate set evals/retrieval-heldout-5.toml: added by judge_run add-set (no label read).
+[r101]
+set = "evals/retrieval-heldout-5.toml"
+id = "g01"
+[r102]
+set = "evals/retrieval-heldout-5.toml"
+id = "g02"
+[r103]
+set = "evals/retrieval-heldout-5.toml"
+id = "g03"
+[r104]
+set = "evals/retrieval-heldout-5.toml"
+id = "g04"
+[r105]
+set = "evals/retrieval-heldout-5.toml"
+id = "g05"
+[r106]
+set = "evals/retrieval-heldout-5.toml"
+id = "g06"
+[r107]
+set = "evals/retrieval-heldout-5.toml"
+id = "g07"
+[r108]
+set = "evals/retrieval-heldout-5.toml"
+id = "g08"
+[r109]
+set = "evals/retrieval-heldout-5.toml"
+id = "g09"
+[r110]
+set = "evals/retrieval-heldout-5.toml"
+id = "g10"
+[r111]
+set = "evals/retrieval-heldout-5.toml"
+id = "g11"
+[r112]
+set = "evals/retrieval-heldout-5.toml"
+id = "g12"
+[r113]
+set = "evals/retrieval-heldout-5.toml"
+id = "g13"
+[r114]
+set = "evals/retrieval-heldout-5.toml"
+id = "g14"
+[r115]
+set = "evals/retrieval-heldout-5.toml"
+id = "g15"
+[r116]
+set = "evals/retrieval-heldout-5.toml"
+id = "g16"
+[r117]
+set = "evals/retrieval-heldout-5.toml"
+id = "g17"
+[r118]
+set = "evals/retrieval-heldout-5.toml"
+id = "g18"
+[r119]
+set = "evals/retrieval-heldout-5.toml"
+id = "g19"
+[r120]
+set = "evals/retrieval-heldout-5.toml"
+id = "g20"
+[r121]
+set = "evals/retrieval-heldout-5.toml"
+id = "g21"
+[r122]
+set = "evals/retrieval-heldout-5.toml"
+id = "g22"
+[r123]
+set = "evals/retrieval-heldout-5.toml"
+id = "g23"
+[r124]
+set = "evals/retrieval-heldout-5.toml"
+id = "g24"
+[r125]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu01"
+[r126]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu02"
+[r127]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu03"
+[r128]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu04"
+[r129]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu05"
+[r130]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu06"
+[r131]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu07"
+[r132]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu08"
+[r133]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu09"
+[r134]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu10"
+[r135]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu11"
+[r136]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu12"
+[r137]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu13"
+[r138]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu14"
+[r139]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu15"
+[r140]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu16"
+[r141]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu17"
+[r142]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu18"
+[r143]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu19"
+[r144]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu20"
+[r145]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu21"
+[r146]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu22"
+[r147]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu23"
+[r148]
+set = "evals/retrieval-heldout-5.toml"
+id = "gu24"
