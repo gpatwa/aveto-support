@@ -29,13 +29,13 @@ pinned_commit = "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
 [[question]]
 id = "g01"
 question = "Does saying \"looks good\" to an agent count as approving something?"
-sources = ["docs/HUMAN_APPROVAL_RULES.md"]
+sources = ["docs/HUMAN_APPROVAL_RULES.md", "execution/pack/protocols/APPROVAL_PROTOCOL.md"]
 where = "explicit approval is a direct yes to the specific request; 'looks good' is an acknowledgement"
 
 [[question]]
 id = "g02"
 question = "Roughly how many tokens will one slice use?"
-sources = ["docs/GETTING_STARTED.md"]
+sources = ["docs/GETTING_STARTED.md", "execution/pack/protocols/RUN_ECONOMICS.md", "execution/pack/protocols/PIPELINE_SLOS.md"]
 where = "~756k per slice on average, 520k-947k observed"
 
 [[question]]
@@ -65,19 +65,19 @@ where = "EU AI Act Article 50 transparency, a rule-5 precondition"
 [[question]]
 id = "g07"
 question = "If CI is all green, can a release go out without anyone signing off?"
-sources = ["docs/RELEASE_GATES.md", "docs/HUMAN_APPROVAL_RULES.md"]
+sources = ["docs/RELEASE_GATES.md", "docs/HUMAN_APPROVAL_RULES.md", "agents/release-manager.md"]
 where = "CI enforces mechanical gates; judgment gates and human approval stay human"
 
 [[question]]
 id = "g08"
 question = "Has more than one person ever run this on a real project?"
-sources = ["docs/GETTING_STARTED.md", "docs/VALIDATION_MATRIX.md"]
+sources = ["docs/GETTING_STARTED.md", "docs/VALIDATION_MATRIX.md", "execution/pack/protocols/SLICE_STATE.md"]
 where = "single-operator proven, not multi-operator"
 
 [[question]]
 id = "g09"
 question = "Is there a command that creates the project's .agentic folder for me?"
-sources = ["docs/GETTING_STARTED.md"]
+sources = ["docs/GETTING_STARTED.md", "docs/VALIDATION_MATRIX.md"]
 where = "no .agentic scaffolding tool; copy and edit an example"
 
 [[question]]
@@ -107,7 +107,7 @@ where = "EM accepts or splits into 2-4 smaller slices"
 [[question]]
 id = "g14"
 question = "We trained our own model. When is it allowed to ship?"
-sources = ["agents/ml-engineer.md", "prompts/ml-training.md"]
+sources = ["agents/ml-engineer.md", "prompts/ml-training.md", "templates/MODEL_CARD_TEMPLATE.md"]
 where = "must beat the incumbent; shadow then canary"
 
 [[question]]
@@ -125,19 +125,19 @@ where = "1 - SLO; error budget policy; feature freeze"
 [[question]]
 id = "g17"
 question = "How much of the codebase should a developer agent read before it starts a task?"
-sources = ["prompts/developer-task.md", "docs/OPERATING_MODEL.md"]
+sources = ["prompts/developer-task.md", "docs/OPERATING_MODEL.md", "agents/frontend-developer.md"]
 where = "only the files it will touch and what they depend on"
 
 [[question]]
 id = "g18"
 question = "In the worked example, what happens if one delete in a batch fails?"
-sources = ["examples/saved-items-bulk-delete/artefacts/05-tech-spec.md", "examples/saved-items-bulk-delete/artefacts/07-security-review.md"]
+sources = ["examples/saved-items-bulk-delete/artefacts/05-tech-spec.md", "examples/saved-items-bulk-delete/artefacts/07-security-review.md", "examples/saved-items-bulk-delete/artefacts/03-feature-spec.md", "examples/saved-items-bulk-delete/artefacts/04-ux-spec.md"]
 where = "one transaction; the whole batch rolls back"
 
 [[question]]
 id = "g19"
 question = "In the worked example, can a user get deleted items back?"
-sources = ["examples/saved-items-bulk-delete/artefacts/02-prd.md", "examples/saved-items-bulk-delete/artefacts/04-ux-spec.md"]
+sources = ["examples/saved-items-bulk-delete/artefacts/02-prd.md", "examples/saved-items-bulk-delete/artefacts/04-ux-spec.md", "examples/saved-items-bulk-delete/artefacts/03-feature-spec.md"]
 where = "in-session Undo now; persistent trash view later"
 
 [[question]]
@@ -149,7 +149,7 @@ where = "the prompt cache expires; replaying context is expensive"
 [[question]]
 id = "g21"
 question = "Which standards does the AI risk assessment follow?"
-sources = ["agents/ai-governance.md", "templates/AI_RISK_ASSESSMENT_TEMPLATE.md", "docs/STANDARDS_WATCH.md"]
+sources = ["agents/ai-governance.md", "templates/AI_RISK_ASSESSMENT_TEMPLATE.md", "docs/STANDARDS_WATCH.md", "prompts/ai-risk-review.md"]
 where = "ISO/IEC 42005 and NIST GenAI Profile"
 
 [[question]]

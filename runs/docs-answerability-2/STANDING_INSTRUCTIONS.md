@@ -32,3 +32,9 @@ Also decided by the Architect, in the spec: payload layout line is 137 chars in 
 | # | Decision | Default taken |
 |---|----------|---------------|
 | D4 | Support Reply 2: source reuse. Request 1 said no `sources` path may be a source in any seen set; the support session reports that cannot hold (the seen sets cite 96 of 123 corpus files; 21 of 24 answerable questions cite at least one file an earlier set cites; no question or topic repeats). | Reuse allowed and disclosed (the file's header says why the second bar may read slightly optimistic on those questions). Committed unopened as b692ffc, after the freeze (bca0e40 is its ancestor): `evals/retrieval-heldout-5.toml` and `evals/retrieval-heldout-5-reserves.toml`. The support session also reports the working copy was regenerated after a restart (base sha256 `9cca11aeb4cd66eb` matches the original's record). |
+
+## Digest: label review (stage 6) decisions under SI-1 (owner may veto; detail in `06-label-review.md` section 6)
+| # | Decision | Default taken |
+|---|----------|---------------|
+| D5 | Label-review source additions E2 to E11 (additions only, nothing dropped; the reviewer's "default" priority). | Applied to `evals/retrieval-heldout-5.toml` as data, `sources` lines of 10 answerable questions only (g01, g02, g07, g08, g09, g14, g17, g18, g19, g21); no question text changed; all paths checked to exist at the pinned commit. **Not applied:** the optional `docs/OPERATING_MODEL.md` addition to g02 (the reviewer says it answers a different quantity; leaving it out keeps the gate stricter). `docs/VALIDATION_MATRIX.md` stays on g08 (the owner may drop it; that would only be stricter). |
+| D5b | **Held for the owner:** E1, replacing gu09 (AMBIGUOUS) with reserve gr02. | Not applied. Reviewer recommends replacing. Owner decides before scoring. |
