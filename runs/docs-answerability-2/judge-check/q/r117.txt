@@ -1,0 +1,1 @@
+How much of the codebase should a developer agent read before it starts a task?

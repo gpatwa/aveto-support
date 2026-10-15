@@ -1,0 +1,1 @@
+If CI is all green, can a release go out without anyone signing off?

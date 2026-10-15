@@ -1,0 +1,1 @@
+In the worked example, what happens if one delete in a batch fails?
