@@ -3,7 +3,7 @@
 - **Ask:** docs-answerability-2 from intents/docs-answerability-2.md (confirmed 2026-10-12)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2
-- **Current stage:** Stage 7 driver (waiting-on-session: SESSION_REQUEST-3.md); method FROZEN at bca0e403a69a5cda7826ea36897734bc63dc7b87
+- **Current stage:** Security Review (adversarial)
 - **Status:** in-progress (waiting-on-session)
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
@@ -26,6 +26,8 @@
 | Smoke r049 + Stage 5 driver | Owner-started fresh session | done (driver log: no anomaly; smoke criteria met after APPROVAL_RECORD-8) | SESSION_REQUEST-2.md -> 05a-smoke.md, 05b-driver-log.md | smoke pass, then r001-r048 |
 | Stage 5 scoring | QA Evidence (fresh) | done | runs/docs-answerability-2/05-seen-check.md | record valid (48 spawns, 0 offered tools, 0 tool_use); bar 1 20/20 MET, bar 2 24/28 MET, judge errors 0; overall MET (registered 16/20 and 23/28) |
 | Label review (fifth set) | QA Evidence (fresh, adversarial on unanswerable) | done | runs/docs-answerability-2/06-label-review.md | unanswerable: 23 CONFIRMED, 0 ANSWERABLE-IN-DOCS, 1 AMBIGUOUS (gu09, recommend replace with gr02); 18 hard negatives verified; answerable: 13 source additions on 10 questions, 0 dropped; set not run; edits proposed, not applied |
+| Stage 7 driver | Owner-started session | done (07a-driver-log.md: 48 spawns r101-r148, no anomaly; session-load deviation disclosed) | SESSION_REQUEST-3.md -> 07a-driver-log.md | audit: no anomaly |
+| Stage 7 scoring | QA Evidence (fresh) | done | runs/docs-answerability-2/07-gate-scoring.md | record valid (48 spawns, 0 offered tools, 0 tool_use); bar 1 24/24 MET, bar 2 16/19 MET, judge errors 0; overall MET; retrieval gate exit 1 (19/24 = 79.2%), reported apart |
 
 ## Approvals
 
@@ -42,8 +44,8 @@
 ## Budget
 
 - **Budget:** 2600k plan · ceiling 3400k (stop and ask above it; no hard cap) · unit: peak context summed per spawn  ·  **Depth:** standard (Security: adversarial, bound by the intent)
-- **Spent:** 1288k (50%)  ·  **Remaining:** 1312k
-- **Next stage:** Stage 7 driver r101-r148 (owner-started fresh-load session) then scoring QA, est. 450k → **PROCEED**
+- **Spent:** 1746k (67%)  ·  **Remaining:** 854k
+- **Next stage:** Security Review (review, adversarial: binds) est. 125k → **PROCEED**
 
 Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 90k estimate (314k + ~90k + 130k, well under the 2600k plan); the Orchestrator records pass 2's actual spend. The stage is gated by the rule 4 approval, not by budget.
 
@@ -72,7 +74,9 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 | Smoke r049 + stage 5 judge spawns (49) | sonnet-5-5 (harness log, from transcripts) | n/a | — | — | — | 386k peak-sum (7.8k + 378.7k; in-equiv 449k); est. was 350k | 0 | 0 |
 | Stage 5 scoring QA | sonnet-5-5 (harness log) | medium (declared) | — | — | 1:17 | 42k peak (291k processed) | 10 | 0 |
 | Stage 6 label review | sonnet-5-5 (harness log) | high (declared) | — | — | 11:46 | 226k peak (13.31M processed; est. was 110k) | 109 | 0 |
-| **Total** | | | | | | 1288k peak-sum (stage 1 29k from transcripts; usage.mjs does not list forked spawns) | 139 | |
+| Stage 7 judge spawns (48, driver session) | sonnet-5-5 (harness log, from transcripts) | n/a | — | — | — | 411k peak-sum (in-equiv 480k); est. was 400k | 0 | 0 |
+| Stage 7 scoring QA | sonnet-5-5 (harness log) | medium (declared) | — | — | 1:53 | 47k peak (408k processed) | 13 | 0 |
+| **Total** | | | | | | 1746k peak-sum (stage 1 29k from transcripts; usage.mjs does not list forked spawns) | 139 | |
 
 ## Freeze record (R8)
 

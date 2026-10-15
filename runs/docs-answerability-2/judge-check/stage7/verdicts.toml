@@ -1,0 +1,242 @@
+format = "aveto-judge-verdicts-v1"
+prompt_sha256 = "24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427"
+
+[[verdict]]
+id = "g01"
+verdict = "ANSWERABLE"
+input_sha256 = "6483c848264fcfaef0816c1df4ba9a13e6dd340868519df62e4046a9077a66eb"
+
+[[verdict]]
+id = "g02"
+verdict = "ANSWERABLE"
+input_sha256 = "b0de588e0e5a3833a7549b250154d5bfbd42f32756ee9f7644f6c57b512dd661"
+
+[[verdict]]
+id = "g03"
+verdict = "ANSWERABLE"
+input_sha256 = "7e0b88a2318223778ec8395dfe487a02f6cc340c3182b7471feef9c9616c85fe"
+
+[[verdict]]
+id = "g04"
+verdict = "ANSWERABLE"
+input_sha256 = "ebd8d15757505440b9bca34e360de67d3084ba169c7eb5395182d0c51da00a13"
+
+[[verdict]]
+id = "g05"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "2bbadb0a930070608beef052f517ebfdb5de2c3c50f453113a3ec061a54cee76"
+
+[[verdict]]
+id = "g06"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "245a6e7dcb0e819295cecb0fb6e6848aeb425943a3c1c9b2304d9ccc77a81f1d"
+
+[[verdict]]
+id = "g07"
+verdict = "ANSWERABLE"
+input_sha256 = "844830cdb1c4b9d098ce225457040b17c19d28db78c1bfa88cec422176fdf1ee"
+
+[[verdict]]
+id = "g08"
+verdict = "ANSWERABLE"
+input_sha256 = "36ca2877cd5a94fe516bb4c5aa569fea716903626823412fa16272c634793d53"
+
+[[verdict]]
+id = "g09"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "0aed92112cac0522d5a1de95541313ad4149f7bc0f840cefed833af9eef8f4d1"
+
+[[verdict]]
+id = "g10"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "d8597c72b5bc6034c99f13476120586bbb960d6a9990fdb810cd48f21306ca4b"
+
+[[verdict]]
+id = "g11"
+verdict = "ANSWERABLE"
+input_sha256 = "8674854105a12553807dc8afd906a993b30ba7dcc1d5568c2c23362fb7030f8c"
+
+[[verdict]]
+id = "g12"
+verdict = "ANSWERABLE"
+input_sha256 = "609773c816079acebbb78d7930c911ddc4c09e598cf0036fa3e5202a5b1a48e7"
+
+[[verdict]]
+id = "g13"
+verdict = "ANSWERABLE"
+input_sha256 = "2303c0b7d7976fd19edce0641e9ae024d8b0dbf1592b4ecd60e8f7c21630ab79"
+
+[[verdict]]
+id = "g14"
+verdict = "ANSWERABLE"
+input_sha256 = "200cbbbab30e11d2084cfe8b1202354a3c147172cd09e48827dfb2130493f850"
+
+[[verdict]]
+id = "g15"
+verdict = "ANSWERABLE"
+input_sha256 = "c711bf0c4b3fb878136e6abf982c1825bf642f37fb5a69aac791594106e61c8c"
+
+[[verdict]]
+id = "g16"
+verdict = "ANSWERABLE"
+input_sha256 = "111de97af45e691747d3582c9ea578e9f07e9c9927a07e84715067edaec39e9a"
+
+[[verdict]]
+id = "g17"
+verdict = "ANSWERABLE"
+input_sha256 = "dff76d29e3a420382b81c46146ecb6131e72759eb752ca3b005c863d91ef5989"
+
+[[verdict]]
+id = "g18"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "3a736d5d12d3869d7ef605f5e0b94b85d98def4a8773aa65ad98c01f6da86793"
+
+[[verdict]]
+id = "g19"
+verdict = "ANSWERABLE"
+input_sha256 = "b671ab51b0e122c01c7d7e7f76f67c9a659f97561228fccd4ad205bda8a81602"
+
+[[verdict]]
+id = "g20"
+verdict = "ANSWERABLE"
+input_sha256 = "2f7010efd0d27036c53122d0bcbd3bace8e68427e0af6ab6f077f7d9ad882816"
+
+[[verdict]]
+id = "g21"
+verdict = "ANSWERABLE"
+input_sha256 = "e28de892a08c62cb819721f6806f396eda074906f29dd8dc34f222963d8d5767"
+
+[[verdict]]
+id = "g22"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "40e3156df8e76bcb0908f08b2bc718eb91f78ab01f2bf12ac860d38d067d6d66"
+
+[[verdict]]
+id = "g23"
+verdict = "ANSWERABLE"
+input_sha256 = "4eea3161fb873962ec332257fb64209a88ee450cf60abd1240578911b47b02b2"
+
+[[verdict]]
+id = "g24"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "b8c50cde7854287ff1881cb6a6980904b4c1ef1cbd5891bc64f7aba41783aae8"
+
+[[verdict]]
+id = "gu01"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "d17aae7a457f78e225865d29e041d5d055c2287cb7864a3503e5aebce7c50e7b"
+
+[[verdict]]
+id = "gu02"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "7dff8b8396fdf68b1116c2ccb10509828dcbe7d06d6c6c86ccd20b03d6621630"
+
+[[verdict]]
+id = "gu03"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "ccb91b437ab76fe92ace23c0ed0e3af0f8395ea7b984725f8e20a172e0ef7b9a"
+
+[[verdict]]
+id = "gu04"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "e15ae2896e05b2b4ec95a1f73ce0566fb3f0af65fec009d0d2d234552fb6897f"
+
+[[verdict]]
+id = "gu05"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "0a5faf1576ad8fa86331b68dc7fbc709b76b7e24f39c08a6a23c133464e690d2"
+
+[[verdict]]
+id = "gu06"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "8535d5d0c99e2b40ecd98c344cbac9fb19625de7bd686f9cc53dd033041e9408"
+
+[[verdict]]
+id = "gu07"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "6756a79d3293826da93dd8bccfbd7ae62b18035a823831598d08252f3a13d2ab"
+
+[[verdict]]
+id = "gu08"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "fd2e9ac5f32d23dfbc64a6113635ec62d15cb61c5f913b75253e8863ddf075e0"
+
+[[verdict]]
+id = "gu09"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "1be8209eefbe77eac24f198ee11a0b092aec204d6a831dd6914c11fc16eb4cf6"
+
+[[verdict]]
+id = "gu10"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "b13b3a820e4d4f69d94d5d1cd003d40be93fb9e0d662395e5db45262bc1473b6"
+
+[[verdict]]
+id = "gu11"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "4ee482e99afc530c25e2f75b38634892eeab068a760dc69bb87d255db8c04ab6"
+
+[[verdict]]
+id = "gu12"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "ba04c2d1f7de9a00dfbd6fbce28a457831570d155a7abfcae13bbd88b8c116e6"
+
+[[verdict]]
+id = "gu13"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "884b87f00395bdcf997c059ba4f48b63fade030a6be1f5eeffc98109eecb0546"
+
+[[verdict]]
+id = "gu14"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "2a83b0a18fe3bc2ff771c644e60231a9d504031ef3512a557d09b3f912ca2303"
+
+[[verdict]]
+id = "gu15"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "d9731c3cb9a72c8d9dc836813ee0afaa0f6b565686f5ac244fd3c0e0cdbdebfe"
+
+[[verdict]]
+id = "gu16"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "d07dac73ccf347a75a24b4f9fec0fdcbedb350f9809317956e22ec89cff3d8b8"
+
+[[verdict]]
+id = "gu17"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "10fb7499a44a8b5ccc2be278c61533ebc2a8449a1c6d7cc9a7af74867fee011a"
+
+[[verdict]]
+id = "gu18"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "e4a5110943639459475292a68f4fdc8a010bbd4e8e180d7b91e190e30c8e3e52"
+
+[[verdict]]
+id = "gu19"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "6ec5dac7e9fc73db3ccf673df95a0747d4dc6856d14e033730fc47a0fa01ea6b"
+
+[[verdict]]
+id = "gu20"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "c35781f76494c7b6cb60593f8dc1dbb39a6543832f991d8ba72361bbcbbb7380"
+
+[[verdict]]
+id = "gu21"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "67b2f2fbfb6e5e62e641acc871ab893d36899dc735e65c960b5b4eee79fde103"
+
+[[verdict]]
+id = "gu22"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "951f4017ba0bd6488d13bce0b43941f21cd38baeca0ca416082b6c16f18e7a9d"
+
+[[verdict]]
+id = "gu23"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "cb204824eb0c81ec0efe764d22fcc2ce7493a59fc438776de7087fab4d7975d4"
+
+[[verdict]]
+id = "gu24"
+verdict = "NOT_ANSWERABLE"
+input_sha256 = "9bc11bedf94575d3aad0ac31b5b62df3c8e65c87f20e2308a715fa96b0e6d247"

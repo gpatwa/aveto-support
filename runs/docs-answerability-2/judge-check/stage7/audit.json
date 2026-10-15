@@ -1,0 +1,434 @@
+[
+ {
+  "run_id": "r101",
+  "eval_id": "g01",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 7104,
+  "in_equiv": 8849.5,
+  "in_batch": true
+ },
+ {
+  "run_id": "r102",
+  "eval_id": "g02",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 7550,
+  "in_equiv": 8725.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r103",
+  "eval_id": "g03",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 9857,
+  "in_equiv": 11609.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r104",
+  "eval_id": "g04",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 8592,
+  "in_equiv": 10026.0,
+  "in_batch": true
+ },
+ {
+  "run_id": "r105",
+  "eval_id": "g05",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 10175,
+  "in_equiv": 12005.5,
+  "in_batch": true
+ },
+ {
+  "run_id": "r106",
+  "eval_id": "g06",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 6674,
+  "in_equiv": 7628.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r107",
+  "eval_id": "g07",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 9101,
+  "in_equiv": 10660.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r108",
+  "eval_id": "g08",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 10278,
+  "in_equiv": 12135.25,
+  "in_batch": true
+ },
+ {
+  "run_id": "r109",
+  "eval_id": "g09",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8055,
+  "in_equiv": 9356.0,
+  "in_batch": true
+ },
+ {
+  "run_id": "r110",
+  "eval_id": "g10",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8040,
+  "in_equiv": 9336.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r111",
+  "eval_id": "g11",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 8225,
+  "in_equiv": 9565.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r112",
+  "eval_id": "g12",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 6370,
+  "in_equiv": 7248.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r113",
+  "eval_id": "g13",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 7224,
+  "in_equiv": 8314.5,
+  "in_batch": true
+ },
+ {
+  "run_id": "r114",
+  "eval_id": "g14",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 7963,
+  "in_equiv": 9237.5,
+  "in_batch": true
+ },
+ {
+  "run_id": "r115",
+  "eval_id": "g15",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 7941,
+  "in_equiv": 9213.5,
+  "in_batch": true
+ },
+ {
+  "run_id": "r116",
+  "eval_id": "g16",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 8603,
+  "in_equiv": 10040.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r117",
+  "eval_id": "g17",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 7743,
+  "in_equiv": 8965.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r118",
+  "eval_id": "g18",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 6972,
+  "in_equiv": 8001.25,
+  "in_batch": true
+ },
+ {
+  "run_id": "r119",
+  "eval_id": "g19",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 6928,
+  "in_equiv": 7946.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r120",
+  "eval_id": "g20",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 8734,
+  "in_equiv": 10203.0,
+  "in_batch": true
+ },
+ {
+  "run_id": "r121",
+  "eval_id": "g21",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 8930,
+  "in_equiv": 10446.5,
+  "in_batch": true
+ },
+ {
+  "run_id": "r122",
+  "eval_id": "g22",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 7591,
+  "in_equiv": 8775.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r123",
+  "eval_id": "g23",
+  "token": "ANSWERABLE",
+  "category": "",
+  "peak": 6797,
+  "in_equiv": 7779.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r124",
+  "eval_id": "g24",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8024,
+  "in_equiv": 9317.0,
+  "in_batch": true
+ },
+ {
+  "run_id": "r125",
+  "eval_id": "gu01",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8396,
+  "in_equiv": 9782.0,
+  "in_batch": true
+ },
+ {
+  "run_id": "r126",
+  "eval_id": "gu02",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8908,
+  "in_equiv": 10421.5,
+  "in_batch": true
+ },
+ {
+  "run_id": "r127",
+  "eval_id": "gu03",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8189,
+  "in_equiv": 9524.0,
+  "in_batch": true
+ },
+ {
+  "run_id": "r128",
+  "eval_id": "gu04",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 9240,
+  "in_equiv": 10839.0,
+  "in_batch": true
+ },
+ {
+  "run_id": "r129",
+  "eval_id": "gu05",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8089,
+  "in_equiv": 9397.25,
+  "in_batch": true
+ },
+ {
+  "run_id": "r130",
+  "eval_id": "gu06",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8031,
+  "in_equiv": 9323.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r131",
+  "eval_id": "gu07",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8548,
+  "in_equiv": 9971.0,
+  "in_batch": true
+ },
+ {
+  "run_id": "r132",
+  "eval_id": "gu08",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 10545,
+  "in_equiv": 12467.5,
+  "in_batch": true
+ },
+ {
+  "run_id": "r133",
+  "eval_id": "gu09",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 13078,
+  "in_equiv": 15632.0,
+  "in_batch": true
+ },
+ {
+  "run_id": "r134",
+  "eval_id": "gu10",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 9592,
+  "in_equiv": 11276.5,
+  "in_batch": true
+ },
+ {
+  "run_id": "r135",
+  "eval_id": "gu11",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8263,
+  "in_equiv": 9614.5,
+  "in_batch": true
+ },
+ {
+  "run_id": "r136",
+  "eval_id": "gu12",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8765,
+  "in_equiv": 10242.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r137",
+  "eval_id": "gu13",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 13364,
+  "in_equiv": 15993.0,
+  "in_batch": true
+ },
+ {
+  "run_id": "r138",
+  "eval_id": "gu14",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8143,
+  "in_equiv": 9465.5,
+  "in_batch": true
+ },
+ {
+  "run_id": "r139",
+  "eval_id": "gu15",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8824,
+  "in_equiv": 10318.0,
+  "in_batch": true
+ },
+ {
+  "run_id": "r140",
+  "eval_id": "gu16",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 9221,
+  "in_equiv": 10812.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r141",
+  "eval_id": "gu17",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8423,
+  "in_equiv": 9815.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r142",
+  "eval_id": "gu18",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 9237,
+  "in_equiv": 10833.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r143",
+  "eval_id": "gu19",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 6926,
+  "in_equiv": 7943.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r144",
+  "eval_id": "gu20",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8696,
+  "in_equiv": 10156.25,
+  "in_batch": true
+ },
+ {
+  "run_id": "r145",
+  "eval_id": "gu21",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8223,
+  "in_equiv": 9567.25,
+  "in_batch": true
+ },
+ {
+  "run_id": "r146",
+  "eval_id": "gu22",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 7856,
+  "in_equiv": 9107.75,
+  "in_batch": true
+ },
+ {
+  "run_id": "r147",
+  "eval_id": "gu23",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 8234,
+  "in_equiv": 9579.25,
+  "in_batch": true
+ },
+ {
+  "run_id": "r148",
+  "eval_id": "gu24",
+  "token": "NOT_ANSWERABLE",
+  "category": "",
+  "peak": 10486,
+  "in_equiv": 12395.0,
+  "in_batch": true
+ }
+]
