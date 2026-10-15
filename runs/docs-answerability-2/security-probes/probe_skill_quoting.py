@@ -1,3 +1,4 @@
+# ruff: noqa  (Security Review evidence script; lint-exempt by design, kept as written)
 """P4: what a shell would run if the harness substitutes $ARGUMENTS textually into the
 aveto-judge-seen `!` line. The program `uv run ... seen_payload.py` is replaced by
 `printf '[%s]\n'` so nothing but printf and echo runs. Offline; no judge."""

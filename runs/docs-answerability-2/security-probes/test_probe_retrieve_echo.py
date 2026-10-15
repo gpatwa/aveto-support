@@ -1,3 +1,4 @@
+# ruff: noqa  (Security Review evidence script; lint-exempt by design, kept as written)
 """P5: can `retrieve` (unjudged) print a line that looks judged? Offline, FakeEmbedder."""
 from __future__ import annotations
 

@@ -1,3 +1,4 @@
+# ruff: noqa  (Security Review evidence script; lint-exempt by design, kept as written)
 """Security probes (stage 8). Offline; product functions and the tests' fakes only.
 
 Run: uv run pytest -q -s -p no:cacheprovider --rootdir=. runs/docs-answerability-2/security-probes/test_probe_judge.py

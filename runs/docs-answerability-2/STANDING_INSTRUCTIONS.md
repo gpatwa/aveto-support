@@ -52,3 +52,6 @@ Two findings need the owner's decision, neither blocking, neither actioned by th
 - **S6** the gitignored `.claude/settings.local.json` rule `Bash(uv run -q --project * python * seen_payload.py *)` is wider than needed; recommended: delete or narrow it now that the stage 7 driver is finished. The Orchestrator does not edit permission settings.
 Advisories S1 to S4, S7, S8 go to the close-out as carry-forward.
 An untracked `runs/docs-answerability-2/RELEASE_APPROVAL_PACKET.md` (a support-session draft, not this slice's artefact) is left untouched and uncommitted.
+
+## Release Gate QA run: one mechanical failure, fixed (SI-1 decision D6)
+`09-release-qa.md` reported NO-GO on `uv run ruff check` (23 errors), all in `runs/docs-answerability-2/security-probes/*.py`, which the Orchestrator committed in 69fd907 although the Security record calls them uncommitted evidence. That was the Orchestrator's slip, not a product defect (product, tests and tools were lint-clean). Fix taken (retry 1 of the failure budget): a first-line `# ruff: noqa` comment in each of the three scripts, no other change to them, no `pyproject.toml` change (a frozen file). Re-run: ruff all checks passed, mypy clean, 375 passed. The Release Manager gets the corrected state.

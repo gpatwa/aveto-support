@@ -29,6 +29,7 @@
 | Stage 7 driver | Owner-started session | done (07a-driver-log.md: 48 spawns r101-r148, no anomaly; session-load deviation disclosed) | SESSION_REQUEST-3.md -> 07a-driver-log.md | audit: no anomaly |
 | Stage 7 scoring | QA Evidence (fresh) | done | runs/docs-answerability-2/07-gate-scoring.md | record valid (48 spawns, 0 offered tools, 0 tool_use); bar 1 24/24 MET, bar 2 16/19 MET, judge errors 0; overall MET; retrieval gate exit 1 (19/24 = 79.2%), reported apart |
 | Security Review (adversarial) | Security & Privacy | done | runs/docs-answerability-2/08-security-review.md | PASS WITH NON-BLOCKING FINDINGS: 0 blocking; S5, S6 required-fix (eval skill `'$ARGUMENTS'` quote breakout; local settings.local.json rule too wide; owner's call, not the product); S1-S4, S7, S8 advisory; freeze verified (empty diff since bca0e40) |
+| Release Gate QA (spawn 1 of 2) | QA Evidence (fresh) | done | runs/docs-answerability-2/09-release-qa.md | NO-GO as written on one mechanical item: `uv run ruff check` exits 1 (23 errors, all in the committed `security-probes/*.py`, commit 69fd907; product, tests, tools clean). mypy clean; pytest 375 passed; `-m model` 8 passed, 1 failed (`test_sample_derivation_reproducible`, cause confirmed: frozen key is a byte-identical prefix of the current key); freeze diff empty; INV-4/INV-5 equal the approved blocks plus record 8; Done-means rows all MET except README/status (not applicable yet); deviations listed in section 5 |
 
 ## Approvals
 
@@ -46,7 +47,9 @@
 
 - **Budget:** 2600k plan · ceiling 3400k (stop and ask above it; no hard cap) · unit: peak context summed per spawn  ·  **Depth:** standard (Security: adversarial, bound by the intent)
 - **Spent:** 1903k (73%)  ·  **Remaining:** 697k
-- **Next stage:** Release Gate (gate, standard) est. 150k → **PROCEED**
+- **Next stage:** Release Manager verdict (gate, standard) est. 50k → **PROCEED**
+
+Note (Release Gate QA): the verdict needs the ruff item in `09-release-qa.md` section 1 settled first (fix the probe scripts or untrack them; do not touch `pyproject.toml`, a frozen file).
 
 Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 90k estimate (314k + ~90k + 130k, well under the 2600k plan); the Orchestrator records pass 2's actual spend. The stage is gated by the rule 4 approval, not by budget.
 
