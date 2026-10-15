@@ -55,3 +55,11 @@ An untracked `runs/docs-answerability-2/RELEASE_APPROVAL_PACKET.md` (a support-s
 
 ## Release Gate QA run: one mechanical failure, fixed (SI-1 decision D6)
 `09-release-qa.md` reported NO-GO on `uv run ruff check` (23 errors), all in `runs/docs-answerability-2/security-probes/*.py`, which the Orchestrator committed in 69fd907 although the Security record calls them uncommitted evidence. That was the Orchestrator's slip, not a product defect (product, tests and tools were lint-clean). Fix taken (retry 1 of the failure budget): a first-line `# ruff: noqa` comment in each of the three scripts, no other change to them, no `pyproject.toml` change (a frozen file). Re-run: ruff all checks passed, mypy clean, 375 passed. The Release Manager gets the corrected state.
+
+## Release Gate verdict (`09-release-checklist.md`): GO WITH CONDITIONS (internally releasable, not announced; tier 2 as the intent names)
+No stop under SI-3 applies to docs and close-out, so they proceed. The conditions are the owner's before any push, merge, deploy or announcement:
+- **C1** the owner rules on the tier: tier 2 stands (as the intent names) or tier 3 (the slice rewrites INV-4/INV-5 and adds a third-party data flow); under tier 3 the verdict reverts to no-go until a post-launch monitoring plan exists.
+- **C2 (S6)** delete, narrow or accept the `.claude/settings.local.json` rule. **C3 (S5)** the `/aveto-judge-seen` quote breakout: decide before that skill is invoked again.
+- **C4** run ruff, mypy and pytest on the final tree: the Orchestrator ran them after D6 (ruff all checks passed, mypy clean, 375 passed, 12 deselected) and re-runs them at close-out.
+- **C5** identity in the approval records, the DPA line for Anthropic (nothing in the artefacts states it; the owner's to state), and the STATE corrections (done by the Orchestrator).
+- **C6** docs carry the full figures. **R-A** the retrieval-gate exit 1 on the fifth set (79.2%) accepted in the owner's words or declared relevant.

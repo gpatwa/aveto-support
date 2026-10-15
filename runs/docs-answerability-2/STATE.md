@@ -3,7 +3,7 @@
 - **Ask:** docs-answerability-2 from intents/docs-answerability-2.md (confirmed 2026-10-12)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2
-- **Current stage:** Release Gate (tier 2)
+- **Current stage:** Docs (stage 10), under release conditions C1-C6
 - **Status:** in-progress
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
@@ -20,7 +20,7 @@
 | Scope | Engineering Manager | done | runs/docs-answerability-2/01-scope.md | one slice, no split; 11 gaps for the Architect; approvals A-E listed |
 | Architecture pass 1 | Software Architect | done | runs/docs-answerability-2/02-tech-spec.md | method registered (R1-R8); 11 scope gaps closed; SI-1 defaults A1-A13 listed; owner items in 14.3 |
 | Architecture pass 2 | Software Architect | done | runs/docs-answerability-2/02b-approval-packet.md, 02c-rule6-question.md, docs/adr/0008-operator-run-answerability-judge.md, docs/ARCHITECTURE.md | INV-4/INV-5 exact words drafted (not applied); 13 flags (F1-F13) where the intent's phrasing could not be backed as written; rule 6 question raised; ADR 0008 Proposed |
-| Rule 4 approval (INV-4/INV-5) | Owner | pending | runs/docs-answerability-2/02b-approval-packet.md | owner's own words; rule 6 question (02c) answered separately |
+| Rule 4 approval (INV-4/INV-5), rule 6 question | Owner | done (corrected by the Orchestrator per release condition C5) | APPROVAL_RECORD-5, -6, -8 | approved in the owner's own words 2026-10-12/13; INV-5 environment list edited under record 8 |
 | Implementation | AI Engineer | done | runs/docs-answerability-2/03-implementation.md, 03a-d1-proposed-diff.md | regression 375 passed (+9 model); derivation 20/56 split as registered; A10 reproduced 13/20 and 37/56; D1 diff written, not applied |
 | D1 decision | Owner | done (APPROVAL_RECORD-7; applied in 1bb6f4e) | runs/docs-answerability-2/03a-d1-proposed-diff.md | owner's own words |
 | Smoke r049 + Stage 5 driver | Owner-started fresh session | done (driver log: no anomaly; smoke criteria met after APPROVAL_RECORD-8) | SESSION_REQUEST-2.md -> 05a-smoke.md, 05b-driver-log.md | smoke pass, then r001-r048 |
@@ -30,6 +30,7 @@
 | Stage 7 scoring | QA Evidence (fresh) | done | runs/docs-answerability-2/07-gate-scoring.md | record valid (48 spawns, 0 offered tools, 0 tool_use); bar 1 24/24 MET, bar 2 16/19 MET, judge errors 0; overall MET; retrieval gate exit 1 (19/24 = 79.2%), reported apart |
 | Security Review (adversarial) | Security & Privacy | done | runs/docs-answerability-2/08-security-review.md | PASS WITH NON-BLOCKING FINDINGS: 0 blocking; S5, S6 required-fix (eval skill `'$ARGUMENTS'` quote breakout; local settings.local.json rule too wide; owner's call, not the product); S1-S4, S7, S8 advisory; freeze verified (empty diff since bca0e40) |
 | Release Gate QA (spawn 1 of 2) | QA Evidence (fresh) | done | runs/docs-answerability-2/09-release-qa.md | NO-GO as written on one mechanical item: `uv run ruff check` exits 1 (23 errors, all in the committed `security-probes/*.py`, commit 69fd907; product, tests, tools clean). mypy clean; pytest 375 passed; `-m model` 8 passed, 1 failed (`test_sample_derivation_reproducible`, cause confirmed: frozen key is a byte-identical prefix of the current key); freeze diff empty; INV-4/INV-5 equal the approved blocks plus record 8; Done-means rows all MET except README/status (not applicable yet); deviations listed in section 5 |
+| Release Gate verdict (spawn 2 of 2) | Release Manager (fresh) | done | runs/docs-answerability-2/09-release-checklist.md | **GO WITH CONDITIONS** (internally releasable, not announced; tier 2 as the intent names it): conditions C1 to C6 are the owner's/named roles' (C1 tier ruling, tier 3 plausible; C2 S6; C3 S5; C4 final-tree ruff/mypy/pytest by a session with a shell + owner sees D6; C5 identity, STATE record 8 and stale rule 4 row, DPA line; C6 stage 10 carries the full figures); accepted risks: retrieval gate exit 1 (19/24 = 79.2%), bar 2 one question of margin at both stages (stage 5 24/28, stage 7 16/19), best-score rule NOT MET, end to end 16/24; this role had no shell and did not re-run ruff, mypy or pytest; no push, merge, deploy or announcement authorised |
 
 ## Approvals
 
@@ -41,13 +42,15 @@
 | Stage 1: two public questions before INV words | 4 (sequencing) | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-4.md |
 | INV-4/INV-5 exact words (+ two-line NOT_ANSWERABLE output, F10) | 4 | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-5.md |
 | Session context named (extends record 3) | 6 | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-6.md |
+| D1: seven harness tools added to disallowedTools | 5 | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-7.md |
+| INV-5 environment list edit (OS version, git/worktree flag) | 4 | yes | approved | owner | 2026-10-13 | APPROVAL_RECORD-8.md |
 | D1: seven harness tools added to judge disallowedTools | 4/5 | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-7.md |
 
 ## Budget
 
 - **Budget:** 2600k plan · ceiling 3400k (stop and ask above it; no hard cap) · unit: peak context summed per spawn  ·  **Depth:** standard (Security: adversarial, bound by the intent)
-- **Spent:** 1903k (73%)  ·  **Remaining:** 697k
-- **Next stage:** Release Manager verdict (gate, standard) est. 50k → **PROCEED**
+- **Spent:** 2090k (80%)  ·  **Remaining:** 510k
+- **Next stage:** Docs (Tech Writer, smoke) est. 30k → **PROCEED**
 
 Note (Release Gate QA): the verdict needs the ruff item in `09-release-qa.md` section 1 settled first (fix the probe scripts or untrack them; do not touch `pyproject.toml`, a frozen file).
 
@@ -81,7 +84,9 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 | Stage 7 judge spawns (48, driver session) | sonnet-5-5 (harness log, from transcripts) | n/a | — | — | — | 411k peak-sum (in-equiv 480k); est. was 400k | 0 | 0 |
 | Stage 7 scoring QA | sonnet-5-5 (harness log) | medium (declared) | — | — | 1:53 | 47k peak (408k processed) | 13 | 0 |
 | Security Review (adversarial) | opus-5-5 (harness log) | high (declared) | — | — | 10:42 | 157k peak (5.44M processed; est. was 125k) | 54 | 0 |
-| **Total** | | | | | | 1903k peak-sum (stage 1 29k from transcripts; usage.mjs does not list forked spawns) | 139 | |
+| Release Gate QA run | sonnet-5-5 (harness log) | medium (declared) | — | — | 5:10 | 83k peak (1.70M processed; est. 60k) | 35 | 0 |
+| Release Gate verdict (Release Manager) | sonnet-5-5 (harness log) | medium (declared) | — | — | 4:17 | 104k peak (1.53M processed; est. 50k) | 45 | 0 |
+| **Total** | | | | | | 2090k peak-sum (stage 1 29k from transcripts; usage.mjs does not list forked spawns) | 139 | |
 
 ## Freeze record (R8)
 
