@@ -3,8 +3,8 @@
 - **Ask:** docs-answerability-2 from intents/docs-answerability-2.md (confirmed 2026-10-12)
 - **Project pack:** ai-agent-product
 - **Release tier:** 2
-- **Current stage:** Security Review (adversarial)
-- **Status:** in-progress (waiting-on-session)
+- **Current stage:** Release Gate (tier 2)
+- **Status:** in-progress
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
 - **Started:** 2026-10-12  ·  **Updated:** 2026-10-12
@@ -28,6 +28,7 @@
 | Label review (fifth set) | QA Evidence (fresh, adversarial on unanswerable) | done | runs/docs-answerability-2/06-label-review.md | unanswerable: 23 CONFIRMED, 0 ANSWERABLE-IN-DOCS, 1 AMBIGUOUS (gu09, recommend replace with gr02); 18 hard negatives verified; answerable: 13 source additions on 10 questions, 0 dropped; set not run; edits proposed, not applied |
 | Stage 7 driver | Owner-started session | done (07a-driver-log.md: 48 spawns r101-r148, no anomaly; session-load deviation disclosed) | SESSION_REQUEST-3.md -> 07a-driver-log.md | audit: no anomaly |
 | Stage 7 scoring | QA Evidence (fresh) | done | runs/docs-answerability-2/07-gate-scoring.md | record valid (48 spawns, 0 offered tools, 0 tool_use); bar 1 24/24 MET, bar 2 16/19 MET, judge errors 0; overall MET; retrieval gate exit 1 (19/24 = 79.2%), reported apart |
+| Security Review (adversarial) | Security & Privacy | done | runs/docs-answerability-2/08-security-review.md | PASS WITH NON-BLOCKING FINDINGS: 0 blocking; S5, S6 required-fix (eval skill `'$ARGUMENTS'` quote breakout; local settings.local.json rule too wide; owner's call, not the product); S1-S4, S7, S8 advisory; freeze verified (empty diff since bca0e40) |
 
 ## Approvals
 
@@ -44,8 +45,8 @@
 ## Budget
 
 - **Budget:** 2600k plan · ceiling 3400k (stop and ask above it; no hard cap) · unit: peak context summed per spawn  ·  **Depth:** standard (Security: adversarial, bound by the intent)
-- **Spent:** 1746k (67%)  ·  **Remaining:** 854k
-- **Next stage:** Security Review (review, adversarial: binds) est. 125k → **PROCEED**
+- **Spent:** 1903k (73%)  ·  **Remaining:** 697k
+- **Next stage:** Release Gate (gate, standard) est. 150k → **PROCEED**
 
 Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 90k estimate (314k + ~90k + 130k, well under the 2600k plan); the Orchestrator records pass 2's actual spend. The stage is gated by the rule 4 approval, not by budget.
 
@@ -76,7 +77,8 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 | Stage 6 label review | sonnet-5-5 (harness log) | high (declared) | — | — | 11:46 | 226k peak (13.31M processed; est. was 110k) | 109 | 0 |
 | Stage 7 judge spawns (48, driver session) | sonnet-5-5 (harness log, from transcripts) | n/a | — | — | — | 411k peak-sum (in-equiv 480k); est. was 400k | 0 | 0 |
 | Stage 7 scoring QA | sonnet-5-5 (harness log) | medium (declared) | — | — | 1:53 | 47k peak (408k processed) | 13 | 0 |
-| **Total** | | | | | | 1746k peak-sum (stage 1 29k from transcripts; usage.mjs does not list forked spawns) | 139 | |
+| Security Review (adversarial) | opus-5-5 (harness log) | high (declared) | — | — | 10:42 | 157k peak (5.44M processed; est. was 125k) | 54 | 0 |
+| **Total** | | | | | | 1903k peak-sum (stage 1 29k from transcripts; usage.mjs does not list forked spawns) | 139 | |
 
 ## Freeze record (R8)
 
@@ -88,4 +90,6 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 
 ## Next action
 
-Owner starts the fresh session per `SESSION_REQUEST-3.md` (r101 to r148). It writes `07a-driver-log.md`. Then the Orchestrator spawns a different fresh QA to score once with `--expect-tools none`. Known: `test_sample_derivation_reproducible` (model-marked) now fails because it compares the whole key file byte for byte and the registered gate rows were appended after the freeze; the sample prefix of the key is byte-identical to the frozen file; the test is frozen and is not edited (disclose in the release gate).
+Orchestrator spawns the Release Gate (tier 2, est. 150k) on `08-security-review.md` (PASS WITH NON-BLOCKING FINDINGS; S5 and S6 are required-fix items for the owner: narrow or delete the `.claude/settings.local.json` rule, and do not invoke `/aveto-judge-seen` again until its `'$ARGUMENTS'` line is fixed).
+
+Previous (done): Owner starts the fresh session per `SESSION_REQUEST-3.md` (r101 to r148). It writes `07a-driver-log.md`. Then the Orchestrator spawns a different fresh QA to score once with `--expect-tools none`. Known: `test_sample_derivation_reproducible` (model-marked) now fails because it compares the whole key file byte for byte and the registered gate rows were appended after the freeze; the sample prefix of the key is byte-identical to the frozen file; the test is frozen and is not edited (disclose in the release gate).

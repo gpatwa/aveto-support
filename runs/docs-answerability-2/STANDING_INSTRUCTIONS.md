@@ -45,3 +45,10 @@ Applied: the old gu09 block replaced by gr02's block with only the id changed (d
 
 ## SI-3 (owner, typed, 2026-10-14)
 After a stage or pre-registered check passes, continue to the next planned stage without waiting. Stop only for: a failed pre-registered check; any rule 1 to 6 approval, safety-control wording, lowering a depth the intent names, a credential, or push, merge or deploy; spend above the 3.4M ceiling; an anomaly in a spawn audit; a Security finding rated blocking; or a session the owner must start (write the session request with the exact line and stop). The scoring run stays blind: the scoring driver does not read the key or the set. Everything else is decided under SI-1 and listed in the digest.
+
+## Security Review result (stage 8, adversarial; `08-security-review.md`): PASS WITH NON-BLOCKING FINDINGS (SI-3: continue to the Release Gate)
+Two findings need the owner's decision, neither blocking, neither actioned by the Orchestrator (both touch the owner's permissions or a frozen method file):
+- **S5** quote breakout in `.claude/skills/aveto-judge-seen/SKILL.md:9` (single-quoted `$ARGUMENTS`); a fix voids the freeze for future use; stage 7 results unaffected (every transcript matched a key payload by hash). Security recommends not invoking `/aveto-judge-seen` again until fixed.
+- **S6** the gitignored `.claude/settings.local.json` rule `Bash(uv run -q --project * python * seen_payload.py *)` is wider than needed; recommended: delete or narrow it now that the stage 7 driver is finished. The Orchestrator does not edit permission settings.
+Advisories S1 to S4, S7, S8 go to the close-out as carry-forward.
+An untracked `runs/docs-answerability-2/RELEASE_APPROVAL_PACKET.md` (a support-session draft, not this slice's artefact) is left untouched and uncommitted.
