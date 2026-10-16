@@ -69,21 +69,23 @@
 
 ## Not yet done
 
-- Tier 3 is ruled (owner, 2026-10-16). Six tier 3 items are not met strictly;
-  the owner holds the conditions T1 to T11. The main ones:
-  - The owner's approval of the release action is pending; the change request
-    is PENDING (approver named: Gopal Patwa).
-  - Anthropic's DPA, account terms, retention and training use are UNKNOWN and
-    not stated by the owner.
-  - The monitoring thresholds are proposals the owner has not set.
+- Tier 3 is ruled (owner, 2026-10-16). Six tier 3 items are not met strictly.
+  The owner closed the slice on 2026-10-16 as an internal release candidate,
+  not landed (no merge, push, tag, deploy or announcement). Conditions T1 to
+  T11 are deferred to the next run's Charter; they are neither resolved nor
+  waived. The main ones:
+  - The release action is not approved; the change request is PENDING
+    (approver named: Gopal Patwa).
+  - Anthropic's DPA, account terms, retention and training use are UNKNOWN,
+    deferred.
+  - The monitoring thresholds are proposals, not set.
   - The rollback has never been rehearsed.
-  - The retrieval gate exit 1 above (19/24 = 79.2% on the fifth set) is not
-    accepted yet.
+  - The retrieval gate exit 1 above (19/24 = 79.2% on the fifth set, not a
+    registered bar) is recorded as a known limit.
   - S5 (quote breakout in the eval-only skill `/aveto-judge-seen`) is open; do
-    not use that skill until it is fixed.
+    not use that skill again until it is fixed.
   - S6 (a permissive local permission rule): the file is verified absent in
-    this worktree; it was reported removed on the owner's word, and the owner
-    confirms.
+    this worktree; it was reported removed on the owner's word.
   - A final ruff, mypy and pytest run on the exact commit to be merged is not
     recorded (the lint gate passes because three Security probe scripts exempt
     themselves, D6, which the owner acknowledged).

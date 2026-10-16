@@ -19,3 +19,7 @@ Every other line of both files, all figures, `STATE.md`, `SAFETY_INVARIANTS.md`,
 ## Still open for this role
 
 The runbook copy into `docs/runbooks/` (T5, from `11-monitoring-plan.md` sections 2 and 5) is not done in this pass.
+
+## Closure wording touch-up (2026-10-16, Tech Writer, smoke)
+
+Source: `APPROVAL_RECORD-10.md`, `16-slice-closure.md`. In `README.md` (status banner and Status section) and `.agentic/CURRENT_MVP_STATUS.md` ("Not yet done"): replaced "the owner holds T1 to T11" and "pending/not accepted yet/has not stated/has yet to confirm" wording with the owner's decision: closed as an internal release candidate, not landed; T1 to T11 deferred to the next run's Charter (neither resolved nor waived); DPA status UNKNOWN, deferred; R-A (19/24 = 79.2%, exit 1, not a registered bar) a known limit; `/aveto-judge-seen` not used again until S5 is fixed. No figure changed, no new claim added. Nothing else edited.

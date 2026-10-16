@@ -3,8 +3,8 @@
 - **Ask:** docs-answerability-2 from intents/docs-answerability-2.md (confirmed 2026-10-12)
 - **Project pack:** ai-agent-product
 - **Release tier:** 3 (owner ruling, APPROVAL_RECORD-9, 2026-10-16; the intent named 2)
-- **Current stage:** Closed out; tier 3 verdict GO WITH CONDITIONS (not cleared to land). Waiting on the owner's conditions T1 to T11
-- **Status:** blocked-on-approval
+- **Current stage:** CLOSED as an internal release candidate, not landed (APPROVAL_RECORD-10); T1 to T11 deferred to the next run's Charter
+- **Status:** done
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
 - **Started:** 2026-10-12  ·  **Updated:** 2026-10-16
@@ -46,12 +46,13 @@
 | D1: seven harness tools added to disallowedTools | 5 | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-7.md |
 | INV-5 environment list edit (OS version, git/worktree flag) | 4 | yes | approved | owner | 2026-10-13 | APPROVAL_RECORD-8.md |
 | Release tier ruled 3; D6 acknowledged; seen-set skill unused until S5 fixed; RELEASE_APPROVAL_PACKET set aside | release tier (C1) | yes | approved | Gopal Patwa (owner) | 2026-10-16 | APPROVAL_RECORD-9.md |
+| Closure: internal release candidate, not landed; T1-T11 deferred to the next Charter; DPA unknown, deferred; R-A a known limit | release decision | yes | approved (no merge, push, tag or deploy) | Gopal Patwa (owner) | 2026-10-16 | APPROVAL_RECORD-10.md |
 
 ## Budget
 
 - **Budget:** 2600k plan · ceiling 3400k (stop and ask above it; no hard cap) · unit: peak context summed per spawn  ·  **Depth:** standard (Security: adversarial, bound by the intent)
 - **Spent:** 2773k (82% of the 3.4M ceiling; 173k over the 2.6M plan, which is not a stop)  ·  **Remaining to ceiling:** 627k
-- **Next stage:** none planned. Owner decisions T1 to T11 (13-release-checklist-tier3.md) before any push, merge or deploy → **STOP-AND-ASK**
+- **Next stage:** none. Slice closed; the next run's Charter takes T1 to T11 (see 16-slice-closure.md) → **DONE**
 
 Note (Release Gate QA): the verdict needs the ruff item in `09-release-qa.md` section 1 settled first (fix the probe scripts or untrack them; do not touch `pyproject.toml`, a frozen file).
 
@@ -108,4 +109,4 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 
 ## Next action
 
-Closed out (15-close-out.md). Nothing is pushed or merged; the branch is `claude/docs-answerability-2`. Owner: decide the conditions in `13-release-checklist-tier3.md` section 8 (T1 to T11): the release-action approval and change request (11c), the Anthropic vendor/DPA position (11b), monitoring thresholds (11), rollback rehearsal, the retrieval-gate result (R-A), S5, the S6 deletion confirmation, governance gates. Orchestrator: re-run ruff, mypy and pytest on the merge candidate when asked. A support-session step: run the analytics refresh after the actuals are recorded.
+Slice closed by the owner (APPROVAL_RECORD-10, `16-slice-closure.md`). Nothing is merged, pushed, tagged or deployed. Next run: its Charter decides T1 to T11 in the owner's own words; `/aveto-judge-seen` is not used until S5 is fixed.

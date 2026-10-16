@@ -7,9 +7,11 @@
 > returns files. The judge step is a separate, optional step that the operator
 > runs by hand in their own Claude Code session; it can replace the files with
 > `no confident match`. Release Gate verdict at tier 3 (ruled by the owner):
-> **go with conditions** (an internal branch candidate, not announced, **not
-> cleared to land**: no push, merge, deploy, PR, tag or announcement without the
-> owner's own typed yes). Details and limits are in
+> **go with conditions** (an internal release candidate, **not landed**, not
+> announced, **not cleared to land**: no push, merge, deploy, PR, tag or
+> announcement without the owner's own typed yes). The owner closed the slice on
+> 2026-10-16 in that state; conditions T1 to T11 are deferred to the next run's
+> Charter. Details and limits are in
 > [Status](#status) below. The default ranking (`file-rrf-v1`) scored 14/16 on
 > an earlier held-out set; an optional reranker is off by default and showed no
 > demonstrated gain. The record of each attempt, including what failed and
@@ -162,22 +164,23 @@ question repeats), which may flatter Bar 2.
 **Release tier and verdict.** The owner ruled the release tier 3 on
 2026-10-16. The tier 3 verdict is **go with conditions**: an internally
 releasable branch candidate, not announced, and not cleared to land. Six tier 3
-items are not met strictly, and the owner holds the conditions T1 to T11. The
-main ones:
+items are not met strictly. On 2026-10-16 the owner closed the slice as an
+internal release candidate, not landed (no merge, push, tag, deploy or
+announcement). Conditions T1 to T11 are deferred to the next run's Charter; they
+are neither resolved nor waived. The main ones:
 
-- The owner's approval of the release action is pending, and the change request
-  is PENDING (approver named: Gopal Patwa).
-- Anthropic's DPA, account terms, retention and training use are UNKNOWN; the
-  owner has not stated them.
-- The monitoring thresholds are proposals the owner has not set.
+- The release action is not approved, and the change request is PENDING
+  (approver named: Gopal Patwa).
+- Anthropic's DPA, account terms, retention and training use are UNKNOWN,
+  deferred.
+- The monitoring thresholds are proposals, not set.
 - The rollback has never been rehearsed.
-- The retrieval gate result above (19/24 = 79.2% on the fifth set) is not
-  accepted yet.
+- The retrieval gate result above (19/24 = 79.2% on the fifth set, exit 1, not
+  a registered bar) is recorded as a known limit.
 - S5 (quote breakout in the eval-only skill `/aveto-judge-seen`) is open; that
-  skill is not to be used until it is fixed.
+  skill is not to be used again until it is fixed.
 - S6 (a permissive local permission rule): the file is verified absent in this
-  worktree; it was reported removed on the owner's word, and the owner has yet
-  to confirm it.
+  worktree; it was reported removed on the owner's word.
 - A final lint, type and test run on the exact commit to be merged has not been
   recorded.
 
