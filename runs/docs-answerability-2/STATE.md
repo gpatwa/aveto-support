@@ -2,8 +2,8 @@
 
 - **Ask:** docs-answerability-2 from intents/docs-answerability-2.md (confirmed 2026-10-12)
 - **Project pack:** ai-agent-product
-- **Release tier:** 2
-- **Current stage:** Docs (stage 10), under release conditions C1-C6
+- **Release tier:** 3 (owner ruling, APPROVAL_RECORD-9, 2026-10-16; the intent named 2)
+- **Current stage:** Tier 3 additions (monitoring plan, vendor risk and DPA, change request, dry run and audit coverage), then Release Manager re-verdict, docs finish, close-out
 - **Status:** in-progress
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
@@ -45,13 +45,14 @@
 | Session context named (extends record 3) | 6 | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-6.md |
 | D1: seven harness tools added to disallowedTools | 5 | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-7.md |
 | INV-5 environment list edit (OS version, git/worktree flag) | 4 | yes | approved | owner | 2026-10-13 | APPROVAL_RECORD-8.md |
+| Release tier ruled 3; D6 acknowledged; seen-set skill unused until S5 fixed; RELEASE_APPROVAL_PACKET set aside | release tier (C1) | yes | approved | Gopal Patwa (owner) | 2026-10-16 | APPROVAL_RECORD-9.md |
 | D1: seven harness tools added to judge disallowedTools | 4/5 | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-7.md |
 
 ## Budget
 
 - **Budget:** 2600k plan · ceiling 3400k (stop and ask above it; no hard cap) · unit: peak context summed per spawn  ·  **Depth:** standard (Security: adversarial, bound by the intent)
 - **Spent:** 2090k (80%)  ·  **Remaining:** 510k
-- **Next stage:** Close-out (Post-Launch Learning) est. 55k → **PROCEED**
+- **Next stage:** Tier 3 additions: SRE monitoring plan (design/review ~40k), compliance review (~50k), QA dry run and audit coverage (~60k), Release Manager tier 3 verdict (~50k), docs finish (~30k), close-out (~55k): est. 285k → **PROCEED** (spent 2156k + 285k stays under the 3.4M ceiling; over the 2.6M plan, which is not a stop)
 
 Note (Release Gate QA): the verdict needs the ruff item in `09-release-qa.md` section 1 settled first (fix the probe scripts or untrack them; do not touch `pyproject.toml`, a frozen file).
 
