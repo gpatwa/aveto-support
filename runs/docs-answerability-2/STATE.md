@@ -7,7 +7,7 @@
 - **Status:** in-progress
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
-- **Started:** 2026-10-12  ·  **Updated:** 2026-10-12
+- **Started:** 2026-10-12  ·  **Updated:** 2026-10-16
 
 ## Stages
 
@@ -46,7 +46,6 @@
 | D1: seven harness tools added to disallowedTools | 5 | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-7.md |
 | INV-5 environment list edit (OS version, git/worktree flag) | 4 | yes | approved | owner | 2026-10-13 | APPROVAL_RECORD-8.md |
 | Release tier ruled 3; D6 acknowledged; seen-set skill unused until S5 fixed; RELEASE_APPROVAL_PACKET set aside | release tier (C1) | yes | approved | Gopal Patwa (owner) | 2026-10-16 | APPROVAL_RECORD-9.md |
-| D1: seven harness tools added to judge disallowedTools | 4/5 | yes | approved | owner | 2026-10-12 | APPROVAL_RECORD-7.md |
 
 ## Budget
 
