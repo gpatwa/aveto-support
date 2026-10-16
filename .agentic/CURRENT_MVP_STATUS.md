@@ -42,9 +42,13 @@
     file in the top 5 (not a registered bar of this slice).
   - Source files of the fifth set overlap earlier sets' (21 of 24 answerable
     questions); disclosed, may flatter Bar 2.
-- Release Gate verdict: **go with conditions**, internally releasable, **not
-  announced**, no unattended use, no push, merge or deploy
-  (`runs/docs-answerability-2/09-release-checklist.md`). ADR 0008 stays
+- Release Gate verdict at tier 3 (ruled by the owner, 2026-10-16): **go with
+  conditions**, an internally releasable branch candidate, **not announced**
+  and **not cleared to land**: no push, merge, deploy, PR, tag, announcement or
+  unattended use without the owner's own typed yes
+  (`runs/docs-answerability-2/13-release-checklist-tier3.md`). A dry run on a
+  fixture passed 11 of 11 criteria (no model ran in it); audit coverage passed
+  with gaps G1 to G9. ADR 0008 stays
   Proposed. Limits: one model, one set, a small sample, one scored run; the
   judge adds a failure mode of over-abstaining on answerable questions.
   Nothing here claims production readiness.
@@ -65,13 +69,24 @@
 
 ## Not yet done
 
-- Open owner decisions, not resolved: the release tier (tier 3 plausible per the
-  Release Manager; run at tier 2); Security findings S5 (quote breakout in the
-  eval-only skill `/aveto-judge-seen`, not to be invoked until decided) and S6
-  (a too-wide local permission rule); the retrieval gate exit 1 above; approver
-  identity and DPA line for the approval record; a final ruff, mypy and pytest
-  run by a session with a shell (the lint gate passes because three Security
-  probe scripts exempt themselves, D6).
+- Tier 3 is ruled (owner, 2026-10-16). Six tier 3 items are not met strictly;
+  the owner holds the conditions T1 to T11. The main ones:
+  - The owner's approval of the release action is pending; the change request
+    is PENDING (approver named: Gopal Patwa).
+  - Anthropic's DPA, account terms, retention and training use are UNKNOWN and
+    not stated by the owner.
+  - The monitoring thresholds are proposals the owner has not set.
+  - The rollback has never been rehearsed.
+  - The retrieval gate exit 1 above (19/24 = 79.2% on the fifth set) is not
+    accepted yet.
+  - S5 (quote breakout in the eval-only skill `/aveto-judge-seen`) is open; do
+    not use that skill until it is fixed.
+  - S6 (a permissive local permission rule): the file is verified absent in
+    this worktree; it was reported removed on the owner's word, and the owner
+    confirms.
+  - A final ruff, mypy and pytest run on the exact commit to be merged is not
+    recorded (the lint gate passes because three Security probe scripts exempt
+    themselves, D6, which the owner acknowledged).
 - One model-marked test fails in the committed tree
   (`test_sample_derivation_reproducible`; the frozen test compares the whole key
   file, which gained rows after the freeze). A later slice must change it.

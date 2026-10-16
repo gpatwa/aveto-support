@@ -6,8 +6,10 @@
 > `retrieve` itself never abstains: a question the docs do not answer still
 > returns files. The judge step is a separate, optional step that the operator
 > runs by hand in their own Claude Code session; it can replace the files with
-> `no confident match`. Release Gate verdict: **go with conditions** (internally
-> releasable, not announced). Details and limits are in
+> `no confident match`. Release Gate verdict at tier 3 (ruled by the owner):
+> **go with conditions** (an internal branch candidate, not announced, **not
+> cleared to land**: no push, merge, deploy, PR, tag or announcement without the
+> owner's own typed yes). Details and limits are in
 > [Status](#status) below. The default ranking (`file-rrf-v1`) scored 14/16 on
 > an earlier held-out set; an optional reranker is off by default and showed no
 > demonstrated gain. The record of each attempt, including what failed and
@@ -157,12 +159,32 @@ offered, 0 tool calls, 48 spawns each stage. Fifth-set source files overlap
 earlier sets' (21 of 24 answerable questions cite at least one such file; no
 question repeats), which may flatter Bar 2.
 
-**Open owner decisions** (none is resolved here): the release tier (the
-Release Manager reads tier 3 as plausible; this slice is run at tier 2);
-Security findings S5 (quote breakout in the eval-only skill
-`/aveto-judge-seen`, which is not to be invoked again until decided) and S6 (a
-local permission rule that is wider than needed); the retrieval gate result
-above; the identity and DPA line for the approval record; a final lint, type
-and test run by a session with a shell on the final tree. Release Gate
-verdict: `runs/docs-answerability-2/09-release-checklist.md`. Nothing here is
-announced or deployed, and nothing authorises a push or merge.
+**Release tier and verdict.** The owner ruled the release tier 3 on
+2026-10-16. The tier 3 verdict is **go with conditions**: an internally
+releasable branch candidate, not announced, and not cleared to land. Six tier 3
+items are not met strictly, and the owner holds the conditions T1 to T11. The
+main ones:
+
+- The owner's approval of the release action is pending, and the change request
+  is PENDING (approver named: Gopal Patwa).
+- Anthropic's DPA, account terms, retention and training use are UNKNOWN; the
+  owner has not stated them.
+- The monitoring thresholds are proposals the owner has not set.
+- The rollback has never been rehearsed.
+- The retrieval gate result above (19/24 = 79.2% on the fifth set) is not
+  accepted yet.
+- S5 (quote breakout in the eval-only skill `/aveto-judge-seen`) is open; that
+  skill is not to be used until it is fixed.
+- S6 (a permissive local permission rule): the file is verified absent in this
+  worktree; it was reported removed on the owner's word, and the owner has yet
+  to confirm it.
+- A final lint, type and test run on the exact commit to be merged has not been
+  recorded.
+
+Also new: a dry run on a fixture (11 of 11 criteria pass) and an audit coverage
+check (pass with gaps G1 to G9). The model was not run in the dry run, and the
+operator path `/aveto-judge` has never been measured. Records: the tier 3
+verdict `runs/docs-answerability-2/13-release-checklist-tier3.md`, with
+`11-monitoring-plan.md`, `11b-vendor-risk.md`, `11c-change-request.md` and
+`12-tier3-dryrun-audit.md` beside it. Nothing here is announced or deployed,
+and nothing authorises a push or merge.
