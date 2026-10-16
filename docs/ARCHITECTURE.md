@@ -13,11 +13,12 @@
 > `judge-apply`, `eval --verdicts`, the `/aveto-judge` skill), proposed in
 > [ADR 0008](adr/0008-operator-run-answerability-judge.md). Both registered
 > judge bars were met once (seen-set sample and fifth gate set; figures under
-> "Safety stance"). The Release Gate verdict **go with conditions** (internally
-> releasable, not announced; `runs/docs-answerability-2/09-release-checklist.md`)
-> was given at tier 2 and is being re-run for tier 3, which is the owner's
-> ruling (`runs/docs-answerability-2/APPROVAL_RECORD-9.md`). Nothing is
-> released or announced. The INV-4 and INV-5
+> "Safety stance"). The owner ruled the release tier 3 on 2026-10-16
+> (`runs/docs-answerability-2/APPROVAL_RECORD-9.md`); the tier 3 verdict is
+> **GO WITH CONDITIONS** (internally releasable candidate, not announced, not
+> cleared to land; conditions T1 to T11 are the owner's or a named role's to
+> resolve; see `runs/docs-answerability-2/13-release-checklist-tier3.md`).
+> Nothing is released or announced. The INV-4 and INV-5
 > words that cover it are approved and live in `.agentic/SAFETY_INVARIANTS.md`.
 > Tech specs: `runs/docs-retrieval/02-tech-spec.md` (retrieval);
 > `runs/docs-answerability-2/02-tech-spec.md` (the judge step).
@@ -230,8 +231,11 @@ supersedes the ranking and confidence parts of
     fifth set, 16 of 24 answerable questions show the right file after judging
     (diagnostic).
 
-  The Release Gate verdict go with conditions was given at tier 2 and is being
-  re-run for tier 3, the owner's ruling (APPROVAL_RECORD-9). The step is not
+  The owner ruled the release tier 3 on 2026-10-16 (APPROVAL_RECORD-9); the
+  tier 3 verdict is GO WITH CONDITIONS (internally releasable candidate, not
+  announced, not cleared to land; conditions T1 to T11 are the owner's or a
+  named role's to resolve; see
+  `runs/docs-answerability-2/13-release-checklist-tier3.md`). The step is not
   released and not announced.
 - **Bounded network surface (INV-5, amended under APPROVAL_RECORD-4).** Egress
   is limited to two read-only HTTPS GETs, both made only by `ingest`:
