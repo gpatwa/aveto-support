@@ -3,7 +3,7 @@
 - **Ask:** docs-answerability-2 from intents/docs-answerability-2.md (confirmed 2026-10-12)
 - **Project pack:** ai-agent-product
 - **Release tier:** 3 (owner ruling, APPROVAL_RECORD-9, 2026-10-16; the intent named 2)
-- **Current stage:** Tier 3 additions (monitoring plan, vendor risk and DPA, change request, dry run and audit coverage), then Release Manager re-verdict, docs finish, close-out
+- **Current stage:** Release Gate re-run at tier 3 (Release Manager)
 - **Status:** in-progress
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
@@ -51,8 +51,8 @@
 ## Budget
 
 - **Budget:** 2600k plan · ceiling 3400k (stop and ask above it; no hard cap) · unit: peak context summed per spawn  ·  **Depth:** standard (Security: adversarial, bound by the intent)
-- **Spent:** 2090k (80%)  ·  **Remaining:** 510k
-- **Next stage:** Tier 3 additions: SRE monitoring plan (design/review ~40k), compliance review (~50k), QA dry run and audit coverage (~60k), Release Manager tier 3 verdict (~50k), docs finish (~30k), close-out (~55k): est. 285k → **PROCEED** (spent 2156k + 285k stays under the 3.4M ceiling; over the 2.6M plan, which is not a stop)
+- **Spent:** 2469k (95% of the 2.6M plan; 73% of the 3.4M ceiling)  ·  **Remaining to ceiling:** 931k
+- **Next stage:** Release Manager tier 3 verdict (gate) est. 60k, then docs update (README, status; ~30k), close-out (~55k), final-tree run: est. 145k; spent 2469k + 145k = 2614k stays under the 3.4M ceiling → **PROCEED**
 
 Note (Release Gate QA): the verdict needs the ruff item in `09-release-qa.md` section 1 settled first (fix the probe scripts or untrack them; do not touch `pyproject.toml`, a frozen file).
 
@@ -88,7 +88,12 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 | Security Review (adversarial) | opus-5-5 (harness log) | high (declared) | — | — | 10:42 | 157k peak (5.44M processed; est. was 125k) | 54 | 0 |
 | Release Gate QA run | sonnet-5-5 (harness log) | medium (declared) | — | — | 5:10 | 83k peak (1.70M processed; est. 60k) | 35 | 0 |
 | Release Gate verdict (Release Manager) | sonnet-5-5 (harness log) | medium (declared) | — | — | 4:17 | 104k peak (1.53M processed; est. 50k) | 45 | 0 |
-| **Total** | | | | | | 2090k peak-sum (stage 1 29k from transcripts; usage.mjs does not list forked spawns) | 139 | |
+| Docs (Tech Writer, smoke; partial: two files refused by the write-scope guard) | sonnet-5-5 (harness log) | medium (declared) | — | — | 1:44 | 65k peak (538k processed; est. 30k) | 42 | 0 |
+| Docs finish (Architect, resumed after a session-limit interruption) | opus-5-5 (harness log) | high (declared) | — | — | — | 52k peak across passes (691k processed) | 19 | 0 |
+| Tier 3: monitoring plan (SRE) | sonnet-5-5 (harness log) | medium (declared) | — | — | 2:13 | 58k peak (305k processed; est. 40k) | 9 | 0 |
+| Tier 3: vendor risk and change request (Compliance Reviewer) | sonnet-5-5 (harness log) | high (declared) | — | — | 2:45 | 83k peak (640k processed; est. 50k) | 31 | 0 |
+| Tier 3: fixture dry run and audit coverage (QA Evidence) | sonnet-5-5 (harness log) | medium (declared) | — | — | 6:10 | 121k peak (3.10M processed; est. 60k) | 44 | 0 |
+| **Total** | | | | | | 2469k peak-sum (stage 1 29k from transcripts; usage.mjs does not list forked spawns) | 139 | |
 
 ## Freeze record (R8)
 
