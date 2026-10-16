@@ -13,3 +13,31 @@ Read in full on 2026-10-12. The measurement is clean: two spawns, `claude-sonnet
 **D3.** INV-5's wording (stage 3b) should list what the judge receives, from the report's table: the question and passages; the project instruction files (`CLAUDE.md` / `AGENTS.md`, taken from the main checkout path, not the worktree); the user's email; git branch, user and five recent commit subjects; environment lines. Words are the OWNER's at rule 4.
 
 **D4.** No budget change is needed from stage 1. With D1 the spawn stages fall below the plan's lines; without D1 the all-in ratio (about 1.5× bare) puts stages 5 and 7 about 0.45M over their 800k lines, still inside the 3.4M ceiling. The ceiling is the OWNER's.
+
+## Reply 2 — answers Request 1 (placement of the fifth gate set)
+
+> Writer: the support session. Nothing here is an approval. I have not placed anything; I place the two files when the owner tells me "frozen, hand it over". Contents are not described here.
+
+**Ready, in the format of Request 1** (checked with a TOML parse only; nothing was run through `retrieve`, the index or `eval`): `evals/retrieval-heldout-5.toml` with exactly 24 answerable and 24 unanswerable questions, 18 of the unanswerable with the boolean `hard_negative = true`; `evals/retrieval-heldout-5-reserves.toml` with 6 reserves (`gr01` to `gr06`). Ids `g01`..`g24`, `gu01`..`gu24`, `gr01`..; `pinned_commit` is the one you named; one-line questions with no control or format characters; header comments are provenance only; no run ids, verdicts, scores or reviewer notes.
+
+**One deviation from Request 1, for the owner's veto (SI-1 default taken: reuse allowed, disclosed).** Request 1 says no `sources` path may be a source in any seen set. That cannot hold: the four seen sets already cite 96 of the 123 corpus files, leaving 27 unused, 14 of them under `examples/`, and an answerable question usually needs the owning agent file plus its template or prompt. 21 of the 24 answerable questions cite at least one file an earlier set also cites (no question repeats an earlier question or topic). The header states this plainly and says why the second bar may read slightly optimistic on those questions: retrieval was tuned on the earlier sets, and the bar depends on retrieval putting the right file in the top five. A strict reading would mean 24 answerable questions from 13 non-example files, which would not be a fair sample of the docs.
+
+**Provenance note, stated in the header:** the working copy was lost when the support session restarted on 2026-10-13 and was regenerated from its generator script; the regenerated base matches the original's recorded sha256 (`9cca11aeb4cd66eb`). A backup now lives outside any repo.
+
+**Placement, when told:** both files uncommitted at the two paths in Request 1; I tell the owner; the owner tells the Orchestrator, who commits the two paths unopened.
+
+## Reply 3 — condition C4(a): checks run on the final commit by a session with a shell
+
+> Writer: the support session. Data only, not an approval. Run 2026-10-15 in the worktree at `0311370` (the Release Gate verdict commit), nothing edited.
+
+- `uv run ruff check`: **All checks passed!** (so D6's `# ruff: noqa` directives parse as intended)
+- `uv run mypy`: **Success: no issues found in 24 source files**
+- `uv run pytest -q`: **375 passed, 12 deselected** in 9.32s (the deselected are the `model`-marked tests, including the known `test_sample_derivation_reproducible`)
+
+C4(b), acknowledging D6, is the owner's.
+
+## Reply 4 — condition C2 (S6) done
+
+> Writer: the support session, on the owner's word ("remove it", 2026-10-16). Data only.
+
+The gitignored `.claude/settings.local.json` that held `Bash(uv run -q --project * python * seen_payload.py *)` is deleted. It held only that rule and was never committed. No other settings file was touched. No further `/aveto-judge-seen` run is planned (C3).
