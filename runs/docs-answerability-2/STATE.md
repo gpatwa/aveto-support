@@ -3,8 +3,8 @@
 - **Ask:** docs-answerability-2 from intents/docs-answerability-2.md (confirmed 2026-10-12)
 - **Project pack:** ai-agent-product
 - **Release tier:** 3 (owner ruling, APPROVAL_RECORD-9, 2026-10-16; the intent named 2)
-- **Current stage:** Release Gate re-run at tier 3 (Release Manager)
-- **Status:** in-progress
+- **Current stage:** Closed out; tier 3 verdict GO WITH CONDITIONS (not cleared to land). Waiting on the owner's conditions T1 to T11
+- **Status:** blocked-on-approval
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
 - **Started:** 2026-10-12  ·  **Updated:** 2026-10-16
@@ -50,8 +50,8 @@
 ## Budget
 
 - **Budget:** 2600k plan · ceiling 3400k (stop and ask above it; no hard cap) · unit: peak context summed per spawn  ·  **Depth:** standard (Security: adversarial, bound by the intent)
-- **Spent:** 2469k (95% of the 2.6M plan; 73% of the 3.4M ceiling)  ·  **Remaining to ceiling:** 931k
-- **Next stage:** Release Manager tier 3 verdict (gate) est. 60k, then docs update (README, status; ~30k), close-out (~55k), final-tree run: est. 145k; spent 2469k + 145k = 2614k stays under the 3.4M ceiling → **PROCEED**
+- **Spent:** 2773k (82% of the 3.4M ceiling; 173k over the 2.6M plan, which is not a stop)  ·  **Remaining to ceiling:** 627k
+- **Next stage:** none planned. Owner decisions T1 to T11 (13-release-checklist-tier3.md) before any push, merge or deploy → **STOP-AND-ASK**
 
 Note (Release Gate QA): the verdict needs the ruff item in `09-release-qa.md` section 1 settled first (fix the probe scripts or untrack them; do not touch `pyproject.toml`, a frozen file).
 
@@ -61,7 +61,7 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 
 | Stage | Retries used | Cap | Class | Last failure |
 |-------|--------------|-----|-------|--------------|
-| — | 0 | 2 | — | — |
+| Release Gate QA run | 1 | 2 | logic | ruff exit 1 on the committed security probe scripts; fixed by the Orchestrator (D6), acknowledged by the owner in APPROVAL_RECORD-9 |
 
 ## Interruptions
 
@@ -92,7 +92,11 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 | Tier 3: monitoring plan (SRE) | sonnet-5-5 (harness log) | medium (declared) | — | — | 2:13 | 58k peak (305k processed; est. 40k) | 9 | 0 |
 | Tier 3: vendor risk and change request (Compliance Reviewer) | sonnet-5-5 (harness log) | high (declared) | — | — | 2:45 | 83k peak (640k processed; est. 50k) | 31 | 0 |
 | Tier 3: fixture dry run and audit coverage (QA Evidence) | sonnet-5-5 (harness log) | medium (declared) | — | — | 6:10 | 121k peak (3.10M processed; est. 60k) | 44 | 0 |
-| **Total** | | | | | | 2469k peak-sum (stage 1 29k from transcripts; usage.mjs does not list forked spawns) | 139 | |
+| Release Gate verdict at tier 3 | sonnet-5-5 (harness log) | medium (declared) | — | — | 5:23 | 152k peak (2.56M processed; est. 60k) | 56 | 0 |
+| Docs update, tier 3 (Tech Writer) | sonnet-5-5 (harness log) | medium (declared) | — | — | 0:27 | 40k peak (91k processed; est. 25k) | 8 | 0 |
+| Docs finish, tier wording (Architect, resumed again) | opus-5-5 (harness log) | high (declared) | — | — | 0:39 | +8k peak (60k across passes) | 9 | 0 |
+| Close-out (Post-Launch Learning) | sonnet-5-5 (harness log) | medium (declared) | — | — | 3:11 | 105k peak (756k processed; est. 55k) | 27 | 0 |
+| **Total** | | | | | | 2773k peak-sum | 766 | |
 
 ## Freeze record (R8)
 
@@ -104,6 +108,4 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 
 ## Next action
 
-Orchestrator spawns the Release Gate (tier 2, est. 150k) on `08-security-review.md` (PASS WITH NON-BLOCKING FINDINGS; S5 and S6 are required-fix items for the owner: narrow or delete the `.claude/settings.local.json` rule, and do not invoke `/aveto-judge-seen` again until its `'$ARGUMENTS'` line is fixed).
-
-Previous (done): Owner starts the fresh session per `SESSION_REQUEST-3.md` (r101 to r148). It writes `07a-driver-log.md`. Then the Orchestrator spawns a different fresh QA to score once with `--expect-tools none`. Known: `test_sample_derivation_reproducible` (model-marked) now fails because it compares the whole key file byte for byte and the registered gate rows were appended after the freeze; the sample prefix of the key is byte-identical to the frozen file; the test is frozen and is not edited (disclose in the release gate).
+Closed out (15-close-out.md). Nothing is pushed or merged; the branch is `claude/docs-answerability-2`. Owner: decide the conditions in `13-release-checklist-tier3.md` section 8 (T1 to T11): the release-action approval and change request (11c), the Anthropic vendor/DPA position (11b), monitoring thresholds (11), rollback rehearsal, the retrieval-gate result (R-A), S5, the S6 deletion confirmation, governance gates. Orchestrator: re-run ruff, mypy and pytest on the merge candidate when asked. A support-session step: run the analytics refresh after the actuals are recorded.

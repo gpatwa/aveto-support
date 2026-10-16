@@ -63,3 +63,12 @@ No stop under SI-3 applies to docs and close-out, so they proceed. The condition
 - **C4** run ruff, mypy and pytest on the final tree: the Orchestrator ran them after D6 (ruff all checks passed, mypy clean, 375 passed, 12 deselected) and re-runs them at close-out.
 - **C5** identity in the approval records, the DPA line for Anthropic (nothing in the artefacts states it; the owner's to state), and the STATE corrections (done by the Orchestrator).
 - **C6** docs carry the full figures. **R-A** the retrieval-gate exit 1 on the fifth set (79.2%) accepted in the owner's words or declared relevant.
+
+## Final digest: decisions taken under SI-1 and SI-3 after the tier 3 ruling (owner may veto)
+| # | Decision | Default taken |
+|---|----------|---------------|
+| D7 | Three tier 3 checks run in parallel after record 9 (monitoring plan, vendor risk and change request, fixture dry run and audit coverage) at the owner's direction; spend 2,773k peak-sum, 82% of the 3.4M ceiling, 173k over the 2.6M plan (not a stop). | Proceeded. Figures in `STATE.md` and `trace.json`; the close-out has the breakdown. |
+| D8 | The Architect's wording "the owner's or a named role's to resolve" for conditions T1 to T11 (the checklist assigns T6, T9, T11 to roles). | Kept. |
+| D9 | S6: `.claude/settings.local.json` verified absent in this worktree; the support session's Reply 4 reports it was removed on the owner's word. | Recorded as a fact, not as an approval; the owner confirms (T9). |
+| D10 | `trace.json` written by the Orchestrator (T11); `STATE.md` corrected (duplicate record 7 row, stale lines, Total, failure budget); analytics regenerated (`runs/ANALYTICS.md`, `runs/dashboard.html`). | Done. |
+| D11 | The untracked `RELEASE_APPROVAL_PACKET.md` and the modified `SUPPORT_REPLIES.md` belong to the support session. | Left untouched and uncommitted. |

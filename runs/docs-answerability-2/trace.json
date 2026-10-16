@@ -9,7 +9,7 @@
   "leastPrivilegeEnforced": true,
   "leastPrivilegeNote": "Role subagents loaded from this worktree's .claude/agents/ (generated, tool-restricted). The judge agent has no tools key, a deny list ending in mcp__* with the seven harness tools (D1), and a match-all deny hook; offered tools 0 on every audited spawn. The judge-spawning sessions were owner-started (stage 1, smoke and stage 5, stage 7); the stage 7 driver session was started in the main checkout and moved to the worktree before any spawn (disclosed).",
   "telemetrySource": "self-reported",
-  "telemetryNote": "Tokens are peak context per spawn (the budget unit). Forked judge spawns and owner-started session spawns are not listed by usage.mjs; their figures come from transcript peak-sums. Total about 2,469k peak-sum against a 2.6M plan and a 3.4M ceiling.",
+  "telemetryNote": "Tokens are peak context per spawn (the budget unit). Forked judge spawns and owner-started session spawns are not listed by usage.mjs; their figures come from transcript peak-sums. Total about 2773k peak-sum against a 2.6M plan and a 3.4M ceiling.",
   "approvals": [
     {
       "action": "Plan 2.6M, ceiling 3.4M (no hard cap), intent and plan confirmed",
@@ -232,7 +232,7 @@
       "effort": "medium (declared)",
       "tokens": 83000,
       "toolCalls": 35,
-      "retries": 0
+      "retries": 1
     },
     {
       "stage": "Release Gate verdict (tier 2)",
@@ -286,6 +286,42 @@
       "effort": "medium (declared)",
       "tokens": 121000,
       "toolCalls": 44,
+      "retries": 0
+    },
+    {
+      "stage": "Release Gate verdict at tier 3",
+      "executor": "subagent",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 152000,
+      "toolCalls": 56,
+      "retries": 0
+    },
+    {
+      "stage": "Docs update, tier 3 state (Tech Writer)",
+      "executor": "subagent",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 40000,
+      "toolCalls": 8,
+      "retries": 0
+    },
+    {
+      "stage": "Docs finish, tier wording (Architect, resumed again)",
+      "executor": "subagent",
+      "model": "opus-5-5",
+      "effort": "high (declared)",
+      "tokens": 8000,
+      "toolCalls": 9,
+      "retries": 0
+    },
+    {
+      "stage": "Close-out (Post-Launch Learning)",
+      "executor": "subagent",
+      "model": "sonnet-5-5",
+      "effort": "medium (declared)",
+      "tokens": 105000,
+      "toolCalls": 27,
       "retries": 0
     }
   ]

@@ -1,13 +1,13 @@
 # Pipeline Analytics — generated
 
-_Generated 2026-10-09T21:44:57Z. **Do not edit by hand** — regenerate with `node <playbook>/execution/analyze.mjs .` from the repo root._
+_Generated 2026-10-16T22:04:28Z. **Do not edit by hand** — regenerate with `node <playbook>/execution/analyze.mjs .` from the repo root._
 
 ## Fleet
 
-- Runs traced: **7**
-- Stages: **49** · Tokens: **27,468,328** · Tool calls: **1,116**
+- Runs traced: **8**
+- Stages: **71** · Tokens: **30,240,845** · Tool calls: **1,882**
 - **Untraced stages: 6** across 4 run(s) — executed by the Orchestrator rather than spawned, so they carry no tokens or tool calls
-- Envelope breaches: **4/7** · Stage outliers: **26**
+- Envelope breaches: **5/8** · Stage outliers: **34**
 
 ## Per run
 
@@ -20,6 +20,7 @@ _Generated 2026-10-09T21:44:57Z. **Do not edit by hand** — regenerate with `no
 | docs-retrieval-3-proof | 2 | 4 | 2,345,000 | 51 | 200,000 | ❌ over 2145k |
 | docs-retrieval-4 | 2 | 11 | 9,684,000 | 232 | 1,000,000 | ❌ over 8684k |
 | docs-abstention | 2 | 12 | 8,407,000 | 240 | 1,100,000 | ❌ over 7307k |
+| docs-answerability-2 | 3 | 22 | 2,772,517 | 766 | 2,200,000 | ❌ over 573k |
 
 ## Pipeline completeness
 
@@ -38,6 +39,7 @@ this table) can say whether a given skip was earned.
 | docs-retrieval-3-proof | ⚠ Scope Review, Implementation, Release Gate | Market Research, Discovery, UX Research, UI Design, Architecture, QA Evidence, Security Review, Post-Launch | Label review, Scoring, Close-out |
 | docs-retrieval-4 | — | Market Research, Discovery, UX Research, UI Design, QA Evidence, Post-Launch | Close-out |
 | docs-abstention | — | Market Research, Discovery, UX Research, UI Design, QA Evidence, Post-Launch | Baseline, Stale-text pass (README), Status-file edit, Close-out |
+| docs-answerability-2 | ⚠ Intake | Market Research, Discovery, UX Research, UI Design | Stage 1 measurement (2 judge spawns, owner-started session), Smoke r049 + stage 5 judge spawns (49), Stage 6 label review, Stage 7 judge spawns (48, driver session), Docs finish (Architect, resumed), Docs finish, tier wording (Architect, resumed again) |
 
 ## DORA
 
@@ -48,7 +50,7 @@ Per `PIPELINE_SLOS.md` § DORA mapping. **Only metrics the traces ground are rep
 | Lead time (median) | — | intake → landed, 0/0 slices dated |
 | Deployment frequency | — | 0 landed over the traced span |
 | Change failure rate | — | 0 post-landing fixes + 0 reverts ÷ 0 landed |
-| Rework rate | — | 2 stage retries + 0 post-landing fixes ÷ 0 landed |
+| Rework rate | — | 3 stage retries + 0 post-landing fixes ÷ 0 landed |
 | Failed-deployment recovery time | **not captured** | needs `detectedAt`/`resolvedAt` on a `gateCatches` entry; no run has recorded them |
 
 ## Density by archetype
@@ -57,7 +59,7 @@ Tokens per tool call, measured against each archetype's own cap.
 
 | Archetype | What it does | Cap | Observed (n) | Range | Avg |
 |-----------|--------------|-----|--------------|-------|-----|
-| **review** | read artefacts → verdict | 8,000 | 21 | 654–7,000 | 2,435 |
+| **review** | read artefacts → verdict | 8,000 | 34 | 654–7,000 | 2,686 |
 | **build** | heavy file / test I/O | 5,000 | 2 | 3,420–3,828 | 3,624 |
 
 ## Per stage
@@ -113,6 +115,28 @@ Tokens per tool call, measured against each archetype's own cap.
 | docs-abstention | ARCHITECTURE.md edit | review | opus-5-5 | declared: frontmatter default | 236,000 | 27 | 8,741 | 109% | ⚠ over cap, ⚠ density |
 | docs-abstention | Status-file edit | review | sonnet-5-5 | declared: frontmatter default | 63,000 | 9 | 7,000 | 88% | — |
 | docs-abstention | Close-out | review | sonnet-5-5 | declared: frontmatter default | 126,000 | 11 | 11,455 | 143% | ⚠ density |
+| docs-answerability-2 | Stage 1 measurement (2 judge spawns, owner-started session) | review | sonnet-5-5 | n/a | 28,517 | 0 | — | — | — |
+| docs-answerability-2 | Scope Review | review | sonnet-5-5 | medium (declared) | 107,000 | 61 | 1,754 | 22% | — |
+| docs-answerability-2 | Architecture pass 1 | review | opus-5-5 | high (declared) | 178,000 | 78 | 2,282 | 29% | ⚠ over cap |
+| docs-answerability-2 | Architecture pass 2 | review | opus-5-5 | high (declared) | 165,000 | 69 | 2,391 | 30% | ⚠ over cap |
+| docs-answerability-2 | Implementation (stage 4) | review | sonnet-5-5 | medium (declared) | 154,000 | 47 | 3,277 | 41% | ⚠ over cap |
+| docs-answerability-2 | Smoke r049 + stage 5 judge spawns (49) | review | sonnet-5-5 | n/a | 386,000 | 0 | — | — | ⚠ over cap |
+| docs-answerability-2 | Stage 5 scoring QA | review | sonnet-5-5 | medium (declared) | 42,000 | 10 | 4,200 | 53% | — |
+| docs-answerability-2 | Stage 6 label review | review | sonnet-5-5 | high (declared) | 226,000 | 109 | 2,073 | 26% | ⚠ over cap |
+| docs-answerability-2 | Stage 7 judge spawns (48, driver session) | review | sonnet-5-5 | n/a | 411,000 | 0 | — | — | ⚠ over cap |
+| docs-answerability-2 | Stage 7 scoring QA | review | sonnet-5-5 | medium (declared) | 47,000 | 13 | 3,615 | 45% | — |
+| docs-answerability-2 | Security Review (adversarial) | review | opus-5-5 | high (declared) | 157,000 | 54 | 2,907 | 36% | ⚠ over cap |
+| docs-answerability-2 | Release Gate QA run | review | sonnet-5-5 | medium (declared) | 83,000 | 35 | 2,371 | 30% | — |
+| docs-answerability-2 | Release Gate verdict (tier 2) | review | sonnet-5-5 | medium (declared) | 104,000 | 45 | 2,311 | 29% | — |
+| docs-answerability-2 | Docs (Tech Writer) | review | sonnet-5-5 | medium (declared) | 65,000 | 42 | 1,548 | 19% | — |
+| docs-answerability-2 | Docs finish (Architect, resumed) | review | opus-5-5 | high (declared) | 52,000 | 19 | 2,737 | 34% | — |
+| docs-answerability-2 | Tier 3: monitoring plan (SRE) | review | sonnet-5-5 | medium (declared) | 58,000 | 9 | 6,444 | 81% | — |
+| docs-answerability-2 | Tier 3: vendor risk and change request (Compliance Reviewer) | review | sonnet-5-5 | high (declared) | 83,000 | 31 | 2,677 | 33% | — |
+| docs-answerability-2 | Tier 3: fixture dry run and audit coverage (QA) | review | sonnet-5-5 | medium (declared) | 121,000 | 44 | 2,750 | 34% | — |
+| docs-answerability-2 | Release Gate verdict at tier 3 | review | sonnet-5-5 | medium (declared) | 152,000 | 56 | 2,714 | 34% | ⚠ over cap |
+| docs-answerability-2 | Docs update, tier 3 state (Tech Writer) | review | sonnet-5-5 | medium (declared) | 40,000 | 8 | 5,000 | 63% | — |
+| docs-answerability-2 | Docs finish, tier wording (Architect, resumed again) | review | opus-5-5 | high (declared) | 8,000 | 9 | 889 | 11% | — |
+| docs-answerability-2 | Close-out (Post-Launch Learning) | review | sonnet-5-5 | medium (declared) | 105,000 | 27 | 3,889 | 49% | — |
 
 ## Untraced stages
 
@@ -134,7 +158,7 @@ excludes them** — treat slice costs as a floor, not a total.
 Defects the gates caught before they shipped — the pipeline earning its keep.
 **A floor, not a total:** 5 run(s) predate the `gateCatches` field (docs-retrieval, docs-retrieval-2, docs-retrieval-2-proof, docs-retrieval-3, docs-retrieval-3-proof) and recorded catches only in prose, so a real block — e.g. Security stopping the http-layer bind — is not counted here.
 
-**Structured catches: 4**
+**Structured catches: 9**
 
 | Run | Gate | Verdict | Severity | Finding | Recovery |
 |-----|------|---------|----------|--------|----------|
@@ -142,6 +166,11 @@ Defects the gates caught before they shipped — the pipeline earning its keep.
 | docs-abstention | Pre-registered seen-set condition (spec 4.1) | fail | blocker | judge pooled Bar 1 2/20 vs >=16/20; method stopped before the one-shot fifth set was spent | — |
 | docs-abstention | Baseline | fail | advisory | baseline on the unchanged code showed retrieve never abstains while INV-4, README and status said it did | — |
 | docs-abstention | Release Gate | fail | blocker | NO-GO: bars never evaluated; model path stopped | — |
+| docs-answerability-2 | Label review | fail | required-fix | One unanswerable label (gu09) ambiguous; replaced by a reserve (owner D5b). Ten answerable questions had defensible sources missing; additions applied. | — |
+| docs-answerability-2 | Security | fail | required-fix | S5: quote breakout in the eval-only skill /aveto-judge-seen (single-quoted $ARGUMENTS); open, the skill is not to be used until fixed. | — |
+| docs-answerability-2 | Security | fail | required-fix | S6: a wide local permission rule for seen_payload.py; the file was removed on the owner's word (verified absent). | — |
+| docs-answerability-2 | Release Gate (QA run) | fail | required-fix | ruff exit 1: 23 errors in the committed security probe scripts; fixed with a first-line noqa (D6), acknowledged by the owner. | — |
+| docs-answerability-2 | Release Gate (tier 3) | fail | required-fix | Six tier 3 items not met: release-action approval, change request approval, vendor risk and DPA (unknown), plus governance gates unruled; owner holds conditions T1 to T11. | — |
 
 
 ## Outliers
@@ -172,6 +201,14 @@ Defects the gates caught before they shipped — the pipeline earning its keep.
 - **Stale-text pass (README)** (docs-abstention, review): 179,000 tok / 29 calls — 1.2× the 150k per-stage token cap
 - **ARCHITECTURE.md edit** (docs-abstention, review): 236,000 tok / 27 calls — 1.6× the 150k per-stage token cap; 1.1× the 8.0k review-density cap
 - **Close-out** (docs-abstention, review): 126,000 tok / 11 calls — 1.4× the 8.0k review-density cap
+- **Architecture pass 1** (docs-answerability-2, review): 178,000 tok / 78 calls — 1.2× the 150k per-stage token cap
+- **Architecture pass 2** (docs-answerability-2, review): 165,000 tok / 69 calls — 1.1× the 150k per-stage token cap
+- **Implementation (stage 4)** (docs-answerability-2, review): 154,000 tok / 47 calls — 1.0× the 150k per-stage token cap
+- **Smoke r049 + stage 5 judge spawns (49)** (docs-answerability-2, review): 386,000 tok / 0 calls — 2.6× the 150k per-stage token cap
+- **Stage 6 label review** (docs-answerability-2, review): 226,000 tok / 109 calls — 1.5× the 150k per-stage token cap
+- **Stage 7 judge spawns (48, driver session)** (docs-answerability-2, review): 411,000 tok / 0 calls — 2.7× the 150k per-stage token cap
+- **Security Review (adversarial)** (docs-answerability-2, review): 157,000 tok / 54 calls — 1.0× the 150k per-stage token cap
+- **Release Gate verdict at tier 3** (docs-answerability-2, review): 152,000 tok / 56 calls — 1.0× the 150k per-stage token cap
 
 ## Baselines
 
