@@ -1,0 +1,1 @@
+Can I run Aveto on a Raspberry Pi?

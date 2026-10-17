@@ -1,0 +1,275 @@
+# Derived by uv run python -m tools.judge_run derive-sample --out runs/docs-answerability-2/judge-check. Questions copied verbatim from the seen sets.
+pinned_commit = "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+
+[[question]]
+id = "a03"
+question = "Once it's installed, how do I actually ask it to build something?"
+sources = ["docs/GETTING_STARTED.md", "execution/pack/commands/agentic-slice.md"]
+where = "/agentic-slice"
+
+[[question]]
+id = "a05"
+question = "What should I write down before starting a new feature?"
+sources = ["templates/INTENT_TEMPLATE.md"]
+where = "the intent template sections"
+
+[[question]]
+id = "a07"
+question = "Which things will the agents never do without asking me first?"
+sources = ["docs/HUMAN_APPROVAL_RULES.md"]
+where = "'Always require approval'"
+
+[[question]]
+id = "a09"
+question = "How does it stop a run from burning through too many tokens?"
+sources = ["execution/pack/protocols/RUN_ECONOMICS.md"]
+where = "§2 budget check before every spawn"
+
+[[question]]
+id = "a13"
+question = "How does QA know the feature is actually what I asked for, not just that the tests pass?"
+sources = ["agents/qa-evidence.md", "templates/QA_EVIDENCE_TEMPLATE.md"]
+where = "verifies each 'Done means' line verbatim"
+
+[[question]]
+id = "a15"
+question = "Can it deploy to AWS?"
+sources = ["agents/cloud-deployment.md"]
+where = "Azure is the first adapter; AWS is a named future one"
+
+[[question]]
+id = "a18"
+question = "Will the support agent reply to my customers by itself?"
+sources = ["agents/customer-support.md"]
+where = "draft — never send"
+
+[[question]]
+id = "a20"
+question = "Does it follow any security guidance written specifically for AI agents?"
+sources = ["docs/STANDARDS_WATCH.md"]
+where = "OWASP Top 10 for Agentic Applications"
+
+[[question]]
+id = "a22"
+question = "When I build an AI feature, do I have to call the model straight away?"
+sources = ["project-packs/ai-agent-product.md"]
+where = "deterministic-first, LLM as adapter"
+
+[[question]]
+id = "a24"
+question = "Why isn't there a project manager agent?"
+sources = ["docs/AGENT_ROLES.md"]
+where = "'Roles you will not see here'"
+
+[[question]]
+id = "u01"
+question = "What is the monthly licence price for a team of ten?"
+answerable = false
+hard_negative = "\"pricing\" appears in the FinOps and Market Researcher briefs, about a product's pricing — not Aveto's"
+
+[[question]]
+id = "u02"
+question = "Does Aveto run on Windows?"
+answerable = false
+hard_negative = "\"window\" appears as a usage window and time window — never the operating system"
+
+[[question]]
+id = "u03"
+question = "Can I use it with GitLab merge requests?"
+answerable = false
+
+[[question]]
+id = "u04"
+question = "Is there a VS Code extension I can install?"
+answerable = false
+
+[[question]]
+id = "u05"
+question = "How do I reset my Aveto account password?"
+answerable = false
+
+[[question]]
+id = "u06"
+question = "Can approvals come through Slack instead of GitHub?"
+answerable = false
+
+[[question]]
+id = "h03"
+question = "Who keeps an eye on how much the product costs to run?"
+sources = ["agents/finops.md"]
+where = "unit economics, budgets and kill-switches"
+
+[[question]]
+id = "h06"
+question = "After an outage, what should we write up so it doesn't happen again?"
+sources = ["templates/INCIDENT_REVIEW_TEMPLATE.md"]
+where = "blameless incident review"
+
+[[question]]
+id = "h08"
+question = "I'm building a tool that clicks through websites for people. Is there guidance for that kind of product?"
+sources = ["project-packs/browser-automation-product.md"]
+where = "project pack for a product that drives a real browser"
+
+[[question]]
+id = "h10"
+question = "Once something is deployed, who checks that it really works for users?"
+sources = ["agents/production-verification.md"]
+where = "is the live system actually working, right after a deploy"
+
+[[question]]
+id = "h12"
+question = "I want to try two versions of a page and see which one does better. How should I set that up?"
+sources = ["templates/EXPERIMENT_SPEC_TEMPLATE.md", "agents/data-analyst.md"]
+where = "hypothesis, primary metric, sample size and duration"
+
+[[question]]
+id = "h16"
+question = "Where do we think through how an attacker might abuse a new feature?"
+sources = ["templates/THREAT_MODEL_TEMPLATE.md"]
+where = "lightweight STRIDE threat model"
+
+[[question]]
+id = "hu01"
+question = "Can I run Aveto on a Raspberry Pi?"
+answerable = false
+
+[[question]]
+id = "hu02"
+question = "Does it create tickets in Jira?"
+answerable = false
+
+[[question]]
+id = "hu03"
+question = "Is there a phone app for approving runs on the go?"
+answerable = false
+
+[[question]]
+id = "hu04"
+question = "Can the agents write all their documents in Spanish?"
+answerable = false
+
+[[question]]
+id = "hu05"
+question = "What response-time SLA do you promise for paid support?"
+answerable = false
+hard_negative = "\"SLA\" appears in the SRE brief and incident and vendor templates, about a product's own SLAs — never Aveto support"
+
+[[question]]
+id = "hu06"
+question = "How do I cancel my Aveto subscription?"
+answerable = false
+hard_negative = "\"subscription\" appears as the Claude Code subscription and an Azure subscription — never an Aveto plan"
+
+[[question]]
+id = "t02"
+question = "I need to change my database tables. What should I plan before doing it?"
+sources = ["templates/MIGRATION_PLAN_TEMPLATE.md"]
+where = "the migration plan"
+
+[[question]]
+id = "t05"
+question = "What logging and alerts should a new service have from day one?"
+sources = ["templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md", "agents/sre.md"]
+where = "structured logging, metrics and alerts bootstrap"
+
+[[question]]
+id = "t08"
+question = "Is there one place that lists every run, what's blocked and what shipped?"
+sources = ["execution/pack/protocols/RUN_INVENTORY.md"]
+where = "runs/INDEX.md, the fleet view"
+
+[[question]]
+id = "t10"
+question = "How is the Aveto website itself published?"
+sources = ["docs/DEPLOYMENT.md"]
+where = "deployment of the public site"
+
+[[question]]
+id = "t14"
+question = "Who keeps a model's training data and retraining in order?"
+sources = ["agents/ml-engineer.md"]
+where = "the lifecycle of trained models"
+
+[[question]]
+id = "tu01"
+question = "Can I get approval requests in Microsoft Teams?"
+answerable = false
+
+[[question]]
+id = "tu02"
+question = "Is there a free trial?"
+answerable = false
+
+[[question]]
+id = "tu03"
+question = "How do I deploy Aveto on Kubernetes?"
+answerable = false
+
+[[question]]
+id = "tu04"
+question = "Is there a Discord community for Aveto users?"
+answerable = false
+
+[[question]]
+id = "f01"
+question = "What should the requirements doc for a feature cover before anyone designs it?"
+sources = ["templates/PRD_TEMPLATE.md", "agents/product-manager.md", "prompts/product-brief.md", "templates/INTENT_TEMPLATE.md"]
+where = "the PRD: problem, user, success criteria, scope, non-goals"
+
+[[question]]
+id = "f03"
+question = "How do I work out what a new feature will cost to run each month?"
+sources = ["templates/COST_BUDGET_TEMPLATE.md", "prompts/cost-review.md", "agents/finops.md"]
+where = "the cost and budget review"
+
+[[question]]
+id = "f06"
+question = "Where are a screen's empty, loading and error states written down for the developer?"
+sources = ["templates/UX_SPEC_TEMPLATE.md", "agents/ui-designer.md"]
+where = "UX spec states; the UI Designer's states and interaction notes"
+
+[[question]]
+id = "f08"
+question = "Who checks there's real evidence a problem exists before we build anything?"
+sources = ["agents/market-researcher.md", "templates/DISCOVERY_BRIEF_TEMPLATE.md", "prompts/market-research.md"]
+where = "market research and the discovery brief's problem hypothesis"
+
+[[question]]
+id = "f10"
+question = "Who looks for security holes and privacy leaks in a change before release?"
+sources = ["agents/security-privacy.md", "prompts/security-review.md", "templates/THREAT_MODEL_TEMPLATE.md", "docs/RELEASE_GATES.md"]
+where = "the Security & Privacy agent and its review prompt"
+
+[[question]]
+id = "f13"
+question = "Which agent hands out the work to all the others during a run?"
+sources = ["agents/orchestrator.md", "prompts/orchestrator.md", "execution/pack/commands/agentic-slice.md"]
+where = "the Orchestrator"
+
+[[question]]
+id = "f15"
+question = "Who writes the prompts and wires up the model calls in an AI feature?"
+sources = ["agents/ai-engineer.md", "project-packs/ai-agent-product.md", "prompts/developer-task.md", "agents/ml-engineer.md"]
+where = "implements the AI / LLM portion: adapter wiring, prompts"
+
+[[question]]
+id = "fu01"
+question = "Does it work with Bitbucket?"
+answerable = false
+
+[[question]]
+id = "fu02"
+question = "Is Aveto listed on the GitHub Marketplace?"
+answerable = false
+
+[[question]]
+id = "fu03"
+question = "Is Aveto itself SOC 2 certified?"
+answerable = false
+hard_negative = "\"SOC 2\" and \"certification\" appear in the compliance brief and templates, about the product being built — never Aveto's own status"
+
+[[question]]
+id = "fu04"
+question = "Are the docs available in Japanese?"
+answerable = false

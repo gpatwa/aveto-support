@@ -1,0 +1,1 @@
+Is there a command that creates the project's .agentic folder for me?

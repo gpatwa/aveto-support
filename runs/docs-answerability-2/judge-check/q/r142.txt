@@ -1,0 +1,1 @@
+Does it support right-to-left languages?

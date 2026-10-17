@@ -1,0 +1,42 @@
+# Retrieval evaluation set — FIFTH held-out gate, RESERVES, for docs-answerability-2.
+#
+# Used only to replace a question the label review drops, in id order, unchanged.
+# Never run through add-set and never scored unless a replacement is needed.
+# Provenance as in retrieval-heldout-5.toml.
+
+pinned_commit = "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+
+[[question]]
+id = "gr01"
+question = "Can I put my company's logo on the documents the agents generate?"
+answerable = false
+
+[[question]]
+id = "gr02"
+question = "Can I export a run's trace as a spreadsheet?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gr03"
+question = "Which database does the Aveto website use?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gr04"
+question = "Can I start a slice from a webhook or from another program?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gr05"
+question = "Does anything run at the same time as the engineers, or is every stage strictly one after another?"
+sources = ["agents/analytics-engineer.md", "docs/AGENTIC_SDLC.md"]
+where = "the Analytics Engineer runs alongside Architecture and Implementation"
+
+[[question]]
+id = "gr06"
+question = "What does an agent have to include when it asks me for approval?"
+sources = ["docs/HUMAN_APPROVAL_RULES.md"]
+where = "'How to ask for approval': what it wants to do, why, what would be reversed"

@@ -1,0 +1,10 @@
+# APPROVAL_RECORD-9 — release tier ruled 3; conditions C3, C4(b); packet set aside (owner, typed, 2026-10-16)
+
+Approver: **Gopal Patwa** (the owner, in the driving session). Owner's words: "Set RELEASE_APPROVAL_PACKET.md aside: it is out of this slice's scope and I am not signing it now (no API key, no runtime model client, no drafting, no Azure deploy in this slice). C1: I rule tier 3: write the monitoring plan, record me as the named approver of the release action, and record Anthropic's vendor-risk and DPA status from what we know; then re-run the Release Manager verdict for tier 3. C4(b): D6 acknowledged. C3: the seen-set skill is not used again until S5 is fixed. Then do the close-out and stop. Do not merge or push."
+
+Recorded effect:
+- **C1:** release tier is **3** (replaces the intent's tier 2). Tier 3 adds to tier 2: explicit human approval per HUMAN_APPROVAL_RULES (records 1 to 9), a dry run on a fixture before live, audit event coverage manually verified, a post-launch monitoring plan, and (enterprise contexts) a change request with a named approver. Work ordered: monitoring plan, named approver, Anthropic vendor-risk and DPA status "from what we know" (unknowns stated as unknown, nothing invented), then a re-run Release Manager verdict for tier 3. The depth of no stage is lowered.
+- **C4(b):** D6 (the `# ruff: noqa` first line in the three Security probe scripts, commit 3e1c939) acknowledged by the owner.
+- **C3:** `/aveto-judge-seen` is not used again until S5 is fixed. The skill is a frozen method file; fixing S5 is a separate, later decision.
+- **`RELEASE_APPROVAL_PACKET.md`** (untracked draft from another session) is set aside as out of scope: not signed, not part of this slice, not committed by the Orchestrator. No API key, runtime model client, drafting or Azure deploy is in this slice.
+- **Not approved by this record:** push, merge, deploy, announcement, unattended use, a hard cap or any budget change, the S5 fix, the S6 rule's disposition (still the owner's: delete, narrow or accept), the retrieval-gate acceptance (R-A).

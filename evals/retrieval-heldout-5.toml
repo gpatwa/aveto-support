@@ -1,0 +1,311 @@
+# Retrieval evaluation set — FIFTH held-out gate, for docs-answerability-2.
+#
+# Provenance, stated plainly:
+#   - Drafted by Claude in the playbook (support) session on 2026-10-09, before
+#     the answerability slices ran, and kept outside this repo until the method
+#     froze (method commit recorded in runs/docs-answerability-2/STATE.md).
+#   - It has NOT been run through retrieve, the index or eval. No role that
+#     designed or built retrieval or the judge has seen it.
+#   - The working copy was lost on 2026-10-13 and regenerated from its generator
+#     script; the regenerated file matches the original's recorded sha256.
+#   - Labels follow the pack's "Held-out gates" rule 4: each answerable question
+#     lists every file that defensibly answers it. The fresh label-review QA is
+#     asked to add any it finds missing and to attack the unanswerable labels.
+#   - No question repeats a question or a topic of the four earlier sets. Sources
+#     are NOT unique to this set: the earlier sets already cite 96 of the 123
+#     corpus files, so a no-reuse rule cannot hold, and 21 of the 24 answerable
+#     questions here cite at least one file an earlier set also cites. Retrieval
+#     was tuned on those earlier sets, so the second bar may read slightly
+#     optimistic on those questions.
+#
+# The bars, fixed before any run and never moved: abstain correctly on at least
+# 80 percent of the unanswerable questions (20 of 24); do not abstain on at
+# least 80 percent of the answerable questions whose right file is in the top 5.
+
+pinned_commit = "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+
+# ── Answerable ──
+
+[[question]]
+id = "g01"
+question = "Does saying \"looks good\" to an agent count as approving something?"
+sources = ["docs/HUMAN_APPROVAL_RULES.md", "execution/pack/protocols/APPROVAL_PROTOCOL.md"]
+where = "explicit approval is a direct yes to the specific request; 'looks good' is an acknowledgement"
+
+[[question]]
+id = "g02"
+question = "Roughly how many tokens will one slice use?"
+sources = ["docs/GETTING_STARTED.md", "execution/pack/protocols/RUN_ECONOMICS.md", "execution/pack/protocols/PIPELINE_SLOS.md"]
+where = "~756k per slice on average, 520k-947k observed"
+
+[[question]]
+id = "g03"
+question = "Can I keep a long-lived feature branch going while the agents work on it?"
+sources = ["docs/OPERATING_MODEL.md"]
+where = "trunk-based by default, no long-lived feature branches"
+
+[[question]]
+id = "g04"
+question = "If a deploy of the Aveto website goes wrong, how do I undo it?"
+sources = ["docs/DEPLOYMENT.md"]
+where = "Cloudflare Pages keeps every deployment; revert the commit"
+
+[[question]]
+id = "g05"
+question = "Will every agent keep sending me progress updates while it works?"
+sources = ["docs/OPERATING_MODEL.md", "agents/orchestrator.md"]
+where = "only the Orchestrator talks to the human"
+
+[[question]]
+id = "g06"
+question = "Do I have to tell my users they are talking to an AI?"
+sources = ["docs/STANDARDS_WATCH.md", "agents/compliance-reviewer.md"]
+where = "EU AI Act Article 50 transparency, a rule-5 precondition"
+
+[[question]]
+id = "g07"
+question = "If CI is all green, can a release go out without anyone signing off?"
+sources = ["docs/RELEASE_GATES.md", "docs/HUMAN_APPROVAL_RULES.md", "agents/release-manager.md"]
+where = "CI enforces mechanical gates; judgment gates and human approval stay human"
+
+[[question]]
+id = "g08"
+question = "Has more than one person ever run this on a real project?"
+sources = ["docs/GETTING_STARTED.md", "docs/VALIDATION_MATRIX.md", "execution/pack/protocols/SLICE_STATE.md"]
+where = "single-operator proven, not multi-operator"
+
+[[question]]
+id = "g09"
+question = "Is there a command that creates the project's .agentic folder for me?"
+sources = ["docs/GETTING_STARTED.md", "docs/VALIDATION_MATRIX.md"]
+where = "no .agentic scaffolding tool; copy and edit an example"
+
+[[question]]
+id = "g10"
+question = "How do I uninstall the pack from my repo?"
+sources = ["docs/VALIDATION_MATRIX.md"]
+where = "no uninstall and none planned; revert with git checkout"
+
+[[question]]
+id = "g11"
+question = "When an experiment ends, who reads out the result and what are the possible outcomes?"
+sources = ["agents/data-analyst.md", "prompts/experiment-readout.md", "templates/EXPERIMENT_SPEC_TEMPLATE.md"]
+where = "Data Analyst; ship / hold / kill / extend"
+
+[[question]]
+id = "g12"
+question = "I already have a PRD. Who turns it into personas and user journeys?"
+sources = ["agents/ux-researcher.md", "prompts/ux-audit.md", "templates/FEATURE_SPEC_TEMPLATE.md"]
+where = "UX Researcher produces the feature spec"
+
+[[question]]
+id = "g13"
+question = "A feature looks too big to build in one go. Who decides whether to split it, and into how many pieces?"
+sources = ["agents/engineering-manager.md", "prompts/em-scope-review.md"]
+where = "EM accepts or splits into 2-4 smaller slices"
+
+[[question]]
+id = "g14"
+question = "We trained our own model. When is it allowed to ship?"
+sources = ["agents/ml-engineer.md", "prompts/ml-training.md", "templates/MODEL_CARD_TEMPLATE.md"]
+where = "must beat the incumbent; shadow then canary"
+
+[[question]]
+id = "g15"
+question = "Who keeps the AI test suite representative as the product changes?"
+sources = ["agents/ai-governance.md", "prompts/ai-risk-review.md"]
+where = "AI Governance owns the eval suite (Eval Curator)"
+
+[[question]]
+id = "g16"
+question = "What is an error budget, and what happens when it is used up?"
+sources = ["agents/sre.md", "prompts/reliability-review.md"]
+where = "1 - SLO; error budget policy; feature freeze"
+
+[[question]]
+id = "g17"
+question = "How much of the codebase should a developer agent read before it starts a task?"
+sources = ["prompts/developer-task.md", "docs/OPERATING_MODEL.md", "agents/frontend-developer.md"]
+where = "only the files it will touch and what they depend on"
+
+[[question]]
+id = "g18"
+question = "In the worked example, what happens if one delete in a batch fails?"
+sources = ["examples/saved-items-bulk-delete/artefacts/05-tech-spec.md", "examples/saved-items-bulk-delete/artefacts/07-security-review.md", "examples/saved-items-bulk-delete/artefacts/03-feature-spec.md", "examples/saved-items-bulk-delete/artefacts/04-ux-spec.md"]
+where = "one transaction; the whole batch rolls back"
+
+[[question]]
+id = "g19"
+question = "In the worked example, can a user get deleted items back?"
+sources = ["examples/saved-items-bulk-delete/artefacts/02-prd.md", "examples/saved-items-bulk-delete/artefacts/04-ux-spec.md", "examples/saved-items-bulk-delete/artefacts/03-feature-spec.md"]
+where = "in-session Undo now; persistent trash view later"
+
+[[question]]
+id = "g20"
+question = "Why should an agent avoid long pauses in the middle of a slice?"
+sources = ["docs/OPERATING_MODEL.md"]
+where = "the prompt cache expires; replaying context is expensive"
+
+[[question]]
+id = "g21"
+question = "Which standards does the AI risk assessment follow?"
+sources = ["agents/ai-governance.md", "templates/AI_RISK_ASSESSMENT_TEMPLATE.md", "docs/STANDARDS_WATCH.md", "prompts/ai-risk-review.md"]
+where = "ISO/IEC 42005 and NIST GenAI Profile"
+
+[[question]]
+id = "g22"
+question = "In the worked example, how is the feature switched off if something goes wrong?"
+sources = ["examples/saved-items-bulk-delete/artefacts/08-release-checklist.md", "examples/saved-items-bulk-delete/artefacts/05-tech-spec.md"]
+where = "toggle the bulkDelete flag off"
+
+[[question]]
+id = "g23"
+question = "What is the difference between a standard, a normal and an emergency change?"
+sources = ["templates/CHANGE_REQUEST_TEMPLATE.md"]
+where = "pre-approved / needs review / approval recorded afterwards"
+
+[[question]]
+id = "g24"
+question = "What can the agents do without asking me first?"
+sources = ["docs/HUMAN_APPROVAL_RULES.md"]
+where = "the 'Allowed without approval' list"
+
+# ── Unanswerable (gated here) ──
+
+[[question]]
+id = "gu01"
+question = "Which cloud region does the Aveto website run in?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu02"
+question = "What uptime does the Aveto website guarantee?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu03"
+question = "Does the Security agent run penetration tests against my live site?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu04"
+question = "How long does Aveto keep my run records before deleting them?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu05"
+question = "What time zone do scheduled runs use?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu06"
+question = "How do I send run alerts to PagerDuty?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu07"
+question = "Can I connect Sentry for error tracking?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu08"
+question = "Is there a Grafana dashboard for the pipeline analytics?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu09"
+question = "Can I export a run's trace as a spreadsheet?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu10"
+question = "Can I get the analytics report as a PDF?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu11"
+question = "What is the Aveto pack's own test coverage percentage?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu12"
+question = "Can I vote on what goes on the Aveto roadmap?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu13"
+question = "How do I add my own custom role to the 28 agents?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu14"
+question = "How many experiments can I run at the same time?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu15"
+question = "Who founded Aveto?"
+answerable = false
+
+[[question]]
+id = "gu16"
+question = "Does it work in a monorepo?"
+answerable = false
+
+[[question]]
+id = "gu17"
+question = "Can I run the agents inside Docker?"
+answerable = false
+
+[[question]]
+id = "gu18"
+question = "Does it support right-to-left languages?"
+answerable = false
+
+[[question]]
+id = "gu19"
+question = "Is there a nonprofit discount?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu20"
+question = "How do I report a bug in Aveto itself?"
+answerable = false
+
+[[question]]
+id = "gu21"
+question = "How many people contribute to Aveto?"
+answerable = false
+
+[[question]]
+id = "gu22"
+question = "Can I give the Orchestrator voice commands?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu23"
+question = "Is there a mobile version of the Aveto website?"
+answerable = false
+hard_negative = true
+
+[[question]]
+id = "gu24"
+question = "Which Node.js version does the installer need?"
+answerable = false
+hard_negative = true

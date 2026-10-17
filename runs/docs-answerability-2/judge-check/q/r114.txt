@@ -1,0 +1,1 @@
+We trained our own model. When is it allowed to ship?
