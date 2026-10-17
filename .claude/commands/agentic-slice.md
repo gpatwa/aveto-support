@@ -38,9 +38,38 @@ Do this:
 4. Write `runs/<slice-id>/00-slice-plan.md`: the one-line outcome, the
    stages that will run (compressed per the EM's judgment and the intent's
    **Stakes** — see "When to compress stages" in the playbook's
-   `docs/AGENTIC_SDLC.md`), success criteria taken from the intent's "Done
-   means", non-goals, and constraints from `.agentic/`.
-5. **Confirm intent and plan together, once.** Show the human both files.
+   `docs/AGENTIC_SDLC.md`), each with the **Environment** it needs
+   (`default` or `fresh-load`, see `SESSION_REQUEST.md`), success criteria
+   taken from the intent's "Done means", non-goals, and constraints from
+   `.agentic/`. Add a **Prerequisites** table (permission rules, settings,
+   folder shortcuts the stages need, each with its dry run) and run the dry
+   runs before the first session request.
+5. **Process v2 (pack v20): one Charter, then no questions.** After the plan,
+   run a **setup phase** first: build and dry-run every agent, skill, hook,
+   permission rule and script the gated stages will need, and record each dry
+   run in the plan's Prerequisites table. A gated stage never changes a
+   definition it then has to reload. Then draft `runs/<slice-id>/CHARTER.md`
+   from the playbook's `templates/CHARTER_TEMPLATE.md`, run
+   `node <playbook>/execution/charter-check.mjs runs/<slice-id>/CHARTER.md
+   --plan runs/<slice-id>/00-slice-plan.md` until it passes, and show the human
+   the intent, the plan and the Charter with its sha256, once. When the human
+   approves the Charter by its hash, run every stage to the end without asking,
+   send a notice at each stage boundary (immediately before the release
+   stage, re-run `charter-check` and save its output to
+   `runs/<slice-id>/charter-check-output.txt` for the Release Manager, who has
+   no shell), act on covered gated actions per
+   `APPROVAL_PROTOCOL.md` "A run under a Charter", stop only for the Charter's
+   section 9, and finish with `END_REVIEW.md`. Without an approved Charter,
+   step 5 below applies as written.
+   **One session runs the slice.** Start it in the slice's worktree. When
+   `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` is `1` (installed with `--teams`),
+   run each stage as a named teammate using its role's agent type, so it is a
+   fresh session that reads the agent and skill files when it spawns; the
+   lead's automatic plan approval of a teammate is **never** a human approval.
+   Otherwise run stages as subagents and keep the setup-phase rule, so no stage
+   needs a session the human starts. Never ask the human to open a session
+   during a Charter run; if one is truly needed, that is a Charter stop.
+5b. **Confirm intent and plan together, once.** Show the human both files.
    Nothing past Scope Review starts until they confirm. A line still marked
    (inferred) after confirmation is dropped, not kept — it never becomes an
    acceptance criterion.
@@ -52,6 +81,8 @@ Do this:
    The human types the ceiling once. After that, stop and ask only when a
    stage would pass the ceiling, a pre-registered check fails, or a gate
    would have to be compressed. You never raise a budget yourself.
+   Also list every `fresh-load` stage and the Prerequisites table, so the
+   human sets and starts them once, in order, and not at a stop.
 6. **Scan for gated actions now.** If the ask trips any rule in the
    playbook's `docs/HUMAN_APPROVAL_RULES.md` (send/submit, destructive
    shared-state, deploy, safety-control change, real model/client, new data
