@@ -20,6 +20,7 @@
 | 1 S5 fix | AI Engineer | done (428 passed, 12 deselected; mypy, ruff clean) | runs/land-answerability/01-s5-fix.md | QA |
 | 2 T4 rollback rehearsal | QA Evidence | done (T4 MET: revert -m 1 clean, tree identical to main, 168 passed; scratch branch and worktree removed) | runs/land-answerability/02-rollback-rehearsal.md | n/a |
 | 4 T10 AI Governance | AI Governance | done, standard (tier minimal, provisional on the Art. 50 question for owner/legal; "AI capability risk-tiered" MET WITH GAPS; "Eval coverage" MET WITH GAPS; Data Governance waived per Charter C8.5; file not yet committed, no shell) | runs/land-answerability/04-ai-risk-assessment.md | n/a |
+| 5 Docs (T2, T5, T7, T9b, T9c) | Tech Writer | done, partial (README, CURRENT_MVP_STATUS, runbook, 11-monitoring-plan, 11c, slice 7 STATE updated; docs/ARCHITECTURE.md refused by write-scope guard, proposed edits handed to the Architect; no duplicate record 7 row existed; not committed, no shell) | runs/land-answerability/05-docs-note.md | n/a |
 | 3 T3 vendor risk | Compliance Reviewer | done (DPA not in place: owner-accepted limitation under adopted operating rule, not MET; other fields UNKNOWN) | runs/land-answerability/03-vendor-risk-note.md; runs/docs-answerability-2/11b-vendor-risk.md | Release Gate T3 row |
 
 ## Approvals

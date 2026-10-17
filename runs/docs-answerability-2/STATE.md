@@ -7,7 +7,7 @@
 - **Status:** done
 - **Least-privilege:** enforced (role subagents in `.claude/agents/`; to be confirmed at first spawn)
 - **Telemetry:** self-reported
-- **Started:** 2026-10-12  ·  **Updated:** 2026-10-16
+- **Started:** 2026-10-12  ·  **Updated:** 2026-10-17
 
 ## Stages
 
@@ -109,4 +109,4 @@ Note (Architect, pass 2): the budget check above assumes pass 2 lands near its 9
 
 ## Next action
 
-Slice closed by the owner (APPROVAL_RECORD-10, `16-slice-closure.md`). Nothing is merged, pushed, tagged or deployed. Next run: its Charter decides T1 to T11 in the owner's own words; `/aveto-judge-seen` is not used until S5 is fixed.
+Slice 7 closed as an internal release candidate (APPROVAL_RECORD-10, `16-slice-closure.md`). Its T items (T1 to T11) are carried out by slice `land-answerability` (`runs/land-answerability/`, Charter approved 2026-10-17). Nothing in this slice is merged, pushed, tagged or deployed by this slice. The Approvals table lists record 7 once (checked 2026-10-17; no duplicate row was present to remove).

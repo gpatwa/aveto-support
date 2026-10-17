@@ -4,6 +4,8 @@
 > Tier: 3, as ruled by the owner in `APPROVAL_RECORD-9.md`. This is the item `09-release-checklist.md` ("Post-launch monitoring") said was absent.
 > Source of every figure: `05-seen-check.md`, `07-gate-scoring.md`, `09-release-checklist.md` (copied, not re-derived). Not opened, by the brief: `evals/retrieval-heldout-5*.toml`, `batch-2.txt`, `q/`, `06-label-review.md`, any `diffs.md`.
 > Status of numbers: **thresholds below are my proposals, derived from the recorded figures. The owner sets the final ones.** A threshold the owner has not confirmed is a default, not a commitment.
+>
+> **Adopted (added 2026-10-17 by slice `land-answerability`, T5).** The owner adopted the thresholds (section 1), the cadence (sections 2 and 4) and the stop rules (section 2) in this plan **as written**, in Charter C8.5 of `runs/land-answerability/CHARTER.md`, approved by Gopal Patwa (operator) in `runs/land-answerability/APPROVAL_RECORD-1.md` (2026-10-17; time of day not recorded). The owner also adopted the standing mitigation: **"stop typing `/aveto-judge`, use `retrieve` alone"**. The text below is unchanged from the SRE's draft; "my proposals" above is the history, and the owner's adoption is this note. Sections 2 and 5 are copied to `docs/runbooks/answerability-judge.md`.
 
 ## 0. What "monitoring" means here, stated plainly
 

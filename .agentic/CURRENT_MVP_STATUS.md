@@ -1,6 +1,6 @@
 # Current MVP Status
 
-## What exists (retrieval from docs-retrieval-core; judge step on branch docs-answerability-2; command line only)
+## What exists (retrieval from docs-retrieval-core; judge step landing by pull request from branch land-answerability, the owner merges; command line only)
 
 - `ingest`: downloads the markdown of the configured repo at its pinned commit
   (one read-only HTTPS archive fetch), splits it into passages at headings,
@@ -18,8 +18,8 @@
   rule separates unanswerable from answerable questions on the seen sets, and a
   tried local judge model failed its seen-set check, so the owner stopped that
   path.
-- Judge step (slice `docs-answerability-2`, branch `claude/docs-answerability-2`,
-  not merged): `judge-input` and `judge-apply` (both offline, no model call) plus
+- Judge step (built in slice `docs-answerability-2`; landing by pull request from
+  `claude/land-answerability`, the owner merges): `judge-input` and `judge-apply` (both offline, no model call) plus
   the `/aveto-judge` skill and the `aveto-answerability-judge` subagent
   (`claude-sonnet-5-5`, no tools offered). The operator runs it by hand in their
   own Claude Code session, attended only; `judge-apply` then prints either
@@ -37,18 +37,30 @@
   - Never abstain, fifth set: Bar 1 0/24. Best-score rule (`top1 < 0.67`): not
     met on both stages (stage 5: 13/20 and 17/28; stage 7: 10/24 and 13/19).
   - Over-abstention: 3 of 19 answerable questions (4 of 28 at stage 5).
-  - End-to-end diagnostic: 16/24 answerable questions end with the right file
-    shown. Retrieval gate on the fifth set: exit 1, 19/24 = 79.2% with the right
-    file in the top 5 (not a registered bar of this slice).
+  - Known limit, stated plainly: on the fifth set, retrieval put the right file
+    in the top five for 19 of 24 answerable questions (79.2%, under its 80%
+    bar; retrieval gate exit 1; not a registered bar of the judge slice), and
+    16 of 24 ended with the right file shown after judging. The owner accepted
+    this as a known limit (Charter C8.5, slice `land-answerability`). The bars
+    above describe the eval path; the operator path (`/aveto-judge`) is
+    unmeasured. This is not a capability claim.
   - Source files of the fifth set overlap earlier sets' (21 of 24 answerable
     questions); disclosed, may flatter Bar 2.
-- Release Gate verdict at tier 3 (ruled by the owner, 2026-10-16): **go with
-  conditions**, an internally releasable branch candidate, **not announced**
-  and **not cleared to land**: no push, merge, deploy, PR, tag, announcement or
-  unattended use without the owner's own typed yes
-  (`runs/docs-answerability-2/13-release-checklist-tier3.md`). A dry run on a
-  fixture passed 11 of 11 criteria (no model ran in it); audit coverage passed
-  with gaps G1 to G9. ADR 0008 stays
+- Release tier 3 (the owner's ruling, `APPROVAL_RECORD-9` of slice
+  `docs-answerability-2`, 2026-10-16). Slice `docs-answerability-2` closed as an
+  internal release candidate; its conditions T1 to T11 are carried out by slice
+  `land-answerability` (Charter approved 2026-10-17). **Landing by pull request;
+  the owner merges.** Not announced, no deploy, no unattended use. In that
+  slice: S5 fixed (the operator writes the run id to `.aveto-judge/seen-id`,
+  then runs `/aveto-judge-seen` with no argument; `/aveto-judge` unchanged); the
+  S6 rule deleted (owner, 2026-10-16); monitoring thresholds, cadence and stop
+  rules adopted as written, runbook in `docs/runbooks/answerability-judge.md`;
+  the rollback rehearsed on a throwaway branch
+  (`runs/land-answerability/02-rollback-rehearsal.md`). Operating rule
+  (Charter C4.1): public-docs questions only until a DPA is in place (personal
+  subscription, no DPA; retention and training use per that plan's public terms,
+  not verified). A dry run on a fixture passed 11 of 11 criteria (no model ran
+  in it); audit coverage passed with gaps G1 to G9. ADR 0008 stays
   Proposed. Limits: one model, one set, a small sample, one scored run; the
   judge adds a failure mode of over-abstaining on answerable questions.
   Nothing here claims production readiness.
@@ -69,26 +81,17 @@
 
 ## Not yet done
 
-- Tier 3 is ruled (owner, 2026-10-16). Six tier 3 items are not met strictly.
-  The owner closed the slice on 2026-10-16 as an internal release candidate,
-  not landed (no merge, push, tag, deploy or announcement). Conditions T1 to
-  T11 are deferred to the next run's Charter; they are neither resolved nor
-  waived. The main ones:
-  - The release action is not approved; the change request is PENDING
-    (approver named: Gopal Patwa).
-  - Anthropic's DPA, account terms, retention and training use are UNKNOWN,
-    deferred.
-  - The monitoring thresholds are proposals, not set.
-  - The rollback has never been rehearsed.
-  - The retrieval gate exit 1 above (19/24 = 79.2% on the fifth set, not a
-    registered bar) is recorded as a known limit.
-  - S5 (quote breakout in the eval-only skill `/aveto-judge-seen`) is open; do
-    not use that skill again until it is fixed.
-  - S6 (a permissive local permission rule): the file is verified absent in
-    this worktree; it was reported removed on the owner's word.
-  - A final ruff, mypy and pytest run on the exact commit to be merged is not
-    recorded (the lint gate passes because three Security probe scripts exempt
-    themselves, D6, which the owner acknowledged).
+- Tier 3 is ruled (owner, 2026-10-16). The remaining tier 3 items are carried
+  by slice `land-answerability`; the Release Manager's landing verdict is theirs
+  to issue and is not stated here. Open or UNKNOWN as recorded:
+  - The merge is the owner's own act; the pull request does not merge itself.
+  - Anthropic's DPA is not in place (personal subscription); retention,
+    training use, subprocessors, certifications and residency are UNKNOWN
+    (`runs/docs-answerability-2/11b-vendor-risk.md`). The operating rule above
+    is a policy control the repo cannot enforce.
+  - The operator path `/aveto-judge` has never been measured.
+  - Three Security probe scripts exempt themselves from lint (D6, which the
+    owner acknowledged).
 - One model-marked test fails in the committed tree
   (`test_sample_derivation_reproducible`; the frozen test compares the whole key
   file, which gained rows after the freeze). A later slice must change it.

@@ -1,17 +1,17 @@
 # Aveto Support
 
-> **Status: retrieval, plus an attended judge step on branch
-> `claude/docs-answerability-2`. Not released, not announced, not deployed.**
-> It lists the docs files for a question and generates no answers.
+> **Status: retrieval, plus an attended judge step, landing by pull request
+> (branch `claude/land-answerability`); the owner merges. Not announced, not
+> deployed.** It lists the docs files for a question and generates no answers.
 > `retrieve` itself never abstains: a question the docs do not answer still
 > returns files. The judge step is a separate, optional step that the operator
 > runs by hand in their own Claude Code session; it can replace the files with
-> `no confident match`. Release Gate verdict at tier 3 (ruled by the owner):
-> **go with conditions** (an internal release candidate, **not landed**, not
-> announced, **not cleared to land**: no push, merge, deploy, PR, tag or
-> announcement without the owner's own typed yes). The owner closed the slice on
-> 2026-10-16 in that state; conditions T1 to T11 are deferred to the next run's
-> Charter. Details and limits are in
+> `no confident match`. Release tier 3 (the owner's ruling, `APPROVAL_RECORD-9`
+> of slice `docs-answerability-2`). **Known limit:** on the fifth question set,
+> retrieval put the right file in the top five for 19 of 24 answerable
+> questions (79.2%, under its 80% bar), and 16 of 24 ended with the right file
+> shown after judging. The judge bars describe the eval path; the operator path
+> is unmeasured. Details and limits are in
 > [Status](#status) below. The default ranking (`file-rrf-v1`) scored 14/16 on
 > an earlier held-out set; an optional reranker is off by default and showed no
 > demonstrated gain. The record of each attempt, including what failed and
@@ -113,7 +113,7 @@ lexical and local-embedding ranking, with no generative model and nothing that
 posts to GitHub. The eval bar is scored once, on a held-out question set, after
 the method is frozen; see `.agentic/CURRENT_MVP_STATUS.md`.
 
-### The judge step (branch `claude/docs-answerability-2`)
+### The judge step (landing by pull request from `claude/land-answerability`)
 
 A separate step decides whether the files `retrieve` would show answer the
 question. `judge-input` (offline) prints the question and those passages;
@@ -140,9 +140,18 @@ which stays Proposed.
   `NOT_ANSWERABLE` on 3 of 19 answerable questions whose right file `retrieve`
   had in the top five (4 of 28 in the seen-set sample).
 - **It does not repair retrieval.** On the fifth set the retrieval gate exits 1:
-  19/24 = 79.2% of answerable questions had the right file in the top 5 (not a
-  registered bar of this slice). End to end, 16 of 24 answerable questions end
-  with the right file shown after judging.
+  retrieval put the right file in the top five for 19 of 24 answerable
+  questions (79.2%, under its 80% bar; not a registered bar of the judge
+  slice). End to end, 16 of 24 answerable questions end with the right file
+  shown after judging. The owner accepted this as a known limit.
+- **The bars describe the eval path; the operator path is unmeasured.** The
+  figures below come from the eval path (a fixed payload per run id).
+  `/aveto-judge`, where your session retypes the payload, has never been
+  measured. Nothing here claims the product answers questions.
+- **Operating rule: public-docs questions only until a DPA is in place.** The
+  judge step runs on a personal subscription with no DPA. Retention and training
+  use follow that plan's public terms, which no agent verified. The repo cannot
+  enforce this rule; it is the operator's.
 
 **Recorded figures** (each scored once; judge errors counted as failures)
 
@@ -161,33 +170,32 @@ offered, 0 tool calls, 48 spawns each stage. Fifth-set source files overlap
 earlier sets' (21 of 24 answerable questions cite at least one such file; no
 question repeats), which may flatter Bar 2.
 
-**Release tier and verdict.** The owner ruled the release tier 3 on
-2026-10-16. The tier 3 verdict is **go with conditions**: an internally
-releasable branch candidate, not announced, and not cleared to land. Six tier 3
-items are not met strictly. On 2026-10-16 the owner closed the slice as an
-internal release candidate, not landed (no merge, push, tag, deploy or
-announcement). Conditions T1 to T11 are deferred to the next run's Charter; they
-are neither resolved nor waived. The main ones:
+**Release tier and landing.** The release tier is 3 (the owner's ruling,
+`APPROVAL_RECORD-9` of slice `docs-answerability-2`, 2026-10-16). Slice
+`docs-answerability-2` closed as an internal release candidate; its conditions
+T1 to T11 are carried out by slice `land-answerability`, whose Charter the owner
+approved on 2026-10-17 (`runs/land-answerability/APPROVAL_RECORD-1.md`).
+**Landing by pull request; the owner merges.** Nothing is announced or deployed.
+What that slice's Charter recorded or changed:
 
-- The release action is not approved, and the change request is PENDING
-  (approver named: Gopal Patwa).
-- Anthropic's DPA, account terms, retention and training use are UNKNOWN,
-  deferred.
-- The monitoring thresholds are proposals, not set.
-- The rollback has never been rehearsed.
-- The retrieval gate result above (19/24 = 79.2% on the fifth set, exit 1, not
-  a registered bar) is recorded as a known limit.
-- S5 (quote breakout in the eval-only skill `/aveto-judge-seen`) is open; that
-  skill is not to be used again until it is fixed.
-- S6 (a permissive local permission rule): the file is verified absent in this
-  worktree; it was reported removed on the owner's word.
-- A final lint, type and test run on the exact commit to be merged has not been
-  recorded.
+- **S5 is fixed.** `/aveto-judge-seen` (eval only) no longer takes caller text
+  in its shell line. To use it, write the run id to `.aveto-judge/seen-id`, then
+  run `/aveto-judge-seen` with no argument. `/aveto-judge` is unchanged.
+- **The S6 rule was deleted** (the owner said so on 2026-10-16).
+- **Monitoring is adopted as written:** the thresholds, cadence and stop rules
+  of `runs/docs-answerability-2/11-monitoring-plan.md`, with the standing
+  mitigation "stop typing `/aveto-judge`, use `retrieve` alone". The runbook is
+  [`docs/runbooks/answerability-judge.md`](docs/runbooks/answerability-judge.md).
+- **Rollback was rehearsed** on a throwaway branch: `git revert -m 1` restored a
+  tree identical to `main` and the regression passed on it
+  (`runs/land-answerability/02-rollback-rehearsal.md`).
+- **Vendor terms:** personal subscription, no DPA in place. The operating rule
+  above is adopted; other vendor fields remain UNKNOWN
+  (`runs/docs-answerability-2/11b-vendor-risk.md`).
+- **Retrieval limit accepted and stated** (the known limit above).
 
-Also new: a dry run on a fixture (11 of 11 criteria pass) and an audit coverage
-check (pass with gaps G1 to G9). The model was not run in the dry run, and the
-operator path `/aveto-judge` has never been measured. Records: the tier 3
-verdict `runs/docs-answerability-2/13-release-checklist-tier3.md`, with
-`11-monitoring-plan.md`, `11b-vendor-risk.md`, `11c-change-request.md` and
-`12-tier3-dryrun-audit.md` beside it. Nothing here is announced or deployed,
-and nothing authorises a push or merge.
+The dry run on a fixture (11 of 11 criteria; no model ran in it) and the audit
+coverage check (pass with gaps G1 to G9) are in
+`runs/docs-answerability-2/`. The tier 3 gate record is
+`runs/docs-answerability-2/13-release-checklist-tier3.md`; this slice's records
+are under `runs/land-answerability/`.
