@@ -4,8 +4,8 @@
 > is updated each slice rather than appended to. The history of *why* lives in
 > [`docs/adr/`](adr/). Per-slice detail lives in `runs/<slice-id>/`.
 >
-> **Current as of:** docs-answerability-2, stage 10b (2026-10-16), on
-> branch `claude/docs-answerability-2`, **not merged**. Retrieval is the hybrid
+> **Current as of:** land-answerability (2026-10-17), on branch
+> `claude/land-answerability`, landing by pull request; the owner merges. Retrieval is the hybrid
 > ranking of [ADR 0003](adr/0003-hybrid-embedding-retrieval.md) at file level
 > ([ADR 0004](adr/0004-file-level-ranking-and-fixed-corpus.md)), default
 > `file-rrf-v1` ([ADR 0006](adr/0006-default-rrf-reranker-opt-in.md)). This
@@ -13,12 +13,13 @@
 > `judge-apply`, `eval --verdicts`, the `/aveto-judge` skill), proposed in
 > [ADR 0008](adr/0008-operator-run-answerability-judge.md). Both registered
 > judge bars were met once (seen-set sample and fifth gate set; figures under
-> "Safety stance"). The owner ruled the release tier 3 on 2026-10-16
-> (`runs/docs-answerability-2/APPROVAL_RECORD-9.md`); the tier 3 verdict is
-> **GO WITH CONDITIONS** (internally releasable candidate, not announced, not
-> cleared to land; conditions T1 to T11 are the owner's or a named role's to
-> resolve; see `runs/docs-answerability-2/13-release-checklist-tier3.md`).
-> Nothing is released or announced. The INV-4 and INV-5
+> "Safety stance"). Release tier 3, by the owner's ruling of 2026-10-16
+> (`runs/docs-answerability-2/APPROVAL_RECORD-9.md`). Slice docs-answerability-2
+> closed as an internal candidate; its T items are carried by
+> `land-answerability`. Landing by pull request; the owner merges. Not
+> announced. The S5 finding is fixed in this slice and the S6 rule was deleted
+> (owner, 2026-10-16). Operating rule (Charter C4.1): public-docs questions only
+> until a DPA is in place; personal subscription, no DPA. The INV-4 and INV-5
 > words that cover it are approved and live in `.agentic/SAFETY_INVARIANTS.md`.
 > Tech specs: `runs/docs-retrieval/02-tech-spec.md` (retrieval);
 > `runs/docs-answerability-2/02-tech-spec.md` (the judge step).
@@ -58,7 +59,7 @@ question ─► [1 classify] ─►│ [2 retrieve] ─► RetrievalResult (top 
 | Evaluate | `aveto_support/evaluate.py` | Scores retrieval against an eval file (`--eval-file`) using integer ≥80% thresholds |
 | Judge (offline half) | `aveto_support/judge.py` | **This branch.** Builds the judge payload from `retrieve`'s result at the default ranking (question, then each shown file and passage in full with heading and line range; no scores, URLs or commit) and its sha256; parses a reply (`parse_verdict`: last non-empty line, `Q1 <TOKEN>` with an optional colon and reason, fail closed on any control or format character, keeps the token only); renders the applied result; handles the transport files in `.aveto-judge/` (gitignored, deleted on every `judge-apply`). Calls no model, opens no socket, starts no process |
 | Judge scoring | `aveto_support/judge_eval.py` | **This branch.** `eval --verdicts <file>`: reads a verdicts file (one token per eval question, bound by payload sha256 and prompt sha256) and prints the two abstention bars, judge errors, hard negatives and the end-to-end figure. The `eval` exit code stays the retrieval gate |
-| Judge agent and skills | `.claude/agents/aveto-answerability-judge.md`, `.claude/skills/aveto-judge/`, `.claude/skills/aveto-judge-seen/`, `prompts/answerability-judge-v1.txt` | **Not part of the program; run by Claude Code.** The agent pins `claude-sonnet-5-5`, has no `tools` entry, a deny list ending in `mcp__*` and a hook that refuses every tool call; its prompt is hash-pinned. `/aveto-judge` (operator path) runs only when the operator types it. `/aveto-judge-seen` (eval only) is a forked skill whose helper injects the payload for a run id listed in its key file and refuses anything else |
+| Judge agent and skills | `.claude/agents/aveto-answerability-judge.md`, `.claude/skills/aveto-judge/`, `.claude/skills/aveto-judge-seen/`, `prompts/answerability-judge-v1.txt` | **Not part of the program; run by Claude Code.** The agent pins `claude-sonnet-5-5`, has no `tools` entry, a deny list ending in `mcp__*` and a hook that refuses every tool call; its prompt is hash-pinned. `/aveto-judge` (operator path) runs only when the operator types it. `/aveto-judge-seen` (eval only) is a forked skill that takes no caller text in its shell line (S5, fixed in land-answerability): its helper reads the run id from `.aveto-judge/seen-id`, written by the operator, injects the payload for a run id listed in its key file and refuses anything else |
 
 **Configuration** lives in `docs-source.toml`: the docs repo and its full
 40-hex commit, plus an `[embedding]` table holding the model repo, revision and
@@ -165,9 +166,10 @@ flowchart LR
      harness attaches go to that session's model provider. What is attached was
      measured in `runs/docs-answerability-2/01-measurement.md`, and INV-5 in
      `.agentic/SAFETY_INVARIANTS.md` states it (see Safety stance).
-   - For evaluation, the forked skill `/aveto-judge-seen <run id>` has the
-     harness inject the payload of a key-listed eval question, so no model
-     retypes it. The eval-only tool `tools/judge_run.py` (tech spec 4.3;
+   - For evaluation, the operator writes the run id to `.aveto-judge/seen-id`
+     and runs the forked skill `/aveto-judge-seen` with no argument (S5, fixed
+     in land-answerability: no caller text in its shell line); the harness
+     injects the payload of a key-listed eval question, so no model retypes it. The eval-only tool `tools/judge_run.py` (tech spec 4.3;
      outside the package) turns replies into tokens through the product's own
      `judge-apply` and audits the transcripts; `eval --verdicts` scores them.
 
@@ -231,12 +233,12 @@ supersedes the ranking and confidence parts of
     fifth set, 16 of 24 answerable questions show the right file after judging
     (diagnostic).
 
-  The owner ruled the release tier 3 on 2026-10-16 (APPROVAL_RECORD-9); the
-  tier 3 verdict is GO WITH CONDITIONS (internally releasable candidate, not
-  announced, not cleared to land; conditions T1 to T11 are the owner's or a
-  named role's to resolve; see
-  `runs/docs-answerability-2/13-release-checklist-tier3.md`). The step is not
-  released and not announced.
+  Release tier 3, by the owner's ruling of 2026-10-16 (APPROVAL_RECORD-9 of
+  slice docs-answerability-2). That slice closed as an internal candidate; its
+  T items are carried by `land-answerability`. Landing by pull request; the
+  owner merges. Not announced. S5 is fixed in this slice; the S6 rule was
+  deleted (owner, 2026-10-16). Operating rule (Charter C4.1): public-docs
+  questions only until a DPA is in place; personal subscription, no DPA.
 - **Bounded network surface (INV-5, amended under APPROVAL_RECORD-4).** Egress
   is limited to two read-only HTTPS GETs, both made only by `ingest`:
   - the configured docs archive at a full commit (redirects only to GitHub
