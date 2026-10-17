@@ -16,3 +16,5 @@ uv run mypy: Success, 24 files. uv run ruff check: All checks passed. uv run pyt
 ## Files changed
 .claude/skills/aveto-judge-seen/SKILL.md, .claude/skills/aveto-judge-seen/seen_payload.py, tests/test_judge_seen_skill.py, runs/land-answerability/01-s5-fix.md, runs/land-answerability/STATE.md.
 Note: operator usage changes: write the id to `.aveto-judge/seen-id`, then run `/aveto-judge-seen` with no argument.
+
+Follow-up: added test_refuses_wrong_argument_count (any argv refused, fixed line, exit 2, no payload) because .agentic/SAFETY_INVARIANTS.md cites it; every other cited test name still exists in tests/.

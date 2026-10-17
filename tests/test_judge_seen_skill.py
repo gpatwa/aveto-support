@@ -213,9 +213,12 @@ def test_refuses_id_not_in_key(seen: Path) -> None:
     assert not (seen / "q").exists()
 
 
-def test_refuses_any_argument() -> None:
-    assert helper.main(["r001"]) == 2
-    assert helper.main(["r001", "r002"]) == 2
+def test_refuses_wrong_argument_count(capsys: pytest.CaptureFixture[str]) -> None:
+    for argv in (["r001"], ["r001", "r002"], [""]):
+        assert helper.main(argv) == 2
+        out = capsys.readouterr().out
+        assert out == "refused: this skill takes no argument\n"
+        assert "=== " not in out
 
 
 def test_prepare_writes_question_only(seen: Path) -> None:
