@@ -19,6 +19,8 @@
 | Charter | Human | awaiting approval | runs/land-answerability/CHARTER.md | human approves by hash |
 | 1 S5 fix | AI Engineer | done (428 passed, 12 deselected; mypy, ruff clean) | runs/land-answerability/01-s5-fix.md | QA |
 | 2 T4 rollback rehearsal | QA Evidence | done (T4 MET: revert -m 1 clean, tree identical to main, 168 passed; scratch branch and worktree removed) | runs/land-answerability/02-rollback-rehearsal.md | n/a |
+| 4 T10 AI Governance | AI Governance | done, standard (tier minimal, provisional on the Art. 50 question for owner/legal; "AI capability risk-tiered" MET WITH GAPS; "Eval coverage" MET WITH GAPS; Data Governance waived per Charter C8.5; file not yet committed, no shell) | runs/land-answerability/04-ai-risk-assessment.md | n/a |
+| 3 T3 vendor risk | Compliance Reviewer | done (DPA not in place: owner-accepted limitation under adopted operating rule, not MET; other fields UNKNOWN) | runs/land-answerability/03-vendor-risk-note.md; runs/docs-answerability-2/11b-vendor-risk.md | Release Gate T3 row |
 
 ## Approvals
 
