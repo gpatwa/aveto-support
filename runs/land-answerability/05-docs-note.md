@@ -25,7 +25,7 @@ Hand to the Architect (T9b). Proposed changes:
 5. Operating rule (Charter C4.1): public-docs questions only until a DPA is in place; personal subscription, no DPA.
 6. ADR 0008 stays Proposed (its entry already says so).
 
-Applied by the Architect, 2026-10-17: items 1 to 5 edited into `docs/ARCHITECTURE.md` (header, Judge agent component row, Data flow item 4 last bullet, Safety stance); item 6 needed no change. No figures added; no code, invariant or ADR touched; not committed.
+Applied by the Architect, 2026-10-17: items 1 to 5 edited into `docs/ARCHITECTURE.md` (header, Judge agent component row, Data flow item 4 last bullet, Safety stance); item 6 needed no change. No figures added; no code or invariant touched; ADR 0008 later got one added note (Proposed status unchanged); committed by the Orchestrator.
 
 ## Flags
 - The retrieval figure 19/24 appears elsewhere in the docs for the dev set (also 79.2%); not changed.
