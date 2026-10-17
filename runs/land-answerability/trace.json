@@ -1,24 +1,144 @@
-{ "schema": "agentic-sdlc/trace@2", "slice": "land-answerability", "tier": 3,
-  "overlay": false, "landed": false, "started": "2026-10-17",
-  "operator": "Gopal Patwa",
-  "leastPrivilegeEnforced": true,
-  "leastPrivilegeNote": "Stages ran as the pack's role agents from this repo's worktree; the code-review layer ran in the Orchestrator session via the local /code-review skill.",
-  "telemetrySource": "self-reported",
-  "approvals": [ { "action": "Approve Charter sha256 5cb44338417a13038e29d6bf9f12320c9367f5199847ccb6680385d31cc976fb (covers C5.3 skill change; C8.2/C8.3 push and PR)",
-                   "rule": "Charter (Process v2); rules 4 and 3 as bounded by C5.3, C8.2",
-                   "decision": "approved", "approver": "Gopal Patwa",
-                   "requestedAt": "2026-10-17", "decidedAt": "2026-10-17",
-                   "record": "runs/land-answerability/APPROVAL_RECORD-1.md" } ],
-  "gateCatches": [
-    { "gate": "Orchestrator code review", "verdict": "fail", "severity": "required-fix", "finding": "Run permission rules (git branch *, git commit *, ...) committed into shared .claude/settings.json" },
-    { "gate": "Security", "verdict": "fail", "severity": "required-fix", "finding": "R1: hostile-id test accepted r001\\n and touched the real tree; passed only because index/models were absent" },
-    { "gate": "AI Governance", "verdict": "fail", "severity": "required-fix", "finding": "S5 fix removed test_refuses_wrong_argument_count cited by INV-5; restored" } ],
-  "stages": [
-    { "stage": "S5 fix", "executor": "subagent", "model": "sonnet-5-5", "effort": "declared", "tokens": 32000, "toolCalls": 0, "retries": 0 },
-    { "stage": "Rollback rehearsal", "executor": "subagent", "model": "sonnet-5-5", "effort": "declared", "tokens": 32000, "toolCalls": 0, "retries": 0 },
-    { "stage": "Vendor risk", "executor": "subagent", "model": "sonnet-5-5", "effort": "declared", "tokens": 44000, "toolCalls": 0, "retries": 0 },
-    { "stage": "AI Governance", "executor": "subagent", "model": "sonnet-5-5", "effort": "declared", "tokens": 90000, "toolCalls": 0, "retries": 0 },
-    { "stage": "Records and docs", "executor": "subagent", "model": "sonnet-5-5", "effort": "declared", "tokens": 97000, "toolCalls": 0, "retries": 0 },
-    { "stage": "ARCHITECTURE.md edits", "executor": "subagent", "model": "opus-5-5", "effort": "declared", "tokens": 35000, "toolCalls": 0, "retries": 0 },
-    { "stage": "Security re-check", "executor": "subagent", "model": "opus-5-5", "effort": "declared", "tokens": 94000, "toolCalls": 0, "retries": 0 },
-    { "stage": "Final-tree QA", "executor": "subagent", "model": "sonnet-5-5", "effort": "declared", "tokens": 40000, "toolCalls": 0, "retries": 0 } ] }
+{
+ "schema": "agentic-sdlc/trace@2",
+ "slice": "land-answerability",
+ "tier": 3,
+ "overlay": false,
+ "landed": false,
+ "started": "2026-10-17",
+ "operator": "Gopal Patwa",
+ "leastPrivilegeEnforced": true,
+ "leastPrivilegeNote": "Stages ran as the pack's role agents from this repo's worktree; the code-review layer ran in the Orchestrator session via the local /code-review skill.",
+ "telemetrySource": "self-reported",
+ "approvals": [
+  {
+   "action": "Approve Charter sha256 5cb44338417a13038e29d6bf9f12320c9367f5199847ccb6680385d31cc976fb (covers C5.3 skill change; C8.2/C8.3 push and PR)",
+   "rule": "Charter (Process v2); rules 4 and 3 as bounded by C5.3, C8.2",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-17",
+   "decidedAt": "2026-10-17",
+   "record": "runs/land-answerability/APPROVAL_RECORD-1.md"
+  }
+ ],
+ "gateCatches": [
+  {
+   "gate": "Orchestrator code review",
+   "verdict": "fail",
+   "severity": "required-fix",
+   "finding": "Run permission rules (git branch *, git commit *, ...) committed into shared .claude/settings.json"
+  },
+  {
+   "gate": "Security",
+   "verdict": "fail",
+   "severity": "required-fix",
+   "finding": "R1: hostile-id test accepted r001\\n and touched the real tree; passed only because index/models were absent"
+  },
+  {
+   "gate": "AI Governance",
+   "verdict": "fail",
+   "severity": "required-fix",
+   "finding": "S5 fix removed test_refuses_wrong_argument_count cited by INV-5; restored"
+  }
+ ],
+ "stages": [
+  {
+   "stage": "S5 fix",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 32000,
+   "toolCalls": 0,
+   "retries": 0
+  },
+  {
+   "stage": "Rollback rehearsal",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 32000,
+   "toolCalls": 0,
+   "retries": 0
+  },
+  {
+   "stage": "Vendor risk",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 44000,
+   "toolCalls": 0,
+   "retries": 0
+  },
+  {
+   "stage": "AI Governance",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 90000,
+   "toolCalls": 0,
+   "retries": 0
+  },
+  {
+   "stage": "Records and docs",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 97000,
+   "toolCalls": 0,
+   "retries": 0
+  },
+  {
+   "stage": "ARCHITECTURE.md edits",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared",
+   "tokens": 35000,
+   "toolCalls": 0,
+   "retries": 0
+  },
+  {
+   "stage": "Security re-check",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared",
+   "tokens": 94000,
+   "toolCalls": 0,
+   "retries": 0
+  },
+  {
+   "stage": "Final-tree QA",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 40000,
+   "toolCalls": 0,
+   "retries": 0
+  },
+  {
+   "stage": "Setup phase",
+   "executor": "orchestrator",
+   "model": "claude-sonnet-5-5 (declared)",
+   "effort": "declared",
+   "tokens": 0,
+   "toolCalls": 0,
+   "retries": 0
+  },
+  {
+   "stage": "Code review layer (/code-review high)",
+   "executor": "orchestrator",
+   "model": "claude-sonnet-5-5 (declared)",
+   "effort": "high",
+   "tokens": 0,
+   "toolCalls": 0,
+   "retries": 1
+  },
+  {
+   "stage": "Release Gate tier 3",
+   "executor": "subagent",
+   "model": "declared",
+   "effort": "declared",
+   "tokens": 187000,
+   "toolCalls": 0,
+   "retries": 0
+  }
+ ]
+}

@@ -4,7 +4,7 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
 - **Current stage:** Release Gate
-- **Status:** in-progress
+- **Status:** done (PR opened; owner merges)
 - **Least-privilege:** enforced — role subagents/teammates in `.claude/agents/` (pack v23), run from this repo's worktree
 - **Telemetry:** self-reported — see `TELEMETRY.md`
 - **Charter:** runs/land-answerability/CHARTER.md, sha256 5cb44338417a13038e29d6bf9f12320c9367f5199847ccb6680385d31cc976fb approved in APPROVAL_RECORD-1
@@ -14,9 +14,9 @@
 
 | Stage | Owner | Status | Artefact | Gate |
 |-------|-------|--------|----------|------|
-| Intent | Human | drafted, awaiting confirmation | runs/land-answerability/intent.md | human confirms |
+| Intent | Human | confirmed (APPROVAL_RECORD-1) | runs/land-answerability/intent.md | human confirms |
 | Intake | Orchestrator | done | runs/land-answerability/00-slice-plan.md | n/a |
-| Charter | Human | awaiting approval | runs/land-answerability/CHARTER.md | human approves by hash |
+| Charter | Human | approved by hash (APPROVAL_RECORD-1) | runs/land-answerability/CHARTER.md | human approves by hash |
 | 1 S5 fix | AI Engineer | done (428 passed, 12 deselected; mypy, ruff clean) | runs/land-answerability/01-s5-fix.md | QA |
 | 2 T4 rollback rehearsal | QA Evidence | done (T4 MET: revert -m 1 clean, tree identical to main, 168 passed; scratch branch and worktree removed) | runs/land-answerability/02-rollback-rehearsal.md | n/a |
 | 4 T10 AI Governance | AI Governance | done, standard (tier minimal, provisional on the Art. 50 question for owner/legal; "AI capability risk-tiered" MET WITH GAPS; "Eval coverage" MET WITH GAPS; Data Governance waived per Charter C8.5; file not yet committed, no shell) | runs/land-answerability/04-ai-risk-assessment.md | n/a |
@@ -30,13 +30,15 @@
 
 | Action | Rule | Requested | Decision | Approver | When (UTC) | Record |
 |--------|------|-----------|----------|----------|-----------|--------|
-| Approve the Charter | Charter | yes | PENDING | Gopal Patwa | — | runs/land-answerability/APPROVAL_RECORD-1.md |
+| Approve the Charter | Charter | yes | approved | Gopal Patwa | 2026-10-17 (time not recorded) | runs/land-answerability/APPROVAL_RECORD-1.md |
+| Skill change within bounds (S5 fix) | Charter C5.3 (sha256 5cb44338…76fb) | covered | done | Gopal Patwa via Charter | 2026-10-17 | CHARTER.md#C5.3, APPROVAL_RECORD-1 |
+| Push claude/land-answerability; PR into main | Charter C8.2/C8.3 | covered | see END_REVIEW.md | Gopal Patwa via Charter | 2026-10-17 | CHARTER.md#C8.2, #C8.3 |
 
 ## Budget
 
 - **Budget:** 450k tokens  ·  **Depth:** standard
-- **Spent:** 464k (103% of plan, 77% of ceiling 600k)  ·  **Remaining:** 136k to ceiling
-- **Next stage:** Pre-push check C-1 to C-4, END_REVIEW.md, push and PR (Orchestrator, Charter C8.2) est. 0k → **PROCEED**
+- **Spent:** 651k (145% of plan, 108% of ceiling 600k; hard cap 750k not reached; notice sent in END_REVIEW)  ·  **Remaining:** 99k to hard cap
+- **Next stage:** push and PR (Orchestrator, Charter C8.2) est. 0k → **PROCEED**
 
 ## Failure budget
 
@@ -53,8 +55,9 @@
 
 | Stage | Model | Effort | Start (UTC) | End (UTC) | Wall | Tokens | Tool calls | Retry # |
 |-------|-------|--------|-------------|-----------|------|--------|------------|---------|
+| Setup, code-review layer (Orchestrator, local) | declared | high | — | — | — | — | — | 0 |
 | **Total** | | | | | | 0 | 0 | |
 
 ## Next action
 
-Orchestrator: commit `08-release-checklist-tier3.md` and this file, then do conditions C-1 to C-4 in `08-release-checklist-tier3.md` section 10 (pre-push check on the exact head, STATE and trace.json record fixes including the Approvals rows citing the Charter lines and the stale Intent/Charter/Approvals rows, `END_REVIEW.md` disclosures), then push `claude/land-answerability` and open the PR into `main` under Charter C8.2 only; never merge; delete `.claude/settings.local.json` afterwards. Note: the Approvals table and the Intent/Charter stage rows above are stale (APPROVAL_RECORD-1 records the approval); the Release Manager did not edit them.
+Push claude/land-answerability and open the PR into main (Charter C8.2); then delete .claude/settings.local.json. The owner reviews and merges.
