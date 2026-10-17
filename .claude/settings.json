@@ -15,5 +15,25 @@
   },
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(uv sync --locked)",
+      "Bash(uv run mypy)",
+      "Bash(uv run ruff check)",
+      "Bash(uv run pytest *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git switch *)",
+      "Bash(git revert *)",
+      "Bash(git branch *)",
+      "Bash(git push -u origin claude/land-answerability)",
+      "Bash(gh pr create *)",
+      "Bash(node /Users/gopalpatwa/opt/agentic-sdlc-playbook/execution/charter-check.mjs *)",
+      "Bash(node /Users/gopalpatwa/opt/agentic-sdlc-playbook/execution/usage.mjs *)"
+    ]
   }
 }
