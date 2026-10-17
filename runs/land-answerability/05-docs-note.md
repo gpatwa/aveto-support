@@ -30,4 +30,6 @@ Applied by the Architect, 2026-10-17: items 1 to 5 edited into `docs/ARCHITECTUR
 ## Flags
 - The retrieval figure 19/24 appears elsewhere in the docs for the dev set (also 79.2%); not changed.
 - The runbook says "the plan" for signals/sections it does not copy; a reader of the repo alone sees run-record paths. Acceptable per the Charter's instruction to copy only sections 2 and 5.
+- Security advisory A5: runbook rollback item 6 reworded (S6 deleted 2026-10-16; `.claude/settings.local.json` now holds only the run's local rules, Charter C6.P, gitignored, deleted when the run ends). Done.
+- Security advisory A5, ADR 0008: the write-scope guard refused the edit (Architect-owned). Exact one-line edit for the Architect, to insert after line 27 (item 4, which shows `/aveto-judge-seen <run id>`), changing nothing else (ADR stays Proposed): `   *Note (slice land-answerability, 2026-10-17): after the S5 fix, `/aveto-judge-seen` takes no argument; it reads the run id from `.aveto-judge/seen-id`.*`
 - No figures invented. Time of day is recorded nowhere (as stated in APPROVAL_RECORD-1).

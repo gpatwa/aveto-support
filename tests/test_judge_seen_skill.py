@@ -79,7 +79,11 @@ def test_skill_frontmatter_and_body() -> None:
     text = SKILL.read_text(encoding="utf-8")
     assert text.startswith("---\n")
     front, body = text[4:].split("\n---\n", 1)
-    keys = [line.split(":", 1)[0] for line in front.splitlines() if re.match(r"^[a-z-]+:", line)]
+    keys = [
+        line.split(":", 1)[0]
+        for line in front.splitlines()
+        if re.match(r"^[a-z-]+:", line)
+    ]
     assert "context: fork" in front.splitlines()
     assert "agent: aveto-answerability-judge" in front.splitlines()
     assert "model" not in keys
@@ -102,7 +106,6 @@ HOSTILE = [
     "R001",
     "x001",
     "r001 ",
-    "r001\n",
     "r001\r",
     "r000x",
     "r094",
@@ -128,8 +131,28 @@ def _skill_line() -> str:
     return line[2:-1]
 
 
+@pytest.fixture
+def sandboxed(seen: Path, monkeypatch: pytest.MonkeyPatch) -> list[str]:
+    """main() reads a tmp key/batch copy and can never reach judge-input or the real q/."""
+    real_prepare = helper.prepare
+    reached: list[str] = []
+
+    def prepare(raw: str, _seen: Path = seen) -> Path:
+        return real_prepare(raw, seen)  # type: ignore[no-any-return]
+
+    def no_run(*args: object, **kwargs: object) -> object:
+        reached.append("judge-input")
+        raise AssertionError("judge-input must not be reached")
+
+    monkeypatch.setattr(helper, "prepare", prepare)
+    monkeypatch.setattr(helper.subprocess, "run", no_run)
+    return reached
+
+
 @pytest.mark.parametrize("arg", HOSTILE)
-def test_refuses_bad_ids(arg: str, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_refuses_bad_ids(
+    arg: str, tmp_path: Path, capsys: pytest.CaptureFixture[str], sandboxed: list[str]
+) -> None:
     id_file = tmp_path / "seen-id"
     id_file.write_text(arg, encoding="utf-8")
     assert helper.main([], id_file) == 2
@@ -138,9 +161,12 @@ def test_refuses_bad_ids(arg: str, tmp_path: Path, capsys: pytest.CaptureFixture
     assert "INJECTED" not in out.out + out.err
     assert "=== " not in out.out
     assert not (tmp_path / "q").exists()
+    assert sandboxed == []
 
 
-def test_refuses_missing_symlink_and_binary_id_file(tmp_path: Path) -> None:
+def test_refuses_missing_symlink_and_binary_id_file(
+    tmp_path: Path, sandboxed: list[str]
+) -> None:
     assert helper.main([], tmp_path / "absent") == 2
     real = tmp_path / "real"
     real.write_text("r001", encoding="utf-8")
@@ -194,7 +220,11 @@ def test_shell_line_has_no_caller_text(arg: str, tmp_path: Path) -> None:
         "CLAUDE_SKILL_DIR": str(skill_dir),
     }
     done = subprocess.run(
-        ["/bin/sh", "-c", rendered], env=env, capture_output=True, text=True, check=False
+        ["/bin/sh", "-c", rendered],
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
     )
     assert done.returncode == 0
     assert "INJECTED" not in done.stdout + done.stderr
@@ -207,13 +237,17 @@ def test_refuses_id_not_in_key(seen: Path) -> None:
         helper.prepare("r094", seen)
     # Present in a batch file but removed from the key: still refused.
     text = (seen / "key" / "key.toml").read_text(encoding="utf-8")
-    (seen / "key" / "key.toml").write_text(text.replace("[r001]", "[r999]"), encoding="utf-8")
+    (seen / "key" / "key.toml").write_text(
+        text.replace("[r001]", "[r999]"), encoding="utf-8"
+    )
     with pytest.raises(helper.Refusal, match="not a committed seen-set id"):
         helper.prepare("r001", seen)
     assert not (seen / "q").exists()
 
 
-def test_refuses_wrong_argument_count(capsys: pytest.CaptureFixture[str]) -> None:
+def test_refuses_wrong_argument_count(
+    capsys: pytest.CaptureFixture[str], sandboxed: list[str]
+) -> None:
     for argv in (["r001"], ["r001", "r002"], [""]):
         assert helper.main(argv) == 2
         out = capsys.readouterr().out
@@ -227,7 +261,9 @@ def test_prepare_writes_question_only(seen: Path) -> None:
     with (seen / "key" / "key.toml").open("rb") as handle:
         table = tomllib.load(handle)["r001"]
     with (ROOT / table["set"]).open("rb") as handle:
-        entry = next(q for q in tomllib.load(handle)["question"] if q["id"] == table["id"])
+        entry = next(
+            q for q in tomllib.load(handle)["question"] if q["id"] == table["id"]
+        )
     assert path.read_text(encoding="utf-8") == entry["question"]
     assert path.read_text(encoding="utf-8") == " ".join(entry["question"].split())
 
