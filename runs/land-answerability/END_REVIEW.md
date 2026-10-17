@@ -25,3 +25,6 @@ Tier 3. Verdict (Release Manager, `08-release-checklist-tier3.md`): **GO WITH CO
 - Whether to merge, and **how** (a merge commit keeps the rehearsed rollback valid; squash or fast-forward would need a different revert).
 - Accepting (or not) the DPA residual risk; the Compliance/Release Manager rows.
 - Whether the operator path should be measured before any use beyond public docs.
+
+## Pre-push check (condition C-1), run on the head before the push
+`git status --short` empty; `git diff --name-only e2b228e HEAD` lists only `runs/` paths; `git diff bca0e40 HEAD` over the method files empty; `git diff main -- .claude/settings.json` empty; `SAFETY_INVARIANTS.md` identical to `bca0e40`; `git diff --check`: only trailing-blank-line notes in run records (slice 7's and this slice's), no code. The pushed head is the commit this file is in; later commits, if any, touch only `runs/`.
