@@ -1,7 +1,10 @@
 """Print the answerability judge's payload for one committed seen-set question.
 
 Eval-only helper of the aveto-judge-seen skill. Input: a run id in the key
-(r001..r049 at the sample, r101 upwards for the gate set).
+(r001..r049 at the sample, r101 upwards for the gate set), read from the
+fixed file .aveto-judge/seen-id (one line, written by the operator). The skill's
+shell line carries no caller text, so no quote or shell metacharacter in an
+argument can reach a shell; the helper takes no argv at all.
 Fail closed: an id that does not match ^r[0-9]{3}$, or is not a table in
 judge-check/key/key.toml, or has no line in a batch file, prints one refusal
 line to stdout and stderr and exits 2 (a non-zero exit aborts the skill, so no
@@ -23,6 +26,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 SEEN = ROOT / "runs" / "docs-answerability-2" / "judge-check"
+ID_FILE = ROOT / ".aveto-judge" / "seen-id"
+MAX_ID_BYTES = 64
 ID_RE = re.compile(r"^r[0-9]{3}$")  # matched with fullmatch on a str without newline
 
 
@@ -68,14 +73,29 @@ def judge_input_command(question_file: Path) -> list[str]:
     ]
 
 
-def main(argv: list[str]) -> int:
-    if len(argv) != 1:
-        message = "refused: exactly one run id is required"
+def read_id(id_file: Path = ID_FILE) -> str:
+    """The run id from the fixed file: one line, at most one trailing newline."""
+    try:
+        if id_file.is_symlink() or not id_file.is_file():
+            raise OSError
+        with id_file.open("rb") as handle:
+            data = handle.read(MAX_ID_BYTES + 1)
+        text = data.decode("ascii")
+    except (OSError, UnicodeDecodeError):
+        raise Refusal("refused: write one run id such as r001 to .aveto-judge/seen-id") from None
+    if len(data) > MAX_ID_BYTES:
+        raise Refusal("refused: the argument must be one run id such as r001")
+    return text.removesuffix("\n")
+
+
+def main(argv: list[str], id_file: Path = ID_FILE) -> int:
+    if argv:
+        message = "refused: this skill takes no argument"
         print(message)
         print(message, file=sys.stderr)
         return 2
     try:
-        question_file = prepare(argv[0])
+        question_file = prepare(read_id(id_file))
     except Refusal as exc:
         print(exc)
         print(exc, file=sys.stderr)

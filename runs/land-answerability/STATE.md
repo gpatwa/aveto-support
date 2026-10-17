@@ -17,6 +17,7 @@
 | Intent | Human | drafted, awaiting confirmation | runs/land-answerability/intent.md | human confirms |
 | Intake | Orchestrator | done | runs/land-answerability/00-slice-plan.md | n/a |
 | Charter | Human | awaiting approval | runs/land-answerability/CHARTER.md | human approves by hash |
+| 1 S5 fix | AI Engineer | done (428 passed, 12 deselected; mypy, ruff clean) | runs/land-answerability/01-s5-fix.md | QA |
 
 ## Approvals
 

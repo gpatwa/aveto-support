@@ -89,31 +89,71 @@ def test_skill_frontmatter_and_body() -> None:
     assert len(lines) == 1
     assert lines[0].startswith("!`") and lines[0].endswith("`")
     assert "seen_payload.py" in lines[0]
-    assert "'$ARGUMENTS'" in lines[0]
+    assert "$ARGUMENTS" not in text and "$0" not in lines[0] and "'" not in lines[0]
+    allowed = next(x for x in front.splitlines() if x.startswith("allowed-tools:"))
+    assert allowed.endswith("seen_payload.py)") and "*)" not in allowed
     assert "key.toml" not in lines[0]
 
 
-@pytest.mark.parametrize(
-    "arg",
-    [
-        "",
-        "r1",
-        "r0001",
-        "R001",
-        "x001",
-        "r001 ",
-        "r001\n",
-        "r000x",
-        "r001; touch pwned",
-        "r001$(touch pwned)",
-        "r001`touch pwned`",
-        "r001 && ls",
-        "r001|cat",
-        "../r001",
-        "What is the price?",
-    ],
-)
-def test_refuses_bad_ids(arg: str, tmp_path: Path) -> None:
+HOSTILE = [
+    "",
+    "r1",
+    "r0001",
+    "R001",
+    "x001",
+    "r001 ",
+    "r001\n",
+    "r001\r",
+    "r000x",
+    "r094",
+    "r999",
+    "r101' ; echo INJECTED ; '",
+    'r101"; echo INJECTED; "',
+    "$(echo INJECTED)",
+    "r101`echo INJECTED`",
+    "r101\necho INJECTED",
+    "r101; echo INJECTED",
+    "r101 && echo INJECTED",
+    "r101|echo INJECTED",
+    "../r101",
+    "r101" + "1" * 5000,
+    "What is the price?",
+]
+
+
+def _skill_line() -> str:
+    body = SKILL.read_text(encoding="utf-8").split("\n---\n", 1)[1]
+    line = next(x for x in body.splitlines() if x.strip())
+    assert line.startswith("!`") and line.endswith("`")
+    return line[2:-1]
+
+
+@pytest.mark.parametrize("arg", HOSTILE)
+def test_refuses_bad_ids(arg: str, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    id_file = tmp_path / "seen-id"
+    id_file.write_text(arg, encoding="utf-8")
+    assert helper.main([], id_file) == 2
+    out = capsys.readouterr()
+    assert out.out.startswith("refused:") and out.out.count("\n") == 1
+    assert "INJECTED" not in out.out + out.err
+    assert "=== " not in out.out
+    assert not (tmp_path / "q").exists()
+
+
+def test_refuses_missing_symlink_and_binary_id_file(tmp_path: Path) -> None:
+    assert helper.main([], tmp_path / "absent") == 2
+    real = tmp_path / "real"
+    real.write_text("r001", encoding="utf-8")
+    link = tmp_path / "link"
+    link.symlink_to(real)
+    assert helper.main([], link) == 2
+    binary = tmp_path / "bin"
+    binary.write_bytes(b"r001\xff")
+    assert helper.main([], binary) == 2
+
+
+@pytest.mark.parametrize("arg", HOSTILE)
+def test_argv_is_refused_and_runs_nothing(arg: str, tmp_path: Path) -> None:
     done = subprocess.run(
         [sys.executable, str(HELPER), arg],
         cwd=tmp_path,
@@ -123,8 +163,43 @@ def test_refuses_bad_ids(arg: str, tmp_path: Path) -> None:
     )
     assert done.returncode == 2
     assert done.stdout.startswith("refused:") and done.stdout.count("\n") == 1
-    assert "=== " not in done.stdout
-    assert not (tmp_path / "pwned").exists()
+    assert "INJECTED" not in done.stdout + done.stderr
+
+
+def test_read_id_accepts_one_trailing_newline(tmp_path: Path) -> None:
+    id_file = tmp_path / "seen-id"
+    id_file.write_text("r101\n", encoding="utf-8")
+    assert helper.read_id(id_file) == "r101"
+
+
+@pytest.mark.parametrize("arg", HOSTILE)
+def test_shell_line_has_no_caller_text(arg: str, tmp_path: Path) -> None:
+    """Render the line as Claude Code would (substituting every variable and
+    $ARGUMENTS), run it with /bin/sh and a stub `uv`: exactly one command runs."""
+    template = _skill_line()
+    rendered = template.replace("$ARGUMENTS", arg)
+    assert rendered == template  # no place for caller text
+    assert arg not in rendered or arg == ""
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    log = tmp_path / "calls.log"
+    stub = bin_dir / "uv"
+    stub.write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$LOG"\n', encoding="utf-8")
+    stub.chmod(0o755)
+    skill_dir = SKILL_DIR
+    env = {
+        "PATH": f"{bin_dir}:/usr/bin:/bin",
+        "LOG": str(log),
+        "CLAUDE_PROJECT_DIR": str(ROOT),
+        "CLAUDE_SKILL_DIR": str(skill_dir),
+    }
+    done = subprocess.run(
+        ["/bin/sh", "-c", rendered], env=env, capture_output=True, text=True, check=False
+    )
+    assert done.returncode == 0
+    assert "INJECTED" not in done.stdout + done.stderr
+    calls = log.read_text(encoding="utf-8").splitlines()
+    assert calls == [f"run -q --project {ROOT} python {skill_dir}/seen_payload.py"]
 
 
 def test_refuses_id_not_in_key(seen: Path) -> None:
@@ -138,8 +213,8 @@ def test_refuses_id_not_in_key(seen: Path) -> None:
     assert not (seen / "q").exists()
 
 
-def test_refuses_wrong_argument_count() -> None:
-    assert helper.main([]) == 2
+def test_refuses_any_argument() -> None:
+    assert helper.main(["r001"]) == 2
     assert helper.main(["r001", "r002"]) == 2
 
 
