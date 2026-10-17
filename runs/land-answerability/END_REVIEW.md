@@ -28,3 +28,4 @@ Tier 3. Verdict (Release Manager, `08-release-checklist-tier3.md`): **GO WITH CO
 
 ## Pre-push check (condition C-1), run on the head before the push
 `git status --short` empty; `git diff --name-only e2b228e HEAD` lists only `runs/` paths; `git diff bca0e40 HEAD` over the method files empty; `git diff main -- .claude/settings.json` empty; `SAFETY_INVARIANTS.md` identical to `bca0e40`; `git diff --check`: only trailing-blank-line notes in run records (slice 7's and this slice's), no code. The pushed head is the commit this file is in; later commits, if any, touch only `runs/`.
+Update: PR https://github.com/gpatwa/aveto-support/pull/4 opened; .claude/settings.local.json deleted after the PR (A4 closed).
