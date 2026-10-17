@@ -18,6 +18,7 @@
 | Intake | Orchestrator | done | runs/land-answerability/00-slice-plan.md | n/a |
 | Charter | Human | awaiting approval | runs/land-answerability/CHARTER.md | human approves by hash |
 | 1 S5 fix | AI Engineer | done (428 passed, 12 deselected; mypy, ruff clean) | runs/land-answerability/01-s5-fix.md | QA |
+| 2 T4 rollback rehearsal | QA Evidence | done (T4 MET: revert -m 1 clean, tree identical to main, 168 passed; scratch branch and worktree removed) | runs/land-answerability/02-rollback-rehearsal.md | n/a |
 
 ## Approvals
 
