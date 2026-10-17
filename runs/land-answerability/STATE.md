@@ -3,7 +3,7 @@
 - **Ask:** `intents/land-answerability.md` — land the answerability judge on `main` behind a PR, closing T1 to T11, under one Charter
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** Stage 1 S5 fix
+- **Current stage:** Release Gate
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents/teammates in `.claude/agents/` (pack v23), run from this repo's worktree
 - **Telemetry:** self-reported — see `TELEMETRY.md`
@@ -34,8 +34,8 @@
 ## Budget
 
 - **Budget:** 450k tokens  ·  **Depth:** standard
-- **Spent:** 0k (0%)  ·  **Remaining:** 450k
-- **Next stage:** S5 fix (build) est. 80k → **PROCEED** once the Charter is approved
+- **Spent:** 464k (103% of plan, 77% of ceiling 600k)  ·  **Remaining:** 136k to ceiling
+- **Next stage:** Release Gate tier 3 (review) est. 60k → **PROCEED**
 
 ## Failure budget
 
