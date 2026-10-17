@@ -3,11 +3,11 @@
 - **Ask:** `intents/land-answerability.md` — land the answerability judge on `main` behind a PR, closing T1 to T11, under one Charter
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** Intake (awaiting Charter approval)
-- **Status:** blocked-on-approval
+- **Current stage:** Stage 1 S5 fix
+- **Status:** in-progress
 - **Least-privilege:** enforced — role subagents/teammates in `.claude/agents/` (pack v23), run from this repo's worktree
 - **Telemetry:** self-reported — see `TELEMETRY.md`
-- **Charter:** runs/land-answerability/CHARTER.md, sha256 5cb44338417a13038e29d6bf9f12320c9367f5199847ccb6680385d31cc976fb (awaiting approval)
+- **Charter:** runs/land-answerability/CHARTER.md, sha256 5cb44338417a13038e29d6bf9f12320c9367f5199847ccb6680385d31cc976fb approved in APPROVAL_RECORD-1
 - **Started:** 2026-10-17  ·  **Updated:** 2026-10-17
 
 ## Stages
