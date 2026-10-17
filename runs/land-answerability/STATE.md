@@ -22,6 +22,7 @@
 | 4 T10 AI Governance | AI Governance | done, standard (tier minimal, provisional on the Art. 50 question for owner/legal; "AI capability risk-tiered" MET WITH GAPS; "Eval coverage" MET WITH GAPS; Data Governance waived per Charter C8.5; file not yet committed, no shell) | runs/land-answerability/04-ai-risk-assessment.md | n/a |
 | 5 Docs (T2, T5, T7, T9b, T9c) | Tech Writer | done, partial (README, CURRENT_MVP_STATUS, runbook, 11-monitoring-plan, 11c, slice 7 STATE updated; docs/ARCHITECTURE.md refused by write-scope guard, proposed edits handed to the Architect; no duplicate record 7 row existed; not committed, no shell) | runs/land-answerability/05-docs-note.md | n/a |
 | 7 Security re-check | Security & Privacy | done, standard (PASS, no blocker; R1 required-fix: `"r001\n"` in the test's HOSTILE list passes only because `index/`/`models/` are absent; A1-A5 advisory) | runs/land-answerability/06-security-recheck.md | Release Gate |
+| 8 Final-tree QA | QA Evidence | done, standard (GO on e2b228e: mypy, ruff clean; 425 passed, 12 deselected, stable over 3 runs; delta +50 vs 375 explained; checks a-g pass; tree clean) | runs/land-answerability/07-final-tree-qa.md | Release Gate |
 | 3 T3 vendor risk | Compliance Reviewer | done (DPA not in place: owner-accepted limitation under adopted operating rule, not MET; other fields UNKNOWN) | runs/land-answerability/03-vendor-risk-note.md; runs/docs-answerability-2/11b-vendor-risk.md | Release Gate T3 row |
 
 ## Approvals
