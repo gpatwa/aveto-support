@@ -24,6 +24,7 @@
 | 7 Security re-check | Security & Privacy | done, standard (PASS, no blocker; R1 required-fix: `"r001\n"` in the test's HOSTILE list passes only because `index/`/`models/` are absent; A1-A5 advisory) | runs/land-answerability/06-security-recheck.md | Release Gate |
 | 8 Final-tree QA | QA Evidence | done, standard (GO on e2b228e: mypy, ruff clean; 425 passed, 12 deselected, stable over 3 runs; delta +50 vs 375 explained; checks a-g pass; tree clean) | runs/land-answerability/07-final-tree-qa.md | Release Gate |
 | 3 T3 vendor risk | Compliance Reviewer | done (DPA not in place: owner-accepted limitation under adopted operating rule, not MET; other fields UNKNOWN) | runs/land-answerability/03-vendor-risk-note.md; runs/docs-answerability-2/11b-vendor-risk.md | Release Gate T3 row |
+| 9 Release Gate tier 3 | Release Manager | done: **GO WITH CONDITIONS for opening the PR** (not a landing sign-off). T1-T11: MET T4 T5 T7 T8 T9; MET WITH GAPS T1 (push and PR only) T2 T6 T10 T11; WAIVED, not MET T3; NOT MET none. QA ran at e2b228e; HEAD at spawn 653ecdd; C-1 pre-push check on the pushed head flips this to NO-GO if a non-runs/ path changed after e2b228e. Conditions C-1..C-4 for the Orchestrator; owner's list in section 12 | runs/land-answerability/08-release-checklist-tier3.md | Orchestrator C-1..C-4, then push and PR (Charter C8.2) |
 
 ## Approvals
 
@@ -35,7 +36,7 @@
 
 - **Budget:** 450k tokens  ·  **Depth:** standard
 - **Spent:** 464k (103% of plan, 77% of ceiling 600k)  ·  **Remaining:** 136k to ceiling
-- **Next stage:** Release Gate tier 3 (review) est. 60k → **PROCEED**
+- **Next stage:** Pre-push check C-1 to C-4, END_REVIEW.md, push and PR (Orchestrator, Charter C8.2) est. 0k → **PROCEED**
 
 ## Failure budget
 
@@ -56,4 +57,4 @@
 
 ## Next action
 
-Show the human the intent, plan and Charter (with its sha256); on approval by hash, run the setup phase (C6.P rules, dry runs) and then stage 1.
+Orchestrator: commit `08-release-checklist-tier3.md` and this file, then do conditions C-1 to C-4 in `08-release-checklist-tier3.md` section 10 (pre-push check on the exact head, STATE and trace.json record fixes including the Approvals rows citing the Charter lines and the stale Intent/Charter/Approvals rows, `END_REVIEW.md` disclosures), then push `claude/land-answerability` and open the PR into `main` under Charter C8.2 only; never merge; delete `.claude/settings.local.json` afterwards. Note: the Approvals table and the Intent/Charter stage rows above are stale (APPROVAL_RECORD-1 records the approval); the Release Manager did not edit them.
