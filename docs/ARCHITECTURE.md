@@ -4,8 +4,8 @@
 > is updated each slice rather than appended to. The history of *why* lives in
 > [`docs/adr/`](adr/). Per-slice detail lives in `runs/<slice-id>/`.
 >
-> **Current as of:** land-answerability (2026-10-17), on branch
-> `claude/land-answerability`, landing by pull request; the owner merges. Retrieval is the hybrid
+> **Current as of:** land-answerability (2026-10-17), merged to `main` in
+> pull request #4 (2026-10-17). Retrieval is the hybrid
 > ranking of [ADR 0003](adr/0003-hybrid-embedding-retrieval.md) at file level
 > ([ADR 0004](adr/0004-file-level-ranking-and-fixed-corpus.md)), default
 > `file-rrf-v1` ([ADR 0006](adr/0006-default-rrf-reranker-opt-in.md)). This
@@ -16,7 +16,7 @@
 > "Safety stance"). Release tier 3, by the owner's ruling of 2026-10-16
 > (`runs/docs-answerability-2/APPROVAL_RECORD-9.md`). Slice docs-answerability-2
 > closed as an internal candidate; its T items are carried by
-> `land-answerability`. Landing by pull request; the owner merges. Not
+> `land-answerability`. Merged by pull request #4 (2026-10-17). Not
 > announced. The S5 finding is fixed in this slice and the S6 rule was deleted
 > (owner, 2026-10-16). Operating rule (Charter C4.1): public-docs questions only
 > until a DPA is in place; personal subscription, no DPA. The INV-4 and INV-5
@@ -235,8 +235,8 @@ supersedes the ranking and confidence parts of
 
   Release tier 3, by the owner's ruling of 2026-10-16 (APPROVAL_RECORD-9 of
   slice docs-answerability-2). That slice closed as an internal candidate; its
-  T items are carried by `land-answerability`. Landing by pull request; the
-  owner merges. Not announced. S5 is fixed in this slice; the S6 rule was
+  T items are carried by `land-answerability`. Merged by pull request #4
+  (2026-10-17). Not announced. S5 is fixed in this slice; the S6 rule was
   deleted (owner, 2026-10-16). Operating rule (Charter C4.1): public-docs
   questions only until a DPA is in place; personal subscription, no DPA.
 - **Bounded network surface (INV-5, amended under APPROVAL_RECORD-4).** Egress

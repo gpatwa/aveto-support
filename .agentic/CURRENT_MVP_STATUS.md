@@ -1,6 +1,6 @@
 # Current MVP Status
 
-## What exists (retrieval from docs-retrieval-core; judge step landing by pull request from branch land-answerability, the owner merges; command line only)
+## What exists (retrieval from docs-retrieval-core; judge step merged in pull request #4; command line only, nothing deployed)
 
 - `ingest`: downloads the markdown of the configured repo at its pinned commit
   (one read-only HTTPS archive fetch), splits it into passages at headings,
@@ -18,8 +18,8 @@
   rule separates unanswerable from answerable questions on the seen sets, and a
   tried local judge model failed its seen-set check, so the owner stopped that
   path.
-- Judge step (built in slice `docs-answerability-2`; landing by pull request from
-  `claude/land-answerability`, the owner merges): `judge-input` and `judge-apply` (both offline, no model call) plus
+- Judge step (built in slice `docs-answerability-2`; merged in pull request #4,
+  2026-10-17): `judge-input` and `judge-apply` (both offline, no model call) plus
   the `/aveto-judge` skill and the `aveto-answerability-judge` subagent
   (`claude-sonnet-5-5`, no tools offered). The operator runs it by hand in their
   own Claude Code session, attended only; `judge-apply` then prints either
@@ -49,8 +49,8 @@
 - Release tier 3 (the owner's ruling, `APPROVAL_RECORD-9` of slice
   `docs-answerability-2`, 2026-10-16). Slice `docs-answerability-2` closed as an
   internal release candidate; its conditions T1 to T11 are carried out by slice
-  `land-answerability` (Charter approved 2026-10-17). **Landing by pull request;
-  the owner merges.** Not announced, no deploy, no unattended use. In that
+  `land-answerability` (Charter approved 2026-10-17). **Merged by pull request #4
+  (2026-10-17, a merge commit).** Not announced, no deploy, no unattended use. In that
   slice: S5 fixed (the operator writes the run id to `.aveto-judge/seen-id`,
   then runs `/aveto-judge-seen` with no argument; `/aveto-judge` unchanged); the
   S6 rule deleted (owner, 2026-10-16); monitoring thresholds, cadence and stop

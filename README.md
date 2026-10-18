@@ -1,7 +1,7 @@
 # Aveto Support
 
-> **Status: retrieval, plus an attended judge step, landing by pull request
-> (branch `claude/land-answerability`); the owner merges. Not announced, not
+> **Status: retrieval, plus an attended judge step, merged to `main` by pull
+> request #4 (2026-10-17). Not announced, not
 > deployed.** It lists the docs files for a question and generates no answers.
 > `retrieve` itself never abstains: a question the docs do not answer still
 > returns files. The judge step is a separate, optional step that the operator
@@ -113,7 +113,7 @@ lexical and local-embedding ranking, with no generative model and nothing that
 posts to GitHub. The eval bar is scored once, on a held-out question set, after
 the method is frozen; see `.agentic/CURRENT_MVP_STATUS.md`.
 
-### The judge step (landing by pull request from `claude/land-answerability`)
+### The judge step (merged in pull request #4; attended, internal use)
 
 A separate step decides whether the files `retrieve` would show answer the
 question. `judge-input` (offline) prints the question and those passages;
@@ -175,7 +175,7 @@ question repeats), which may flatter Bar 2.
 `docs-answerability-2` closed as an internal release candidate; its conditions
 T1 to T11 are carried out by slice `land-answerability`, whose Charter the owner
 approved on 2026-10-17 (`runs/land-answerability/APPROVAL_RECORD-1.md`).
-**Landing by pull request; the owner merges.** Nothing is announced or deployed.
+**Merged by pull request #4 on 2026-10-17 (a merge commit, which keeps the rehearsed rollback valid).** Nothing is announced or deployed; nothing runs on a server.
 What that slice's Charter recorded or changed:
 
 - **S5 is fixed.** `/aveto-judge-seen` (eval only) no longer takes caller text
