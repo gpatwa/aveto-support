@@ -308,3 +308,41 @@ def test_form_post_catch_all_returns_the_error_page_with_a_renderer() -> None:
     assert r.text == "form" and html.forms[-1] == (AskResult(Outcome.JUDGE_ERROR), "")
     j = c.post("/ask", json={"question": QUESTION})  # JSON stays JSON
     assert (j.status_code, j.json()["outcome"]) == (502, "judge_error")
+
+
+def test_health_answers_while_the_thread_pool_is_saturated() -> None:
+    import threading
+    import time
+
+    release = threading.Event()
+    app = make_app(FakeJudgeClient())
+
+    def slow(raw: str, ip: str) -> AskResult:
+        release.wait(20)
+        return AskResult(Outcome.NO_CONFIDENT_MATCH)
+
+    app.state.service.ask = slow
+    done: list[float] = []
+    with TestClient(app, client=(IP, 1)) as c:  # one event loop, one thread pool
+        posters = [
+            threading.Thread(target=lambda: c.post("/ask", json={"question": QUESTION}))
+            for _ in range(60)  # more than the pool's 40 threads
+        ]
+        try:
+            for t in posters:
+                t.start()
+            time.sleep(1.0)
+
+            def probe() -> None:
+                start = time.monotonic()
+                assert c.get("/health").status_code == 200
+                done.append(time.monotonic() - start)
+
+            prober = threading.Thread(target=probe)
+            prober.start()
+            prober.join(3)
+            assert done and done[0] < 1.0
+        finally:
+            release.set()
+            for t in posters:
+                t.join(20)

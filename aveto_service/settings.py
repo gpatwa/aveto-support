@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import os
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from decimal import Decimal, InvalidOperation
 from typing import Literal
 
@@ -22,7 +22,7 @@ NANO = 10**9
 @dataclass(frozen=True)
 class Settings:
     kill_switch: Literal["on", "off"] = "on"
-    api_key: str = ""
+    api_key: str = field(default="", repr=False)
     client_key: Literal["xff_last", "peer"] = "xff_last"
     price_in_nano_per_token: int = DEFAULT_PRICE_IN_NANO
     price_out_nano_per_token: int = DEFAULT_PRICE_OUT_NANO

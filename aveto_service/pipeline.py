@@ -24,6 +24,7 @@ from aveto_service.judge_port import (
 )
 from aveto_service.limits import (
     MAX_QUESTION_CHARS,
+    RETRIEVALS_PER_VISITOR_PER_HOUR,
     RateLimiter,
     Reservation,
     SpendCounter,
@@ -179,6 +180,7 @@ class AskService:
         self._mono = monotonic or time.monotonic
         self._salt = secrets.token_bytes(32)
         self._rate = limiter or RateLimiter()
+        self._retrievals = RateLimiter(limit=RETRIEVALS_PER_VISITOR_PER_HOUR)
         self._spend = SpendCounter(
             settings.daily_cap_nano,
             settings.price_in_nano_per_token,
@@ -223,12 +225,14 @@ class AskService:
         day = utc_day(self._clock())
         now = self._mono()
         try:
-            with self._lock:  # 4
+            with self._lock:  # 4, 5
                 if not self._rate.allowed(key, now):
                     return AskResult(Outcome.RATE_LIMITED)
-            with self._lock:  # 5
+                if not self._retrievals.allowed(key, now):  # bounds work refused after retrieval
+                    return AskResult(Outcome.RATE_LIMITED)
                 if not self._spend.peek(day, self._floor):
                     return AskResult(Outcome.PAUSED)
+                self._retrievals.record(key, now)  # counted whatever happens next
         except Exception:  # noqa: BLE001 - fail closed: any failure is a refusal
             return AskResult(Outcome.RATE_LIMITED)
         try:  # 6

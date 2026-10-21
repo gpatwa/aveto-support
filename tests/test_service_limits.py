@@ -22,6 +22,7 @@ from service_fakes import (
 from aveto_service.abuse_log import Outcome
 from aveto_service.judge_port import JudgeCall, JudgeTransportError
 from aveto_service.limits import (
+    RETRIEVALS_PER_VISITOR_PER_HOUR,
     RateLimiter,
     SpendCounter,
     client_key,
@@ -540,3 +541,24 @@ def test_concurrent_admissions_never_exceed_cap() -> None:
 def test_decimal_cap_parsing_is_exact() -> None:
     assert Settings(monthly_cap_usd="3.1").daily_cap_nano == int(Decimal("3.1") * 10**9) // 31
     assert CANARY  # keep the shared canary import honest for linters
+
+
+def test_retrieval_cap_counts_requests_turned_away_after_retrieval() -> None:
+    embedder = CountingEmbedder()
+    fake = FakeJudgeClient()
+    service = make_service(fake, runtime=make_runtime(embedder=embedder))
+    service._spend.reserve = lambda day, amount: None  # type: ignore[method-assign]
+    for _ in range(RETRIEVALS_PER_VISITOR_PER_HOUR):  # paused at admission, after retrieval
+        assert service.ask(QUESTION, IP).outcome is Outcome.PAUSED
+    assert embedder.queries == RETRIEVALS_PER_VISITOR_PER_HOUR
+    assert service.ask(QUESTION, IP).outcome is Outcome.RATE_LIMITED  # refused before retrieval
+    assert embedder.queries == RETRIEVALS_PER_VISITOR_PER_HOUR
+    assert fake.calls == []
+    assert service.ask(QUESTION, "192.0.2.9").outcome is Outcome.PAUSED  # other visitors unaffected
+    assert embedder.queries == RETRIEVALS_PER_VISITOR_PER_HOUR + 1
+
+
+def test_settings_repr_and_str_hide_the_api_key() -> None:
+    settings = Settings(api_key="sk-ant-secret-canary-9911")
+    assert "secret-canary" not in repr(settings) and "secret-canary" not in str(settings)
+    assert settings.api_key == "sk-ant-secret-canary-9911"

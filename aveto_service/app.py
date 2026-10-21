@@ -152,7 +152,9 @@ def create_app(
             return failure(kind)
 
     @app.get("/health")
-    def health() -> Response:
+    async def health() -> Response:
+        # async on purpose: it runs on the event loop, not the thread pool that a flood of
+        # slow /ask work can fill. service.health() only takes short in-memory locks.
         return JSONResponse(service.health(), headers=_JSON_HEADERS)
 
     @app.exception_handler(Exception)

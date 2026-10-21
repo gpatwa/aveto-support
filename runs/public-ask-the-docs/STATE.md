@@ -3,7 +3,7 @@
 - **Ask:** `intents/public-ask-the-docs.md` — a public "ask the docs" page, live on Azure: verbatim passages or "no confident match", judged through the Anthropic API under hard cost and abuse limits
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 14 Security Review
+- **Current stage:** 15 Docs and safety text
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents/teammates in `.claude/agents/` (pack v26), run from this repo's worktree
 - **Telemetry:** self-reported — see `TELEMETRY.md`
@@ -28,7 +28,8 @@
 | 10 Public page | Frontend Developer | done — `aveto_service/{pages,render,result_store,main}.py`, static css/js; 25 tests, 584 pass, mypy, ruff clean; no browser preview (no tool): enhance.js only syntax-checked, contrast unmeasured; 3 copy mappings for outcomes the UX table lacks | runs/public-ask-the-docs/10-frontend-note.md | local regression green |
 | 11 Infra and image | Cloud Deployment | partial — `infra/main.bicep` + `main.parameters.json` written (C8.3 types only); Dockerfile, .dockerignore, tests/test_infra_static.py blocked by write-scope-guard (text in note); no shell, so no az checks, no regression run | runs/public-ask-the-docs/11-infra-note.md | not met until files written and checks run | 11c done: Dockerfile, .dockerignore, tests/test_infra_static.py written; Azure read-only checks in 11c-infra-checks.md (bicep build FAILS: F1 BCP265 `environment` symbol, F2, F3 for Cloud Deployment); image unbuilt (Docker daemon down); 591 tests green |
 | 13 QA evidence (final tree, offline) | QA Evidence | done — GO WITH CONDITIONS: 606 passed x3 (425 on main + 181), mypy, ruff clean; 0 NOT MET offline except intent line 11 (docs, stage 15 pending); 6 required mutations each caught, 1 redundant kill-switch check (`pipeline.py:216`) untested (QA-1); local run on real index + fake judge: 100 passages byte-identical, logs hold abuse lines only; real API, ingress XFF, image build, retention, cold start, browser checks and gate unverified | runs/public-ask-the-docs/13-qa-evidence.md | local regression green |
-| 6 to 19 (except 8, 9, 10, 11, 13) | per plan | pending | — | — |
+| 14 Security Review (adversarial) | Security & Privacy | done — PASS WITH REQUIRED FIXES, 0 blockers: S-R1 (unrecorded post-retrieval `paused` refusals give unbounded retrieval per visitor; sync `/health` queues behind it; `pipeline.py:229-252`, `app.py:154-156`), S-R2 (QA-1 test, `pipeline.py:216`); stage 17 conditions S-C1 (CR-4 XFF check, kill switch on), S-C2 (retention 7/7 before on), S-C3 (`az acr build` from the worktree root); C4.1 not breached; CR-3 owner decision (not a blocker), CR-8 advisory, 5xx keeps full charge; 15 advisories, owner decisions D1-D7 | runs/public-ask-the-docs/14-security-review.md | fixes S-R1, S-R2 re-checked before the Release Gate |
+| 6 to 19 (except 8, 9, 10, 11, 13, 14) | per plan | pending | — | — |
 
 ## Approvals
 
@@ -39,8 +40,8 @@
 ## Budget
 
 - **Budget:** 2000k tokens  ·  **Depth:** standard
-- **Spent:** 1152k (58%)  ·  **Remaining:** 848k
-- **Next stage:** 14 Security Review, adversarial est. 190k → **PROCEED**
+- **Spent:** 1394k (70%)  ·  **Remaining:** 606k
+- **Next stage:** 15 Safety text (Architect), docs (Tech Writer), words check (different model) est. 220k → **PROCEED**
 
 Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup spend is the driving session's, not a spawn.
 
@@ -78,11 +79,13 @@ Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup 
 | 11d Bicep lint fixes (cloud-infra resumed; peak 69k total for stage 11) | sonnet-5-5 | medium | — | — | — | 3k | 7 | 0 |
 | 12 Review layer (Orchestrator /code-review high, declared sonnet-5-5; + round 1 fixes backend-fix1) | sonnet-5-5 | high | — | — | — | 55k | 19 | 0 |
 | 13 QA evidence (qa-final) | sonnet-5-5 | high | — | — | — | 145k | 57 | 0 |
-| **Total** | | | | | | 1152k | | |
+| 14 Security Review adversarial (security-adv) | opus-5-5 | high | — | — | — | 226k | 63 | 0 |
+| 14b Security required fixes S-R1, S-R2, S-A1 (backend-fix1 resumed; peak 70k total) | sonnet-5-5 | medium | — | — | — | 16k | 5 | 0 |
+| **Total** | | | | | | 1394k | | |
 
 ## Next action
 
-Spawn stage 14 (Security & Privacy, adversarial) with QA-1 and the code-review carry-overs.
+Spawn 15a Architect (INV-4/INV-5 words + ARCHITECTURE.md) and 15b Tech Writer (README, status, runbook) in parallel; then 15c different-model check of the words.
 
 ## Setup log
 
@@ -96,3 +99,5 @@ Spawn stage 14 (Security & Privacy, adversarial) with QA-1 and the code-review c
 - 2026-10-21 Orchestrator, after stage 11: SR-1 resolved in-run (Architect amended §12; Backend wrote Dockerfile/.dockerignore/test_infra_static and ran the read-only checks; Cloud Deployment fixed F1-F3). Orchestrator re-ran: `az bicep build` exit 0; `what-if deployApp=false` creates only identity, ACR, ACR role assignment, Log Analytics, environment, Key Vault role assignment (vault: Ignore); mypy clean, ruff clean, 591 passed. No Azure resource was created. The image is unbuilt (no Docker daemon locally); the first build is `az acr build` at stage 17, so "ingest runs inside the build" and the cold-start figure are unconfirmed until then. Stage 17 deploy commands run from the Orchestrator's session under C8.3 (the deploy role has no shell).
 - 2026-10-21 Orchestrator, after stage 12: `code-review.md` written (tier High, 8 findings: 4 fixed in round 1, CR-3/CR-8 intentional, CR-4 until stage 17, CR-7 rejected; round 1 diff re-reviewed, 0 new). Review is unscored (Charter C3.R). The Orchestrator's own review spend is the driving session's, not a spawn, so it is not in the Trace; the 55k row is the Backend fix spawn. Regression after fixes: mypy clean, ruff clean, 606 passed. CR-1 supersedes tech spec §3 step 7. Carried forward: CR-3 (scale-to-zero resets limits) is an owner decision for END_REVIEW "Blocked on me".
 - 2026-10-21 Orchestrator, after stage 13: QA verdict GO WITH CONDITIONS (606 passed x3, method files byte-identical, mutations a,c-f caught). QA-1: removing the second kill-switch check (`pipeline.py:216`) fails no test — owed a test by the Backend (done with Security's round). QA: a 5xx failure is still charged its full reservation (Security to rule; CR-2 only zeroes status_4xx and connection). Browser checks by the Orchestrator appended to 13-qa-evidence.md: enhance.js, contrast (>= 6.39 light, >= 8.89 dark), 320 px, keyboard focus pass; screen-reader, forced-colors and reduced-motion not checked.
+- 2026-10-21 Orchestrator, after stage 14: Security verdict PASS WITH REQUIRED FIXES, no blocker; S-R1 (retrieval cap, /health off the thread pool), S-R2 (kill-switch test) and S-A1 (Settings repr hides the key) fixed by the Backend; Orchestrator re-ran: mypy clean, ruff clean, 610 passed; diff read, no new finding. Rulings: CR-3 not a blocker (owner decision D1); CR-4 rests on stage 17 check S-C1 before the kill switch goes off; CR-8 advisory; 5xx and timeouts keep the full reservation; C4.1 not breached, and the stage 15 INV-5 words must name the SDK headers about the server (SDK version, OS, Python version). Stage 17 checks S-C1 (forged XFF, kill switch on), S-C2 (log retention reads back 7/7 before the switch goes off), S-C3 (`az acr build` from the worktree root only). Owner decisions D1-D7 go to END_REVIEW.
+- 2026-10-21 Orchestrator, plan adjustment (no Charter change): `.agentic/SAFETY_INVARIANTS.md` and `docs/ARCHITECTURE.md` are writable only by the Software Architect (write-scope guard), not the Tech Writer as the plan said. Stage 15 therefore: 15a Architect writes the INV-4/INV-5 words (within C5.1/C5.2) and ARCHITECTURE.md; 15b Tech Writer writes README, CURRENT_MVP_STATUS and the runbook; 15c a different-model adversarial check of the words (Charter C5 intro: the Architect is Opus, so the checker is Sonnet: Compliance Reviewer), then stage 16 diffs SAFETY_INVARIANTS.md against 2919c87.

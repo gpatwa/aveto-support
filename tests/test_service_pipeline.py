@@ -226,3 +226,23 @@ def test_aveto_support_imports_no_service_deps() -> None:
 
 def test_answerable_default_reply_constant_is_valid() -> None:
     assert judge.parse_verdict(ANSWERABLE_REPLY, judge.BLOCK_ID).token == "ANSWERABLE"
+
+
+def test_pipeline_kill_switch_refuses_without_retrieval_or_model(
+    capfd: pytest.CaptureFixture[str],
+) -> None:
+    from service_fakes import make_settings
+
+    configure_logging()
+    capfd.readouterr()
+    embedder = CountingEmbedder()
+    fake = FakeJudgeClient()
+    service = make_service(
+        fake, runtime=make_runtime(embedder=embedder), settings=make_settings(kill_switch="on")
+    )
+    assert service.ask("how do I install aveto", IP).outcome is Outcome.SERVICE_OFF
+    assert embedder.queries == 0 and fake.calls == []
+    health = service.health()
+    assert (health["judged_today"], health["spend_today_usd"]) == (0, "0.000000")
+    lines = [ln for ln in capfd.readouterr().out.splitlines() if '"o":' in ln]
+    assert len(lines) == 1 and json.loads(lines[0])["o"] == "service_off"

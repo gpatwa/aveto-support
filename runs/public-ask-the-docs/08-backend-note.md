@@ -66,3 +66,12 @@ Tests changed: `test_spend_pause_closes_day` (counter part): the second reservat
 Tests added: `test_inflight_reservations_do_not_close_the_day`, `test_failed_call_charge_by_category` (9 cases), `test_non_transport_failure_keeps_full_reservation`, `test_seven_4xx_failures_do_not_pause_the_day`, `test_midnight_straddle_during_retrieval_reserves_on_the_new_day`, `test_404_and_405_carry_no_store_and_nosniff`, `test_form_post_catch_all_returns_the_error_page_with_a_renderer`. `test_concurrent_admissions_never_exceed_cap` is unchanged and passes.
 Fail-first: run against the base source, 9 of the new/changed tests failed (the in-flight test, 4 charge cases, seven-4xx, straddle, 404/405, form catch-all) plus the changed counter test; they pass with the change.
 Regression: `uv run mypy && uv run ruff check && uv run pytest` green (606 passed, 12 deselected).
+
+## Security round (S-R1, S-R2, S-A1)
+
+- **S-R1 (a).** A second sliding-window limiter on the same hashed key (`RETRIEVALS_PER_VISITOR_PER_HOUR = 30`, `limits.py`) counts every request that reaches retrieval, whatever happens next (paused or rate_limited at admission included). Steps 4 and 5 now run under one lock: hourly allowance, retrieval allowance, spend peek, then the retrieval stamp. Over 30 retrievals an hour the request is `rate_limited` before any retrieval, no model call. Requests refused by the peek (nothing retrieved) are not stamped.
+- **S-R1 (b).** `GET /health` is now `async def`, so it runs on the event loop and not the thread pool. Judged safe: `service.health()` only takes the short in-memory admission lock, which is never held across retrieval or the model call.
+- **S-R2.** `test_pipeline_kill_switch_refuses_without_retrieval_or_model` (direct `AskService.ask`, switch on): no retrieval, no judge call, $0, one `service_off` abuse line. Mutation (the kill-switch check at step 1 replaced by `if False`) made it fail; restored.
+- **S-A1.** `Settings.api_key` is `field(default="", repr=False)`.
+- **Tests added.** `test_retrieval_cap_counts_requests_turned_away_after_retrieval`, `test_health_answers_while_the_thread_pool_is_saturated`, `test_pipeline_kill_switch_refuses_without_retrieval_or_model`, `test_settings_repr_and_str_hide_the_api_key`. With the three fixes reverted (retrieval check, `async`, `repr=False`), the first, second and fourth fail.
+- **Regression.** mypy, ruff, pytest green (610 passed, 12 deselected). The S-R2 test is parametrised over one case only (switch on), not the unparsable-setting variant.

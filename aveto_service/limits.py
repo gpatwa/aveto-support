@@ -17,6 +17,7 @@ from aveto_support import judge
 MAX_QUESTION_CHARS = 500
 MAX_BODY_BYTES = 16_384
 PER_VISITOR_PER_HOUR = 10
+RETRIEVALS_PER_VISITOR_PER_HOUR = 30  # every request that reaches retrieval, admitted or not
 WINDOW_SECONDS = 3600.0
 MAX_VISITOR_KEYS = 50_000
 MAX_TOKENS = 1024  # the adapter's max_tokens; bounds the output part of a reservation
