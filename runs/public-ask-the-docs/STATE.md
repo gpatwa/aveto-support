@@ -3,11 +3,11 @@
 - **Ask:** `intents/public-ask-the-docs.md` — a public "ask the docs" page, live on Azure: verbatim passages or "no confident match", judged through the Anthropic API under hard cost and abuse limits
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 15 Docs and safety text (15c found two Charter stops)
-- **Status:** blocked-on-approval
+- **Current stage:** 15e Charter v2 recorded, words final; next 16 Release Gate
+- **Status:** in-progress
 - **Least-privilege:** enforced — role subagents/teammates in `.claude/agents/` (pack v26), run from this repo's worktree
 - **Telemetry:** self-reported — see `TELEMETRY.md`
-- **Charter:** runs/public-ask-the-docs/CHARTER.md, sha256 d0acc5346a80e199e3f95ac57e23a2c01fec43e56d93dbda3b4a03e6a99fa74c approved in APPROVAL_RECORD-1
+- **Charter:** runs/public-ask-the-docs/CHARTER-v2.md, sha256 e04b82539e1fe17ed86d945a93b761dafef4f19c1af30dc4353f31743fc8ead4 approved in APPROVAL_RECORD-2 (replaces v1, d0acc534…, APPROVAL_RECORD-1)
 - **Started:** 2026-10-20  ·  **Updated:** 2026-10-20
 
 ## Stages
@@ -36,7 +36,7 @@
 
 | Action | Rule | Requested | Decision | Approver | When (UTC) | Record |
 |--------|------|-----------|----------|----------|-----------|--------|
-| Approve Charter v2 (amendment 1: C4.1 SDK headers, C5.2 one sentence) | Charter section 9.1 and 9.5 | yes | PENDING | — | — | runs/public-ask-the-docs/CHARTER-v2.md, sha256 e04b82539e1fe17ed86d945a93b761dafef4f19c1af30dc4353f31743fc8ead4 |
+| Approve Charter v2 (amendment 1: C4.1 SDK headers, C5.2 one sentence) | Charter section 9.1 and 9.5 | yes | approved | Gopal Patwa | 2026-10-21T20:29:11Z | runs/public-ask-the-docs/APPROVAL_RECORD-2.md |
 | Approve the Charter | Charter | yes | approved | Gopal Patwa | 2026-10-21T06:42:08Z | runs/public-ask-the-docs/APPROVAL_RECORD-1.md |
 
 ## Budget
@@ -94,7 +94,7 @@ Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup 
 
 ## Next action
 
-BLOCKED on the owner: approve CHARTER-v2.md by its sha256 (e04b8253…ead4) or decide otherwise (see END note below). Then: record APPROVAL_RECORD-2, runbook vault-line fix, stage 16.
+Runbook vault-line fix (Tech Writer), then stage 16 (Release Gate tier 3).
 
 ## Setup log
 
