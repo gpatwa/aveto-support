@@ -53,6 +53,7 @@ _ADMITTED = frozenset({Outcome.ANSWER, Outcome.NO_CONFIDENT_MATCH, Outcome.JUDGE
 NO_CONFIDENT_MATCH_TEXT = "no confident match"
 JUDGE_ERROR_TEXT = "judge error"
 TOP_OF_FILE = "(top of file)"
+_NEVER_BILLED = frozenset({"status_4xx", "connection"})
 
 
 @dataclass(frozen=True)
@@ -241,7 +242,9 @@ class AskService:
         amount = self._spend.reservation_amount(
             self._system_bytes, len(payload.encode("utf-8"))
         )
-        with self._lock:  # 7
+        with self._lock:  # 7: day and time are taken again, so a midnight straddle is safe
+            day = utc_day(self._clock())
+            now = self._mono()
             if not self._rate.allowed(key, now):
                 return AskResult(Outcome.RATE_LIMITED)
             reservation = self._spend.reserve(day, amount)
@@ -255,6 +258,7 @@ class AskService:
     ) -> AskResult:
         call: JudgeCall | None = None
         attempts = 1
+        unbilled = False  # a failure the provider never bills (or nothing was sent)
         try:
             call = self._judge.judge(self._runtime.system_prompt, payload)
             attempts = max(1, call.attempts)
@@ -264,6 +268,8 @@ class AskService:
             return AskResult(Outcome.JUDGE_ERROR)
         except JudgeTransportError as exc:
             attempts = max(1, exc.attempts)
+            if exc.category in _NEVER_BILLED or exc.attempts == 0:
+                unbilled = True
         except Exception:  # noqa: BLE001 - an unexpected adapter failure is a failed attempt
             attempts = 1  # it keeps its full reservation below
         in_tokens = out_tokens = 0
@@ -274,6 +280,8 @@ class AskService:
             charge = self._spend.cost(in_tokens, out_tokens)
         # The adapter retries by itself; each attempt beyond the first is charged in full.
         charge += (attempts - 1) * amount
+        if unbilled:
+            charge = 0
         with self._lock:
             self._spend.settle(reservation, charge, in_tokens, out_tokens)
         if call is None:

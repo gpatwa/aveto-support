@@ -169,16 +169,21 @@ class SpendCounter:
         ) * self.price_in + MAX_TOKENS * self.price_out
 
     def peek(self, day: str, floor: int) -> bool:
+        """May a request go on? It may be refused here without closing the day."""
         self.roll(day)
         return not self.closed and self.spent + self.in_flight + floor <= self.cap
 
     def reserve(self, day: str, amount: int) -> Reservation | None:
-        """Reserve `amount` or close the day. None means paused."""
+        """Reserve `amount`. None means paused. The day closes only when SETTLED spend plus
+        `amount` is over the cap; when only in-flight reservations leave no room, this one
+        request is refused and the day stays open."""
         self.roll(day)
         if self.closed:
             return None
-        if self.spent + self.in_flight + amount > self.cap:
+        if self.spent + amount > self.cap:
             self.closed = True
+            return None
+        if self.spent + self.in_flight + amount > self.cap:
             return None
         self.in_flight += amount
         return Reservation(day, amount)

@@ -310,8 +310,12 @@ def test_client_key_store_full_fails_closed() -> None:
 def test_spend_pause_closes_day() -> None:
     counter = SpendCounter(1000, 1, 1)
     day = "2026-10-21"
-    assert counter.reserve(day, 600) is not None
-    assert counter.reserve(day, 600) is None  # does not fit: the day closes
+    first = counter.reserve(day, 600)
+    assert first is not None
+    assert counter.reserve(day, 600) is None  # in-flight only: refused, the day stays open
+    assert not counter.closed
+    counter.settle(first, 600, 0, 0)  # settled spend 600
+    assert counter.reserve(day, 600) is None  # settled spend plus this one is over: closes
     assert counter.closed
     assert counter.reserve(day, 1) is None  # even a tiny one is refused now
     assert not counter.peek(day, 0)
@@ -326,6 +330,109 @@ def test_spend_pause_closes_day() -> None:
     assert fake.calls == []
     clock.advance(24 * 3600)
     assert service.ask(QUESTION, IP).outcome is Outcome.ANSWER
+
+
+def test_inflight_reservations_do_not_close_the_day() -> None:
+    release = threading.Event()
+    in_judge = threading.Semaphore(0)
+
+    class SlowJudge(FakeJudgeClient):
+        def judge(self, system_prompt: str, payload: str) -> JudgeCall:
+            in_judge.release()
+            assert release.wait(10)
+            return super().judge(system_prompt, payload)
+
+    fake = SlowJudge()
+    service = make_service(fake)
+    release.set()
+    service.ask(QUESTION, "192.0.2.200")
+    release.clear()
+    amount = service._spend.reservation_amount(
+        service._system_bytes, len(fake.calls[0][1].encode())
+    )
+    # room for three in flight, and the floor check still passes for a fourth
+    service._spend.cap = service._spend.spent + 3 * amount + service._floor
+    results: list[Outcome] = []
+    lock = threading.Lock()
+
+    def worker() -> None:
+        outcome = service.ask(QUESTION, IP).outcome  # one visitor key
+        with lock:
+            results.append(outcome)
+
+    threads = [threading.Thread(target=worker) for _ in range(10)]
+    for t in threads:
+        t.start()
+    assert in_judge.acquire(timeout=10)
+    for _ in range(200):
+        with lock:
+            if len(results) >= 6:
+                break
+        threading.Event().wait(0.05)
+    with lock:
+        assert Outcome.PAUSED in results
+    assert not service._spend.closed
+    release.set()
+    for t in threads:
+        t.join(10)
+    assert Outcome.PAUSED in results and not service._spend.closed
+    service._spend.cap = 10**12
+    assert service.ask(QUESTION, "192.0.2.201").outcome is Outcome.ANSWER
+
+
+@pytest.mark.parametrize(
+    ("category", "attempts", "full"),
+    [
+        ("status_4xx", 1, False), ("connection", 1, False), ("connection", 2, False),
+        ("timeout", 1, True), ("status_5xx", 2, True), ("stop_reason", 1, True),
+        ("tool_use", 1, True), ("other", 1, True), ("prompt_hash", 0, False),
+    ],
+)
+def test_failed_call_charge_by_category(category: str, attempts: int, full: bool) -> None:
+    fake = FakeJudgeClient([JudgeTransportError(category, attempts=attempts)])
+    service = make_service(fake)
+    service.ask(QUESTION, IP)
+    reserved = service._spend.reservation_amount(
+        service._system_bytes, len(fake.calls[0][1].encode())
+    )
+    assert service._spend.spent == (max(1, attempts) * reserved if full else 0)
+    assert service._spend.in_flight == 0
+
+
+def test_non_transport_failure_keeps_full_reservation() -> None:
+    fake = FakeJudgeClient([RuntimeError("boom")])
+    service = make_service(fake)
+    service.ask(QUESTION, IP)
+    reserved = service._spend.reservation_amount(
+        service._system_bytes, len(fake.calls[0][1].encode())
+    )
+    assert service._spend.spent == reserved
+
+
+def test_seven_4xx_failures_do_not_pause_the_day() -> None:
+    fake = FakeJudgeClient([JudgeTransportError("status_4xx")] * 7)
+    service = make_service(fake)
+    for i in range(7):
+        assert service.ask(QUESTION, f"192.0.2.{i + 1}").outcome is Outcome.JUDGE_ERROR
+    assert service._spend.spent == 0 and not service._spend.closed
+    assert service.ask(QUESTION, "192.0.2.50").outcome is Outcome.ANSWER
+
+
+def test_midnight_straddle_during_retrieval_reserves_on_the_new_day() -> None:
+    clock = FakeClock(now=datetime(2026, 10, 21, 23, 59, 59, tzinfo=UTC))
+
+    class StraddleEmbedder(CountingEmbedder):
+        def embed_query(self, question: str) -> bytes:
+            clock.advance(2)  # retrieval crosses 00:00 UTC
+            return super().embed_query(question)
+
+    service = make_service(
+        FakeJudgeClient(), clock=clock, runtime=make_runtime(embedder=StraddleEmbedder())
+    )
+    assert service.ask(QUESTION, IP).outcome is Outcome.ANSWER
+    assert service._spend.day == "2026-10-22"
+    health = service.health()
+    assert (health["day"], health["judged_today"]) == ("2026-10-22", 1)
 
 
 def test_spend_reservation_bounds_and_settles() -> None:

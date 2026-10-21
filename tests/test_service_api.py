@@ -281,3 +281,30 @@ def test_page_routes_exist_only_with_a_renderer() -> None:
     # these routes cannot reach the model
     plain = client_of(FakeJudgeClient())
     assert [plain.get(p).status_code for p in ("/", "/result/x", "/static/style.css")] == [404] * 3
+
+
+def test_404_and_405_carry_no_store_and_nosniff() -> None:
+    c = client_of(FakeJudgeClient())
+    missing = c.get("/nope")
+    wrong = c.get("/ask")
+    assert (missing.status_code, wrong.status_code) == (404, 405)
+    assert missing.json() == {"detail": "Not Found"}
+    assert wrong.json() == {"detail": "Method Not Allowed"} and wrong.headers["allow"] == "POST"
+    for r in (missing, wrong):
+        assert r.headers["cache-control"] == "no-store"
+        assert r.headers["x-content-type-options"] == "nosniff"
+
+
+def test_form_post_catch_all_returns_the_error_page_with_a_renderer() -> None:
+    html = RecordingHtml()
+    app = make_app(FakeJudgeClient(), html=html)
+
+    def explode(raw: str, ip: str) -> AskResult:
+        raise RuntimeError("boom")
+
+    app.state.service.ask = explode
+    c = TestClient(app, client=(IP, 1))
+    r = c.post("/ask", content=b"question=hello", headers=FORM_HEADERS)
+    assert r.text == "form" and html.forms[-1] == (AskResult(Outcome.JUDGE_ERROR), "")
+    j = c.post("/ask", json={"question": QUESTION})  # JSON stays JSON
+    assert (j.status_code, j.json()["outcome"]) == (502, "judge_error")

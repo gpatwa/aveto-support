@@ -16,6 +16,7 @@ from urllib.parse import parse_qs
 
 from fastapi import FastAPI, Request
 from starlette.concurrency import run_in_threadpool
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import JSONResponse, Response
 
 from aveto_service.abuse_log import Outcome, configure_logging, emit_ops
@@ -117,6 +118,12 @@ def create_app(
     service = AskService(runtime, judge_client, settings, monotonic=monotonic, **extra)  # type: ignore[arg-type]
     app.state.service = service
 
+    def failure(kind: str) -> Response:
+        """The fixed error: the error page for a form post when a renderer is present."""
+        if kind == _FORM and html is not None:
+            return html.form_outcome(AskResult(Outcome.JUDGE_ERROR), "")
+        return _json(AskResult(Outcome.JUDGE_ERROR))
+
     def respond(result: AskResult, kind: str, raw: str) -> Response:
         if kind == _FORM and html is not None:
             echo = raw if result.outcome not in (Outcome.BODY_TOO_LARGE, Outcome.BAD_REQUEST) else ""
@@ -142,7 +149,7 @@ def create_app(
             return respond(result, kind, raw)
         except Exception:  # noqa: BLE001 - fail closed: any failure is a refusal
             emit_ops("unhandled")
-            return _json(AskResult(Outcome.JUDGE_ERROR))
+            return failure(kind)
 
     @app.get("/health")
     def health() -> Response:
@@ -151,7 +158,12 @@ def create_app(
     @app.exception_handler(Exception)
     async def unhandled(request: Request, exc: Exception) -> Response:
         emit_ops("unhandled")
-        return _json(AskResult(Outcome.JUDGE_ERROR))
+        return failure(_content_type(request))
+
+    @app.exception_handler(StarletteHTTPException)
+    async def http_error(request: Request, exc: StarletteHTTPException) -> Response:
+        headers = {**(exc.headers or {}), **_JSON_HEADERS}
+        return JSONResponse({"detail": exc.detail}, status_code=exc.status_code, headers=headers)
 
     if html is not None:
         pages = html
