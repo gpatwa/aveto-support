@@ -3,7 +3,7 @@
 - **Ask:** `intents/public-ask-the-docs.md` — a public "ask the docs" page, live on Azure: verbatim passages or "no confident match", judged through the Anthropic API under hard cost and abuse limits
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 9 AI adapter, 10 Frontend (parallel)
+- **Current stage:** 11 Infra and image
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents/teammates in `.claude/agents/` (pack v26), run from this repo's worktree
 - **Telemetry:** self-reported — see `TELEMETRY.md`
@@ -24,7 +24,9 @@
 | 4 UX spec | UI Designer | done — one page, 11 states with final copy, no-JS form post, tokens light/dark, no stop item | runs/public-ask-the-docs/04-ux-spec.md | n/a |
 | 5 Tech spec | Software Architect | done — two passes; `aveto_service/` beside the unchanged core; kill switch = Container App env var via Bicep param (default on); limits in fail-closed order; 3 new deps; ADR 0009 proposed; no STOP taken, 1 possible STOP at stage 11 (vault RBAC mode), 2 owner items (counters reset with the replica; "without a redeploy" = no build, new revision) | runs/public-ask-the-docs/05-tech-spec.md, docs/adr/0009-public-ask-service-on-azure-container-apps.md | n/a |
 | 8 Backend service | Backend Architect | done — `aveto_service/` (settings, port, limits, abuse log, pipeline, app); fastapi 0.157.0, uvicorn 0.54.0, anthropic 1.7.0; 110 new tests, 535 pass; mypy, ruff clean; deviations in note (attempts field, post-hoc charge for retry) | runs/public-ask-the-docs/08-backend-note.md | local regression green |
-| 6 to 19 (except 8) | per plan | pending | — | — |
+| 9 AI adapter | AI Engineer | done — `aveto_service/anthropic_judge.py`; 24 tests on a fake Messages client; request body exact, no tools, effort high explicit, 2 attempts, fixed error categories, hash fail-closed, SDK loggers muted by the adapter; 559 pass, mypy, ruff clean; (U) model id and effort accepted: stage 17 | runs/public-ask-the-docs/09-ai-adapter-note.md | local regression green |
+| 10 Public page | Frontend Developer | done — `aveto_service/{pages,render,result_store,main}.py`, static css/js; 25 tests, 584 pass, mypy, ruff clean; no browser preview (no tool): enhance.js only syntax-checked, contrast unmeasured; 3 copy mappings for outcomes the UX table lacks | runs/public-ask-the-docs/10-frontend-note.md | local regression green |
+| 6 to 19 (except 8, 9, 10) | per plan | pending | — | — |
 
 ## Approvals
 
@@ -35,8 +37,8 @@
 ## Budget
 
 - **Budget:** 2000k tokens  ·  **Depth:** standard
-- **Spent:** 684k (34%)  ·  **Remaining:** 1316k
-- **Next stage:** 9 AI adapter + 10 Frontend page (build, parallel) est. 190k → **PROCEED**
+- **Spent:** 806k (40%)  ·  **Remaining:** 1194k
+- **Next stage:** 11 Infra + image definition (Cloud Deployment; what-if only) est. 130k → **PROCEED**
 
 Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup spend is the driving session's, not a spawn.
 
@@ -66,11 +68,13 @@ Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup 
 | 7 Compliance + data (compliance-2) | sonnet-5-5 | high | — | — | — | 84k | 21 | 0 |
 | 4b UX copy amendment (ui-patch) | sonnet-5-5 | medium | — | — | — | 35k | 6 | 0 |
 | 8 Backend service (backend) | sonnet-5-5 | medium | — | — | — | 146k | 36 | 0 |
-| **Total** | | | | | | 684k | | |
+| 9 AI adapter (ai-adapter) | sonnet-5-5 | medium | — | — | — | 46k | 16 | 0 |
+| 10 Frontend page (frontend) | sonnet-5-5 | medium | — | — | — | 76k | 20 | 0 |
+| **Total** | | | | | | 806k | | |
 
 ## Next action
 
-Spawn stages 9 (AI Engineer) and 10 (Frontend Developer) in parallel; then 11 (Cloud Deployment).
+Spawn stage 11 (Cloud Deployment): Dockerfile, infra/main.bicep, what-if only.
 
 ## Setup log
 
@@ -80,3 +84,4 @@ Spawn stages 9 (AI Engineer) and 10 (Frontend Developer) in parallel; then 11 (C
 - 2026-10-21 Orchestrator, after stage 5: (1) `kv-aveto-ask-gp` is in RBAC mode (`enableRbacAuthorization` true, read-only check), so the tech spec's possible C8.3 STOP does not arise. (2) Kill switch is an env var applied by `az deployment group create` (covered by C8.3); it creates a new revision with no image rebuild. The intent's "without a redeploy" is met only in that sense — reported at END_REVIEW, not stretched. (3) Hourly and daily counters are in memory and reset when the replica scales to zero; persistence would need a resource C8.3 does not name. The $10 console limit stays the monthly backstop. Security rules at stage 14; owner decides at END_REVIEW. (4) The service shows each passage's full verbatim text (what the judge saw), not the CLI's 3-line excerpt; INV-4 words must say so, within C5.1; Security checks at stage 14.
 - 2026-10-21 Orchestrator, after stages 6 and 7: both PASS (06 tier limited, provisional on Art. 50 for owner/legal; 07 PASS WITH REQUIRED FIXES, gates G1-G10). Carried forward as release-gate conditions: page must name Anthropic as recipient, say an AI model decides, tell visitors not to enter personal data (06 R1; 07 top gap) — UX spec 04 patched before stage 10; owner records a line on Art. 50 / privacy / legal or accepts them open (06 R2, END_REVIEW); Security rules at stage 14 on counters reset at scale-to-zero and forwarded-IP (06 R3); stage 17 must search Log Analytics for the tester's own IP in ingress/system tables (07). Only 1 of 4 hostile gate questions tests injection through the question, and the 8/10 bar may miss by chance (06): reported as is, bars not changed. Stage 6's first attempt had already written 06 before the usage-limit cut; the re-run verified it and left it unchanged.
 - 2026-10-21 Orchestrator, after stage 8: regression re-run by the Orchestrator: mypy clean, ruff clean, 535 passed (425 + 110 new); `git diff main -- aveto_support prompts .claude .agentic` empty. Stage 8 deviation to carry: `JudgeCall.attempts` — the adapter must set attempts=2 when it retried (08-backend-note). Open gap L1 (the judge_error cause is not logged) is a logging-contract choice for Security at stage 14.
+- 2026-10-21 Orchestrator, after stages 9 and 10: regression re-run by the Orchestrator: mypy clean, ruff clean, 584 passed (535 + 24 adapter + 25 pages); method files byte-identical to main (empty diff). No live Anthropic call made; first live call is stage 17. Items routed forward: (a) UX table lacks copy for `unusable_question`, `bad_request`, `body_too_large` — reused Empty / Too long copy (10-frontend-note) → QA/Security to look, no owner action; (b) an unmatched static path returns FastAPI's default JSON 404 without the page headers (app.py is the Backend's) → Security stage 14; (c) enhance.js untested beyond `node --check`, contrast and 320px/forced-colors unmeasured → QA stage 13 (built-in browser available); (d) SDK logger muted by the adapter constructor (09 note).
