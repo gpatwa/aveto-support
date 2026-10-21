@@ -91,6 +91,11 @@ a glance, and who would rather read the source passage than a summary.
 - [ ] README, `.agentic/CURRENT_MVP_STATUS.md` and `docs/ARCHITECTURE.md` state only
       recorded figures, and stop saying "attended, internal" only for this service.
 
+**Gate set recorded (2026-10-20, before the run):** `public-gate-1.toml`, 20 questions
+(10 answerable, 6 unanswerable, 4 hostile), written by the support session and held
+outside the repo; sha256 `7eb4f588567d5b6fccea6dc59e2874f0d124777c9bde040c4e3a6de94786064f`.
+The run commits it only after the method freezes, and the hash must match.
+
 ## Must not break
 
 INV-1 (nothing is posted to GitHub), INV-2 (every answer is a named passage), INV-4
