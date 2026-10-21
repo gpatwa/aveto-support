@@ -346,3 +346,74 @@ def test_health_answers_while_the_thread_pool_is_saturated() -> None:
             release.set()
             for t in posters:
                 t.join(20)
+
+
+def test_oversize_reply_shows_no_model_text_over_http() -> None:
+    reply = "Q1 ANSWERABLE " + CANARY + "y" * 200_000
+    c = client_of(FakeJudgeClient(default=JudgeCall(reply, 10, 1)))
+    r = c.post("/ask", json={"question": QUESTION})
+    assert (r.status_code, r.json()) == (502, {"outcome": "judge_error", "text": "judge error"})
+    assert CANARY not in r.text
+
+
+@pytest.mark.parametrize("path", ["/ask/", "/static/style.css/", "/result/abc/"])
+def test_trailing_slash_is_404_not_a_redirect(path: str) -> None:
+    c = client_of(FakeJudgeClient(), html=RecordingHtml())
+    for method in (c.get, c.post):
+        r = method(path, headers={"host": "evil.example"}, follow_redirects=False)
+        assert r.status_code == 404 and "location" not in r.headers
+
+
+def test_fastapi_telemetry_auto_configure_is_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("FASTAPI_OTEL_AUTO_CONFIGURE", "true")
+    assert make_app(FakeJudgeClient())._telemetry["auto_configure"] is False
+
+
+CROSS_SITE = [
+    {"sec-fetch-site": "cross-site"},
+    {"origin": "https://evil.example"},
+    {"origin": "http://testserver.evil.example"},
+    {"origin": "null"},
+    {"origin": "https://evil.example", "sec-fetch-site": "same-origin"},
+]
+SAME_ORIGIN = [
+    {},
+    {"sec-fetch-site": "same-origin"},
+    {"sec-fetch-site": "none"},
+    {"origin": "http://testserver"},
+    {"origin": "HTTP://TestServer", "sec-fetch-site": "same-origin"},
+]
+
+
+@pytest.mark.parametrize("extra", CROSS_SITE)
+@pytest.mark.parametrize("headers", [JSON_HEADERS, FORM_HEADERS])
+def test_cross_site_post_is_refused_before_retrieval_and_model(
+    extra: dict[str, str], headers: dict[str, str], capfd: pytest.CaptureFixture[str]
+) -> None:
+    from aveto_service.abuse_log import configure_logging
+
+    configure_logging()
+    embedder = CountingEmbedder()
+    fake = FakeJudgeClient()
+    html = RecordingHtml()
+    app = make_app(fake, runtime=make_runtime(embedder=embedder), html=html)
+    c = TestClient(app, client=(IP, 5000))
+    body = b'{"question": "' + QUESTION.encode() + b'"}' if headers is JSON_HEADERS else b"question=hello"
+    capfd.readouterr()
+    r = c.post("/ask", content=body, headers={**headers, **extra})
+    if headers is JSON_HEADERS:
+        assert (r.status_code, r.json()) == (400, {"outcome": "bad_request"})
+    else:
+        assert r.text == "form" and html.forms[-1] == (AskResult(Outcome.BAD_REQUEST), "")
+    assert fake.calls == [] and embedder.queries == 0
+    lines = [ln for ln in capfd.readouterr().out.splitlines() if ln]
+    assert len(lines) == 1 and "bad_request" in lines[0]
+
+
+@pytest.mark.parametrize("extra", SAME_ORIGIN)
+def test_same_origin_post_still_works(extra: dict[str, str]) -> None:
+    fake = FakeJudgeClient()
+    c = client_of(fake)
+    r = c.post("/ask", json={"question": QUESTION}, headers=extra)
+    assert r.status_code == 200 and r.json()["outcome"] == "answer"
+    assert len(fake.calls) == 1

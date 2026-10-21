@@ -246,3 +246,19 @@ def test_pipeline_kill_switch_refuses_without_retrieval_or_model(
     assert (health["judged_today"], health["spend_today_usd"]) == (0, "0.000000")
     lines = [ln for ln in capfd.readouterr().out.splitlines() if '"o":' in ln]
     assert len(lines) == 1 and json.loads(lines[0])["o"] == "service_off"
+
+
+def test_oversize_reply_is_judge_error_and_charged() -> None:
+    # S-A4: the core's MAX_REPLY_BYTES applies in the service, though the reply parses
+    reply = ANSWERABLE_REPLY + " " + "x" * 200_000
+    fake = FakeJudgeClient(default=JudgeCall(reply, 2000, 10))
+    service = make_service(fake)
+    result = service.ask(QUESTION, IP)
+    assert result.to_json() == {"outcome": "judge_error", "text": "judge error"}
+    assert result.files == ()
+    health = service.health()
+    assert (health["judged_today"], health["input_tokens_today"]) == (1, 2000)
+    # a reply at the limit is still parsed
+    at_limit = ANSWERABLE_REPLY + " " + "x" * (judge.MAX_REPLY_BYTES - len(ANSWERABLE_REPLY) - 1)
+    ok = make_service(FakeJudgeClient(default=JudgeCall(at_limit, 2000, 10))).ask(QUESTION, IP)
+    assert ok.outcome is Outcome.ANSWER

@@ -75,3 +75,11 @@ Regression: `uv run mypy && uv run ruff check && uv run pytest` green (606 passe
 - **S-A1.** `Settings.api_key` is `field(default="", repr=False)`.
 - **Tests added.** `test_retrieval_cap_counts_requests_turned_away_after_retrieval`, `test_health_answers_while_the_thread_pool_is_saturated`, `test_pipeline_kill_switch_refuses_without_retrieval_or_model`, `test_settings_repr_and_str_hide_the_api_key`. With the three fixes reverted (retrieval check, `async`, `repr=False`), the first, second and fourth fail.
 - **Regression.** mypy, ruff, pytest green (610 passed, 12 deselected). The S-R2 test is parametrised over one case only (switch on), not the unparsable-setting variant.
+
+## Security round 2 (S-A4, S-A6, S-A8)
+
+- **S-A4** (`pipeline.py`): before `parse_verdict`, a reply over `judge.MAX_REPLY_BYTES` (UTF-8 bytes, constant imported from the core, core untouched) is a `judge_error`; the call is settled and counted as normal (usage recorded). Tests: 200 KB reply at service level (usage charged) and over HTTP (502, no model text), plus a reply exactly at the limit still parsed.
+- **S-A6** (`app.py`): `FastAPI(..., redirect_slashes=False)`; `/ask/`, `/static/style.css/`, `/result/abc/` (GET and POST, `Host: evil.example`) return the 404 handler, no `Location`.
+- **S-A8** (`app.py`, `_cross_site`): `POST /ask` is refused as `bad_request` (400; form kind gets the error state) when `Sec-Fetch-Site: cross-site`, or an `Origin` is present whose netloc differs (case-insensitive) from `Host` (`Origin: null` and a missing Host count as foreign). Checked after the kill switch and before the body read, so no retrieval or model call; `service.refuse` writes the normal abuse line. Same-origin cases (no header, `same-origin`, `none`, matching Origin) still answer.
+- **Telemetry** (S-A2 part): the pinned FastAPI accepts `telemetry={"auto_configure": False}` (`fastapi/telemetry/_api.py`); passed in the constructor; test sets `FASTAPI_OTEL_AUTO_CONFIGURE=true` and asserts it stays off.
+- Fail-first: on the base source 16 of the new tests fail (all but the same-origin regression guards).

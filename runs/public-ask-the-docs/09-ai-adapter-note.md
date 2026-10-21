@@ -25,3 +25,10 @@ no tools; body keys exact, system == prompt bytes, one user message == payload, 
 - (U) `x-stainless-*` header set and that no extra header carries visitor data: not inspected; stage 14.
 - (U) whether the model emits thinking at high effort inside the 1024-token cap (a `max_tokens` stop -> `judge_error`): stage 17.
 - Looked at: `anthropic` 1.7.0 installed source (`messages.create` signature, exception classes), tests run against fakes only.
+
+## Security round (S-A2)
+- SDK 1.7.0 `_client.py` reads `ANTHROPIC_BASE_URL` when `base_url` is None and merges `ANTHROPIC_CUSTOM_HEADERS` into `default_headers` (env first, then explicit), so an explicit empty `default_headers` does not remove them; there is no clean opt-out.
+- Fix in `aveto_service/anthropic_judge.py`: the real client is built with `base_url="https://api.anthropic.com"` (an explicit kwarg beats the env var). If `ANTHROPIC_CUSTOM_HEADERS` is set at all (even empty), construction raises `ValueError("Anthropic judge adapter refuses extra SDK header settings.")` (names no value). The injected `client=` path is unchanged and skips the check. The module's only environment read is that one name.
+- Header names sent (observed, lower-case, asserted exactly): host, accept, accept-encoding, connection, content-length, content-type, user-agent, anthropic-version, x-api-key, x-stainless-arch, x-stainless-async, x-stainless-lang, x-stainless-os, x-stainless-package-version, x-stainless-read-timeout, x-stainless-retry-count, x-stainless-runtime, x-stainless-runtime-version, x-stainless-timeout.
+- Tests (httpx2 MockTransport, no network): `test_base_url_env_cannot_redirect_and_header_set_is_exact`, `test_custom_headers_env_fails_closed` (3 values), `test_injected_client_skips_env_check`; the source-scan test now allows exactly the one `ANTHROPIC_CUSTOM_HEADERS` read, and `os` joins the import allow-list.
+- Not done here: FastAPI `telemetry={"auto_configure": False}` in `app.py` (Backend).

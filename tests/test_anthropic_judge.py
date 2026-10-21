@@ -251,7 +251,16 @@ def test_no_logging_calls_and_no_key_in_source() -> None:
     src = (ROOT / "aveto_service" / "anthropic_judge.py").read_text(encoding="utf-8")
     tree = ast.parse(src)
     names = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)}
-    assert not names & {"print", "environ", "getenv"}
+    assert not names & {"print", "getenv"}
+    # The only environment read is the fail-closed check of the SDK's header setting.
+    env_reads = {
+        n.value
+        for n in ast.walk(tree)
+        if isinstance(n, ast.Constant)
+        and isinstance(n.value, str)
+        and n.value.startswith("ANTHROPIC_")
+    }
+    assert env_reads == {"ANTHROPIC_CUSTOM_HEADERS"}
     assert "sk-ant" not in src
 
 
@@ -269,6 +278,7 @@ def test_anthropic_judge_import_allow_list() -> None:
         "__future__",
         "hashlib",
         "logging",
+        "os",
         "time",
         "collections",
         "typing",
@@ -289,3 +299,86 @@ def test_adapter_mutes_sdk_loggers() -> None:
     logging.getLogger("anthropic").setLevel(logging.DEBUG)
     AnthropicJudgeClient(KEY, client=SimpleNamespace(messages=FakeMessages()))
     assert not logging.getLogger("anthropic").isEnabledFor(logging.CRITICAL)
+
+
+def _mock_sdk(monkeypatch: pytest.MonkeyPatch) -> list[httpx.Request]:
+    seen: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        body = {
+            "id": "msg_1",
+            "type": "message",
+            "role": "assistant",
+            "model": anthropic_judge.MODEL,
+            "content": [{"type": "text", "text": "Q1 ANSWERABLE reason"}],
+            "stop_reason": "end_turn",
+            "stop_sequence": None,
+            "usage": {"input_tokens": 3, "output_tokens": 2},
+        }
+        return httpx.Response(200, json=body)
+
+    real = anthropic.Anthropic
+
+    def factory(**kwargs: Any) -> Any:
+        http = httpx.Client(transport=httpx.MockTransport(handler))
+        return real(http_client=http, **kwargs)
+
+    monkeypatch.setattr(anthropic, "Anthropic", factory)
+    return seen
+
+
+# Observed from SDK 1.7.0 (lower-cased); the x-stainless-* values describe the runtime only.
+EXPECTED_HEADER_NAMES = {
+    "host",
+    "accept",
+    "accept-encoding",
+    "connection",
+    "content-length",
+    "content-type",
+    "user-agent",
+    "anthropic-version",
+    "x-api-key",
+    "x-stainless-arch",
+    "x-stainless-async",
+    "x-stainless-lang",
+    "x-stainless-os",
+    "x-stainless-package-version",
+    "x-stainless-read-timeout",
+    "x-stainless-retry-count",
+    "x-stainless-runtime",
+    "x-stainless-runtime-version",
+    "x-stainless-timeout",
+}
+
+
+def test_base_url_env_cannot_redirect_and_header_set_is_exact(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ANTHROPIC_BASE_URL", "https://evil.example.test")
+    monkeypatch.delenv("ANTHROPIC_CUSTOM_HEADERS", raising=False)
+    seen = _mock_sdk(monkeypatch)
+    call = AnthropicJudgeClient(KEY).judge(PROMPT, PAYLOAD)
+    assert call.reply.startswith("Q1")
+    assert len(seen) == 1
+    assert seen[0].url.host == "api.anthropic.com"
+    assert seen[0].url.scheme == "https"
+    assert {k.lower() for k in seen[0].headers} == EXPECTED_HEADER_NAMES
+
+
+@pytest.mark.parametrize("value", ["X-Evil: 1", "", "no colon here"])
+def test_custom_headers_env_fails_closed(
+    monkeypatch: pytest.MonkeyPatch, value: str
+) -> None:
+    monkeypatch.setenv("ANTHROPIC_CUSTOM_HEADERS", value)
+    seen = _mock_sdk(monkeypatch)
+    with pytest.raises(ValueError) as info:
+        AnthropicJudgeClient(KEY)
+    assert value not in str(info.value) or value == ""
+    assert KEY not in str(info.value) and "CUSTOM_HEADERS" not in str(info.value)
+    assert seen == []
+
+
+def test_injected_client_skips_env_check(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ANTHROPIC_CUSTOM_HEADERS", "X-Evil: 1")
+    AnthropicJudgeClient(KEY, client=SimpleNamespace(messages=FakeMessages()))

@@ -40,8 +40,8 @@
 ## Budget
 
 - **Budget:** 2000k tokens  ·  **Depth:** standard
-- **Spent:** 1394k (70%)  ·  **Remaining:** 606k
-- **Next stage:** 15 Safety text (Architect), docs (Tech Writer), words check (different model) est. 220k → **PROCEED**
+- **Spent:** 1459k (73%)  ·  **Remaining:** 541k
+- **Next stage:** 15 Safety text (Architect), docs (Tech Writer), words check est. 220k → **PROCEED**
 
 Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup spend is the driving session's, not a spawn.
 
@@ -81,11 +81,13 @@ Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup 
 | 13 QA evidence (qa-final) | sonnet-5-5 | high | — | — | — | 145k | 57 | 0 |
 | 14 Security Review adversarial (security-adv) | opus-5-5 | high | — | — | — | 226k | 63 | 0 |
 | 14b Security required fixes S-R1, S-R2, S-A1 (backend-fix1 resumed; peak 70k total) | sonnet-5-5 | medium | — | — | — | 16k | 5 | 0 |
-| **Total** | | | | | | 1394k | | |
+| 14c Security round 2: S-A2 egress pin (ai-sa2) | sonnet-5-5 | medium | — | — | — | 29k | 8 | 0 |
+| 14d Security round 2: S-A4, S-A6, S-A8 (backend-sa) | sonnet-5-5 | medium | — | — | — | 36k | 11 | 0 |
+| **Total** | | | | | | 1459k | | |
 
 ## Next action
 
-Spawn 15a Architect (INV-4/INV-5 words + ARCHITECTURE.md) and 15b Tech Writer (README, status, runbook) in parallel; then 15c different-model check of the words.
+Spawn 15a Architect and 15b Tech Writer in parallel, then 15c different-model words check.
 
 ## Setup log
 
@@ -101,3 +103,4 @@ Spawn 15a Architect (INV-4/INV-5 words + ARCHITECTURE.md) and 15b Tech Writer (R
 - 2026-10-21 Orchestrator, after stage 13: QA verdict GO WITH CONDITIONS (606 passed x3, method files byte-identical, mutations a,c-f caught). QA-1: removing the second kill-switch check (`pipeline.py:216`) fails no test — owed a test by the Backend (done with Security's round). QA: a 5xx failure is still charged its full reservation (Security to rule; CR-2 only zeroes status_4xx and connection). Browser checks by the Orchestrator appended to 13-qa-evidence.md: enhance.js, contrast (>= 6.39 light, >= 8.89 dark), 320 px, keyboard focus pass; screen-reader, forced-colors and reduced-motion not checked.
 - 2026-10-21 Orchestrator, after stage 14: Security verdict PASS WITH REQUIRED FIXES, no blocker; S-R1 (retrieval cap, /health off the thread pool), S-R2 (kill-switch test) and S-A1 (Settings repr hides the key) fixed by the Backend; Orchestrator re-ran: mypy clean, ruff clean, 610 passed; diff read, no new finding. Rulings: CR-3 not a blocker (owner decision D1); CR-4 rests on stage 17 check S-C1 before the kill switch goes off; CR-8 advisory; 5xx and timeouts keep the full reservation; C4.1 not breached, and the stage 15 INV-5 words must name the SDK headers about the server (SDK version, OS, Python version). Stage 17 checks S-C1 (forged XFF, kill switch on), S-C2 (log retention reads back 7/7 before the switch goes off), S-C3 (`az acr build` from the worktree root only). Owner decisions D1-D7 go to END_REVIEW.
 - 2026-10-21 Orchestrator, plan adjustment (no Charter change): `.agentic/SAFETY_INVARIANTS.md` and `docs/ARCHITECTURE.md` are writable only by the Software Architect (write-scope guard), not the Tech Writer as the plan said. Stage 15 therefore: 15a Architect writes the INV-4/INV-5 words (within C5.1/C5.2) and ARCHITECTURE.md; 15b Tech Writer writes README, CURRENT_MVP_STATUS and the runbook; 15c a different-model adversarial check of the words (Charter C5 intro: the Architect is Opus, so the checker is Sonnet: Compliance Reviewer), then stage 16 diffs SAFETY_INVARIANTS.md against 2919c87.
+- 2026-10-21 Orchestrator, security round 2 (advisories fixed, beyond the two required fixes): S-A2 client pinned to `https://api.anthropic.com`, construction fails closed if `ANTHROPIC_CUSTOM_HEADERS` is set; S-A4 service applies the core's 4096-byte reply limit; S-A6 `redirect_slashes` off; S-A8 cross-site POST /ask refused (Sec-Fetch-Site / Origin); FastAPI OpenTelemetry auto-configure pinned off. 636 passed, mypy and ruff clean; method files byte-identical to main. Header names the SDK sends (19, from the adapter note): host, accept, accept-encoding, connection, content-length, content-type, user-agent, anthropic-version, x-api-key, x-stainless-{arch,async,lang,os,package-version,read-timeout,retry-count,runtime,runtime-version,timeout}. NOT fixed, carried to END_REVIEW as advisories: S-A3 (the "paused for today, not a fault" copy is false during an outage; owner-approved UX copy), S-A5 (invisible-character injection carrier not in the 4 hostile gate questions), S-A7 (no uvicorn read timeout; ingress bounds it, unconfirmed), S-A9 (vault-scope role), S-A10 (log daily quota drops late abuse lines), S-A11 (Azure spend has no cap), S-A12 (ops lines to name in the C4.2 words), S-A14, S-A15; owner decisions D1-D7.

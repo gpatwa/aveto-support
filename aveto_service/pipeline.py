@@ -290,6 +290,8 @@ class AskService:
             self._spend.settle(reservation, charge, in_tokens, out_tokens)
         if call is None:
             return AskResult(Outcome.JUDGE_ERROR)
+        if len(call.reply.encode("utf-8")) > judge.MAX_REPLY_BYTES:
+            return AskResult(Outcome.JUDGE_ERROR)  # the core's "reply too long" (S-A4)
         try:
             verdict = judge.parse_verdict(call.reply, judge.BLOCK_ID)
         except judge.JudgeError:

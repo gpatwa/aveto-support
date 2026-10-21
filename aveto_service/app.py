@@ -12,7 +12,7 @@ import os
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, urlsplit
 
 from fastapi import FastAPI, Request
 from starlette.concurrency import run_in_threadpool
@@ -81,6 +81,18 @@ async def _read_body(request: Request) -> bytes | None:
     return b"".join(chunks)
 
 
+def _cross_site(request: Request) -> bool:
+    """True for a request a page on another site made: `Sec-Fetch-Site: cross-site`, or an
+    `Origin` whose host is not this request's `Host`. No such header is same-origin."""
+    if request.headers.get("sec-fetch-site", "").strip().lower() == "cross-site":
+        return True
+    origin = request.headers.get("origin")
+    if origin is None:
+        return False
+    host = request.headers.get("host", "").strip().lower()
+    return urlsplit(origin).netloc.lower() != host or not host
+
+
 def _question_of(body: bytes, kind: str) -> str | None:
     """The `question` field, or None if the body is not exactly one string field."""
     try:
@@ -111,7 +123,13 @@ def create_app(
     clock: Callable[[], datetime] | None = None,
     monotonic: Callable[[], float] | None = None,
 ) -> FastAPI:
-    app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(
+        docs_url=None,
+        redoc_url=None,
+        openapi_url=None,
+        redirect_slashes=False,
+        telemetry={"auto_configure": False},
+    )
     extra = {}
     if clock is not None:
         extra["clock"] = clock
@@ -139,6 +157,8 @@ def create_app(
         try:
             if settings.kill_switch != "off":
                 return respond(service.refuse(Outcome.SERVICE_OFF, ip), kind, "")
+            if _cross_site(request):
+                return respond(service.refuse(Outcome.BAD_REQUEST, ip), kind, "")
             body = await _read_body(request)
             if body is None:
                 return respond(service.refuse(Outcome.BODY_TOO_LARGE, ip), kind, "")

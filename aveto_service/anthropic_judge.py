@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import os
 import time
 from collections.abc import Callable
 from typing import Any
@@ -24,6 +25,7 @@ MAX_TOKENS = 1024
 TIMEOUT_SECONDS = 20.0
 BACKOFF_SECONDS = 1.0
 MAX_ATTEMPTS = 2
+BASE_URL = "https://api.anthropic.com"
 ADAPTER_ID = "anthropic-messages-judge-v1"
 # The SDK's DEBUG logging prints the request options, which hold the payload: mute it here too.
 _SDK_LOGGERS = ("anthropic", "httpx", "httpx2", "httpcore", "httpcore2")
@@ -99,9 +101,16 @@ class AnthropicJudgeClient:
             sdk_logger = logging.getLogger(name)
             sdk_logger.setLevel(logging.CRITICAL + 1)
             sdk_logger.propagate = False
-        self._client = client or anthropic.Anthropic(
-            api_key=api_key, max_retries=0, timeout=TIMEOUT_SECONDS
-        )
+        if client is None:
+            # The SDK merges ANTHROPIC_CUSTOM_HEADERS into every request and an explicit
+            # default_headers cannot remove them: fail closed. ANTHROPIC_BASE_URL is
+            # overridden by the explicit base_url below.
+            if os.environ.get("ANTHROPIC_CUSTOM_HEADERS") is not None:
+                raise ValueError("Anthropic judge adapter refuses extra SDK header settings.")
+            client = anthropic.Anthropic(
+                api_key=api_key, base_url=BASE_URL, max_retries=0, timeout=TIMEOUT_SECONDS
+            )
+        self._client = client
         self._sleep = sleep
 
     def judge(self, system_prompt: str, payload: str) -> JudgeCall:
