@@ -199,3 +199,7 @@ coverage check (pass with gaps G1 to G9) are in
 `runs/docs-answerability-2/`. The tier 3 gate record is
 `runs/docs-answerability-2/13-release-checklist-tier3.md`; this slice's records
 are under `runs/land-answerability/`.
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE). See [NOTICE](NOTICE) for the copyright holder, the trademark note and, where relevant, third-party components.

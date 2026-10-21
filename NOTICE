@@ -1,0 +1,28 @@
+Aveto
+Copyright 2026 Gopal Patwa
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+"Aveto", its name and its logo are not licensed under Apache-2.0. The license
+grants no right to use them (Apache-2.0 section 6); use of the name needs
+separate permission.
+
+Aveto is independent. It is not affiliated with or endorsed by Anthropic. It runs
+in Claude Code.
+
+Third-party components
+
+aveto-support downloads, at `ingest`, and does not redistribute in this repository:
+
+- BAAI/bge-small-en-v1.5, revision 5c38ec7c405ec4b44b94cc5a9bb96e735b38267a
+  (ONNX weights and vocabulary, sha256-pinned in docs-source.toml). License declared
+  on its model card: MIT. Source: https://huggingface.co/BAAI/bge-small-en-v1.5
+
+The public service image (Dockerfile) contains this model and no reranker. The
+cross-encoder/ms-marco-MiniLM-L6-v2 reranker was closed "nothing ships" and is not in
+the image; its license question (MS MARCO training data) stays open and must be resolved
+before it is ever shipped.
+
+The documentation corpus the support agent answers from is the Aveto playbook
+(https://github.com/gpatwa/agentic-sdlc-playbook) at the commit pinned in
+docs-source.toml, also licensed under Apache-2.0.
