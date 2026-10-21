@@ -1,5 +1,13 @@
 # UX spec: public-ask-the-docs (stage 4, UI Designer, depth standard)
 
+> **Amendment 2026-10-21 (smoke depth).** Only section 2 copy changed; states, layout and all other copy are unchanged.
+> - Header statement now says "an AI model" (06 R1 / T2; 07 G1 item 1).
+> - Anthropic is named as the recipient of the question and passages, handled under its own terms (06 R1 / T1; 07 G1 item 3).
+> - New bullet: no personal or confidential information in a question (06 R1 / T3; 07 G1 item 2).
+> - "not stored or logged" is now "This service does not store or log your question" (07 section 6 item 3; G5 keeps it true for this service only).
+> - Retention kept and widened because 07 section 6 items 4 and 5 require them (G1): the address is read to apply the limits, kept 7 days as a scrambled form; the service runs in the US. 07 item 6 (short privacy notice link) is not added: whether a notice is due is the owner's legal call (07 G8); the issue link already exists.
+> - Wording is mine; facts are 07's. No legal conclusion is stated on the page.
+
 Sources: `03-feature-spec.md` sections 2, 6, 7; `02-prd.md` section 5; `intent.md` "A public page". Plain HTML and CSS written by hand, one stylesheet inlined or served by the service, no CDN, no web fonts, no tracking. No component library exists for this page (new service); everything below is new and small. Feasibility of the no-JS path and the Back/reload rule is the Architect's to confirm (see Open items).
 
 ## 1. Delivery model (binds the layout)
@@ -13,12 +21,13 @@ Sources: `03-feature-spec.md` sections 2, 6, 7; `02-prd.md` section 5; `intent.m
 Top to bottom, one `<main>`; reading order equals tab order.
 
 1. `<h1>` "Ask the Aveto docs"
-2. Statement `<p>`: "Verbatim passages from Aveto's docs; a model decides only whether they answer. Nothing on this page is written by a model."
+2. Statement `<p>`: "Verbatim passages from Aveto's docs; an AI model decides only whether they answer. Nothing on this page is written by an AI model."
 3. `<ul>` "What to expect":
    - "You get passages copied word for word from the docs, with the file and line numbers, or a plain note that the docs don't answer your question."
    - "Limits: 10 questions an hour and 500 characters a question. The service pauses for the day when the day's allowance is used."
-   - "Questions are not stored or logged. To catch abuse we keep a scrambled form of your address, the time and the outcome for 7 days."
-   - "To decide whether the passages answer, your question and the passages found are sent to Anthropic, a model provider." (Final wording subject to stage 7; the Frontend Developer takes it from this file unless stage 7 replaces it.)
+   - "Please don't put personal or confidential information in your question."
+   - "This service does not store or log your question. To decide whether the passages answer, your question and the passages found are sent to Anthropic, the company that makes the AI model. Anthropic handles them under its own terms, which this page does not control."
+   - "To apply the limits we read your address, then keep only a scrambled form of it, the time and the outcome for 7 days. The service runs in the United States (Azure, East US 2)."
    - "The docs are in English. One question at a time; nothing is remembered between questions."
 4. The form (section 3).
 5. `<section id="result">` result region (section 4), always in the DOM, empty at first.

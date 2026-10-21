@@ -3,7 +3,13 @@ name = "aveto-support"
 version = "0.1.0"
 description = "Aveto support agent: retrieval over pinned documentation (no model)."
 requires-python = ">=3.12,<3.13"
-dependencies = ["onnxruntime", "numpy"]
+dependencies = [
+    "onnxruntime",
+    "numpy",
+    "fastapi==0.157.0",
+    "uvicorn==0.54.0",
+    "anthropic==1.7.0",
+]
 
 [dependency-groups]
 dev = ["pytest", "mypy", "ruff"]
@@ -14,7 +20,7 @@ package = false
 [tool.mypy]
 strict = true
 python_version = "3.12"
-files = ["aveto_support", "tests", "tools"]
+files = ["aveto_support", "aveto_service", "tests", "tools"]
 
 [[tool.mypy.overrides]]
 module = ["onnxruntime"]
