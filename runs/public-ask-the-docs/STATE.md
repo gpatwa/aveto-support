@@ -3,7 +3,7 @@
 - **Ask:** `intents/public-ask-the-docs.md` — a public "ask the docs" page, live on Azure: verbatim passages or "no confident match", judged through the Anthropic API under hard cost and abuse limits
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 11 Infra and image
+- **Current stage:** 11 Infra and image (rerouted, SR-1)
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents/teammates in `.claude/agents/` (pack v26), run from this repo's worktree
 - **Telemetry:** self-reported — see `TELEMETRY.md`
@@ -26,7 +26,8 @@
 | 8 Backend service | Backend Architect | done — `aveto_service/` (settings, port, limits, abuse log, pipeline, app); fastapi 0.157.0, uvicorn 0.54.0, anthropic 1.7.0; 110 new tests, 535 pass; mypy, ruff clean; deviations in note (attempts field, post-hoc charge for retry) | runs/public-ask-the-docs/08-backend-note.md | local regression green |
 | 9 AI adapter | AI Engineer | done — `aveto_service/anthropic_judge.py`; 24 tests on a fake Messages client; request body exact, no tools, effort high explicit, 2 attempts, fixed error categories, hash fail-closed, SDK loggers muted by the adapter; 559 pass, mypy, ruff clean; (U) model id and effort accepted: stage 17 | runs/public-ask-the-docs/09-ai-adapter-note.md | local regression green |
 | 10 Public page | Frontend Developer | done — `aveto_service/{pages,render,result_store,main}.py`, static css/js; 25 tests, 584 pass, mypy, ruff clean; no browser preview (no tool): enhance.js only syntax-checked, contrast unmeasured; 3 copy mappings for outcomes the UX table lacks | runs/public-ask-the-docs/10-frontend-note.md | local regression green |
-| 6 to 19 (except 8, 9, 10) | per plan | pending | — | — |
+| 11 Infra and image | Cloud Deployment | partial — `infra/main.bicep` + `main.parameters.json` written (C8.3 types only); Dockerfile, .dockerignore, tests/test_infra_static.py blocked by write-scope-guard (text in note); no shell, so no az checks, no regression run | runs/public-ask-the-docs/11-infra-note.md | not met until files written and checks run |
+| 6 to 19 (except 8, 9, 10, 11) | per plan | pending | — | — |
 
 ## Approvals
 
@@ -37,8 +38,8 @@
 ## Budget
 
 - **Budget:** 2000k tokens  ·  **Depth:** standard
-- **Spent:** 806k (40%)  ·  **Remaining:** 1194k
-- **Next stage:** 11 Infra + image definition (Cloud Deployment; what-if only) est. 130k → **PROCEED**
+- **Spent:** 872k (44%)  ·  **Remaining:** 1128k
+- **Next stage:** 11b Spec §12 fix (Architect, smoke) then 11c Dockerfile/tests/Azure checks (Backend) est. 120k → **PROCEED**
 
 Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup spend is the driving session's, not a spawn.
 
@@ -70,11 +71,12 @@ Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup 
 | 8 Backend service (backend) | sonnet-5-5 | medium | — | — | — | 146k | 36 | 0 |
 | 9 AI adapter (ai-adapter) | sonnet-5-5 | medium | — | — | — | 46k | 16 | 0 |
 | 10 Frontend page (frontend) | sonnet-5-5 | medium | — | — | — | 76k | 20 | 0 |
-| **Total** | | | | | | 806k | | |
+| 11 Infra + image (cloud-infra) PARTIAL: guard blocked 3 files; no shell | sonnet-5-5 | medium | — | — | — | 66k | 25 | 0 |
+| **Total** | | | | | | 872k | | |
 
 ## Next action
 
-Spawn stage 11 (Cloud Deployment): Dockerfile, infra/main.bicep, what-if only.
+Spawn Architect (smoke) to amend §12; then Backend Architect for Dockerfile, .dockerignore, test_infra_static, bicep lint + what-if.
 
 ## Setup log
 
