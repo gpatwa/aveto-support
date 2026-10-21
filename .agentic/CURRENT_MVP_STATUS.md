@@ -1,6 +1,29 @@
 # Current MVP Status
 
-## What exists (retrieval from docs-retrieval-core; judge step merged in pull request #4; command line only, nothing deployed)
+## What exists (retrieval from docs-retrieval-core; judge step merged in pull request #4; public service built on branch `claude/public-ask-the-docs`; nothing deployed)
+
+- **Public service, built on branch `claude/public-ask-the-docs` (slice
+  `public-ask-the-docs`); not merged, not deployed, no live model call made, no
+  figure measured.** Package `aveto_service` (FastAPI): `POST /ask`, `GET /health`
+  and a public page at `GET /`. It runs the unchanged retrieval and judge prompt
+  and returns either verbatim passages (full text, with path, heading, line range
+  and permalink, no scores) or `no confident match`, or `judge error` with no
+  passage. The model decides only whether the passages answer; no generated text
+  is shown. It calls the Anthropic Messages API with `claude-sonnet-5-5` and no
+  tools, through an `anthropic` SDK client, from the service only (the program
+  `python -m aveto_support` still makes no model call). Limits in code: 10
+  judged questions per visitor per hour, 500 characters, a daily share of $10 a
+  month (`10 / 31` a day, UTC reset), a kill switch (default on), all refusing
+  before any model call; counters live in memory and restart with the replica. No
+  question is stored or logged; abuse lines hold a time, a hashed address prefix
+  and an outcome code. Also in the tree: `Dockerfile`, `infra/main.bicep` (Azure
+  Container Apps, scale 0 to 1, resource group `rg-aveto-ask`), runbook
+  `docs/runbooks/public-ask.md`. Recorded checks: 606 tests passed on the QA
+  run (`runs/public-ask-the-docs/13-qa-evidence.md`) and Security review verdict
+  PASS WITH REQUIRED FIXES (`14-security-review.md`; later rounds recorded in the
+  git history). The image has never been built and the Bicep has not been
+  deployed; the read-only Azure checks are in `11c-infra-checks.md`. The attended
+  `/aveto-judge` path below is unchanged and is still attended and internal.
 
 - `ingest`: downloads the markdown of the configured repo at its pinned commit
   (one read-only HTTPS archive fetch), splits it into passages at headings,
@@ -81,6 +104,21 @@
 
 ## Not yet done
 
+- **Public service (slice `public-ask-the-docs`):** the release verdict is the
+  Release Manager's and is not stated here. Not yet measured (stage 18): cost per
+  question, median and slowest response time, cold-start time, monthly Azure cost,
+  the 20-question gate result. Not yet run: the image build, the deploy, the
+  stage 17 checks (S-C1: the client address behind the ingress, with the kill
+  switch on; S-C2: both log tables read back 7 and 7; S-C3: build from the
+  worktree root only), and the first live call (which settles whether the
+  `effort` field is accepted for `claude-sonnet-5-5`). Open owner decisions from
+  the Security review: D1 the daily pause holds per replica lifetime, so an
+  attacker could use the month's $10 in hours; D2 what to do if the ingress
+  address is not per client; D3 whether to reduce the public `/health` after the
+  gate; D4 about 40 questions from a few addresses pause the service for everyone
+  until 00:00 UTC; D5 Azure spend is outside the $10 and no budget alert exists;
+  D6 the identity can read every secret in the vault; D7 the console limit rests
+  on the owner's word. Linking the page from aveto.dev is not done.
 - Tier 3 is ruled (owner, 2026-10-16). The remaining tier 3 items are carried
   by slice `land-answerability`; the Release Manager's landing verdict is theirs
   to issue and is not stated here. Open or UNKNOWN as recorded:
@@ -96,16 +134,22 @@
   (`test_sample_derivation_reproducible`; the frozen test compares the whole key
   file, which gained rows after the freeze). A later slice must change it.
 - Retrieval has not passed its held-out gate as a released feature; nothing is
-  released, announced or deployed, no answers are generated, and the judge step
-  is not unattended, not a service and not wired to any drafter.
+  released, announced or deployed, no answers are generated, and the attended
+  judge step is not unattended, not a service and not wired to any drafter. (The
+  public service on the branch is a separate, undeployed path; see above.)
 - (Resolved, for the record: `tests/fixtures/wordpiece_golden.json` exists; the
   earlier line saying it was missing was stale.)
 
 ## Out of scope (not built)
 
-- Any generative model call by the program: classify, draft, check. (The
-  operator-run judge step above is outside the program, returns only a verdict,
-  and is not drafting.)
-- An HTTP surface (FastAPI is decided but not installed), a database.
+- Any generative model call by the program `python -m aveto_support`: classify,
+  draft, check. (The operator-run judge step above is outside the program,
+  returns only a verdict, and is not drafting. The `aveto_service` package, built
+  on branch `claude/public-ask-the-docs`, makes one verdict-only model call per
+  admitted question; that is the service, not the program, and it is not
+  deployed.) Generated answers and drafting are not built anywhere.
+- A database, accounts or sign-in for visitors, multi-turn chat, a custom domain.
+  (The HTTP surface exists on the branch above as `aveto_service`; it is not
+  deployed and is not on `main`.)
 - CI: arrives with `docs-retrieval-ci`.
 - Anything that posts to GitHub.

@@ -20,6 +20,12 @@
 > [`runs/docs-retrieval-2-proof/`](runs/docs-retrieval-2-proof/02-close-out.md)
 > and [`runs/docs-retrieval/`](runs/docs-retrieval/08-close-out.md).
 
+> **Public service (slice `public-ask-the-docs`): built, not yet deployed or
+> measured.** A small web service, `aveto_service`, is built on this branch. It
+> is separate from the attended `/aveto-judge` path described above, which
+> remains attended and internal. See [Public service](#public-service-ask-the-docs)
+> below. Every cost, speed and gate figure for it is **not yet measured (stage 18)**.
+
 A support agent for [Aveto](https://aveto.dev) — built **by Aveto, in public**.
 
 It is designed to answer questions about Aveto from Aveto's own documentation
@@ -105,6 +111,87 @@ commit, and the pinned model files. Pointing the file at another repo or model i
 a new approval for this repo; on your own fork, it is your decision.
 `evals/retrieval.toml` is written for the committed source and will refuse to run
 against an index of a different commit.
+
+## Public service (Ask the Docs)
+
+**Status: built, not yet deployed or measured.** The code, the container recipe
+(`Dockerfile`) and the Azure infrastructure file (`infra/main.bicep`) are in this
+repo. Nothing has been deployed, no live model call has been made through the
+service, and no figure below is measured.
+
+**What it is.** A visitor asks a question about Aveto and gets either the
+**verbatim documentation passages** that answer it, each with its file, heading,
+line range and a link to the pinned commit, or **`no confident match`** (the page
+says "The docs don't answer this") with a link to open a GitHub issue. The model
+decides only whether the shown passages answer the question. **It generates no
+text:** every word shown is copied from the docs. A reply the service cannot use
+shows `judge error` and no passage.
+
+**How it differs from the attended path.** Both exist. `/aveto-judge` (above)
+still runs only in your own Claude Code session, by hand, and is still attended
+and internal. The service is a separate package (`aveto_service`, not
+`python -m aveto_support`) that runs the same retrieval, the same judge prompt
+(`answerability-judge-v1`, checked by hash at startup) and the same verdict-only
+parser, but calls the Anthropic Messages API from a server with
+`claude-sonnet-5-5` and no tools. One difference in what is shown: on a match the
+service returns each passage's full text (what the judge read) and no scores,
+where `judge-apply` prints `retrieve`'s three-line excerpts and scores.
+`retrieve`, `eval`, `judge-input` and `judge-apply` are unchanged and still make
+no network call.
+
+**Routes.** `GET /` (the page), `POST /ask` (JSON `{"question": "..."}` or the
+page's form), `GET /health` (counters and the kill-switch state).
+
+**Limits** (enforced by the service; each refusal happens before any model call):
+
+- 10 questions per visitor per hour. The visitor is identified by a hash of the
+  address, kept in memory only. Questions that reach the model count, including
+  ones that end in `judge error`.
+- 500 characters per question.
+- A daily share of $10 a month ($10 / 31 a day, reset at 00:00 UTC). When it is
+  used up the page says "Paused for today" and no model is called.
+- A kill switch (`ASK_KILL_SWITCH`): anything other than exactly `off` means on.
+  Changing it creates a new revision of the app.
+- The owner's $10-a-month limit in the Anthropic console is the backstop. The
+  service's counters are held in memory and **restart when the replica restarts**
+  (scale to zero, a kill-switch change, a redeploy), so the daily share holds per
+  replica lifetime, not per day. The console limit is what holds the month. Its
+  existence rests on the owner's statement; no agent has verified it.
+
+**What is sent to whom.** Anthropic receives the question and the passages shown,
+with a fixed prompt, and the owner's API key; no visitor address, identifier or
+request header. Microsoft Azure hosts the service (Container Apps, in the
+owner's subscription) and keeps the platform logs. **No question is stored or
+logged.** The service logs one line per request holding a time, the first 16
+characters of a hashed address and an outcome code, and a few fixed operational
+codes, kept 7 days once the retention setting is applied (it is applied by the
+deploy, which has not happened). Anthropic's own retention is under its terms and
+has not been verified by any agent.
+
+**Run it locally.** The service needs the `ingest` output (`index/` and
+`models/`) and reads the key from `ANTHROPIC_API_KEY`.
+
+```sh
+uv sync --locked
+uv run python -m aveto_support ingest                        # builds index/ and models/ (the server needs them; the tests below use a fake embedder)
+uv run pytest tests/test_service_pipeline.py tests/test_service_limits.py \
+  tests/test_service_logging.py tests/test_service_api.py tests/test_anthropic_judge.py \
+  tests/test_service_pages.py                                # the service tests, all with a fake judge, offline
+```
+
+Those tests are the way to exercise the service with a fake judge: they use
+`FakeJudgeClient` from `tests/service_fakes.py`. **There is no committed command
+that starts a server with a fake judge.** The server entry point is
+`aveto_service.main:app` (the `Dockerfile` starts it with `uvicorn`); with no
+`ANTHROPIC_API_KEY` set it uses a placeholder judge and every question that
+reaches it ends in `judge error`, and the kill switch defaults to on until
+`ASK_KILL_SWITCH=off`. Deployment and operations: the runbook
+[`docs/runbooks/public-ask.md`](docs/runbooks/public-ask.md).
+
+**Not yet measured (stage 18):** cost per question; median and slowest response
+time; cold-start time; the monthly Azure cost; the result of the 20-question
+gate scored through the deployed service. None is recorded, so none is stated.
+The release decision is the Release Manager's and is not made here.
 
 ## Status
 

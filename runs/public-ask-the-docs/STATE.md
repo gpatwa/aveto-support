@@ -3,8 +3,8 @@
 - **Ask:** `intents/public-ask-the-docs.md` — a public "ask the docs" page, live on Azure: verbatim passages or "no confident match", judged through the Anthropic API under hard cost and abuse limits
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 15 Docs and safety text
-- **Status:** in-progress
+- **Current stage:** 15 Docs and safety text (15c found two Charter stops)
+- **Status:** blocked-on-approval
 - **Least-privilege:** enforced — role subagents/teammates in `.claude/agents/` (pack v26), run from this repo's worktree
 - **Telemetry:** self-reported — see `TELEMETRY.md`
 - **Charter:** runs/public-ask-the-docs/CHARTER.md, sha256 d0acc5346a80e199e3f95ac57e23a2c01fec43e56d93dbda3b4a03e6a99fa74c approved in APPROVAL_RECORD-1
@@ -29,19 +29,21 @@
 | 11 Infra and image | Cloud Deployment | partial — `infra/main.bicep` + `main.parameters.json` written (C8.3 types only); Dockerfile, .dockerignore, tests/test_infra_static.py blocked by write-scope-guard (text in note); no shell, so no az checks, no regression run | runs/public-ask-the-docs/11-infra-note.md | not met until files written and checks run | 11c done: Dockerfile, .dockerignore, tests/test_infra_static.py written; Azure read-only checks in 11c-infra-checks.md (bicep build FAILS: F1 BCP265 `environment` symbol, F2, F3 for Cloud Deployment); image unbuilt (Docker daemon down); 591 tests green |
 | 13 QA evidence (final tree, offline) | QA Evidence | done — GO WITH CONDITIONS: 606 passed x3 (425 on main + 181), mypy, ruff clean; 0 NOT MET offline except intent line 11 (docs, stage 15 pending); 6 required mutations each caught, 1 redundant kill-switch check (`pipeline.py:216`) untested (QA-1); local run on real index + fake judge: 100 passages byte-identical, logs hold abuse lines only; real API, ingress XFF, image build, retention, cold start, browser checks and gate unverified | runs/public-ask-the-docs/13-qa-evidence.md | local regression green |
 | 14 Security Review (adversarial) | Security & Privacy | done — PASS WITH REQUIRED FIXES, 0 blockers: S-R1 (unrecorded post-retrieval `paused` refusals give unbounded retrieval per visitor; sync `/health` queues behind it; `pipeline.py:229-252`, `app.py:154-156`), S-R2 (QA-1 test, `pipeline.py:216`); stage 17 conditions S-C1 (CR-4 XFF check, kill switch on), S-C2 (retention 7/7 before on), S-C3 (`az acr build` from the worktree root); C4.1 not breached; CR-3 owner decision (not a blocker), CR-8 advisory, 5xx keeps full charge; 15 advisories, owner decisions D1-D7 | runs/public-ask-the-docs/14-security-review.md | fixes S-R1, S-R2 re-checked before the Release Gate |
-| 6 to 19 (except 8, 9, 10, 11, 13, 14) | per plan | pending | — | — |
+| 15 Docs and safety text | Software Architect (15a); Tech Writer (15b); Compliance Reviewer (15c) | in progress — 15a done: INV-4 (two callers, service (a)/(b)/(c) mapping, transcript counterpart, 23 test names) and INV-5 (service exception, 19 header names, ops lines, 24 test names) written within C5.1/C5.2; 5 original lines changed, only the C5.1 sentence's words removed; INV-1 to INV-3 untouched; all 44 cited test names verified; `git diff` not run (no shell, U); 4 reading risks R1-R4 for 15c; `docs/ARCHITECTURE.md` gains "Public ask service"; no STOP | runs/public-ask-the-docs/15a-safety-text-note.md, .agentic/SAFETY_INVARIANTS.md, docs/ARCHITECTURE.md | 15c words check; stage 16 diff against 2919c87 |
+| 6 to 19 (except 8, 9, 10, 11, 13, 14, 15) | per plan | pending | — | — |
 
 ## Approvals
 
 | Action | Rule | Requested | Decision | Approver | When (UTC) | Record |
 |--------|------|-----------|----------|----------|-----------|--------|
+| Approve Charter v2 (amendment 1: C4.1 SDK headers, C5.2 one sentence) | Charter section 9.1 and 9.5 | yes | PENDING | — | — | runs/public-ask-the-docs/CHARTER-v2.md, sha256 e04b82539e1fe17ed86d945a93b761dafef4f19c1af30dc4353f31743fc8ead4 |
 | Approve the Charter | Charter | yes | approved | Gopal Patwa | 2026-10-21T06:42:08Z | runs/public-ask-the-docs/APPROVAL_RECORD-1.md |
 
 ## Budget
 
 - **Budget:** 2000k tokens  ·  **Depth:** standard
-- **Spent:** 1459k (73%)  ·  **Remaining:** 541k
-- **Next stage:** 15 Safety text (Architect), docs (Tech Writer), words check est. 220k → **PROCEED**
+- **Spent:** 2004k (100%)  ·  **Remaining:** -4k
+- **Next stage:** 16 Release Gate tier 3 (after Charter v2 decision) est. 170k → **PROCEED**
 
 Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup spend is the driving session's, not a spawn.
 
@@ -55,6 +57,7 @@ Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup 
 
 | Stage | Cause | Class | Partial artefact reached | Resumed |
 |-------|-------|-------|--------------------------|---------|
+| 15c words check | usage limit (HTTP 429) | infra | none (no 15c-words-check.md written) | yes |
 | 6 AI Governance | usage limit (HTTP 429) | infra | see re-spawn | yes |
 | 7 Compliance | usage limit (HTTP 429) | infra | see re-spawn | yes |
 
@@ -83,11 +86,15 @@ Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup 
 | 14b Security required fixes S-R1, S-R2, S-A1 (backend-fix1 resumed; peak 70k total) | sonnet-5-5 | medium | — | — | — | 16k | 5 | 0 |
 | 14c Security round 2: S-A2 egress pin (ai-sa2) | sonnet-5-5 | medium | — | — | — | 29k | 8 | 0 |
 | 14d Security round 2: S-A4, S-A6, S-A8 (backend-sa) | sonnet-5-5 | medium | — | — | — | 36k | 11 | 0 |
-| **Total** | | | | | | 1459k | | |
+| 15a INV-4/INV-5 words + ARCHITECTURE.md (arch-words) | opus-5-5 | high | — | — | — | 203k | 65 | 0 |
+| 15b README, status, runbook (writer-docs) | sonnet-5-5 | medium | — | — | — | 110k | 32 | 0 |
+| 15c different-model words check (words-check-2; first attempt cut off by usage limit) | sonnet-5-5 | high | — | — | — | 180k | 44 | 0 |
+| 15d words round 2 (arch-words-2) | opus-5-5 | high | — | — | — | 52k | 11 | 0 |
+| **Total** | | | | | | 2004k | | |
 
 ## Next action
 
-Spawn 15a Architect and 15b Tech Writer in parallel, then 15c different-model words check.
+BLOCKED on the owner: approve CHARTER-v2.md by its sha256 (e04b8253…ead4) or decide otherwise (see END note below). Then: record APPROVAL_RECORD-2, runbook vault-line fix, stage 16.
 
 ## Setup log
 
@@ -104,3 +111,4 @@ Spawn 15a Architect and 15b Tech Writer in parallel, then 15c different-model wo
 - 2026-10-21 Orchestrator, after stage 14: Security verdict PASS WITH REQUIRED FIXES, no blocker; S-R1 (retrieval cap, /health off the thread pool), S-R2 (kill-switch test) and S-A1 (Settings repr hides the key) fixed by the Backend; Orchestrator re-ran: mypy clean, ruff clean, 610 passed; diff read, no new finding. Rulings: CR-3 not a blocker (owner decision D1); CR-4 rests on stage 17 check S-C1 before the kill switch goes off; CR-8 advisory; 5xx and timeouts keep the full reservation; C4.1 not breached, and the stage 15 INV-5 words must name the SDK headers about the server (SDK version, OS, Python version). Stage 17 checks S-C1 (forged XFF, kill switch on), S-C2 (log retention reads back 7/7 before the switch goes off), S-C3 (`az acr build` from the worktree root only). Owner decisions D1-D7 go to END_REVIEW.
 - 2026-10-21 Orchestrator, plan adjustment (no Charter change): `.agentic/SAFETY_INVARIANTS.md` and `docs/ARCHITECTURE.md` are writable only by the Software Architect (write-scope guard), not the Tech Writer as the plan said. Stage 15 therefore: 15a Architect writes the INV-4/INV-5 words (within C5.1/C5.2) and ARCHITECTURE.md; 15b Tech Writer writes README, CURRENT_MVP_STATUS and the runbook; 15c a different-model adversarial check of the words (Charter C5 intro: the Architect is Opus, so the checker is Sonnet: Compliance Reviewer), then stage 16 diffs SAFETY_INVARIANTS.md against 2919c87.
 - 2026-10-21 Orchestrator, security round 2 (advisories fixed, beyond the two required fixes): S-A2 client pinned to `https://api.anthropic.com`, construction fails closed if `ANTHROPIC_CUSTOM_HEADERS` is set; S-A4 service applies the core's 4096-byte reply limit; S-A6 `redirect_slashes` off; S-A8 cross-site POST /ask refused (Sec-Fetch-Site / Origin); FastAPI OpenTelemetry auto-configure pinned off. 636 passed, mypy and ruff clean; method files byte-identical to main. Header names the SDK sends (19, from the adapter note): host, accept, accept-encoding, connection, content-length, content-type, user-agent, anthropic-version, x-api-key, x-stainless-{arch,async,lang,os,package-version,read-timeout,retry-count,runtime,runtime-version,timeout}. NOT fixed, carried to END_REVIEW as advisories: S-A3 (the "paused for today, not a fault" copy is false during an outage; owner-approved UX copy), S-A5 (invisible-character injection carrier not in the 4 hostile gate questions), S-A7 (no uvicorn read timeout; ingress bounds it, unconfirmed), S-A9 (vault-scope role), S-A10 (log daily quota drops late abuse lines), S-A11 (Azure spend has no cap), S-A12 (ops lines to name in the C4.2 words), S-A14, S-A15; owner decisions D1-D7.
+- 2026-10-21 Orchestrator, stage 15 stop: the different-model check (`15c-words-check.md`, verdict FAIL as written) found two Charter stops, neither of which the Orchestrator may waive: S10 (INV-5's retained sentence "The operator's session is the one exception, and it is not the program." must change because the service is now a second exception; C5.2 says every other sentence stays) and S11b (the SDK's own headers — user-agent and x-stainless-os/arch/runtime — are beyond C4.1's "exactly"; the words are accurate and must stay). Curable findings S1, F1, F2, F3 applied by the Architect (round 2). Charter v2 drafted at `CHARTER-v2.md` (two lines changed, C4.1 and C5.2; charter-check passes; sha256 e04b82539e1fe17ed86d945a93b761dafef4f19c1af30dc4353f31743fc8ead4); v1 (`CHARTER.md`, d0acc534…) stays the approved Charter until the owner approves v2 by hash. Spend 2004k = 100% of plan total 2000k, under the ceiling 3000k: the run continues above plan total without a notice duty; projected finish about 2.4M. Runbook correction owed (Tech Writer): the vault IS inside rg-aveto-ask (the owner created it there), so deleting the group would delete the key.
