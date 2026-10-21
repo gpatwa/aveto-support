@@ -3,7 +3,7 @@
 - **Ask:** `intents/public-ask-the-docs.md` — a public "ask the docs" page, live on Azure: verbatim passages or "no confident match", judged through the Anthropic API under hard cost and abuse limits
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 13 QA evidence
+- **Current stage:** 14 Security Review
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents/teammates in `.claude/agents/` (pack v26), run from this repo's worktree
 - **Telemetry:** self-reported — see `TELEMETRY.md`
@@ -27,7 +27,8 @@
 | 9 AI adapter | AI Engineer | done — `aveto_service/anthropic_judge.py`; 24 tests on a fake Messages client; request body exact, no tools, effort high explicit, 2 attempts, fixed error categories, hash fail-closed, SDK loggers muted by the adapter; 559 pass, mypy, ruff clean; (U) model id and effort accepted: stage 17 | runs/public-ask-the-docs/09-ai-adapter-note.md | local regression green |
 | 10 Public page | Frontend Developer | done — `aveto_service/{pages,render,result_store,main}.py`, static css/js; 25 tests, 584 pass, mypy, ruff clean; no browser preview (no tool): enhance.js only syntax-checked, contrast unmeasured; 3 copy mappings for outcomes the UX table lacks | runs/public-ask-the-docs/10-frontend-note.md | local regression green |
 | 11 Infra and image | Cloud Deployment | partial — `infra/main.bicep` + `main.parameters.json` written (C8.3 types only); Dockerfile, .dockerignore, tests/test_infra_static.py blocked by write-scope-guard (text in note); no shell, so no az checks, no regression run | runs/public-ask-the-docs/11-infra-note.md | not met until files written and checks run | 11c done: Dockerfile, .dockerignore, tests/test_infra_static.py written; Azure read-only checks in 11c-infra-checks.md (bicep build FAILS: F1 BCP265 `environment` symbol, F2, F3 for Cloud Deployment); image unbuilt (Docker daemon down); 591 tests green |
-| 6 to 19 (except 8, 9, 10, 11) | per plan | pending | — | — |
+| 13 QA evidence (final tree, offline) | QA Evidence | done — GO WITH CONDITIONS: 606 passed x3 (425 on main + 181), mypy, ruff clean; 0 NOT MET offline except intent line 11 (docs, stage 15 pending); 6 required mutations each caught, 1 redundant kill-switch check (`pipeline.py:216`) untested (QA-1); local run on real index + fake judge: 100 passages byte-identical, logs hold abuse lines only; real API, ingress XFF, image build, retention, cold start, browser checks and gate unverified | runs/public-ask-the-docs/13-qa-evidence.md | local regression green |
+| 6 to 19 (except 8, 9, 10, 11, 13) | per plan | pending | — | — |
 
 ## Approvals
 
@@ -38,8 +39,8 @@
 ## Budget
 
 - **Budget:** 2000k tokens  ·  **Depth:** standard
-- **Spent:** 1007k (50%)  ·  **Remaining:** 993k
-- **Next stage:** 13 QA evidence on the final tree est. 130k → **PROCEED**
+- **Spent:** 1152k (58%)  ·  **Remaining:** 848k
+- **Next stage:** 14 Security Review, adversarial est. 190k → **PROCEED**
 
 Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup spend is the driving session's, not a spawn.
 
@@ -76,11 +77,12 @@ Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup 
 | 11c Dockerfile, infra tests, Azure read-only checks (backend-infra) | sonnet-5-5 | medium | — | — | — | 50k | 16 | 0 |
 | 11d Bicep lint fixes (cloud-infra resumed; peak 69k total for stage 11) | sonnet-5-5 | medium | — | — | — | 3k | 7 | 0 |
 | 12 Review layer (Orchestrator /code-review high, declared sonnet-5-5; + round 1 fixes backend-fix1) | sonnet-5-5 | high | — | — | — | 55k | 19 | 0 |
-| **Total** | | | | | | 1007k | | |
+| 13 QA evidence (qa-final) | sonnet-5-5 | high | — | — | — | 145k | 57 | 0 |
+| **Total** | | | | | | 1152k | | |
 
 ## Next action
 
-Spawn stage 13 (QA Evidence) on the final tree; include the built-in browser checks for enhance.js, contrast, 320px.
+Spawn stage 14 (Security & Privacy, adversarial) with QA-1 and the code-review carry-overs.
 
 ## Setup log
 
@@ -93,3 +95,4 @@ Spawn stage 13 (QA Evidence) on the final tree; include the built-in browser che
 - 2026-10-21 Orchestrator, after stages 9 and 10: regression re-run by the Orchestrator: mypy clean, ruff clean, 584 passed (535 + 24 adapter + 25 pages); method files byte-identical to main (empty diff). No live Anthropic call made; first live call is stage 17. Items routed forward: (a) UX table lacks copy for `unusable_question`, `bad_request`, `body_too_large` — reused Empty / Too long copy (10-frontend-note) → QA/Security to look, no owner action; (b) an unmatched static path returns FastAPI's default JSON 404 without the page headers (app.py is the Backend's) → Security stage 14; (c) enhance.js untested beyond `node --check`, contrast and 320px/forced-colors unmeasured → QA stage 13 (built-in browser available); (d) SDK logger muted by the adapter constructor (09 note).
 - 2026-10-21 Orchestrator, after stage 11: SR-1 resolved in-run (Architect amended §12; Backend wrote Dockerfile/.dockerignore/test_infra_static and ran the read-only checks; Cloud Deployment fixed F1-F3). Orchestrator re-ran: `az bicep build` exit 0; `what-if deployApp=false` creates only identity, ACR, ACR role assignment, Log Analytics, environment, Key Vault role assignment (vault: Ignore); mypy clean, ruff clean, 591 passed. No Azure resource was created. The image is unbuilt (no Docker daemon locally); the first build is `az acr build` at stage 17, so "ingest runs inside the build" and the cold-start figure are unconfirmed until then. Stage 17 deploy commands run from the Orchestrator's session under C8.3 (the deploy role has no shell).
 - 2026-10-21 Orchestrator, after stage 12: `code-review.md` written (tier High, 8 findings: 4 fixed in round 1, CR-3/CR-8 intentional, CR-4 until stage 17, CR-7 rejected; round 1 diff re-reviewed, 0 new). Review is unscored (Charter C3.R). The Orchestrator's own review spend is the driving session's, not a spawn, so it is not in the Trace; the 55k row is the Backend fix spawn. Regression after fixes: mypy clean, ruff clean, 606 passed. CR-1 supersedes tech spec §3 step 7. Carried forward: CR-3 (scale-to-zero resets limits) is an owner decision for END_REVIEW "Blocked on me".
+- 2026-10-21 Orchestrator, after stage 13: QA verdict GO WITH CONDITIONS (606 passed x3, method files byte-identical, mutations a,c-f caught). QA-1: removing the second kill-switch check (`pipeline.py:216`) fails no test — owed a test by the Backend (done with Security's round). QA: a 5xx failure is still charged its full reservation (Security to rule; CR-2 only zeroes status_4xx and connection). Browser checks by the Orchestrator appended to 13-qa-evidence.md: enhance.js, contrast (>= 6.39 light, >= 8.89 dark), 320 px, keyboard focus pass; screen-reader, forced-colors and reduced-motion not checked.
