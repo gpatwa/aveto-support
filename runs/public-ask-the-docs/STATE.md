@@ -3,7 +3,7 @@
 - **Ask:** `intents/public-ask-the-docs.md` — a public "ask the docs" page, live on Azure: verbatim passages or "no confident match", judged through the Anthropic API under hard cost and abuse limits
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 12 Review layer
+- **Current stage:** 13 QA evidence
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents/teammates in `.claude/agents/` (pack v26), run from this repo's worktree
 - **Telemetry:** self-reported — see `TELEMETRY.md`
@@ -38,8 +38,8 @@
 ## Budget
 
 - **Budget:** 2000k tokens  ·  **Depth:** standard
-- **Spent:** 952k (48%)  ·  **Remaining:** 1048k
-- **Next stage:** 12 Review layer (/code-review high, Orchestrator) est. 60k → **PROCEED**
+- **Spent:** 1007k (50%)  ·  **Remaining:** 993k
+- **Next stage:** 13 QA evidence on the final tree est. 130k → **PROCEED**
 
 Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup spend is the driving session's, not a spawn.
 
@@ -75,11 +75,12 @@ Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup 
 | 11a Spec §12 amendment (arch-amend, smoke) | opus-5-5 | high | — | — | — | 29k | 10 | 0 |
 | 11c Dockerfile, infra tests, Azure read-only checks (backend-infra) | sonnet-5-5 | medium | — | — | — | 50k | 16 | 0 |
 | 11d Bicep lint fixes (cloud-infra resumed; peak 69k total for stage 11) | sonnet-5-5 | medium | — | — | — | 3k | 7 | 0 |
-| **Total** | | | | | | 952k | | |
+| 12 Review layer (Orchestrator /code-review high, declared sonnet-5-5; + round 1 fixes backend-fix1) | sonnet-5-5 | high | — | — | — | 55k | 19 | 0 |
+| **Total** | | | | | | 1007k | | |
 
 ## Next action
 
-Run stage 12: /code-review at high on the diff vs main, REVIEW.md rules, write code-review.md.
+Spawn stage 13 (QA Evidence) on the final tree; include the built-in browser checks for enhance.js, contrast, 320px.
 
 ## Setup log
 
@@ -91,3 +92,4 @@ Run stage 12: /code-review at high on the diff vs main, REVIEW.md rules, write c
 - 2026-10-21 Orchestrator, after stage 8: regression re-run by the Orchestrator: mypy clean, ruff clean, 535 passed (425 + 110 new); `git diff main -- aveto_support prompts .claude .agentic` empty. Stage 8 deviation to carry: `JudgeCall.attempts` — the adapter must set attempts=2 when it retried (08-backend-note). Open gap L1 (the judge_error cause is not logged) is a logging-contract choice for Security at stage 14.
 - 2026-10-21 Orchestrator, after stages 9 and 10: regression re-run by the Orchestrator: mypy clean, ruff clean, 584 passed (535 + 24 adapter + 25 pages); method files byte-identical to main (empty diff). No live Anthropic call made; first live call is stage 17. Items routed forward: (a) UX table lacks copy for `unusable_question`, `bad_request`, `body_too_large` — reused Empty / Too long copy (10-frontend-note) → QA/Security to look, no owner action; (b) an unmatched static path returns FastAPI's default JSON 404 without the page headers (app.py is the Backend's) → Security stage 14; (c) enhance.js untested beyond `node --check`, contrast and 320px/forced-colors unmeasured → QA stage 13 (built-in browser available); (d) SDK logger muted by the adapter constructor (09 note).
 - 2026-10-21 Orchestrator, after stage 11: SR-1 resolved in-run (Architect amended §12; Backend wrote Dockerfile/.dockerignore/test_infra_static and ran the read-only checks; Cloud Deployment fixed F1-F3). Orchestrator re-ran: `az bicep build` exit 0; `what-if deployApp=false` creates only identity, ACR, ACR role assignment, Log Analytics, environment, Key Vault role assignment (vault: Ignore); mypy clean, ruff clean, 591 passed. No Azure resource was created. The image is unbuilt (no Docker daemon locally); the first build is `az acr build` at stage 17, so "ingest runs inside the build" and the cold-start figure are unconfirmed until then. Stage 17 deploy commands run from the Orchestrator's session under C8.3 (the deploy role has no shell).
+- 2026-10-21 Orchestrator, after stage 12: `code-review.md` written (tier High, 8 findings: 4 fixed in round 1, CR-3/CR-8 intentional, CR-4 until stage 17, CR-7 rejected; round 1 diff re-reviewed, 0 new). Review is unscored (Charter C3.R). The Orchestrator's own review spend is the driving session's, not a spawn, so it is not in the Trace; the 55k row is the Backend fix spawn. Regression after fixes: mypy clean, ruff clean, 606 passed. CR-1 supersedes tech spec §3 step 7. Carried forward: CR-3 (scale-to-zero resets limits) is an owner decision for END_REVIEW "Blocked on me".
