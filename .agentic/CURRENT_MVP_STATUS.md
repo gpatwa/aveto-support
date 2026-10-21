@@ -11,7 +11,9 @@
   passage. The model decides only whether the passages answer; no generated text
   is shown. It calls the Anthropic Messages API with `claude-sonnet-5-5` and no
   tools, through an `anthropic` SDK client, from the service only (the program
-  `python -m aveto_support` still makes no model call). Limits in code: 10
+  `python -m aveto_support` still makes no model call). What the request carries,
+  including the SDK's own headers, and the two exceptions (the operator's session
+  and this service) are stated in [INV-4 and INV-5](SAFETY_INVARIANTS.md). Limits in code: 10
   judged questions per visitor per hour, 500 characters, a daily share of $10 a
   month (`10 / 31` a day, UTC reset), a kill switch (default on), all refusing
   before any model call; counters live in memory and restart with the replica. No

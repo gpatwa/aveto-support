@@ -159,8 +159,12 @@ page's form), `GET /health` (counters and the kill-switch state).
   existence rests on the owner's statement; no agent has verified it.
 
 **What is sent to whom.** Anthropic receives the question and the passages shown,
-with a fixed prompt, and the owner's API key; no visitor address, identifier or
-request header. Microsoft Azure hosts the service (Container Apps, in the
+with a fixed prompt, the owner's API key and the SDK's own headers (they describe
+the service's runtime: SDK version, operating system, CPU architecture, Python
+version, timeouts); no visitor address, identifier or request header. The exact
+list and wording are in [INV-5](.agentic/SAFETY_INVARIANTS.md), which names two
+exceptions to "the program sends nothing anywhere": the operator's own Claude Code
+session on the attended path, and this service. Microsoft Azure hosts the service (Container Apps, in the
 owner's subscription) and keeps the platform logs. **No question is stored or
 logged.** The service logs one line per request holding a time, the first 16
 characters of a hashed address and an outcome code, and a few fixed operational

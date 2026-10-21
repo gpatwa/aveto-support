@@ -23,7 +23,9 @@ judge. `POST /ask` returns verbatim docs passages or `no confident match`;
 Container Apps in resource group `rg-aveto-ask` (eastus2), scale 0 to 1
 replica. The model call goes to the Anthropic Messages API with
 `claude-sonnet-5-5`; the key lives in Key Vault `kv-aveto-ask-gp`
-(secret `anthropic-api-key`). No visitor question is stored.
+(secret `anthropic-api-key`). No visitor question is stored. What the request
+carries, including the SDK's own headers, is stated in
+[INV-5](../../.agentic/SAFETY_INVARIANTS.md).
 
 ## 1. Deploy (commands 1 to 5, exactly as in tech spec section 7)
 
@@ -260,14 +262,18 @@ az acr delete -g rg-aveto-ask -n acravetoaskgp --yes
 az identity delete -g rg-aveto-ask -n id-aveto-ask
 ```
 
-- The Key Vault `kv-aveto-ask-gp` is the owner's, referenced as `existing` and
-  never created by the Bicep. Do not delete it with the rest. The role
+- The Key Vault `kv-aveto-ask-gp` is the owner's, created by the owner inside
+  `rg-aveto-ask`, and referenced by the Bicep as `existing` (never created or
+  deleted by it). Do not delete it with the rest. The role
   assignment `Key Vault Secrets User` granted to the identity on that vault is
   removed with `az role assignment delete` for that scope and identity; look it
   up first with `az role assignment list --scope <vault id>`.
-- Do not delete the resource group `rg-aveto-ask` as a shortcut until you have
-  checked that the vault is not inside it (not confirmed here).
-- The Anthropic key and its console limit are the owner's to revoke or remove.
+- **Do not delete the resource group `rg-aveto-ask`.** It contains the owner's
+  Key Vault and the secret `anthropic-api-key`. Delete the named resources one
+  by one, as listed above.
+- If the owner wants the key gone too, that is a separate owner command, not
+  part of this removal. The Anthropic key and its console limit are likewise
+  the owner's to revoke or remove.
 - After removal, point readers away from the service URL (the link from
   aveto.dev is a separate change in the playbook repo) and update the README
   Status.

@@ -26,6 +26,11 @@ Cost per question, response time (median, slowest), cold-start time, monthly Azu
 6. **Whether table retention below 30 days works, ingress behaviour, console limit hardness, effort field acceptance:** all still unconfirmed upstream; the docs say so or point to the stage 17 check.
 7. The runbook states `Paused for today` copy is inaccurate during transient shortfalls and outages (S-A3). If later rounds changed the copy, that line is stale.
 
+## Corrections after the coordinator's message (Charter v2, final safety words)
+
+- Runbook section 10: the vault is inside `rg-aveto-ask` (owner created it there, per the coordinator); "do not delete the resource group" is now stated outright and the "not confirmed" wording is removed. Item 1 above is superseded on the vault location only; the delete commands are still not run.
+- README "What is sent to whom" now names the SDK's own headers and links INV-5 for the two exceptions; the status file and runbook link INV-4/INV-5 instead of restating them. Checked against the final `SAFETY_INVARIANTS.md`; I did not read 15a or 15c.
+
 ## For other roles
 
 The README Status banner of the attended judge ("merged to main by PR #4") is unchanged and still true on `main`; this branch is not merged. The Release Manager should check the new README section against the final tree. Safety-text (INV-4, INV-5) and the ARCHITECTURE record are the Architect's parallel work and may need cross-checking against the "what is sent to whom" paragraph.
