@@ -3,7 +3,7 @@
 - **Ask:** `intents/public-ask-the-docs.md` — a public "ask the docs" page, live on Azure: verbatim passages or "no confident match", judged through the Anthropic API under hard cost and abuse limits
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 11 Infra and image (rerouted, SR-1)
+- **Current stage:** 12 Review layer
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents/teammates in `.claude/agents/` (pack v26), run from this repo's worktree
 - **Telemetry:** self-reported — see `TELEMETRY.md`
@@ -26,7 +26,7 @@
 | 8 Backend service | Backend Architect | done — `aveto_service/` (settings, port, limits, abuse log, pipeline, app); fastapi 0.157.0, uvicorn 0.54.0, anthropic 1.7.0; 110 new tests, 535 pass; mypy, ruff clean; deviations in note (attempts field, post-hoc charge for retry) | runs/public-ask-the-docs/08-backend-note.md | local regression green |
 | 9 AI adapter | AI Engineer | done — `aveto_service/anthropic_judge.py`; 24 tests on a fake Messages client; request body exact, no tools, effort high explicit, 2 attempts, fixed error categories, hash fail-closed, SDK loggers muted by the adapter; 559 pass, mypy, ruff clean; (U) model id and effort accepted: stage 17 | runs/public-ask-the-docs/09-ai-adapter-note.md | local regression green |
 | 10 Public page | Frontend Developer | done — `aveto_service/{pages,render,result_store,main}.py`, static css/js; 25 tests, 584 pass, mypy, ruff clean; no browser preview (no tool): enhance.js only syntax-checked, contrast unmeasured; 3 copy mappings for outcomes the UX table lacks | runs/public-ask-the-docs/10-frontend-note.md | local regression green |
-| 11 Infra and image | Cloud Deployment | partial — `infra/main.bicep` + `main.parameters.json` written (C8.3 types only); Dockerfile, .dockerignore, tests/test_infra_static.py blocked by write-scope-guard (text in note); no shell, so no az checks, no regression run | runs/public-ask-the-docs/11-infra-note.md | not met until files written and checks run |
+| 11 Infra and image | Cloud Deployment | partial — `infra/main.bicep` + `main.parameters.json` written (C8.3 types only); Dockerfile, .dockerignore, tests/test_infra_static.py blocked by write-scope-guard (text in note); no shell, so no az checks, no regression run | runs/public-ask-the-docs/11-infra-note.md | not met until files written and checks run | 11c done: Dockerfile, .dockerignore, tests/test_infra_static.py written; Azure read-only checks in 11c-infra-checks.md (bicep build FAILS: F1 BCP265 `environment` symbol, F2, F3 for Cloud Deployment); image unbuilt (Docker daemon down); 591 tests green |
 | 6 to 19 (except 8, 9, 10, 11) | per plan | pending | — | — |
 
 ## Approvals
@@ -38,8 +38,8 @@
 ## Budget
 
 - **Budget:** 2000k tokens  ·  **Depth:** standard
-- **Spent:** 872k (44%)  ·  **Remaining:** 1128k
-- **Next stage:** 11b Spec §12 fix (Architect, smoke) then 11c Dockerfile/tests/Azure checks (Backend) est. 120k → **PROCEED**
+- **Spent:** 952k (48%)  ·  **Remaining:** 1048k
+- **Next stage:** 12 Review layer (/code-review high, Orchestrator) est. 60k → **PROCEED**
 
 Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup spend is the driving session's, not a spawn.
 
@@ -72,11 +72,14 @@ Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup 
 | 9 AI adapter (ai-adapter) | sonnet-5-5 | medium | — | — | — | 46k | 16 | 0 |
 | 10 Frontend page (frontend) | sonnet-5-5 | medium | — | — | — | 76k | 20 | 0 |
 | 11 Infra + image (cloud-infra) PARTIAL: guard blocked 3 files; no shell | sonnet-5-5 | medium | — | — | — | 66k | 25 | 0 |
-| **Total** | | | | | | 872k | | |
+| 11a Spec §12 amendment (arch-amend, smoke) | opus-5-5 | high | — | — | — | 29k | 10 | 0 |
+| 11c Dockerfile, infra tests, Azure read-only checks (backend-infra) | sonnet-5-5 | medium | — | — | — | 50k | 16 | 0 |
+| 11d Bicep lint fixes (cloud-infra resumed; peak 69k total for stage 11) | sonnet-5-5 | medium | — | — | — | 3k | 7 | 0 |
+| **Total** | | | | | | 952k | | |
 
 ## Next action
 
-Spawn Architect (smoke) to amend §12; then Backend Architect for Dockerfile, .dockerignore, test_infra_static, bicep lint + what-if.
+Run stage 12: /code-review at high on the diff vs main, REVIEW.md rules, write code-review.md.
 
 ## Setup log
 
@@ -87,3 +90,4 @@ Spawn Architect (smoke) to amend §12; then Backend Architect for Dockerfile, .d
 - 2026-10-21 Orchestrator, after stages 6 and 7: both PASS (06 tier limited, provisional on Art. 50 for owner/legal; 07 PASS WITH REQUIRED FIXES, gates G1-G10). Carried forward as release-gate conditions: page must name Anthropic as recipient, say an AI model decides, tell visitors not to enter personal data (06 R1; 07 top gap) — UX spec 04 patched before stage 10; owner records a line on Art. 50 / privacy / legal or accepts them open (06 R2, END_REVIEW); Security rules at stage 14 on counters reset at scale-to-zero and forwarded-IP (06 R3); stage 17 must search Log Analytics for the tester's own IP in ingress/system tables (07). Only 1 of 4 hostile gate questions tests injection through the question, and the 8/10 bar may miss by chance (06): reported as is, bars not changed. Stage 6's first attempt had already written 06 before the usage-limit cut; the re-run verified it and left it unchanged.
 - 2026-10-21 Orchestrator, after stage 8: regression re-run by the Orchestrator: mypy clean, ruff clean, 535 passed (425 + 110 new); `git diff main -- aveto_support prompts .claude .agentic` empty. Stage 8 deviation to carry: `JudgeCall.attempts` — the adapter must set attempts=2 when it retried (08-backend-note). Open gap L1 (the judge_error cause is not logged) is a logging-contract choice for Security at stage 14.
 - 2026-10-21 Orchestrator, after stages 9 and 10: regression re-run by the Orchestrator: mypy clean, ruff clean, 584 passed (535 + 24 adapter + 25 pages); method files byte-identical to main (empty diff). No live Anthropic call made; first live call is stage 17. Items routed forward: (a) UX table lacks copy for `unusable_question`, `bad_request`, `body_too_large` — reused Empty / Too long copy (10-frontend-note) → QA/Security to look, no owner action; (b) an unmatched static path returns FastAPI's default JSON 404 without the page headers (app.py is the Backend's) → Security stage 14; (c) enhance.js untested beyond `node --check`, contrast and 320px/forced-colors unmeasured → QA stage 13 (built-in browser available); (d) SDK logger muted by the adapter constructor (09 note).
+- 2026-10-21 Orchestrator, after stage 11: SR-1 resolved in-run (Architect amended §12; Backend wrote Dockerfile/.dockerignore/test_infra_static and ran the read-only checks; Cloud Deployment fixed F1-F3). Orchestrator re-ran: `az bicep build` exit 0; `what-if deployApp=false` creates only identity, ACR, ACR role assignment, Log Analytics, environment, Key Vault role assignment (vault: Ignore); mypy clean, ruff clean, 591 passed. No Azure resource was created. The image is unbuilt (no Docker daemon locally); the first build is `az acr build` at stage 17, so "ingest runs inside the build" and the cold-start figure are unconfirmed until then. Stage 17 deploy commands run from the Orchestrator's session under C8.3 (the deploy role has no shell).

@@ -236,6 +236,14 @@ def test_dockerignore_excludes_the_same() -> None:
     assert "!evals/calibration-offtopic.toml" in lines
 ```
 
+## Fixes after lint (SR-1)
+
+Applied to `infra/main.bicep` after the Backend Architect's checks (`11c-infra-checks.md`); not re-linted by me (no shell).
+
+- F1 (BCP265): resource symbol `environment` renamed `managedEnv`; its reference `managedEnvironmentId: managedEnv.id` updated. The `environment().suffixes.keyvaultDns` function call is unchanged.
+- F2 (BCP037): `anonymousPullEnabled` removed from the registry (anonymous pull is off by default). The note's earlier mention of it and the hand-off test's `test_bicep_registry_private` (which requires `anonymousPullEnabled: false`) are superseded; the test now rejects `anonymousPullEnabled: true` instead.
+- F3 (BCP318): output is now `app.?properties.?configuration.?ingress.?fqdn ?? ''`.
+
 ## Findings for the Orchestrator
 
 - Hand-off needed: write the three files above (write guard blocks this role), then run the seven NOT RUN commands.

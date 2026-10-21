@@ -59,7 +59,6 @@ resource registry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
   }
   properties: {
     adminUserEnabled: false
-    anonymousPullEnabled: false
   }
 }
 
@@ -95,7 +94,7 @@ resource systemLogsTable 'Microsoft.OperationalInsights/workspaces/tables@2022-1
   }
 }
 
-resource environment 'Microsoft.App/managedEnvironments@2024-03-01' = {
+resource managedEnv 'Microsoft.App/managedEnvironments@2024-03-01' = {
   name: environmentName
   location: location
   properties: {
@@ -148,7 +147,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = if (deployApp) {
     }
   }
   properties: {
-    managedEnvironmentId: environment.id
+    managedEnvironmentId: managedEnv.id
     configuration: {
       activeRevisionsMode: 'Single'
       ingress: {
@@ -236,4 +235,4 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = if (deployApp) {
 }
 
 output registryLoginServer string = registry.properties.loginServer
-output appFqdn string = deployApp ? app.properties.configuration.ingress.fqdn : ''
+output appFqdn string = app.?properties.?configuration.?ingress.?fqdn ?? ''
