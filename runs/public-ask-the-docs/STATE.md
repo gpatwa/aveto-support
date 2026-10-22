@@ -41,6 +41,7 @@
 | Anthropic and Azure as data processors | rule 6 | covered | in effect at deploy | Gopal Patwa via Charter v2 | 2026-10-21 | CHARTER-v2.md#C4.1, #C4.2 |
 | INV-4 and INV-5 words | rule 4 | covered | done (15a, 15c check, round 2 and 3) | Gopal Patwa via Charter v2 | 2026-10-21 | CHARTER-v2.md#C5.1, #C5.2; 15c-words-check.md |
 | Deploy to rg-aveto-ask; kill switch on/off | rule 3 | covered | stage 17 (kill switch ON first) | Gopal Patwa via Charter v2 | 2026-10-21 | CHARTER-v2.md#C8.3 |
+| Kill switch OFF (tech spec §7 step 5): the public service starts answering | rule 3 | covered; switch-on gate S1-S9 met per `17-switch-on-recheck.md` (GO WITH CONDITIONS, conditions C1-C4 saved in `17-deploy/conditions-c1-c4.txt`) | executing 2026-10-22 | Gopal Patwa via Charter v2 | 2026-10-22 | CHARTER-v2.md#C8.3 (sha256 e04b8253…ead4) |
 | Push claude/public-ask-the-docs; PR into main | rule 3 | covered | stage 19 | Gopal Patwa via Charter v2 | 2026-10-21 | CHARTER-v2.md#C8.2 |
 | Approve Charter v2 (amendment 1: C4.1 SDK headers, C5.2 one sentence) | Charter section 9.1 and 9.5 | yes | approved | Gopal Patwa | 2026-10-21T20:29:11Z | runs/public-ask-the-docs/APPROVAL_RECORD-2.md |
 | Approve the Charter | Charter | yes | approved | Gopal Patwa | 2026-10-21T06:42:08Z | runs/public-ask-the-docs/APPROVAL_RECORD-1.md |
