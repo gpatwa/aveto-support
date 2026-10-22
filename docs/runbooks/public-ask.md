@@ -277,3 +277,77 @@ az identity delete -g rg-aveto-ask -n id-aveto-ask
 - After removal, point readers away from the service URL (the link from
   aveto.dev is a separate change in the playbook repo) and update the README
   Status.
+
+## 11. Processors and data
+
+This is the processor record for the service, carried from
+`runs/public-ask-the-docs/07-compliance-data.md` section 9 (the full review and
+the line-by-line check are there). The approval it rests on is Charter v2 lines
+C4.1 (Anthropic) and C4.2 (Azure) in `runs/public-ask-the-docs/CHARTER-v2.md`.
+Anything marked **UNKNOWN** has not been established by anyone recorded; nothing
+below fills it in.
+
+| Field | Anthropic | Microsoft Azure |
+|---|---|---|
+| Purpose | Decide whether retrieved docs passages answer a visitor's question | Host the service; platform logs for 7 days |
+| What it receives | Per question, in one request to `api.anthropic.com/v1/messages`: the question (at most 500 characters), the fixed judge prompt, the retrieved passages (path, heading, line range, text), the protocol fields (model, effort, `max_tokens`) and the SDK's own headers about the container. Never a visitor IP, visitor id, hashed key or visitor header. It also sees the Azure outbound address and the owner's API key identity; neither is visitor data. Exact list: [INV-5](../../.agentic/SAFETY_INVARIANTS.md) and C4.1 | The container image (code, pinned index and models, public docs text); the Key Vault secret; each visitor request in transit through ingress, which contains the visitor's raw IP and the question in the POST body; Log Analytics abuse lines (hashed IP, time, outcome) and ops lines |
+| Channel | HTTPS, metered API, key from Key Vault `kv-aveto-ask-gp` | Container Apps, `rg-aveto-ask`, eastus2 |
+| Terms | Commercial Terms, which incorporate the Data Processing Addendum by reference, per the owner's statement (2026-10-20). **DPA: in place by reference per the owner's statement; text unread; not verified. Not recorded as met.** | The owner's Azure subscription terms, unread by any agent. Whether that offer permits production hosting of a public service: **UNKNOWN** |
+| Retention | **UNKNOWN** (no period stated by any artefact; training or improvement use of API inputs also **UNKNOWN**) | Abuse log lines: 7 days, for the two tables `ContainerAppConsoleLogs_CL` and `ContainerAppSystemLogs_CL`, once deploy command 4 is applied and read back (section 6). Other tables and platform records (ingress, metrics, activity log): **UNKNOWN** until the table list is read (section 9) |
+| Residency and transfer | **UNKNOWN** (processing location not stated anywhere; no transfer basis recorded) | United States (eastus2); transfer basis for visitors outside it not recorded |
+| Subprocessors | **UNKNOWN** | **UNKNOWN** |
+| Approver | Gopal Patwa, Charter C4.1 | Gopal Patwa, Charter C4.2 |
+
+Also **UNKNOWN**, from the same review: breach-notification and liability
+terms, certifications and status page for either vendor; whether Anthropic's
+terms and usage policy permit a public, unauthenticated use and require any
+disclosure; whether a hashed IP is still personal data. These and the EU AI Act
+Art. 50 reading (OI-1) are for the owner and legal, not decided here. No
+named compliance approver exists yet; the owner is asked at the end review.
+
+**What the visitor is told.** The page (`aveto_service/render.py`) says that an
+AI model decides; that the question is sent to Anthropic, named, and handled
+there under Anthropic's terms; not to enter personal or confidential
+information; that the address is read to apply the limit and a scrambled form
+is kept 7 days with the time and outcome; and that the service is hosted in the
+United States (Azure East US 2). It is checked in the served HTML before the
+switch goes off (stage 17, release condition S8). It does not say that nothing
+is kept anywhere, because retention at Anthropic is UNKNOWN.
+
+## 12. Monitoring
+
+Nobody is on call and nothing pushes an alert. The owner acts. The signals,
+thresholds and actions below are stated in
+`runs/public-ask-the-docs/06-ai-risk-assessment.md` section 7, which is the
+source; if the two differ, that section wins. No threshold here is new.
+
+**What to look at.** The abuse log in Log Analytics (7 days; outcome codes `o`
+as in section 6) and the `GET /health` counters (section 4; per replica
+lifetime). No question text is kept, so correctness cannot be observed directly:
+every rate is a screening rule on a small sample. The `judge_error` cause is
+deliberately not logged (section 7).
+
+**Cadence.** Daily for the first 3 days live; then at least every 5 days;
+weekly after a quiet month.
+
+| Signal | Threshold | Action |
+|---|---|---|
+| `judge_error` share of admitted calls (abuse log) | Over 5% in 50 calls, or 3 in a row | Check Anthropic status, console limit and key (section 7); kill switch on if unexplained |
+| Input and output tokens per judged question (`/health` deltas) | Over 2x the stage 18 figure (not yet recorded) | Prompt or model change suspected; kill switch on; re-run the canary |
+| `answer` share of admitted calls | Moves more than 20 points from the stage 18 baseline (not yet recorded) over 100 or more calls | Run the canary; review |
+| `paused` days | More than 2 in a week | Demand or abuse; the owner decides on the cap, not an agent |
+| `rate_limited` on one `ip` hash | Any day above 30 | Abuse; kill switch on if cost is rising |
+| Anthropic console spend, Azure bill, and the estimate | Any month over $10, or Azure over $10 | Stop and report |
+| Canary: 6 questions from the spent gate set (3 answerable, 3 not), asked through the page by the owner or operator | Monthly, after any trigger above, and on any model notice; any not-answerable question shown means switch off | Kill switch on; a new pre-registered check before re-enable |
+| Control integrity (zero tolerance) | A request with `tools`; a model other than `claude-sonnet-5-5`; a prompt-hash mismatch (the service refuses to start, `startup_failed` category `prompt_hash`); any shown text that differs from `retrieve` | Kill switch on |
+
+**Who acts.** The repository owner. The Post-Launch Learning Agent reads the
+stage 18 record and each review.
+
+**Known gaps** (06 section 7): **M1** push alerting is outside Charter C8.3, so
+detection depends on someone looking; the owner is to accept that in words at the
+end review. **M2** a fixed `judge_error` category on an ops line is not added
+(it would change the logging contract; for the Architect and Security).
+**M3** stage 18 should compare live passages with local `retrieve`, byte for
+byte, on a sample; not yet done. The two baselines marked "not yet recorded"
+do not exist before stage 18, so those two rows cannot be applied until then.

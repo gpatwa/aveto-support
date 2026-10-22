@@ -31,6 +31,12 @@ Cost per question, response time (median, slowest), cold-start time, monthly Azu
 - Runbook section 10: the vault is inside `rg-aveto-ask` (owner created it there, per the coordinator); "do not delete the resource group" is now stated outright and the "not confirmed" wording is removed. Item 1 above is superseded on the vault location only; the delete commands are still not run.
 - README "What is sent to whom" now names the SDK's own headers and links INV-5 for the two exceptions; the status file and runbook link INV-4/INV-5 instead of restating them. Checked against the final `SAFETY_INVARIANTS.md`; I did not read 15a or 15c.
 
+## Release-gate conditions P3 and P4 (smoke)
+
+- **P3:** runbook section 11 "Processors and data": the 07 section 9 record (Anthropic, Azure), what each receives (07 section 2), terms status and UNKNOWNs (07 section 3), abuse-line retention 7 days for the two named tables, what the visitor is told (07 section 6 as built in `render.py`, per 16 checklist 8.1 row 7; I did not re-read `render.py`). DPA worded "in place by reference per the owner's statement; text unread". Links `07-compliance-data.md` and `CHARTER-v2.md` C4.1/C4.2. Nothing invented; UNKNOWNs kept.
+- **P4:** runbook section 12 "Monitoring": one table restating 06 section 7 thresholds, actions, cadence, owner, gaps M1 to M3; no new threshold. Grep targets "text unread", "5%", "M1" are present.
+- Not checked: `render.py` wording against my paraphrase of the page copy; no shell.
+
 ## For other roles
 
 The README Status banner of the attended judge ("merged to main by PR #4") is unchanged and still true on `main`; this branch is not merged. The Release Manager should check the new README section against the final tree. Safety-text (INV-4, INV-5) and the ARCHITECTURE record are the Architect's parallel work and may need cross-checking against the "what is sent to whom" paragraph.

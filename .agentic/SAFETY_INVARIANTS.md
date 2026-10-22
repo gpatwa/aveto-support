@@ -180,7 +180,7 @@
   start no process and call no generative model (the only models they run are
   the local embedding model and, with `--ranking file-rerank-v1`, the local
   reranker); the default test suite makes no network calls.
-  **The operator's session is the one exception on the attended judge step, and it is not the program.**
+  **The operator's session is one of two exceptions, the other being the service, and it is not the program.**
   When the operator runs the judge step (`/aveto-judge`, which runs only when
   the operator types it), the operator's own Claude Code session sends data to
   that session's model provider (Anthropic, approved as data processor in
@@ -220,7 +220,7 @@
   SDK 1.7.0 pinned by `uv.lock`, with at most two attempts per question and a
   20-second timeout per attempt. Of the question and the docs, each request
   carries only the data in Charter C4.1 of
-  `runs/public-ask-the-docs/CHARTER.md`: the fixed judge prompt
+  `runs/public-ask-the-docs/CHARTER-v2.md`: the fixed judge prompt
   `answerability-judge-v1` (as `system`) and, as the one user message, the
   payload `judge-input` would print for the question (the normalised
   question, at most 500 characters on one line, and the passages `retrieve`

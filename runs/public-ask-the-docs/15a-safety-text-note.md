@@ -384,3 +384,6 @@ line 40 shows no change.
 changed; 245, 246 and 307 to 309 added or rewrapped (line 307 rewrapped to carry the F3 words). Against
 the pre-run file, the `-` lines should now be original 42, 43 (the C5.1 sentence), 106 (reflow, no
 word removed) and 111 (S10, pending the owner) only; original 40 should no longer appear.
+
+**Round 3 (depth smoke, Charter v2 C5.2; 16 notes N1, N4).** N1: line 183 now reads `**The operator's session is one of two exceptions, the other being the service, and it is not the program.**` (`the one exception on the attended judge step` -> `one of two exceptions, the other being the service`; every other word of the original sentence kept). N4: line 223 pointer `runs/public-ask-the-docs/CHARTER.md` -> `runs/public-ask-the-docs/CHARTER-v2.md` (approved in APPROVAL_RECORD-2); no other word changed.
+**(U)** No shell: the diff was not run; Grep found no other `CHARTER` reference in the file, and nothing else in `.agentic/SAFETY_INVARIANTS.md` was edited. Nothing committed; STATE.md not edited.
