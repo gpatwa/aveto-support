@@ -1,0 +1,4 @@
+cold start probe 2026-10-22T18:33:38Z
+GET /health after >1h idle: http 200 total 30.839844s
+{"status":"ok","kill_switch":"off","day":"2026-10-22","judged_today":0,"input_tokens_today":0,"output_tokens_today":0,"spend_today_usd":"0.000000","daily_cap_usd":"0.322580"}
+second GET /health: 0.246848s
