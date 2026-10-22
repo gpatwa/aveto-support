@@ -1,0 +1,122 @@
+{
+ "id": "p03",
+ "kind": "answerable",
+ "http": 200,
+ "seconds": 1.291,
+ "at": "2026-10-22T17:31:36Z",
+ "response": {
+  "outcome": "answer",
+  "docs": {
+   "repo": "gpatwa/agentic-sdlc-playbook",
+   "commit": "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+  },
+  "files": [
+   {
+    "rank": 1,
+    "path": "templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md",
+    "passages": [
+     {
+      "heading": "Observability Bootstrap \u2014 <service / product name> > Structured logging",
+      "line_start": 9,
+      "line_end": 18,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md?plain=1#L9-L18",
+      "text": "## Structured logging\n\n- **Format:** <JSON lines / provider> \u2014 every entry carries\n  `service`, `level`, `timestamp (UTC)`, and a correlation/request ID.\n- **Correlation:** <how the request ID propagates across service calls>\n- **PII rule:** IDs, counts, hashes only \u2014 never content, per\n  `.agentic/SAFETY_INVARIANTS.md`. Name the enforcing layer (serializer /\n  lint rule), not just the policy.\n- **Levels:** what fires `error` (actionable) vs `warn` (investigate) vs\n  `info` (audit-adjacent). An `error` that pages nobody is a `warn`."
+     },
+     {
+      "heading": "Observability Bootstrap \u2014 <service / product name> > Telemetry retention",
+      "line_start": 58,
+      "line_end": 62,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md?plain=1#L58-L62",
+      "text": "## Telemetry retention\n\n- Logs: <period> \u00b7 Metrics: <period> \u00b7 Traces: <period>\n- Sign-off from Data Governance if any telemetry stream could carry\n  restricted data: <yes / n/a>"
+     }
+    ]
+   },
+   {
+    "rank": 2,
+    "path": "templates/CUSTOMER_ISSUE_RESOLUTION_TEMPLATE.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/CUSTOMER_ISSUE_RESOLUTION_TEMPLATE.md",
+    "passages": [
+     {
+      "heading": "Customer Issue Resolution \u2014 <issue id> > Drafted reply",
+      "line_start": 33,
+      "line_end": 37,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/CUSTOMER_ISSUE_RESOLUTION_TEMPLATE.md?plain=1#L33-L37",
+      "text": "## Drafted reply\n\n> <the exact text that would be sent>\n\nCites: <the real fix/answer this draft is based on \u2014 never a placeholder>"
+     },
+     {
+      "heading": "Customer Issue Resolution \u2014 <issue id> > Approval \u2014 verify + send (combined gate, per HUMAN_APPROVAL_RULES.md)",
+      "line_start": 39,
+      "line_end": 43,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/CUSTOMER_ISSUE_RESOLUTION_TEMPLATE.md?plain=1#L39-L43",
+      "text": "## Approval \u2014 verify + send (combined gate, per HUMAN_APPROVAL_RULES.md)\n\n| Requested | Verified by | Decision | Sent text (if edited) | When (UTC) |\n|-----------|-------------|----------|------------------------|------------|\n| <what and why> | <human> | <approved / denied> | <diff from draft, if any> | <ts> |"
+     }
+    ]
+   },
+   {
+    "rank": 3,
+    "path": "templates/TECH_SPEC_TEMPLATE.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/TECH_SPEC_TEMPLATE.md",
+    "passages": [
+     {
+      "heading": "Tech Spec \u2014 <slice name> > Audit / feedback / usage events",
+      "line_start": 36,
+      "line_end": 42,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/TECH_SPEC_TEMPLATE.md?plain=1#L36-L42",
+      "text": "## Audit / feedback / usage events\n\nEvery state-changing function emits at least one event. List them here.\n\n| Event type | Emitted from | Metadata fields |\n|------------|--------------|-----------------|\n| `<type>` (audit/feedback/usage) | `<file>:<fn>` | `<key1, key2, ...>` |"
+     },
+     {
+      "heading": "Tech Spec \u2014 <slice name> > Data model deltas",
+      "line_start": 11,
+      "line_end": 18,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/TECH_SPEC_TEMPLATE.md?plain=1#L11-L18",
+      "text": "## Data model deltas\n\n| Type | Change | Rationale |\n|------|--------|-----------|\n| `<Type>` | new / modified / removed | <why> |\n\nFor each new type, include a sketch of the schema (TypeScript or Zod\nshape, or column list for SQL)."
+     }
+    ]
+   },
+   {
+    "rank": 4,
+    "path": "examples/saved-items-bulk-delete/.agentic/SAFETY_INVARIANTS.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/examples/saved-items-bulk-delete/.agentic/SAFETY_INVARIANTS.md",
+    "passages": [
+     {
+      "heading": "Safety Invariants \u2014 Stash > Privacy",
+      "line_start": 18,
+      "line_end": 23,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/examples/saved-items-bulk-delete/.agentic/SAFETY_INVARIANTS.md?plain=1#L18-L23",
+      "text": "## Privacy\n\n4. **No item content in logs.** Logs may carry item IDs, counts, and\n   hashes \u2014 never the saved content, titles, URLs, or notes.\n5. **A user only ever sees or affects their own items.** Every query is\n   scoped by `userId` at the service boundary."
+     },
+     {
+      "heading": "Safety Invariants \u2014 Stash > Automation",
+      "line_start": 25,
+      "line_end": 30,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/examples/saved-items-bulk-delete/.agentic/SAFETY_INVARIANTS.md?plain=1#L25-L30",
+      "text": "## Automation\n\n6. **Nothing is sent, posted, or shared on the user's behalf** without an\n   explicit, per-action approval in the UI.\n7. **LLM adapters throw by default.** No live model call enters the build\n   without approval (`HUMAN_APPROVAL_RULES.md` rule 5)."
+     }
+    ]
+   },
+   {
+    "rank": 5,
+    "path": "project-packs/browser-automation-product.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/project-packs/browser-automation-product.md",
+    "passages": [
+     {
+      "heading": "Project Pack \u2014 Browser Automation Product > Safety invariants (recommended floor)",
+      "line_start": 45,
+      "line_end": 56,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/project-packs/browser-automation-product.md?plain=1#L45-L56",
+      "text": "## Safety invariants (recommended floor)\n\n- No code path reaches a real-site submit without an explicit approval\n  event preceding it in the same session.\n- Approval events are typed (e.g. `submit_approved`,\n  `fill_approved`) and audited.\n- Page-structure hash mismatch aborts the action.\n- CAPTCHA detection pauses the session and surfaces it to the user.\n- Sensitive inputs (resume text, application answers) are never logged\n  in full.\n- The product never auto-installs an extension or modifies browser\n  settings without consent."
+     },
+     {
+      "heading": "Project Pack \u2014 Browser Automation Product > Required service surfaces",
+      "line_start": 58,
+      "line_end": 65,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/project-packs/browser-automation-product.md?plain=1#L58-L65",
+      "text": "## Required service surfaces\n\n- **Dry-run engine** that produces a full audit trail without external\n  effects.\n- **Adapter per ATS / site** with a fixture for tests.\n- **Approval gate** as a typed event, not a boolean flag.\n- **Snapshot persistence** so the user can inspect what the agent saw\n  and what it would have filled."
+     }
+    ]
+   }
+  ],
+  "signal": "Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)"
+ }
+}

@@ -1,0 +1,115 @@
+{
+ "id": "p04",
+ "kind": "answerable",
+ "http": 200,
+ "seconds": 1.658,
+ "at": "2026-10-22T17:31:39Z",
+ "response": {
+  "outcome": "answer",
+  "docs": {
+   "repo": "gpatwa/agentic-sdlc-playbook",
+   "commit": "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+  },
+  "files": [
+   {
+    "rank": 1,
+    "path": "execution/ADAPTERS.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/execution/ADAPTERS.md",
+    "passages": [
+     {
+      "heading": "Provider Adapters > The adapter contract",
+      "line_start": 16,
+      "line_end": 40,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/execution/ADAPTERS.md?plain=1#L16-L40",
+      "text": "## The adapter contract\n\nAn adapter MUST emit, into a product repo:\n\n| Output | From | Requirement |\n|--------|------|-------------|\n| One agent definition per brief | `agents/*.md` | Brief inlined verbatim + execution preamble (protocol pointers); **least-privilege tools** per role; static model default per `pack/protocols/MODEL_ROUTING.md` |\n| Entry-point commands | `pack/commands/` | Start / resume / status semantics preserved |\n| Protocols | `pack/protocols/` | Copied verbatim \u2014 see invariants below |\n| Run guide | `pack/AGENTS.md` | The non-negotiable rules section intact. `AGENTS.md`, not a per-tool file \u2014 see below. |\n| Config record | generated | Playbook path, generation time, pack version, `defaults` (wall-clock budget, retry caps) |\n\n**The run guide is `AGENTS.md`, not a per-tool file.** `AGENTS.md` (Linux\nFoundation, read natively by 20+ tools \u2014 Codex, Cursor, Copilot, Windsurf,\nDevin, Zed, among others) is the adapter-independent source of truth for the\nnon-negotiable rules. A per-tool file \u2014 the Claude Code adapter installs a\n`CLAUDE.md` that is a one-line `@AGENTS.md` import, since Claude Code does\nnot read `AGENTS.md` on its own \u2014 exists only to point *that* tool at it, and\ncarries nothing the rules depend on. Any tool-specific mechanics that are\ngenuinely not portable (subagent dispatch, a pre-spawn hook, `.claude/`\npaths) live in a clearly labeled section inside `AGENTS.md` itself, not\nfolded into the universal rules. This does not by itself make the pack\nwork on a second runtime \u2014 see T12 in `docs/BACKLOG.md` for what still\nwould \u2014 but it is the first artefact any second adapter would not need to\nreinvent."
+     },
+     {
+      "heading": "Provider Adapters",
+      "line_start": 1,
+      "line_end": 14,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/execution/ADAPTERS.md?plain=1#L1-L14",
+      "text": "# Provider Adapters\n\nThe playbook is deliberately split into two layers:\n\n- **The spec** \u2014 `agents/`, `templates/`, `prompts/`, `docs/`. Plain\n  markdown, provider-neutral. Nothing in it assumes a vendor, a harness,\n  or an API.\n- **The adapter** \u2014 `execution/`. Everything harness-specific. The current\n  implementation (`install.mjs` + `pack/`) targets **Claude Code** and is\n  the reference adapter.\n\nSupporting another runtime (OpenAI Agents SDK, Gemini, an internal\norchestrator) means writing another adapter under `execution/<harness>/` \u2014\nnever forking the spec. The briefs stay the single source of truth."
+     }
+    ]
+   },
+   {
+    "rank": 2,
+    "path": "execution/README.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/execution/README.md",
+    "passages": [
+     {
+      "heading": "Execution Pack > Install into a product repo",
+      "line_start": 37,
+      "line_end": 59,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/execution/README.md?plain=1#L37-L59",
+      "text": "## Install into a product repo\n\nFrom the product repo root (which must have a `.agentic/` folder):\n\n```\nnode <playbook>/execution/install.mjs .\n```\n\nThis writes, into the product repo:\n\n- `.claude/agents/<role>.md` \u2014 one Claude Code subagent per playbook brief\n  (the brief inlined, with execution preamble + protocol pointers; tools\n  scoped per role).\n- `.claude/commands/` \u2014 the orchestration slash commands.\n- `.claude/protocols/` \u2014 the three protocols above.\n- `.claude/agentic.config.json` \u2014 records the playbook path + generation\n  time.\n- `AGENTS.md` \u2014 the autonomous-run guide, the source of truth. Read by any\n  AGENTS.md-aware tool, not only Claude Code.\n- `CLAUDE.md` \u2014 a one-line `@AGENTS.md` import. Claude Code does not read\n  `AGENTS.md` on its own, so this file exists purely to point it there.\n\nRe-run after the playbook changes to refresh the generated agents."
+     },
+     {
+      "heading": "Execution Pack > How a run works",
+      "line_start": 61,
+      "line_end": 70,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/execution/README.md?plain=1#L61-L70",
+      "text": "## How a run works\n\n1. `/agentic-slice \"<ask>\"` \u2014 the session becomes the Orchestrator, plans\n   the slice, and writes `runs/<slice-id>/STATE.md`.\n2. It delegates each lifecycle stage to the matching subagent. Each reads\n   its input artefact, writes its output, and updates `STATE.md`.\n3. Gates are enforced between stages; failures retry within budget then\n   escalate.\n4. A gated action (per `docs/HUMAN_APPROVAL_RULES.md`) **pauses** the run\n   for an explicit human approval, recorded as an artefact."
+     }
+    ]
+   },
+   {
+    "rank": 3,
+    "path": "execution/pack/AGENTS.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/execution/pack/AGENTS.md",
+    "passages": [
+     {
+      "heading": "Aveto \u2014 Autonomous Run Guide",
+      "line_start": 1,
+      "line_end": 11,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/execution/pack/AGENTS.md?plain=1#L1-L11",
+      "text": "# Aveto \u2014 Autonomous Run Guide\n\nThis repo is wired to run **Aveto** with autonomous agents. The\nmethodology (roles, templates, gates, rules) lives in the playbook at:\n\n> `{{PLAYBOOK_PATH}}`\n\nThis file is the **source of truth** for any tool that reads `AGENTS.md`\n(Codex, Cursor, GitHub Copilot's coding agent, Windsurf, Amp, Aider, Gemini\nCLI, Zed, Jules, Devin, Junie, and others). `CLAUDE.md` at the repo root\nimports this file \u2014 see the note at the end."
+     },
+     {
+      "heading": "Aveto \u2014 Autonomous Run Guide > Claude Code specifics",
+      "line_start": 54,
+      "line_end": 80,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/execution/pack/AGENTS.md?plain=1#L54-L80",
+      "text": "## Claude Code specifics\n\nEverything above is tool-agnostic. The mechanics below are not \u2014 they\ndescribe how *this pack's Claude Code adapter* implements the rules above,\nnot a universal convention every tool sharing this file follows.\n\n- **Entry points:** `/agentic-slice <ask>` to start, `/agentic-resume\n  <slice-id>` to resume, `/agentic-status [slice-id]` to check.\n- **Role dispatch:** each role runs as a generated Claude Code subagent in\n  `.claude/agents/`, with least-privilege `tools:` frontmatter per role.\n  **Run the Orchestrator from THIS repo, not from the playbook** \u2014 the\n  subagents are only discoverable from *this* project's `.claude/agents/`.\n  A session rooted elsewhere falls back to inlined briefs with **full\n  tools**, silently losing the per-role restriction. If that happens, set\n  `Least-privilege: declared` in `STATE.md` and `leastPrivilegeEnforced:\n  false` + a `leastPrivilegeNote` in `trace.json` (`SLICE_STATE.md`\n  \"Machine-readable trace\") \u2014 the **declared** tier `ADAPTERS.md` invariant\n  4 names. Recording nothing is what's forbidden, not the gap itself.\n- **Budget enforcement:** a pre-spawn hook (`.claude/hooks/`) checks the\n  budget before every subagent spawn \u2014 see `RUN_ECONOMICS.md`.\n\nA tool other than Claude Code driving this repo must honor the\nnon-negotiable rules above by its own means; nothing here assumes it has\nsubagents, hooks, or slash commands shaped like Claude Code's. See\n`ADAPTERS.md` for the adapter contract this pack implements, and\n`docs/BACKLOG.md` T12 for the open work restating that contract as\noutcomes a second adapter could satisfy differently."
+     }
+    ]
+   },
+   {
+    "rank": 4,
+    "path": "execution/pack/CLAUDE.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/execution/pack/CLAUDE.md",
+    "passages": [
+     {
+      "heading": "(top of file)",
+      "line_start": 1,
+      "line_end": 6,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/execution/pack/CLAUDE.md?plain=1#L1-L6",
+      "text": "@AGENTS.md\n\nThis repo's run guide lives in `AGENTS.md` \u2014 the line above imports it\nverbatim into this session per Claude Code's own `@path` import convention.\nNothing Claude-Code-specific needs to live in this file separately: the\n\"Claude Code specifics\" section inside `AGENTS.md` already covers it."
+     }
+    ]
+   },
+   {
+    "rank": 5,
+    "path": "docs/GETTING_STARTED.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/GETTING_STARTED.md",
+    "passages": [
+     {
+      "heading": "Getting Started > Honest limits, stated up front",
+      "line_start": 175,
+      "line_end": 190,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/GETTING_STARTED.md?plain=1#L175-L190",
+      "text": "## Honest limits, stated up front\n\n- **Single-operator proven, not multi-operator.** Every real run to date\n  was driven by one person. `trace.json`'s `operator` field is ready for\n  more; nothing has exercised it yet.\n- **No `.agentic/` scaffolding tool.** You are copying and editing a real\n  example by hand. Templated generation is a real gap (see step 1 above),\n  not a documentation omission.\n- **Telemetry is self-reported unless you turn on OpenTelemetry.**\n  `execution/pack/protocols/TELEMETRY.md` documents how; the standing\n  caveat in `docs/BACKLOG.md` explains why it matters.\n- **This installs a Claude Code adapter.** `AGENTS.md` is written to be\n  tool-neutral, but the mechanics in \"Claude Code specifics\" \u2014 subagent\n  dispatch, the budget-guard hook \u2014 are this adapter's implementation, not\n  a universal guarantee. `execution/ADAPTERS.md` is the contract a second\n  adapter would need to satisfy, and what it's checked against so far."
+     },
+     {
+      "heading": "Getting Started > Setting up the autonomous path > 5. Run a slice",
+      "line_start": 119,
+      "line_end": 153,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/GETTING_STARTED.md?plain=1#L119-L153",
+      "text": "### 5. Run a slice\n\nEither give it a one-line ask:\n\n```\n/agentic-slice \"<what you want built>\"\n```\n\nor, better, write the intent yourself first \u2014 one page, from\n`templates/INTENT_TEMPLATE.md`: what you want, what \"done\" means as\ncheckable statements, what must not break, and what is at stake \u2014 and pass\nits path:\n\n```\n/agentic-slice path/to/intent.md\n```\n\nGiven a one-liner, the Orchestrator drafts the intent for you and marks\neverything it guessed as **(inferred)**. You confirm the intent and the\nplan together, once; nothing past scope review starts before that.\n\nThe intent is what decides how much process you get. A complete one with\nlow stakes takes the short path \u2014 no market research, discovery or UX\nresearch, because you already said what those stages would have derived.\nTick real user data, money, anything irreversible, or a safety control, and\nthe full chain runs however well the intent is written. QA, Security and the\nrelease gate run on every path; QA checks each \"done means\" line exactly as\nyou wrote it.\n\nThe session becomes the Orchestrator: plans the slice, writes\n`runs/<slice-id>/STATE.md`, and delegates each stage to its subagent. A\ngated action pauses and waits \u2014 no timeout auto-approves; silence is not\nconsent. `/agentic-status [slice-id]` checks where a slice stands;\n`/agentic-resume <slice-id>` continues one cold, from a different session\nif needed \u2014 the entire point of `STATE.md` being durable."
+     }
+    ]
+   }
+  ],
+  "signal": "Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)"
+ }
+}

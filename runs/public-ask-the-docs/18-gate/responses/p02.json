@@ -1,0 +1,122 @@
+{
+ "id": "p02",
+ "kind": "answerable",
+ "http": 200,
+ "seconds": 2.193,
+ "at": "2026-10-22T17:31:32Z",
+ "response": {
+  "outcome": "answer",
+  "docs": {
+   "repo": "gpatwa/agentic-sdlc-playbook",
+   "commit": "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+  },
+  "files": [
+   {
+    "rank": 1,
+    "path": "templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md",
+    "passages": [
+     {
+      "heading": "Observability Bootstrap \u2014 <service / product name> > Metrics",
+      "line_start": 20,
+      "line_end": 30,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md?plain=1#L20-L30",
+      "text": "## Metrics\n\nOne row per SLI the SRE's SLOs reference. RED (rate, errors, duration) for\nrequest-shaped services; USE (utilization, saturation, errors) for\nresources.\n\n| SLI | Metric name | Type | Labels | Feeds SLO |\n|-----|-------------|------|--------|-----------|\n| <e.g. read success rate> | <name> | counter/histogram | <low-cardinality only> | <SLO> |\n\n- **Cardinality rule:** no unbounded label values (user IDs, item IDs)."
+     },
+     {
+      "heading": "Observability Bootstrap \u2014 <service / product name> > Structured logging",
+      "line_start": 9,
+      "line_end": 18,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md?plain=1#L9-L18",
+      "text": "## Structured logging\n\n- **Format:** <JSON lines / provider> \u2014 every entry carries\n  `service`, `level`, `timestamp (UTC)`, and a correlation/request ID.\n- **Correlation:** <how the request ID propagates across service calls>\n- **PII rule:** IDs, counts, hashes only \u2014 never content, per\n  `.agentic/SAFETY_INVARIANTS.md`. Name the enforcing layer (serializer /\n  lint rule), not just the policy.\n- **Levels:** what fires `error` (actionable) vs `warn` (investigate) vs\n  `info` (audit-adjacent). An `error` that pages nobody is a `warn`."
+     }
+    ]
+   },
+   {
+    "rank": 2,
+    "path": "templates/MODEL_CARD_TEMPLATE.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/MODEL_CARD_TEMPLATE.md",
+    "passages": [
+     {
+      "heading": "Model Card \u2014 <model name> v<n> > Evaluation",
+      "line_start": 36,
+      "line_end": 49,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/MODEL_CARD_TEMPLATE.md?plain=1#L36-L49",
+      "text": "## Evaluation\n\n- **Held-out set:** <name, size, frozen on date>\n- **Headline metric(s):** <metric: value (CI or n)>\n- **Slice metrics:** <segment: metric \u2014 and the floor that has to hold>\n\n| Segment | Metric | Value | n | Note |\n|---------|--------|-------|---|------|\n| <seg>   | <m>    | <v>   |<n>| <\u2026> |\n| <seg>   | <m>    | <v>   |<n>| <\u2026> |\n\n- **Comparison to incumbent:** <incumbent name \u2014 heuristic, prior\n  model version, \"do nothing\"; metric values; whether new model wins\n  on the metric that matters>"
+     },
+     {
+      "heading": "Model Card \u2014 <model name> v<n> > Training data",
+      "line_start": 24,
+      "line_end": 34,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/MODEL_CARD_TEMPLATE.md?plain=1#L24-L34",
+      "text": "## Training data\n\n- **Source(s):** <where the data came from, with consent / licence\n  basis>\n- **Size:** <rows / examples>\n- **Time window:** <date range>\n- **Sampling rules:** <how examples were selected>\n- **Exclusions:** <what was filtered out and why>\n- **Known biases / gaps:** <segments under-represented, label noise,\n  collection artefacts>\n- **Refresh cadence:** <how often retrained, on what trigger>"
+     }
+    ]
+   },
+   {
+    "rank": 3,
+    "path": "agents/ml-engineer.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/ml-engineer.md",
+    "passages": [
+     {
+      "heading": "ML Engineer Agent > Outputs",
+      "line_start": 22,
+      "line_end": 38,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/ml-engineer.md?plain=1#L22-L38",
+      "text": "## Outputs\n\n- **Dataset card:** source, size, sampling rules, known biases,\n  exclusions, refresh cadence.\n- **Training run:** code in repo, config versioned, seeds recorded,\n  reproducible from the recorded inputs.\n- **Evaluation:** offline metrics on a held-out set (named, frozen),\n  slice metrics by segment, fairness checks where applicable, and a\n  comparison to the incumbent (existing model, heuristic, or \"do\n  nothing\").\n- **Model card** (`templates/MODEL_CARD_TEMPLATE.md`): intended use,\n  out-of-scope use, data, metrics, fairness, limitations, monitoring\n  plan.\n- **Deployment plan:** how the model is served, how it's versioned,\n  rollback, shadow / canary strategy.\n- **Monitoring contract:** drift, skew, latency, calibration, and the\n  triggers that page a human or auto-rollback."
+     },
+     {
+      "heading": "ML Engineer Agent > Inputs",
+      "line_start": 11,
+      "line_end": 20,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/ml-engineer.md?plain=1#L11-L20",
+      "text": "## Inputs\n\n- Tech spec, including the modelling problem framed in product terms\n  (what's predicted, why, how it's used, what failure looks like).\n- `.agentic/SAFETY_INVARIANTS.md` (especially fairness, recourse, and\n  any never-ship-without invariants on model behaviour).\n- The project's existing model registry, training infrastructure, and\n  feature store (or the absence of them \u2014 flag that).\n- Labelled datasets, labelling guidelines, and any prior model cards\n  for the same problem."
+     }
+    ]
+   },
+   {
+    "rank": 4,
+    "path": "prompts/analytics-contract.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/prompts/analytics-contract.md",
+    "passages": [
+     {
+      "heading": "Prompt: Analytics Engineer \u2014 Event Contract & Metric Definitions",
+      "line_start": 1,
+      "line_end": 7,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/prompts/analytics-contract.md?plain=1#L1-L7",
+      "text": "# Prompt: Analytics Engineer \u2014 Event Contract & Metric Definitions\n\nUse when: the Architect has a tech spec and the PRD has success\ncriteria, and you need the events + metric definitions in place\nbefore engineers wire anything.\n\n---"
+     },
+     {
+      "heading": "Prompt: Analytics Engineer \u2014 Event Contract & Metric Definitions > Prompt",
+      "line_start": 9,
+      "line_end": 63,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/prompts/analytics-contract.md?plain=1#L9-L63",
+      "text": "## Prompt\n\n```\nYou are the Analytics Engineer agent for <project name>.\n\nYour job: turn the PRD success criteria into an event contract and\nmetric definitions, and verify the wires end-to-end before QA Evidence\nruns.\n\nRead first:\n- agentic-sdlc/agents/analytics-engineer.md\n- .agentic/SAFETY_INVARIANTS.md (especially PII rules and retention)\n- The existing event schema at <path>\n- The existing warehouse models at <path>\n\nInputs:\n- PRD: <path>\n- Tech spec: <path>\n\nProduce:\n- Event contract delta: new events, new fields, deprecated fields,\n  with types and example payloads.\n- Warehouse model delta: staging / intermediate / mart updates needed\n  to surface the new events as queryable tables.\n- One metric definition per PRD success criterion, expressed as a SQL\n  or semantic-layer query that can run on the warehouse model.\n- Verification note: event ID captured in a smoke run, warehouse query\n  result showing it landed, metric query returning a value.\n\nQuality bar:\n- Every PRD success criterion maps to exactly one metric definition.\n  If a criterion can't be measured as written, push it back to the PM\n  before engineers spend time on the tech spec.\n- Event names follow the project's existing convention. New\n  conventions require an explicit note and EM sign-off.\n- No PII lands in an analytics event raw. Use the project's hashing /\n  tokenisation layer. New sensitive fields go to Security & Privacy.\n- Every new field has a named consumer (a metric or a downstream\n  model) today. No \"future analysis\" fields.\n- The verification note shows real evidence (event ID + query result),\n  not \"I checked\".\n\nOperating constraints:\n- Never silently rename or repurpose an existing event. Renames go\n  through deprecation: emit both, document the cutover, remove the\n  old after a named window.\n- Don't ship a metric definition that depends on data the warehouse\n  doesn't have yet. Block on the upstream wire first.\n- Respect the project's retention policy. Extending retention is a\n  Security & Privacy review, not an analytics decision.\n\nHand off to: Frontend / Backend Engineers (for emission) and QA\nEvidence (for verification in the smoke run). After release, hand the\nmetric definitions to the Data Analyst for the post-launch readout.\n```"
+     }
+    ]
+   },
+   {
+    "rank": 5,
+    "path": "templates/CUSTOMER_ISSUE_RESOLUTION_TEMPLATE.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/CUSTOMER_ISSUE_RESOLUTION_TEMPLATE.md",
+    "passages": [
+     {
+      "heading": "Customer Issue Resolution \u2014 <issue id> > Issue",
+      "line_start": 7,
+      "line_end": 11,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/CUSTOMER_ISSUE_RESOLUTION_TEMPLATE.md?plain=1#L7-L11",
+      "text": "## Issue\n\n- Reported by: <account/user \u2014 scoped; never another customer's data>\n- What they asked: <verbatim or close paraphrase>\n- Category: <account/how-to / bug / incident>"
+     },
+     {
+      "heading": "Customer Issue Resolution \u2014 <issue id> > Root cause (if escalated)",
+      "line_start": 18,
+      "line_end": 23,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/CUSTOMER_ISSUE_RESOLUTION_TEMPLATE.md?plain=1#L18-L23",
+      "text": "## Root cause (if escalated)\n\n- Investigated by: On-Call Engineer Agent\n- Signals correlated: <logs / metrics / traces / deploy history checked>\n- Root cause: <finding>\n- Confidence: <high / medium / low> \u2014 <why>"
+     }
+    ]
+   }
+  ],
+  "signal": "Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)"
+ }
+}

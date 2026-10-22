@@ -1,0 +1,122 @@
+{
+ "id": "p07",
+ "kind": "answerable",
+ "http": 200,
+ "seconds": 4.138,
+ "at": "2026-10-22T17:31:55Z",
+ "response": {
+  "outcome": "answer",
+  "docs": {
+   "repo": "gpatwa/agentic-sdlc-playbook",
+   "commit": "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+  },
+  "files": [
+   {
+    "rank": 1,
+    "path": "agents/engineering-manager.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/engineering-manager.md",
+    "passages": [
+     {
+      "heading": "Engineering Manager Agent > Anti-patterns",
+      "line_start": 115,
+      "line_end": 121,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/engineering-manager.md?plain=1#L115-L121",
+      "text": "## Anti-patterns\n\n- Approving a slice that \"feels small but touches a lot of files.\"\n- Letting an engineer pre-read the codebase to \"build context\".\n- Skipping the QA or Security stage to ship faster.\n- Letting one big slice run because splitting feels bureaucratic.\n- Producing a spec yourself when an agent should have produced it."
+     },
+     {
+      "heading": "Engineering Manager Agent > Operating constraints",
+      "line_start": 100,
+      "line_end": 107,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/engineering-manager.md?plain=1#L100-L107",
+      "text": "## Operating constraints\n\n- Never write product code, design, or copy. The EM produces handoffs and\n  scope decisions, nothing else.\n- Always cite the rule when rejecting work (\"split required per\n  OPERATING_MODEL.md `Cadence`\").\n- Make every handoff actionable: the next agent should be able to start\n  without coming back for clarification."
+     }
+    ]
+   },
+   {
+    "rank": 2,
+    "path": "docs/AGENT_ROLES.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/AGENT_ROLES.md",
+    "passages": [
+     {
+      "heading": "Agent Roles > Why roles instead of one big agent",
+      "line_start": 13,
+      "line_end": 27,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/AGENT_ROLES.md?plain=1#L13-L27",
+      "text": "## Why roles instead of one big agent\n\nSingle-agent systems suffer two failure modes:\n\n1. **Context bloat.** A general agent ends up holding the PRD, the design\n   spec, the architecture, the implementation, and the QA notes \u2014 and runs\n   out of context window mid-task.\n2. **Skill mixing.** Product judgement and security judgement use different\n   reasoning patterns. Mixing them in one prompt produces mediocre output\n   in both.\n\nRoles fix both: each agent owns a narrow surface, hands off through a\ntemplate, and leaves the rest of the system out of its head.\n\n---"
+     },
+     {
+      "heading": "Agent Roles > Engineering Manager \u2014 first-class role",
+      "line_start": 64,
+      "line_end": 90,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/AGENT_ROLES.md?plain=1#L64-L90",
+      "text": "## Engineering Manager \u2014 first-class role\n\nThe EM is not a coordinator that passes notes around. The EM is the agent\nthat defends the team from itself: from doing too much in one slice, from\nskipping a gate because it feels slow, from letting one engineer's context\nwindow become the bottleneck.\n\nConcrete EM responsibilities:\n\n- **Scope.** Reject slices that are too large for one focused implementation\n  pass. Demand a split.\n- **Sequencing.** Decide which stages run, which are compressed, and in\n  what order. Document why.\n- **Context discipline.** Make sure each downstream agent gets only what it\n  needs \u2014 not the whole repo, not the whole PRD if a one-paragraph excerpt\n  will do.\n- **Gates.** Confirm the right release gates apply for this slice.\n- **Handoffs.** Verify each handoff artefact is complete before the next\n  agent starts, so they don't have to re-derive context.\n- **Escalation.** If a downstream agent is stuck because of missing input,\n  the EM is the agent that escalates back up the chain rather than letting\n  the engineer guess.\n\nThe EM's output is captured in `templates/AGENT_HANDOFF_TEMPLATE.md`. See\n`agents/engineering-manager.md` and `prompts/em-scope-review.md`.\n\n---"
+     }
+    ]
+   },
+   {
+    "rank": 3,
+    "path": "docs/AGENTIC_SDLC.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/AGENTIC_SDLC.md",
+    "passages": [
+     {
+      "heading": "Aveto \u2014 End-to-End Lifecycle > 3. Scope Review \u2014 Engineering Manager",
+      "line_start": 85,
+      "line_end": 103,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/AGENTIC_SDLC.md?plain=1#L85-L103",
+      "text": "## 3. Scope Review \u2014 Engineering Manager\n\n**Input:** Slice plan from the Orchestrator (or discovery brief from the\nMarket Researcher).\n\n**Output:** A scoped, sized work item with explicit non-goals, gates, and\nthe list of artefacts that will be produced. The EM is the first defender\nof context-window discipline: they break work down so each subsequent stage\nfits in one focused agent invocation.\n\n**Hand off to:** Product Manager (if discovery is needed) or directly to\nSoftware Architect (if the ask is well understood).\n\nThe EM is a first-class role. They are accountable for: (a) work being the\nright size, (b) the right gates being applied, (c) artefacts being\ndiscoverable, and (d) the team not painting itself into a context-limit\ncorner. See `agents/engineering-manager.md`.\n\n---"
+     },
+     {
+      "heading": "Aveto \u2014 End-to-End Lifecycle > 8. Implementation \u2014 Frontend / Backend / AI / ML Engineers",
+      "line_start": 156,
+      "line_end": 177,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/AGENTIC_SDLC.md?plain=1#L156-L177",
+      "text": "## 8. Implementation \u2014 Frontend / Backend / AI / ML Engineers\n\n**Input:** Tech spec (and event contract from the Analytics Engineer for\nany surface that emits events).\n\n**Output:** Code changes plus targeted tests, all in a single, narrowly-\nscoped commit (or a small set of related commits). See\n`docs/OPERATING_MODEL.md` for the one-task-one-commit rule.\n\nThe ML Engineer is invoked when the slice depends on a model the team\ntrains, fine-tunes, or selects from a candidate set \u2014 distinct from the\nAI Engineer, who wires hosted-LLM adapters and prompts. ML Engineer\noutputs include a model card and monitoring contract. See\n`agents/ml-engineer.md`.\n\n**Hand off to:** QA Evidence Agent.\n\nEngineers MUST run typecheck, the targeted test files, the full test suite,\nand the build before reporting completion. They never report success based\non intent \u2014 only on observed evidence.\n\n---"
+     }
+    ]
+   },
+   {
+    "rank": 4,
+    "path": "docs/OPERATING_MODEL.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/OPERATING_MODEL.md",
+    "passages": [
+     {
+      "heading": "Operating Model > Context discipline > 3. Inspect only relevant files",
+      "line_start": 50,
+      "line_end": 55,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/OPERATING_MODEL.md?plain=1#L50-L55",
+      "text": "### 3. Inspect only relevant files\n\nEngineers read the files they need to change and the files those files\ndepend on. They do not pre-read the codebase \"for context\". If an agent\nfinds itself reading more than ten files for a slice, that's a signal the\nslice is too big \u2014 escalate to the EM."
+     },
+     {
+      "heading": "Operating Model > One commit per task",
+      "line_start": 97,
+      "line_end": 124,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/OPERATING_MODEL.md?plain=1#L97-L124",
+      "text": "## One commit per task\n\nEach task ends with a single, focused commit message:\n\n```\n<imperative title under 70 chars>\n\n<2\u20136 sentences on what changed and why>\n\n<optional: bullet list of safety/behavioural notes if non-obvious>\n\nCo-Authored-By: <model> <noreply@...>\n```\n\nThe commit body should let a future reviewer answer:\n\n1. What changed?\n2. Why?\n3. What safety properties were preserved?\n\nThings the body should NOT contain:\n\n- A blow-by-blow narrative of how the work was done.\n- A list of files (the diff already shows that).\n- Generic tool / model boilerplate (e.g. \"Generated with <tool>\") unless\n  the project explicitly wants it.\n\n---"
+     }
+    ]
+   },
+   {
+    "rank": 5,
+    "path": "agents/sre.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/sre.md",
+    "passages": [
+     {
+      "heading": "Site Reliability Engineer Agent > Handoff",
+      "line_start": 82,
+      "line_end": 88,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/sre.md?plain=1#L82-L88",
+      "text": "## Handoff\n\nTo Post-Launch Learning (incident learnings become carry-forward) and to\nthe Orchestrator (systemic action items become new slices). Use\n`templates/AGENT_HANDOFF_TEMPLATE.md`. The monitoring contracts handed in\nfrom Architecture and the ML Engineer terminate here \u2014 the SRE is their\nowner in production."
+     },
+     {
+      "heading": "Site Reliability Engineer Agent > Decisions the SRE owns",
+      "line_start": 39,
+      "line_end": 45,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/sre.md?plain=1#L39-L45",
+      "text": "## Decisions the SRE owns\n\n- SLO targets and the SLIs that measure them.\n- What pages a human vs. opens a ticket vs. auto-remediates.\n- When the error budget is spent and a feature freeze applies.\n- Incident severity, and when an incident is declared and resolved.\n- Whether a runbook is good enough to hand to on-call."
+     }
+    ]
+   }
+  ],
+  "signal": "Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)"
+ }
+}

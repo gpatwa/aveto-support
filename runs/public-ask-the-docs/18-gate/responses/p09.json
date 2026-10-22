@@ -1,0 +1,12 @@
+{
+ "id": "p09",
+ "kind": "answerable",
+ "http": 200,
+ "seconds": 2.17,
+ "at": "2026-10-22T17:32:06Z",
+ "response": {
+  "outcome": "no_confident_match",
+  "text": "no confident match",
+  "signal": "Deciding signal: answerability judge verdict NOT_ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)"
+ }
+}
