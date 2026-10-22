@@ -1,0 +1,7 @@
+kill switch ON (C8.1) start 2026-10-22T07:24:50Z
+{
+  "state": "Succeeded"
+}
+done 2026-10-22T07:25:55Z
+{"status":"ok","kill_switch":"on","day":"2026-10-22","judged_today":0,"input_tokens_today":0,"output_tokens_today":0,"spend_today_usd":"0.000000","daily_cap_usd":"0.322580"}
+{"outcome":"service_off"} http 503
