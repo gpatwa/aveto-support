@@ -32,3 +32,5 @@ Counters: the service's spend and rate counters reset on every revision change a
 
 ## What this does not cover
 Real visitors, adversarial load, IPv6 clients, a screen reader, the monthly Azure bill, a different judge model or prompt.
+
+## Note (2026-10-22, end of run): after the gate was scored, `score.py` was edited only to satisfy the repo's lint (imports one per line; the gate file opened in a `with` block). No logic changed; `score.py report` on the saved responses still prints Bar 1 10/10 and Bar 2 8/10.

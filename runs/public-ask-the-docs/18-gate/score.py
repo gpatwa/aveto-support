@@ -3,13 +3,20 @@ post a question whose response file already exists. Usage:
   python3 score.py post p01 p02 ...   # post these ids through the live service, save responses
   python3 score.py report             # apply the pre-registered bars to what is saved
 """
-import json, sys, time, tomllib, urllib.request, urllib.error
+import json
+import sys
+import time
+import tomllib
+import urllib.error
+import urllib.request
 from pathlib import Path
+
 HERE = Path(__file__).resolve().parent
 GATE = HERE.parent.parent.parent / "evals" / "public-gate-1.toml"
 URL = "https://ca-aveto-ask.salmonsmoke-fa1fa863.eastus2.azurecontainerapps.io"
 RESP = HERE / "responses"
-Q = {q["id"]: q for q in tomllib.load(open(GATE, "rb"))["question"]}
+with GATE.open("rb") as _f:
+    Q = {q["id"]: q for q in tomllib.load(_f)["question"]}
 
 def get(path, timeout=150):
     with urllib.request.urlopen(URL + path, timeout=timeout) as r:

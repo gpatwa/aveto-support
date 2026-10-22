@@ -1,0 +1,18 @@
+# Final checks at the end of the run, 2026-10-22T23:27:31Z, HEAD fff8dd6
+Audited 36 packages in 11ms
+Success: no issues found in 45 source files
+[*] 1 fixable with the `--fix` option.
+637 passed, 12 deselected in 15.93s
+method files vs main:
+(empty = identical)
+code changed since the deployed commit 879cae23690b (must list none under aveto_service, aveto_support, prompts, infra, Dockerfile):
+(end)
+charter complete: runs/public-ask-the-docs/CHARTER-v2.md
+sha256 e04b82539e1fe17ed86d945a93b761dafef4f19c1af30dc4353f31743fc8ead4
+INV word removals vs main:
+[-it runs only in the-]
+[-and-]
+[-the-]
+[-exception,-]
+diff size vs main:
+ 135 files changed, 12185 insertions(+), 261 deletions(-)
