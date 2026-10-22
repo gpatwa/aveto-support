@@ -51,7 +51,7 @@
 ## Budget
 
 - **Budget:** 2000k tokens  ·  **Depth:** standard
-- **Spent:** 2343k (117%)  ·  **Remaining:** -343k
+- **Spent:** 2496k (125% of plan total 2000k; 83% of the 3000k ceiling)  ·  **Remaining to ceiling:** 504k
 - **Next stage:** none (push after the owner's decision) est. 0k → **PROCEED**
 
 Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup spend is the driving session's, not a spawn.
