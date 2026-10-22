@@ -1,0 +1,8 @@
+S6 retry 1 (new secret version) 2026-10-22T17:23:41Z
+http 200 total 1.831324s
+outcome: answer
+files: 5 passages: 9
+first path: README.md
+signal: Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0
+== /health after
+{"status":"ok","kill_switch":"off","day":"2026-10-22","judged_today":1,"input_tokens_today":4641,"output_tokens_today":60,"spend_today_usd":"0.014823","daily_cap_usd":"0.322580"}

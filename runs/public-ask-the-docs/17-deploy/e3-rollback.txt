@@ -1,0 +1,16 @@
+E3 rollback rehearsal (kill switch direction) 2026-10-22T17:27:32Z
+health before: {"status":"ok","kill_switch":"off","day":"2026-10-22","judged_today":1,"input_tokens_today":4641,"output_token
+-- ON start 17:27:32
+Succeeded
+-- ON deploy done 17:28:37
+health: {"status":"ok","kill_switch":"on","day":"2026-10-22","judged_today":0,"input_tokens_today":0,"output_tokens_to
+POST /ask: {"outcome":"service_off"} http 503
+-- OFF start 17:28:38
+Succeeded
+-- OFF deploy done 17:29:44
+health: {"status":"ok","kill_switch":"on","day":"2026-10-22","judged_today":0,"input_tokens_today":0,"output_tokens_to
+ca-aveto-ask--0000005	2026-10-22T17:28:06+00:00	Healthy
+ca-aveto-ask--0000006	2026-10-22T17:29:15+00:00	Healthy
+17:29:50 {"status":"ok","kill_switch":"off","day":"2026-10-22","judged_today":0
+ca-aveto-ask--0000005	Healthy	0
+ca-aveto-ask--0000006	Healthy	100
