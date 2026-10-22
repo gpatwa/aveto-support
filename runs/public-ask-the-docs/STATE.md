@@ -3,7 +3,7 @@
 - **Ask:** `intents/public-ask-the-docs.md` — a public "ask the docs" page, live on Azure: verbatim passages or "no confident match", judged through the Anthropic API under hard cost and abuse limits
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 17 deployed, kill switch ON; waiting on S-C1 step 2 (owner's phone)
+- **Current stage:** 18 live (kill switch OFF, first call answered); waiting on the gate set file
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents/teammates in `.claude/agents/` (pack v26), run from this repo's worktree
 - **Telemetry:** self-reported — see `TELEMETRY.md`
@@ -49,8 +49,8 @@
 ## Budget
 
 - **Budget:** 2000k tokens  ·  **Depth:** standard
-- **Spent:** 2004k (100%)  ·  **Remaining:** -4k
-- **Next stage:** 16 Release Gate tier 3 (after Charter v2 decision) est. 170k → **PROCEED**
+- **Spent:** 2343k (117%)  ·  **Remaining:** -343k
+- **Next stage:** 18 Production verification and the gate (needs public-gate-1.toml) est. 100k → **PROCEED**
 
 Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup spend is the driving session's, not a spawn.
 
@@ -97,11 +97,13 @@ Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup 
 | 15b README, status, runbook (writer-docs) | sonnet-5-5 | medium | — | — | — | 110k | 32 | 0 |
 | 15c different-model words check (words-check-2; first attempt cut off by usage limit) | sonnet-5-5 | high | — | — | — | 180k | 44 | 0 |
 | 15d words round 2 (arch-words-2) | opus-5-5 | high | — | — | — | 52k | 11 | 0 |
-| **Total** | | | | | | 2004k | | |
+| 15 follow-ups: runbook P3/P4 (writer-p3p4 resumed 50k), INV-5 N1/N4 (arch-words-3, 38k) | sonnet-5-5-and-opus-5-5 | medium | — | — | — | 88k | 22 | 0 |
+| 16 Release Gate tier 3 (release-gate 197k) + 17 switch-on re-check (release-gate-2 54k); stage 17 itself ran in the Orchestrator's session (no spawn) | sonnet-5-5 | high | — | — | — | 251k | 63 | 0 |
+| **Total** | | | | | | 2343k | | |
 
 ## Next action
 
-Owner opens the service URL on a phone over cellular and presses Ask once (kill switch is ON: nothing reaches Anthropic). Then the Orchestrator reads the new `ip` hash from the workspace; if it differs from `f0dc6b0b54a5e4b4`, S1 is met: re-spawn the Release Manager at smoke depth, record the Approvals row for kill switch OFF, run step 5, then S6 (first call), E3 (rollback rehearsal), stage 18.
+Wait for the support session to place ~/opt/aveto-gates/public-gate-1.toml (sha256 7eb4f588…064f); then commit it, score through the live service under the real limits, then PV, then 19.
 
 ## Setup log
 
@@ -120,3 +122,4 @@ Owner opens the service URL on a phone over cellular and presses Ask once (kill 
 - 2026-10-21 Orchestrator, security round 2 (advisories fixed, beyond the two required fixes): S-A2 client pinned to `https://api.anthropic.com`, construction fails closed if `ANTHROPIC_CUSTOM_HEADERS` is set; S-A4 service applies the core's 4096-byte reply limit; S-A6 `redirect_slashes` off; S-A8 cross-site POST /ask refused (Sec-Fetch-Site / Origin); FastAPI OpenTelemetry auto-configure pinned off. 636 passed, mypy and ruff clean; method files byte-identical to main. Header names the SDK sends (19, from the adapter note): host, accept, accept-encoding, connection, content-length, content-type, user-agent, anthropic-version, x-api-key, x-stainless-{arch,async,lang,os,package-version,read-timeout,retry-count,runtime,runtime-version,timeout}. NOT fixed, carried to END_REVIEW as advisories: S-A3 (the "paused for today, not a fault" copy is false during an outage; owner-approved UX copy), S-A5 (invisible-character injection carrier not in the 4 hostile gate questions), S-A7 (no uvicorn read timeout; ingress bounds it, unconfirmed), S-A9 (vault-scope role), S-A10 (log daily quota drops late abuse lines), S-A11 (Azure spend has no cap), S-A12 (ops lines to name in the C4.2 words), S-A14, S-A15; owner decisions D1-D7.
 - 2026-10-21 Orchestrator, stage 15 stop: the different-model check (`15c-words-check.md`, verdict FAIL as written) found two Charter stops, neither of which the Orchestrator may waive: S10 (INV-5's retained sentence "The operator's session is the one exception, and it is not the program." must change because the service is now a second exception; C5.2 says every other sentence stays) and S11b (the SDK's own headers — user-agent and x-stainless-os/arch/runtime — are beyond C4.1's "exactly"; the words are accurate and must stay). Curable findings S1, F1, F2, F3 applied by the Architect (round 2). Charter v2 drafted at `CHARTER-v2.md` (two lines changed, C4.1 and C5.2; charter-check passes; sha256 e04b82539e1fe17ed86d945a93b761dafef4f19c1af30dc4353f31743fc8ead4); v1 (`CHARTER.md`, d0acc534…) stays the approved Charter until the owner approves v2 by hash. Spend 2004k = 100% of plan total 2000k, under the ceiling 3000k: the run continues above plan total without a notice duty; projected finish about 2.4M. Runbook correction owed (Tech Writer): the vault IS inside rg-aveto-ask (the owner created it there), so deleting the group would delete the key.
 - 2026-10-22 Orchestrator, stage 17 (kill switch ON, nothing served): P1-P4 done (73363c5 / 0fa04abda8ad; `17-p2-recheck.txt`; the word-removal list gained `[-the-]` from the N1 reword, inside C5.2). Step 1 created identity, registry, workspace, environment, both role assignments (`17-deploy/step1-*.txt`). Step 2 `az acr build` from the worktree root, tag `aveto-ask:0fa04abda8ad`, 2m15s, digest sha256:82bfb9a3…e8bb; the build's `ingest` wrote index sha256 f36ef5d4…a756, EQUAL to the local index (S4: match), 890 passages, base digests match the Dockerfile pins. Step 3 what-if listed only C8.3 types; create succeeded (revision `ca-aveto-ask--4q3pl0p`, FQDN `ca-aveto-ask.salmonsmoke-fa1fa863.eastus2.azurecontainerapps.io`). D3 off-state check FAILED: no HTTP response in 150 s; console log `{"ops":"startup_failed","c":"index"}`, replica CrashLoopBackOff. Fail-closed, as designed: nothing was served and no model call was possible. Release-checklist D4 applies (startup_failed: stop, hand back, never work around; a change to the Dockerfile = new commit, P2 again, checklist reopened, no gate set opened until the method is frozen again). Root cause (F-LIVE-1): `ingest` writes `index/` and model files with mkstemp (mode 0600); in the image they are root-owned and the runtime user (uid 10001) cannot read them. Fix routed to the Backend Architect (Dockerfile only, `--chown`); then new commit, P2, rebuild with the new tag, redeploy kill switch ON, D3 again. This is a Dockerfile defect, not a Charter stop (a rebuild and redeploy are C8.3). A smoke-depth Release Manager re-check follows the stage 17 artefact (the checklist already asks for it).
+- 2026-10-22 Orchestrator, stage 17 closed: service live (kill switch OFF since 17:29:44Z), first call answered after the owner re-stored the key; S1-S9, M3, G5, E3 recorded in `17-deploy/README.md`; switch-on re-check `17-switch-on-recheck.md` (GO WITH CONDITIONS, C1-C4 met). Measured so far: about $0.0148 per question (4,641 in, 60 out tokens, default prices unconfirmed), 1.83 s for the first answered question, kill-switch change 65-72 s. Spend 2343k of the 3000k ceiling; stage 18 (about 100k) and 19 (about 50k) project to about 2.5M. The gate set `public-gate-1.toml` is not at `~/opt/aveto-gates/`: a request went to the support session (`Aveto AI SDLC`); nothing may be scored without it and its hash.
