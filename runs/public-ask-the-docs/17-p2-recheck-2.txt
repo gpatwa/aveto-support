@@ -1,1 +1,12 @@
 # P2 re-check after F-LIVE-1 fix, 2026-10-22T05:48:30Z
+HEAD12: 879cae23690b
+ M runs/public-ask-the-docs/17-p2-recheck-2.txt
+(empty = clean)
+files changed since 0fa04abda8ad under code paths:
+Dockerfile
+tests/test_infra_static.py
+method files vs main:
+(empty = identical)
+Success: no issues found in 45 source files
+All checks passed!
+637 passed, 12 deselected in 14.96s
