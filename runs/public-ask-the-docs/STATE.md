@@ -3,7 +3,7 @@
 - **Ask:** `intents/public-ask-the-docs.md` — a public "ask the docs" page, live on Azure: verbatim passages or "no confident match", judged through the Anthropic API under hard cost and abuse limits
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 15e Charter v2 recorded, words final; next 16 Release Gate
+- **Current stage:** 17 deployed, kill switch ON; waiting on S-C1 step 2 (owner's phone)
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents/teammates in `.claude/agents/` (pack v26), run from this repo's worktree
 - **Telemetry:** self-reported — see `TELEMETRY.md`
@@ -100,7 +100,7 @@ Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup 
 
 ## Next action
 
-Runbook vault-line fix (Tech Writer), then stage 16 (Release Gate tier 3).
+Owner opens the service URL on a phone over cellular and presses Ask once (kill switch is ON: nothing reaches Anthropic). Then the Orchestrator reads the new `ip` hash from the workspace; if it differs from `f0dc6b0b54a5e4b4`, S1 is met: re-spawn the Release Manager at smoke depth, record the Approvals row for kill switch OFF, run step 5, then S6 (first call), E3 (rollback rehearsal), stage 18.
 
 ## Setup log
 
