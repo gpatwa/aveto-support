@@ -1,14 +1,10 @@
 # End review: public-ask-the-docs
 
-Run under Charter v2 (sha256 `e04b82539e1fe17ed86d945a93b761dafef4f19c1af30dc4353f31743fc8ead4`, `APPROVAL_RECORD-2`; v1 `d0acc534…` in `APPROVAL_RECORD-1`). Branch `claude/public-ask-the-docs`, 32 commits on `main` at 2919c87, **not pushed yet** (see the first item below). Written 2026-10-22.
+Run under Charter v2 (sha256 `e04b82539e1fe17ed86d945a93b761dafef4f19c1af30dc4353f31743fc8ead4`, `APPROVAL_RECORD-2`; v1 `d0acc534…` in `APPROVAL_RECORD-1`). Branch `claude/public-ask-the-docs`, 32 commits on `main` at 2919c87, pushed after the history rewrite (see item 1 below and `HASH_MAP.md`; old hashes cited in the records are in that table). Written 2026-10-22.
 
 ## Blocked on me
 
-1. **Push and pull request: one decision before I push (the repo is PUBLIC).** Commit `8d7cf7f` (an early record) contains your Azure sign-in email address in `runs/public-ask-the-docs/STATE.md`. I removed it from the latest commit (`fff8dd6`), but a push publishes the whole history. Charter C8.2 lets me push and open the pull request, and I have not, because this is your personal data on a public repository. Choose one:
-   - **A. Push as is** (the address stays in one old commit of the public branch). Fastest.
-   - **B. Rewrite the branch to drop it, then push.** Cleaner, but every commit after `8d7cf7f` gets a new hash, so the image tags in the records (`0fa04abda8ad`, `879cae23690b`, which are commit hashes) would no longer match a commit; I would add an old-to-new hash table. **My recommendation: B**, if the address matters to you; otherwise A.
-   - **C. You push it yourself** after deciding.
-   Tell me A or B and I push and open the pull request with this file linked. I never merge.
+1. **Push and pull request: done as you chose (option B).** The branch history was rewritten before the first push so that no commit holds your Azure sign-in email (it was in one early run record); the final tree is byte-identical to the one before the rewrite. Because the image tags in the records are commit hashes, the old-to-new table is in [`HASH_MAP.md`](HASH_MAP.md) (the live image `aveto-ask:879cae23690b` maps to the commit named there). The pull request is linked below; I did not merge it.
 2. **Owner decisions the service rests on** (from `14-security-review.md`, `18-production-verification.md`):
    - **D1 (the big one):** the in-service daily spend cap and the 10-an-hour limit live in memory and reset whenever the replica scales to zero or a new revision starts (I saw both). So they are not caps. Your **$10 console limit is the only durable cap**; a determined visitor can spend it in hours and leave the service answering "couldn't decide" until it resets. Options: accept; amend the Charter for a counter store or one always-on replica.
    - **D2:** resolved (the forwarded-address check passed with your phone). **D3:** `/health` is public and shows spend and token counts; reduce it to a status or keep it. **D4:** about 21 to 27 questions a day pause the service for everyone until 00:00 UTC (at the measured cost). **D5:** Azure spend has no cap; consider a budget alert. **D6:** the app's identity can read every secret in your vault; narrow it or keep the vault single-purpose. **D7:** the console limit rests on your word; nobody could check it.
@@ -37,4 +33,4 @@ Run under Charter v2 (sha256 `e04b82539e1fe17ed86d945a93b761dafef4f19c1af30dc435
 - **Learnings and carry-forward:** `19-post-launch-learning.md`. Top items: a persistent counter store (needs a Charter line), a log cause code for judge errors (needs wording in C4.2 and C5.2), run the image as its runtime user in a test before the first deploy, a larger gate set.
 
 ## Next
-Tell me A or B above (and whether to keep the service on). Then I push, open the pull request with this file linked, and stop. You review and merge it yourself.
+Review and merge the pull request yourself. The service stays on, as you asked.
