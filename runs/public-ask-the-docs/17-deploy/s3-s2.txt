@@ -1,0 +1,14 @@
+2026-10-22T05:59:52Z
+S3: workspace-wide search for machine A's raw IPv4 (masked here as 76.132.152.x) in the last 3 hours, hits per table:
+(no rows above = 0 hits in every table)
+
+Tables holding any data in the last 3 hours (row counts):
+ContainerAppConsoleLogs_CL	PrimaryResult	25
+ContainerAppSystemLogs_CL	PrimaryResult	107
+
+S-C2 read-back:
+ContainerAppSystemLogs	30	30
+ContainerAppHTTPLogs	30	30
+ContainerAppConsoleLogs	30	30
+ContainerAppSystemLogs_CL	7	7
+ContainerAppConsoleLogs_CL	7	7

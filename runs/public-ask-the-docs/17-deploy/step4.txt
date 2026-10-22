@@ -1,0 +1,13 @@
+2026-10-22T05:56:08Z
+step 4 create (configureLogRetention=true, killSwitch=on)
+{
+  "error": null,
+  "state": "Succeeded"
+}
+2026-10-22T05:57:13Z
+== retention read-back
+ContainerAppSystemLogs	30	30
+ContainerAppHTTPLogs	30	30
+ContainerAppConsoleLogs	30	30
+ContainerAppSystemLogs_CL	7	7
+ContainerAppConsoleLogs_CL	7	7

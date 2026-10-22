@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ask the Aveto docs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/enhance.js" defer></script>
+</head>
+<body>
+<main>
+<h1>Ask the Aveto docs</h1>
+<p>Verbatim passages from Aveto's docs; an AI model decides only whether they answer. Nothing on this page is written by an AI model.</p>
+<h2 class="plain">What to expect</h2>
+<ul>
+<li>You get passages copied word for word from the docs, with the file and line numbers, or a plain note that the docs don't answer your question.</li>
+<li>Limits: 10 questions an hour and 500 characters a question. The service pauses for the day when the day's allowance is used.</li>
+<li>Please don't put personal or confidential information in your question.</li>
+<li>This service does not store or log your question. To decide whether the passages answer, your question and the passages found are sent to Anthropic, the company that makes the AI model. Anthropic handles them under its own terms, which this page does not control.</li>
+<li>To apply the limits we read your address, then keep only a scrambled form of it, the time and the outcome for 7 days. The service runs in the United States (Azure, East US 2).</li>
+<li>The docs are in English. One question at a time; nothing is remembered between questions.</li>
+</ul>
+<form id="ask-form" method="post" action="/ask#result">
+<label for="q">Your question about Aveto</label>
+<textarea id="q" name="question" rows="4" autocomplete="off" spellcheck="true" aria-describedby="q-hint q-count q-error"></textarea>
+<p id="q-hint">Up to 500 characters.</p>
+<p id="q-count">0 of 500 characters</p>
+<p id="q-status" class="visually-hidden" role="status"></p>
+<p id="q-error" class="error"></p>
+<button type="submit" id="ask-button">Ask</button>
+</form>
+<section id="result" tabindex="-1" aria-labelledby="result-title"><div id="result-live" aria-live="polite" aria-atomic="true"><div class="state state-note"><span class="icon" aria-hidden="true"></span><h2 id="result-title" role="alert">The service is off</h2><p>Ask the Docs is switched off right now. You can read the docs on GitHub or open an issue.</p><p class="links"><a href="https://github.com/gpatwa/agentic-sdlc-playbook/issues/new?title=Docs+question+not+answered" rel="noopener noreferrer">Open a GitHub issue</a> <a href="https://github.com/gpatwa/agentic-sdlc-playbook/tree/3a83b669a8b53dfdff869a1bbe361bdb156e3a13" rel="noopener noreferrer">Read the docs on GitHub</a></p></div></div><div id="result-extra"></div></section>
+</main>
+<footer>
+<p><a id="link-issue" href="https://github.com/gpatwa/agentic-sdlc-playbook/issues/new?title=Docs+question+not+answered" rel="noopener noreferrer">Open a GitHub issue</a>. Add your question to the issue yourself if you wish.</p>
+<p><a id="link-docs" href="https://github.com/gpatwa/agentic-sdlc-playbook/tree/3a83b669a8b53dfdff869a1bbe361bdb156e3a13" rel="noopener noreferrer">Read the docs on GitHub</a></p>
+</footer>
+</body>
+</html>

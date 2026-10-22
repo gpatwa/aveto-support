@@ -1,0 +1,17 @@
+# S-C1 request log (kill switch ON; every request refused before any model call)
+start 2026-10-22T05:57:37Z
+A4 #1 05:57:38 xff='' http 503
+A4 #2 05:57:40 xff='1.2.3.4' http 503
+A4 #3 05:57:42 xff='198.51.100.7' http 503
+A4 #4 05:57:44 xff='203.0.113.9, 192.0.2.5' http 503
+A4 #5 05:57:47 xff='10.0.0.1' http 503
+A4 #6 05:57:49 xff='::1' http 503
+A4 #7 05:57:51 xff='2001:db8::7' http 503
+A4 #8 05:57:54 xff='garbage' http 503
+A4 #9 05:57:56 xff='8.8.8.8,9.9.9.9,1.1.1.1' http 503
+A4 #10 05:57:58 xff='192.0.2.77' http 503
+A6 IPv6 with the same forged XFF as A4 #3:
+A6 #1 05:58:01 xff='198.51.100.7' http 503
+A6 #2 05:58:03 xff='198.51.100.7' http 503
+A6 #3 05:58:05 xff='' http 503
+end 2026-10-22T05:58:05Z

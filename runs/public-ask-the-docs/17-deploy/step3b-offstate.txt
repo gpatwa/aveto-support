@@ -1,0 +1,21 @@
+2026-10-22T05:55:51Z
+== GET /health
+HTTP/2 200 
+cache-control: no-store
+x-content-type-options: nosniff
+{"status":"ok","kill_switch":"on","day":"2026-10-22","judged_today":0,"input_tokens_today":0,"output_tokens_today":0,"spend_today_usd":"0.000000","daily_cap_usd":"0.322580"}
+== GET /
+http 200 0.245005s
+cache-control: no-store
+content-security-policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+set-cookie count: 0
+off text present: 1
+== POST /ask json
+{"outcome":"service_off"}
+http 503
+== POST /ask form
+http 503
+== replicas
+ca-aveto-ask--0000001	True	Healthy

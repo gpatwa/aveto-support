@@ -1,0 +1,6 @@
+S8: strings in the served GET / HTML (2026-10-22T06:00:07Z)
+an AI model decides: 1
+Anthropic: 1
+personal or confidential: 1
+7 days: 1
+United States: 1

@@ -1,0 +1,10 @@
+2026-10-22T05:51:26Z
+step 3b what-if
+Modify	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.App/containerApps/ca-aveto-ask
+Modify	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.App/managedEnvironments/cae-aveto-ask
+Modify	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ContainerRegistry/registries/acravetoaskgp
+Modify	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ContainerRegistry/registries/acravetoaskgp/providers/Microsoft.Authorization/roleAssignments/09
+Ignore	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.KeyVault/vaults/kv-aveto-ask-gp
+Modify	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.KeyVault/vaults/kv-aveto-ask-gp/providers/Microsoft.Authorization/roleAssignments/56c99a1e-c130
+NoChange	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask
+NoChange	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.OperationalInsights/workspaces/log-aveto-ask
