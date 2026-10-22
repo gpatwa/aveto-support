@@ -1,0 +1,240 @@
+WARNING: Packing source code into tar to upload...
+WARNING: Excluding '.pytest_cache/.gitignore' based on default ignore rules
+WARNING: Excluding '.ruff_cache/.gitignore' based on default ignore rules
+WARNING: Excluding '.mypy_cache/.gitignore' based on default ignore rules
+WARNING: Excluding '.gitignore' based on default ignore rules
+WARNING: Excluding '.venv' directory for performance
+WARNING: Excluding '.git' based on default ignore rules
+WARNING: Uploading archived source code from '/var/folders/8q/5809gl3j5fldgkjjyt679xrr0000gn/T/build_archive_ca8109b38df944479a0833e87f5aaed5.tar.gz'...
+WARNING: Sending context (1.173 MiB) to registry: acravetoaskgp...
+WARNING: Queued a build with ID: ch1
+WARNING: Waiting for an agent...
+2026/10/22 05:38:03 Downloading source code...
+2026/10/22 05:38:04 Finished downloading source code
+2026/10/22 05:38:05 Using acb_vol_29df40cc-7c74-4231-8c95-6dff351e9741 as the home volume
+2026/10/22 05:38:05 Setting up Docker configuration...
+2026/10/22 05:38:05 Successfully set up Docker configuration
+2026/10/22 05:38:05 Logging in to registry: acravetoaskgp.azurecr.io
+2026/10/22 05:38:06 Successfully logged into acravetoaskgp.azurecr.io
+2026/10/22 05:38:06 Executing step ID: build. Timeout(sec): 28800, Working directory: '', Network: ''
+2026/10/22 05:38:06 Scanning for dependencies...
+2026/10/22 05:38:06 Successfully scanned dependencies
+2026/10/22 05:38:06 Launching container with name: build
+Sending build context to Docker daemon  324.1kB
+Step 1/26 : FROM ghcr.io/astral-sh/uv:0.9.7@sha256:ba4857bf2a068e9bc0e64eed8563b065908a4cd6bfb66b531a9c424c8e25e142 AS uv
+ghcr.io/astral-sh/uv:0.9.7@sha256:ba4857bf2a068e9bc0e64eed8563b065908a4cd6bfb66b531a9c424c8e25e142: Pulling from astral-sh/uv
+0624929136dd: Pulling fs layer
+104644e8b943: Pulling fs layer
+104644e8b943: Verifying Checksum
+104644e8b943: Download complete
+0624929136dd: Verifying Checksum
+0624929136dd: Download complete
+0624929136dd: Pull complete
+104644e8b943: Pull complete
+Digest: sha256:ba4857bf2a068e9bc0e64eed8563b065908a4cd6bfb66b531a9c424c8e25e142
+Status: Downloaded newer image for ghcr.io/astral-sh/uv:0.9.7@sha256:ba4857bf2a068e9bc0e64eed8563b065908a4cd6bfb66b531a9c424c8e25e142
+ ---> 488fd431354f
+Step 2/26 : FROM python:3.12-slim-bookworm@sha256:6a0e06f5ba0b373d051aabd3fffb9b873f27f9a2a3a14bcbe37dee6f0e3bbc70 AS build
+docker.io/library/python:3.12-slim-bookworm@sha256:6a0e06f5ba0b373d051aabd3fffb9b873f27f9a2a3a14bcbe37dee6f0e3bbc70: Pulling from library/python
+11422d7ca1a4: Pulling fs layer
+fd4548892b7d: Pulling fs layer
+87463122edac: Pulling fs layer
+b52d28f2ade3: Pulling fs layer
+b52d28f2ade3: Waiting
+fd4548892b7d: Verifying Checksum
+fd4548892b7d: Download complete
+87463122edac: Verifying Checksum
+87463122edac: Download complete
+b52d28f2ade3: Verifying Checksum
+b52d28f2ade3: Download complete
+11422d7ca1a4: Verifying Checksum
+11422d7ca1a4: Download complete
+11422d7ca1a4: Pull complete
+fd4548892b7d: Pull complete
+87463122edac: Pull complete
+b52d28f2ade3: Pull complete
+Digest: sha256:6a0e06f5ba0b373d051aabd3fffb9b873f27f9a2a3a14bcbe37dee6f0e3bbc70
+Status: Downloaded newer image for python:3.12-slim-bookworm@sha256:6a0e06f5ba0b373d051aabd3fffb9b873f27f9a2a3a14bcbe37dee6f0e3bbc70
+ ---> 3c4d812a6efe
+Step 3/26 : COPY --from=uv /uv /uvx /bin/
+ ---> 9c27a1d5aa49
+Step 4/26 : ENV UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=never UV_PYTHON_PREFERENCE=only-system
+ ---> Running in 8662478f9f5c
+Removing intermediate container 8662478f9f5c
+ ---> c14a21fb6d33
+Step 5/26 : WORKDIR /app
+ ---> Running in 68003c49605c
+Removing intermediate container 68003c49605c
+ ---> d5f4c7e416d3
+Step 6/26 : COPY pyproject.toml uv.lock ./
+ ---> c438d9edf8c7
+Step 7/26 : RUN uv sync --locked --no-dev
+ ---> Running in 0a9320b67666
+Using CPython 3.12.15 interpreter at: /usr/local/bin/python3
+Creating virtual environment at: .venv
+Resolved 39 packages in 0.80ms
+Downloading onnxruntime (22.5MiB)
+Downloading pydantic-core (2.1MiB)
+Downloading numpy (15.9MiB)
+Downloading anthropic (1.2MiB)
+ Downloading pydantic-core
+ Downloading onnxruntime
+ Downloading numpy
+ Downloading anthropic
+Prepared 26 packages in 933ms
+Installed 26 packages in 139ms
+ + annotated-doc==0.0.5
+ + annotated-types==0.8.0
+ + anthropic==1.7.0
+ + anyio==4.15.1
+ + click==8.5.0
+ + docstring-parser==0.18.0
+ + fastapi==0.157.0
+ + flatbuffers==25.12.19
+ + h11==0.16.0
+ + httpcore2==2.16.0
+ + httpx2==2.16.0
+ + idna==3.20
+ + jiter==0.17.0
+ + numpy==2.5.3
+ + onnxruntime==1.30.0
+ + opentelemetry-api==1.45.1
+ + packaging==26.3
+ + protobuf==7.36.2
+ + pydantic==2.14.1
+ + pydantic-core==2.50.1
+ + sniffio==1.3.1
+ + starlette==1.9.0
+ + truststore==0.10.5
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.4
+ + uvicorn==0.54.0
+Removing intermediate container 0a9320b67666
+ ---> c0b6956f8691
+Step 8/26 : COPY aveto_support/ aveto_support/
+ ---> 4826886e0997
+Step 9/26 : COPY aveto_service/ aveto_service/
+ ---> 6ec0029cadda
+Step 10/26 : COPY prompts/ prompts/
+ ---> b87636e5e0f1
+Step 11/26 : COPY docs-source.toml ./
+ ---> b4088055d0ee
+Step 12/26 : COPY evals/calibration-offtopic.toml evals/calibration-offtopic.toml
+ ---> d9780f17a421
+Step 13/26 : RUN uv run --no-sync python -m aveto_support ingest
+ ---> Running in 9b5375715429
+
+ingested gpatwa/agentic-sdlc-playbook @ 3a83b669a8b53dfdff869a1bbe361bdb156e3a13
+files indexed: 123   passages: 890   skipped files: 0   empty sections dropped: 32   passages truncated for embedding: 19
+reference similarity: 0.701717 (dense-null-v3: tau_salad 0.701717, tau_offtopic 0.696323; seed 20260926; diagnostic, retrieval does not abstain)
+model files: downloaded (sha256 verified before use)
+reranker files: not fetched (optional; ingest --with-reranker fetches them for --ranking file-rerank-v1)
+wrote index/docs-index.json  sha256 f36ef5d4fbf4b3f5542f59381867d992fe6619a6450cbbb19526f8493804a756
+Removing intermediate container 9b5375715429
+ ---> e24c1cd9e830
+Step 14/26 : FROM python:3.12-slim-bookworm@sha256:6a0e06f5ba0b373d051aabd3fffb9b873f27f9a2a3a14bcbe37dee6f0e3bbc70 AS runtime
+docker.io/library/python:3.12-slim-bookworm@sha256:6a0e06f5ba0b373d051aabd3fffb9b873f27f9a2a3a14bcbe37dee6f0e3bbc70: Pulling from library/python
+Digest: sha256:6a0e06f5ba0b373d051aabd3fffb9b873f27f9a2a3a14bcbe37dee6f0e3bbc70
+Status: Image is up to date for python:3.12-slim-bookworm@sha256:6a0e06f5ba0b373d051aabd3fffb9b873f27f9a2a3a14bcbe37dee6f0e3bbc70
+ ---> 3c4d812a6efe
+Step 15/26 : RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin app
+ ---> Running in 367adb6c9a8d
+Removing intermediate container 367adb6c9a8d
+ ---> e76ecf583ca4
+Step 16/26 : ENV PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1     OMP_NUM_THREADS=1     OPENBLAS_NUM_THREADS=1     MKL_NUM_THREADS=1     ASK_INDEX=/app/index/docs-index.json     ASK_MODELS=/app/models
+ ---> Running in cfa75ad177f8
+Removing intermediate container cfa75ad177f8
+ ---> afaa2b1e492e
+Step 17/26 : WORKDIR /app
+ ---> Running in 080066567a43
+Removing intermediate container 080066567a43
+ ---> 16fd0ba4e468
+Step 18/26 : COPY --from=build /app/.venv /app/.venv
+ ---> 65551a98e399
+Step 19/26 : COPY --from=build /app/aveto_support /app/aveto_support
+ ---> 585417375e77
+Step 20/26 : COPY --from=build /app/aveto_service /app/aveto_service
+ ---> 44d04c14cbc3
+Step 21/26 : COPY --from=build /app/prompts /app/prompts
+ ---> 0324206ea1ed
+Step 22/26 : COPY --from=build /app/index /app/index
+ ---> 2420d4833c09
+Step 23/26 : COPY --from=build /app/models /app/models
+ ---> 5718f882da0a
+Step 24/26 : USER 10001
+ ---> Running in f1c0ce9c138c
+Removing intermediate container f1c0ce9c138c
+ ---> c43ec2f70c5b
+Step 25/26 : EXPOSE 8000
+ ---> Running in 7fc7de3afd55
+Removing intermediate container 7fc7de3afd55
+ ---> 84841a5cae36
+Step 26/26 : CMD ["/app/.venv/bin/uvicorn", "aveto_service.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1", "--no-access-log", "--log-level", "critical", "--no-proxy-headers", "--no-server-header", "--no-date-header"]
+ ---> Running in ea2ed32ac389
+Removing intermediate container ea2ed32ac389
+ ---> d0532a2f435e
+Successfully built d0532a2f435e
+Successfully tagged acravetoaskgp.azurecr.io/aveto-ask:0fa04abda8ad
+2026/10/22 05:40:03 Successfully executed container: build
+2026/10/22 05:40:03 Executing step ID: push. Timeout(sec): 3600, Working directory: '', Network: ''
+2026/10/22 05:40:03 Pushing image: acravetoaskgp.azurecr.io/aveto-ask:0fa04abda8ad, attempt 1
+The push refers to repository [acravetoaskgp.azurecr.io/aveto-ask]
+6ab9f69f79c5: Preparing
+576c28461de5: Preparing
+a42335b966aa: Preparing
+3004ab9af58a: Preparing
+fdbf09531e18: Preparing
+f25268c49090: Preparing
+f7cf39ca4816: Preparing
+9ac8c46b7031: Preparing
+b8a5c0b25a36: Preparing
+536ebec0f9d8: Preparing
+535ecd208849: Preparing
+9b35de789337: Preparing
+f25268c49090: Waiting
+f7cf39ca4816: Waiting
+9ac8c46b7031: Waiting
+b8a5c0b25a36: Waiting
+536ebec0f9d8: Waiting
+535ecd208849: Waiting
+9b35de789337: Waiting
+fdbf09531e18: Pushed
+a42335b966aa: Pushed
+3004ab9af58a: Pushed
+576c28461de5: Pushed
+f7cf39ca4816: Pushed
+9ac8c46b7031: Pushed
+b8a5c0b25a36: Pushed
+535ecd208849: Pushed
+6ab9f69f79c5: Pushed
+536ebec0f9d8: Pushed
+f25268c49090: Pushed
+9b35de789337: Pushed
+0fa04abda8ad: digest: sha256:82bfb9a34d76ee123d14b5e00620f886875538a175163e4998345e9c0dc8e3bb size: 2834
+2026/10/22 05:40:17 Successfully pushed image: acravetoaskgp.azurecr.io/aveto-ask:0fa04abda8ad
+2026/10/22 05:40:17 Step ID: build marked as successful (elapsed time in seconds: 116.801538)
+2026/10/22 05:40:17 Populating digests for step ID: build...
+2026/10/22 05:40:18 Successfully populated digests for step ID: build
+2026/10/22 05:40:18 Step ID: push marked as successful (elapsed time in seconds: 14.425604)
+2026/10/22 05:40:18 The following dependencies were found:
+2026/10/22 05:40:18 
+- image:
+    registry: acravetoaskgp.azurecr.io
+    repository: aveto-ask
+    tag: 0fa04abda8ad
+    digest: sha256:82bfb9a34d76ee123d14b5e00620f886875538a175163e4998345e9c0dc8e3bb
+  runtime-dependency:
+    registry: registry.hub.docker.com
+    repository: library/python
+    tag: 3.12-slim-bookworm
+    digest: sha256:6a0e06f5ba0b373d051aabd3fffb9b873f27f9a2a3a14bcbe37dee6f0e3bbc70
+  buildtime-dependency:
+  - registry: ghcr.io
+    repository: astral-sh/uv
+    tag: 0.9.7
+    digest: sha256:ba4857bf2a068e9bc0e64eed8563b065908a4cd6bfb66b531a9c424c8e25e142
+  git: {}
+
+
+Run ID: ch1 was successful after 2m15s
+exit 0

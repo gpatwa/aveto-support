@@ -130,3 +130,18 @@ def test_dockerignore_excludes_models_index() -> None:
     ):
         assert needed in lines, needed
     assert "!evals/calibration-offtopic.toml" in lines
+
+
+def test_runtime_user_can_read_index_and_models() -> None:
+    # ingest writes these files mode 0600 (mkstemp), so a root-owned copy is unreadable by uid 10001.
+    runtime = DOCKERFILE.split("AS runtime", 1)[1]
+    for path in ("/app/index", "/app/models"):
+        assert re.search(
+            rf"(?m)^COPY\s+--from=build\s+--chown=root:10001\s+{path}\s", runtime
+        ), path
+    m = re.search(
+        r"(?m)^RUN\s+chmod\s+-R\s+u=rwX,g=rX,o=\s+/app/index\s+/app/models$", runtime
+    )
+    assert m, "group read is not granted on index and models"
+    assert runtime.index("chmod") > runtime.rindex("--chown=root:10001")
+    assert runtime.index("chmod") < runtime.index("USER 10001")

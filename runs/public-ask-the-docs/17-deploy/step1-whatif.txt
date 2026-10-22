@@ -1,0 +1,10 @@
+2026-10-22T05:35:51Z
+step 1 what-if (deployApp=false)
+WARNING: A new Bicep release is available: v0.48.1. Upgrade now by running "az bicep upgrade".
+Create	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.App/managedEnvironments/cae-aveto-ask
+Create	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ContainerRegistry/registries/acravetoaskgp
+Create	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ContainerRegistry/registries/acravetoaskgp/providers/Microsoft.Authorization/roleAssignments/09cd3d1e-7d5e-58ee-b631-31cdd0e587fd
+Ignore	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.KeyVault/vaults/kv-aveto-ask-gp
+Create	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.KeyVault/vaults/kv-aveto-ask-gp/providers/Microsoft.Authorization/roleAssignments/56c99a1e-c130-5239-b805-b61d26f7d56f
+Create	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask
+Create	/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.OperationalInsights/workspaces/log-aveto-ask

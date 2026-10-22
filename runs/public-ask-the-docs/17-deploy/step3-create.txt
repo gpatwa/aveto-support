@@ -1,0 +1,16 @@
+2026-10-22T05:40:55Z
+step 3 create (deployApp=true killSwitch=on)
+{
+  "outputs": {
+    "appFqdn": {
+      "type": "String",
+      "value": "ca-aveto-ask.salmonsmoke-fa1fa863.eastus2.azurecontainerapps.io"
+    },
+    "registryLoginServer": {
+      "type": "String",
+      "value": "acravetoaskgp.azurecr.io"
+    }
+  },
+  "state": "Succeeded"
+}
+2026-10-22T05:42:01Z

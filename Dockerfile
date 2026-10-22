@@ -33,8 +33,11 @@ COPY --from=build /app/.venv /app/.venv
 COPY --from=build /app/aveto_support /app/aveto_support
 COPY --from=build /app/aveto_service /app/aveto_service
 COPY --from=build /app/prompts /app/prompts
-COPY --from=build /app/index /app/index
-COPY --from=build /app/models /app/models
+# ingest writes index/ and models/ via mkstemp + os.replace, so the files are mode 0600 and root-owned:
+# unreadable by uid 10001 (live finding F-LIVE-1). Group 10001 gets read-only, others nothing, nobody but root writes.
+COPY --from=build --chown=root:10001 /app/index /app/index
+COPY --from=build --chown=root:10001 /app/models /app/models
+RUN chmod -R u=rwX,g=rX,o= /app/index /app/models
 USER 10001
 EXPOSE 8000
 CMD ["/app/.venv/bin/uvicorn", "aveto_service.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1", "--no-access-log", "--log-level", "critical", "--no-proxy-headers", "--no-server-header", "--no-date-header"]

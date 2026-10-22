@@ -1,0 +1,18 @@
+2026-10-22T05:42:06Z
+== GET /health (cold start measured by this first call)
+http 000 total 150.005255s
+cat: /tmp/h.json: No such file or directory
+
+== GET /
+http 000 total 60.002341s
+set-cookie count: 0
+ugrep: warning: /tmp/index.html: No such file or directory
+== POST /ask (json, kill switch on)
+
+http 000
+== POST /ask (form)
+http 000
+== revisions
+CreatedTime                Active    Replicas    TrafficWeight    HealthState    ProvisioningState    Name
+-------------------------  --------  ----------  ---------------  -------------  -------------------  ---------------------
+2026-10-22T05:41:31+00:00  True      1           100              None           Provisioned          ca-aveto-ask--4q3pl0p

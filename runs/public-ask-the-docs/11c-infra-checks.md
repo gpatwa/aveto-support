@@ -41,3 +41,10 @@ Tests added: 7 (`test_bicep_resources_are_c83`, `test_bicep_kill_switch_default_
 
 ## Regression
 `uv sync --locked && uv run mypy && uv run ruff check && uv run pytest`: mypy clean (45 files), ruff clean, 591 passed, 12 deselected.
+
+## Live deploy finding F-LIVE-1 (Dockerfile; fixed)
+First live deploy (kill switch on) crash-looped with `{"ops":"startup_failed","c":"index"}`. Cause: `ingest` writes `index/docs-index.json` and the model files with `tempfile.mkstemp` + `os.replace` (aveto_support/index.py:290, ingest.py:299), mode 0600. The runtime stage copied them root-owned, so uid 10001 could not read them. My 11c Dockerfile missed this because the image was unbuilt (Docker daemon down) and the test only checked `USER`.
+Fix (Dockerfile only): runtime copies `/app/index` and `/app/models` with `--chown=root:10001`, then `RUN chmod -R u=rwX,g=rX,o= /app/index /app/models` (root rw, group 10001 read-only, others none; the app user cannot write). `--chown` alone would not do: the files stay 0600, so the group bit is needed. Digest pins, non-root, no secrets unchanged.
+New test `test_runtime_user_can_read_index_and_models` (static): both COPYs carry `--chown=root:10001`, the chmod grants `g=rX` on both, and it sits after the copies and before `USER`. Mutation (chmod line removed) makes it fail; restored.
+Local simulation: not possible without a Docker daemon (down) or root to switch uid, so no permission test was invented; only the static Dockerfile check exists. Real confirmation is the rebuilt image starting at stage 17. Unconfirmed: that `chmod -R` on the copied layers works as expected under `az acr build` (it duplicates those layers, adding image size).
+Regression: mypy, ruff clean; pytest green (see reply).
