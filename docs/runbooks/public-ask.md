@@ -1,11 +1,16 @@
 # Runbook: the public Ask the Docs service
 
-> **Status of this runbook.** The service is built. It has not been deployed, and
-> nothing below has been run against Azure by this slice's authors except the
-> read-only checks recorded in `runs/public-ask-the-docs/11c-infra-checks.md`.
-> Commands marked "not run" are written from the design and the tech spec and
-> have never been executed. Every figure for cost, response time and cold start
-> is **not yet measured (stage 18)**.
+> **Status of this runbook.** The service is deployed and answering at
+> `https://ca-aveto-ask.salmonsmoke-fa1fa863.eastus2.azurecontainerapps.io`
+> (Azure Container Apps, East US 2). It is not linked from aveto.dev; that is a
+> separate later change on the owner's word. Deploy commands 1 to 5 and the
+> kill-switch change were run by the Orchestrator's session
+> (`runs/public-ask-the-docs/17-deploy/`). Commands marked "not run" were written
+> from the design and have never been executed. Measured: kill-switch change 65 s
+> (on) and 66 s plus about 6 s (off), cold start 30.8 s, cost per question about
+> $0.0118 at default prices (unconfirmed), response median 1.66 s and slowest
+> 5.09 s from one client (`18-gate/RESULT.md`). **Not measured:** the monthly
+> Azure cost.
 >
 > **Where this comes from.** Tech spec `runs/public-ask-the-docs/05-tech-spec.md`
 > (sections 3, 4, 5, 7) and the Security review
@@ -53,11 +58,10 @@ Notes that apply to these commands:
 
 - Command 5 is the step that makes the service answer visitors. Do not run it
   until section 9 (the pre-switch-on checklist) is complete.
-- The image is unbuilt as of this writing. Whether `ingest` runs inside
-  `az acr build` and what its last line (`wrote index/docs-index.json  sha256 <hex>`)
-  prints are checked at stage 17; keep the build log.
-- The Bicep compiled only after fixes F1 to F3 of `11c-infra-checks.md` were
-  applied; a clean `what-if` of the final file is a stage 17 item.
+- `ingest` runs inside `az acr build`; the index sha256 it prints
+  (`f36ef5d4…a756`) matched the local index at stage 17. Keep the build log.
+- The Bicep compiled after fixes F1 to F3 of `11c-infra-checks.md`; `what-if`
+  was run before each create at stage 17.
 - `killSwitch` defaults to `on`: a deploy that forgets the parameter comes up
   off.
 
@@ -86,10 +90,16 @@ set from the Bicep parameter `killSwitch` (`on` or `off`, default `on`).
 - **It makes a new revision.** Changing the variable creates a new Container
   Apps revision and replaces the replica. There is no image build and no code
   change; the image digest is the same. It is not "without a new revision":
-  the owner was told this in the tech spec (section 4). How long the
-  replacement takes is not yet measured (stage 17).
+  the owner was told this in the tech spec (section 4). Measured
+  (`17-deploy/e3-rollback.txt`): **65 s** from command to a healthy switch-on
+  revision; **66 s** to switch off, plus about 6 s for traffic to move to the new
+  revision. Cold start from zero replicas after more than an hour idle: **30.8 s**
+  to the first `/health` answer (the second call took 0.25 s).
 - **Because the replica is replaced, the in-memory counters restart at zero**
-  (see section 5).
+  (see section 5). A revision change or scale to zero resets the spend, token
+  and rate counters; the Anthropic console limit is the only durable cap.
+- The rollback to the previous image was not rehearsed: the only other tag
+  (`0fa04abda8ad`) is the build that crash-loops (F-LIVE-1, section 7).
 - With the switch on: `GET /` loads and says "The service is off";
   `POST /ask` answers `service_off` before reading the body; `GET /health`
   reports `"kill_switch":"on"`. No retrieval and no model call happen.
@@ -105,7 +115,7 @@ model and writes no log line. It is public. Fields:
 | `kill_switch` | `"on"` or `"off"`, as read at startup. |
 | `day` | The current UTC date, `YYYY-MM-DD`. |
 | `judged_today` | Questions that reached the model since this replica started on this UTC day. |
-| `input_tokens_today`, `output_tokens_today` | Tokens the API reported for those calls. Stage 18 reads cost per question from the change in these across a batch. |
+| `input_tokens_today`, `output_tokens_today` | Tokens the API reported for those calls. Stage 18 read cost per question from the change in these across a batch: about $0.0118 per question at the default prices (unconfirmed). |
 | `spend_today_usd` | The service's own running total for the day, six decimals. It is the service's count, not Anthropic's bill. |
 | `daily_cap_usd` | The day's share of the monthly cap: $10 / 31 = `0.322580`. |
 
@@ -184,9 +194,14 @@ category for it. Steps, in order:
 
 1. `GET /health`: is the service up, and is `kill_switch` what you expect?
 2. Every question fails the same way right after a deploy: suspect the
-   Anthropic request itself (for example, the `effort` field not accepted for
-   the model, or the key missing so the placeholder judge is in use). This was
-   to be caught at the stage 17 first call, before any gate question.
+   Anthropic request or the key. **First-live-call lesson:** the first call
+   after the first switch-on returned `judge error` in 0.43 s with nothing
+   billed. The key had been stored in Key Vault with stray whitespace (the
+   probable cause, not proven; the service logs no cause by design). The
+   owner's direct API test with the same request shape returned 200, so the
+   model id and `effort` field are accepted. The fix was to store the key again
+   **with whitespace stripped**, then redeploy; the next call answered. Check the
+   secret was stored that way before suspecting anything else.
 3. Every question fails after weeks of working: the Anthropic console limit
    ($10 a month) may have been reached. Calls then fail with a 4xx, are charged
    nothing, and visitors see "We couldn't decide this time" until the console's
@@ -201,6 +216,13 @@ category for it. Steps, in order:
    category `prompt_hash`, `index` or `model`, and `/health` never answers.
    The container restarts. A new deploy of a corrected image (command 5 with the
    fixed `imageTag`) or a rollback (section 2) is the fix.
+   **F-LIVE-1 (seen at stage 17):** the first image crash-looped with
+   `startup_failed` category `index`. `ingest` wrote the index and model files
+   with mode 0600, and the runtime user (uid 10001) could not read them. The
+   Dockerfile now sets `--chown=root:10001` and a `chmod` so uid 10001 can read
+   the index and models (image `879cae23690b`). If `startup_failed` returns
+   with category `index` or `model` on a new image, check that those files are
+   readable by uid 10001 first.
 3. After any outage, write the review with `templates/INCIDENT_REVIEW_TEMPLATE.md`
    in the playbook.
 
@@ -333,7 +355,7 @@ weekly after a quiet month.
 | Signal | Threshold | Action |
 |---|---|---|
 | `judge_error` share of admitted calls (abuse log) | Over 5% in 50 calls, or 3 in a row | Check Anthropic status, console limit and key (section 7); kill switch on if unexplained |
-| Input and output tokens per judged question (`/health` deltas) | Over 2x the stage 18 figure (not yet recorded) | Prompt or model change suspected; kill switch on; re-run the canary |
+| Input and output tokens per judged question (`/health` deltas) | Over 2x the stage 18 figure (about 3,557 input and 73 output tokens per question) | Prompt or model change suspected; kill switch on; re-run the canary |
 | `answer` share of admitted calls | Moves more than 20 points from the stage 18 baseline (not yet recorded) over 100 or more calls | Run the canary; review |
 | `paused` days | More than 2 in a week | Demand or abuse; the owner decides on the cap, not an agent |
 | `rate_limited` on one `ip` hash | Any day above 30 | Abuse; kill switch on if cost is rising |

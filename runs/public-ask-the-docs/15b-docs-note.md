@@ -37,6 +37,11 @@ Cost per question, response time (median, slowest), cold-start time, monthly Azu
 - **P4:** runbook section 12 "Monitoring": one table restating 06 section 7 thresholds, actions, cadence, owner, gaps M1 to M3; no new threshold. Grep targets "text unread", "5%", "M1" are present.
 - Not checked: `render.py` wording against my paraphrase of the page copy; no shell.
 
+## Final pass: recorded figures (stage 18 and 17 live checks)
+
+Source: `18-gate/RESULT.md`, `17-deploy/README.md`, intent last Done-means line. Edited README.md (banner, service status, retention sentence, recorded-figures table with caveats, attended-path "not deployed" wording scoped to the attended path), CURRENT_MVP_STATUS.md (service moved from built to deployed and gate scored once; figures, live checks, D1 to D7, unmeasured list; earlier slices' figures untouched), runbook (status, measured kill-switch and cold-start times, counters reset note, first-live-call whitespace lesson, F-LIVE-1, build notes, token baseline). Address named in the runbook and status only; not linked from aveto.dev.
+Left unmeasured and said so: monthly Azure cost, IPv6 clients, screen reader, real visitors, previous-image rollback, price confirmation. The runbook's `answer` share baseline row still says "not yet recorded" (RESULT.md gives no admitted-call answer share). Unconfirmed by me: I did not check the served page or the live address; the "S-C1 passed" and "effort accepted" lines rest on `17-deploy/README.md`.
+
 ## For other roles
 
 The README Status banner of the attended judge ("merged to main by PR #4") is unchanged and still true on `main`; this branch is not merged. The Release Manager should check the new README section against the final tree. Safety-text (INV-4, INV-5) and the ARCHITECTURE record are the Architect's parallel work and may need cross-checking against the "what is sent to whom" paragraph.

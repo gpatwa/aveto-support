@@ -1,8 +1,8 @@
 # Aveto Support
 
 > **Status: retrieval, plus an attended judge step, merged to `main` by pull
-> request #4 (2026-10-17). Not announced, not
-> deployed.** It lists the docs files for a question and generates no answers.
+> request #4 (2026-10-17). Not announced; the attended path is not deployed
+> (the public service below is separate).** It lists the docs files for a question and generates no answers.
 > `retrieve` itself never abstains: a question the docs do not answer still
 > returns files. The judge step is a separate, optional step that the operator
 > runs by hand in their own Claude Code session; it can replace the files with
@@ -20,11 +20,15 @@
 > [`runs/docs-retrieval-2-proof/`](runs/docs-retrieval-2-proof/02-close-out.md)
 > and [`runs/docs-retrieval/`](runs/docs-retrieval/08-close-out.md).
 
-> **Public service (slice `public-ask-the-docs`): built, not yet deployed or
-> measured.** A small web service, `aveto_service`, is built on this branch. It
-> is separate from the attended `/aveto-judge` path described above, which
-> remains attended and internal. See [Public service](#public-service-ask-the-docs)
-> below. Every cost, speed and gate figure for it is **not yet measured (stage 18)**.
+> **Public service (slice `public-ask-the-docs`): deployed on Azure Container
+> Apps and answering; gate scored once.** A small web service, `aveto_service`,
+> is built on this branch and deployed. It is separate from the attended
+> `/aveto-judge` path described above, which remains attended and internal. On a
+> pre-registered 20-question gate it scored Bar 1 10/10 and Bar 2 8/10, exactly at
+> the bar: the margin is zero, the set is small, and 2 of the 10 answerable
+> questions got no answer. That is a measurement, not a capability claim. Figures
+> and caveats: [Public service](#public-service-ask-the-docs) below. This branch
+> is not merged.
 
 A support agent for [Aveto](https://aveto.dev) — built **by Aveto, in public**.
 
@@ -114,10 +118,12 @@ against an index of a different commit.
 
 ## Public service (Ask the Docs)
 
-**Status: built, not yet deployed or measured.** The code, the container recipe
-(`Dockerfile`) and the Azure infrastructure file (`infra/main.bicep`) are in this
-repo. Nothing has been deployed, no live model call has been made through the
-service, and no figure below is measured.
+**Status: deployed on Azure Container Apps (East US 2) and answering; scored once
+on a pre-registered gate.** The code, the container recipe (`Dockerfile`) and the
+Azure infrastructure file (`infra/main.bicep`) are in this repo. The address is
+recorded in the [runbook](docs/runbooks/public-ask.md); it is not linked from
+aveto.dev, and that link is a separate later change on the owner's word. The
+release decision is the Release Manager's and is not made here.
 
 **What it is.** A visitor asks a question about Aveto and gets either the
 **verbatim documentation passages** that answer it, each with its file, heading,
@@ -168,8 +174,8 @@ session on the attended path, and this service. Microsoft Azure hosts the servic
 owner's subscription) and keeps the platform logs. **No question is stored or
 logged.** The service logs one line per request holding a time, the first 16
 characters of a hashed address and an outcome code, and a few fixed operational
-codes, kept 7 days once the retention setting is applied (it is applied by the
-deploy, which has not happened). Anthropic's own retention is under its terms and
+codes, kept 7 days (the retention setting was applied and read back as 7 and 7
+for both tables). Anthropic's own retention is under its terms and
 has not been verified by any agent.
 
 **Run it locally.** The service needs the `ingest` output (`index/` and
@@ -192,10 +198,37 @@ reaches it ends in `judge error`, and the kill switch defaults to on until
 `ASK_KILL_SWITCH=off`. Deployment and operations: the runbook
 [`docs/runbooks/public-ask.md`](docs/runbooks/public-ask.md).
 
-**Not yet measured (stage 18):** cost per question; median and slowest response
-time; cold-start time; the monthly Azure cost; the result of the 20-question
-gate scored through the deployed service. None is recorded, so none is stated.
-The release decision is the Release Manager's and is not made here.
+**Recorded figures (stage 18, scored once through the deployed service).** Gate
+`evals/public-gate-1.toml` (sha256 `7eb4f588…064f`), 20 questions: 10 the docs
+answer, 6 they do not, 4 hostile. Revision `ca-aveto-ask--0000006`, kill switch
+off, real limits.
+
+| Measure | Result |
+|---|---|
+| Bar 1: all 10 unanswerable and hostile questions get `no confident match`, no passage, no judge error | 10 of 10, met |
+| Bar 2: at least 8 of 10 answerable questions show a passage from a listed source | 8 of 10, met exactly at the bar |
+| Judge errors in 20 calls | 0 |
+| Cost per judged question | about $0.0118 ($0.2354 for 20 questions), at the service's default prices of $3 and $15 per million tokens, which are unconfirmed for `claude-sonnet-5-5` |
+| Response time, from one client (a Mac, to East US 2), n = 20 | median 1.66 s, slowest 5.09 s |
+| Cold start, from zero replicas after more than an hour idle | 30.8 s to the first `/health` answer |
+| Monthly Azure cost | **not measured** (Azure's cost data lags about a day) |
+
+Read these plainly:
+
+- **The margin on Bar 2 is zero.** One more miss would have failed it. With 10
+  questions the result cannot separate "meets 80%" from "somewhat below it".
+- **Over-abstention is 2 of 10 answerable questions** (p06 and p09): the judge
+  said not answerable, so the service showed `no confident match` for questions
+  the docs answer. It fails toward silence, as designed.
+- The set is small and its answerable sources overlap earlier sets' files, so
+  Bar 2 may read slightly optimistic. "Right passages" means the service showed a
+  passage from a listed source; other files shown with it were not judged.
+- Not covered: real visitors, adversarial load, invisible-character injection
+  (S-A5), IPv6 clients (the service has no AAAA record), a screen reader, a
+  different judge model or prompt.
+- The service's counters restart with the replica, so the Anthropic console limit
+  is the only durable cap. The cost per question is the service's own count, not
+  Anthropic's bill.
 
 ## Status
 
@@ -266,7 +299,7 @@ question repeats), which may flatter Bar 2.
 `docs-answerability-2` closed as an internal release candidate; its conditions
 T1 to T11 are carried out by slice `land-answerability`, whose Charter the owner
 approved on 2026-10-17 (`runs/land-answerability/APPROVAL_RECORD-1.md`).
-**Merged by pull request #4 on 2026-10-17 (a merge commit, which keeps the rehearsed rollback valid).** Nothing is announced or deployed; nothing runs on a server.
+**Merged by pull request #4 on 2026-10-17 (a merge commit, which keeps the rehearsed rollback valid).** For the attended judge step, nothing is announced or deployed and nothing runs on a server (the public service above is a separate path).
 What that slice's Charter recorded or changed:
 
 - **S5 is fixed.** `/aveto-judge-seen` (eval only) no longer takes caller text
