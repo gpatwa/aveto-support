@@ -3,8 +3,8 @@
 - **Ask:** `intents/public-ask-the-docs.md` — a public "ask the docs" page, live on Azure: verbatim passages or "no confident match", judged through the Anthropic API under hard cost and abuse limits
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 18 live (kill switch OFF, first call answered); waiting on the gate set file
-- **Status:** in-progress
+- **Current stage:** 19 done; END_REVIEW written; waiting on the owner's push decision (A or B)
+- **Status:** blocked-on-approval (push of a public branch that holds the owner's email in one old commit; see END_REVIEW)
 - **Least-privilege:** enforced — role subagents/teammates in `.claude/agents/` (pack v26), run from this repo's worktree
 - **Telemetry:** self-reported — see `TELEMETRY.md`
 - **Charter:** runs/public-ask-the-docs/CHARTER-v2.md, sha256 e04b82539e1fe17ed86d945a93b761dafef4f19c1af30dc4353f31743fc8ead4 approved in APPROVAL_RECORD-2 (replaces v1, d0acc534…, APPROVAL_RECORD-1)
@@ -31,7 +31,9 @@
 | 14 Security Review (adversarial) | Security & Privacy | done — PASS WITH REQUIRED FIXES, 0 blockers: S-R1 (unrecorded post-retrieval `paused` refusals give unbounded retrieval per visitor; sync `/health` queues behind it; `pipeline.py:229-252`, `app.py:154-156`), S-R2 (QA-1 test, `pipeline.py:216`); stage 17 conditions S-C1 (CR-4 XFF check, kill switch on), S-C2 (retention 7/7 before on), S-C3 (`az acr build` from the worktree root); C4.1 not breached; CR-3 owner decision (not a blocker), CR-8 advisory, 5xx keeps full charge; 15 advisories, owner decisions D1-D7 | runs/public-ask-the-docs/14-security-review.md | fixes S-R1, S-R2 re-checked before the Release Gate |
 | 15 Docs and safety text | Software Architect (15a); Tech Writer (15b); Compliance Reviewer (15c) | in progress — 15a done: INV-4 (two callers, service (a)/(b)/(c) mapping, transcript counterpart, 23 test names) and INV-5 (service exception, 19 header names, ops lines, 24 test names) written within C5.1/C5.2; 5 original lines changed, only the C5.1 sentence's words removed; INV-1 to INV-3 untouched; all 44 cited test names verified; `git diff` not run (no shell, U); 4 reading risks R1-R4 for 15c; `docs/ARCHITECTURE.md` gains "Public ask service"; no STOP | runs/public-ask-the-docs/15a-safety-text-note.md, .agentic/SAFETY_INVARIANTS.md, docs/ARCHITECTURE.md | 15c words check; stage 16 diff against 2919c87 |
 | 16 Release Gate (tier 3) | Release Manager | done — GO WITH CONDITIONS for stage 17 steps 1 to 4 only (deploy, kill switch ON); kill switch OFF NOT authorised (switch-on gate S1-S9 in the checklist, smoke-depth re-check recommended); code-review tier re-derived High; safety words inside Charter v2 C5.1/C5.2 with reading notes N1-N5; NOT MET: Approvals rows for gated actions (P1), processor record in runbook (G7, P3); saved final-tree checks name b0cf09d, HEAD is 9f40e9a (P2); pre-deploy P1-P4; dry run MET WITH GAPS (no fixture for the first real Anthropic call); rollback rehearsal and Build gate NOT YET (stage 17); live service, gate and owner decisions D1-D7 not covered | runs/public-ask-the-docs/16-release-checklist-tier3.md | P1-P4 recorded before stage 17; S1-S9 before the switch goes off |
-| 6 to 19 (except 8, 9, 10, 11, 13, 14, 15, 16) | per plan | pending | — | — |
+| 17 Deploy, switch-on, first call | Orchestrator's session (no shell roles) | done — `17-deploy/README.md`; F-LIVE-1 and the bad key found live and fixed | 17-switch-on-recheck.md | switch-on gate S1-S9 met |
+| 18 Gate and production verification | Orchestrator, Production Verification | done — Bar 1 10/10, Bar 2 8/10 (exactly at the bar); HEALTHY WITH WATCH ITEMS | 18-gate/RESULT.md, 18-production-verification.md | pre-registered bars |
+| 19 Post-launch, end review | Post-Launch Learning, Orchestrator | done | 19-post-launch-learning.md, END_REVIEW.md, trace.json | owner review |
 
 ## Approvals
 
@@ -50,7 +52,7 @@
 
 - **Budget:** 2000k tokens  ·  **Depth:** standard
 - **Spent:** 2343k (117%)  ·  **Remaining:** -343k
-- **Next stage:** 18 Production verification and the gate (needs public-gate-1.toml) est. 100k → **PROCEED**
+- **Next stage:** none (push after the owner's decision) est. 0k → **PROCEED**
 
 Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup spend is the driving session's, not a spawn.
 
@@ -103,7 +105,7 @@ Note: ceiling 3000k, hard cap 3600k (Charter C2). Orchestrator intake and setup 
 
 ## Next action
 
-Wait for the support session to place ~/opt/aveto-gates/public-gate-1.toml (sha256 7eb4f588…064f); then commit it, score through the live service under the real limits, then PV, then 19.
+Owner picks A (push as is) or B (rewrite 8d7cf7f..HEAD, then push) in END_REVIEW 'Blocked on me' item 1. Then: push `claude/public-ask-the-docs` and open the pull request (Charter C8.2), bind it with the PR tools, never merge. The service is live with the kill switch OFF (gate passed).
 
 ## Setup log
 

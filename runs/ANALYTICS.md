@@ -1,13 +1,13 @@
 # Pipeline Analytics — generated
 
-_Generated 2026-10-16T22:04:28Z. **Do not edit by hand** — regenerate with `node <playbook>/execution/analyze.mjs .` from the repo root._
+_Generated 2026-10-22T23:29:11Z. **Do not edit by hand** — regenerate with `node <playbook>/execution/analyze.mjs .` from the repo root._
 
 ## Fleet
 
-- Runs traced: **8**
-- Stages: **71** · Tokens: **30,240,845** · Tool calls: **1,882**
-- **Untraced stages: 6** across 4 run(s) — executed by the Orchestrator rather than spawned, so they carry no tokens or tool calls
-- Envelope breaches: **5/8** · Stage outliers: **34**
+- Runs traced: **10**
+- Stages: **110** · Tokens: **33,388,192** · Tool calls: **2,364**
+- **Untraced stages: 8** across 5 run(s) — executed by the Orchestrator rather than spawned, so they carry no tokens or tool calls
+- Envelope breaches: **5/10** · Stage outliers: **41**
 
 ## Per run
 
@@ -21,6 +21,8 @@ _Generated 2026-10-16T22:04:28Z. **Do not edit by hand** — regenerate with `no
 | docs-retrieval-4 | 2 | 11 | 9,684,000 | 232 | 1,000,000 | ❌ over 8684k |
 | docs-abstention | 2 | 12 | 8,407,000 | 240 | 1,100,000 | ❌ over 7307k |
 | docs-answerability-2 | 3 | 22 | 2,772,517 | 766 | 2,200,000 | ❌ over 573k |
+| land-answerability | 3 | 11 | 651,000 | 0 | 900,000 | ✅ pass |
+| public-ask-the-docs | 3 | 30 | 2,496,347 | 482 | 3,000,000 | ✅ pass |
 
 ## Pipeline completeness
 
@@ -40,6 +42,8 @@ this table) can say whether a given skip was earned.
 | docs-retrieval-4 | — | Market Research, Discovery, UX Research, UI Design, QA Evidence, Post-Launch | Close-out |
 | docs-abstention | — | Market Research, Discovery, UX Research, UI Design, QA Evidence, Post-Launch | Baseline, Stale-text pass (README), Status-file edit, Close-out |
 | docs-answerability-2 | ⚠ Intake | Market Research, Discovery, UX Research, UI Design | Stage 1 measurement (2 judge spawns, owner-started session), Smoke r049 + stage 5 judge spawns (49), Stage 6 label review, Stage 7 judge spawns (48, driver session), Docs finish (Architect, resumed), Docs finish, tier wording (Architect, resumed again) |
+| land-answerability | ⚠ Intake, Scope Review, Implementation | Market Research, Discovery, UX Research, UI Design, Post-Launch | S5 fix, Rollback rehearsal, Vendor risk, Records and docs, Setup phase, Code review layer (/code-review high) |
+| public-ask-the-docs | ⚠ Intake | Market Research, UI Design | Stage 5 tech spec (software-architect), Stage 8 backend service (backend-architect), Stage 9 Anthropic judge adapter (ai-engineer), Stage 10 public page (frontend-developer), Stage 11 infra and image (cloud-deployment), Amend tech spec work split (software-architect), Stage 11c Dockerfile and Azure checks (backend-architect), Review round 1 fixes (Backend) (backend-architect), S-A4, S-A6, S-A8 service hardening (Backend) (backend-architect), Stage 15b README, status, runbook (tech-writer), Apply curable safety-text rewordings (software-architect), Runbook processor record and monitoring section (tech-writer), INV-5 reading notes N1 and N4 (software-architect), Stage 18 production verification (from saved evidence) (production-verification), Docs: record the measured figures (README, status, runbook) (tech-writer) |
 
 ## DORA
 
@@ -59,7 +63,7 @@ Tokens per tool call, measured against each archetype's own cap.
 
 | Archetype | What it does | Cap | Observed (n) | Range | Avg |
 |-----------|--------------|-----|--------------|-------|-----|
-| **review** | read artefacts → verdict | 8,000 | 34 | 654–7,000 | 2,686 |
+| **review** | read artefacts → verdict | 8,000 | 50 | 654–7,000 | 2,988 |
 | **build** | heavy file / test I/O | 5,000 | 2 | 3,420–3,828 | 3,624 |
 
 ## Per stage
@@ -137,6 +141,45 @@ Tokens per tool call, measured against each archetype's own cap.
 | docs-answerability-2 | Docs update, tier 3 state (Tech Writer) | review | sonnet-5-5 | medium (declared) | 40,000 | 8 | 5,000 | 63% | — |
 | docs-answerability-2 | Docs finish, tier wording (Architect, resumed again) | review | opus-5-5 | high (declared) | 8,000 | 9 | 889 | 11% | — |
 | docs-answerability-2 | Close-out (Post-Launch Learning) | review | sonnet-5-5 | medium (declared) | 105,000 | 27 | 3,889 | 49% | — |
+| land-answerability | S5 fix | review | sonnet-5-5 | declared | 32,000 | 0 | — | — | — |
+| land-answerability | Rollback rehearsal | review | sonnet-5-5 | declared | 32,000 | 0 | — | — | — |
+| land-answerability | Vendor risk | review | sonnet-5-5 | declared | 44,000 | 0 | — | — | — |
+| land-answerability | AI Governance | design | sonnet-5-5 | declared | 90,000 | 0 | — | — | — |
+| land-answerability | Records and docs | review | sonnet-5-5 | declared | 97,000 | 0 | — | — | — |
+| land-answerability | ARCHITECTURE.md edits | review | opus-5-5 | declared | 35,000 | 0 | — | — | — |
+| land-answerability | Security re-check | review | opus-5-5 | declared | 94,000 | 0 | — | — | — |
+| land-answerability | Final-tree QA | review | sonnet-5-5 | declared | 40,000 | 0 | — | — | — |
+| land-answerability | Release Gate tier 3 | review | declared | declared | 187,000 | 0 | — | — | ⚠ over cap |
+| public-ask-the-docs | Stage 1 scope review (engineering-manager) | review | sonnet-5-5 | declared | 46,779 | 16 | 2,924 | 37% | — |
+| public-ask-the-docs | Stage 2 PRD (product-manager) | review | sonnet-5-5 | declared | 35,923 | 9 | 3,991 | 50% | — |
+| public-ask-the-docs | Stage 3 feature spec (ux-researcher) | review | sonnet-5-5 | declared | 31,984 | 7 | 4,569 | 57% | — |
+| public-ask-the-docs | Stage 4 UX spec (ui-designer) | review | sonnet-5-5 | declared | 26,080 | 9 | 2,898 | 36% | — |
+| public-ask-the-docs | Stage 5 tech spec (software-architect) | review | opus-5-5 | declared | 214,927 | 79 | 2,721 | 34% | ⚠ over cap |
+| public-ask-the-docs | Stage 6 AI governance (re-spawn) (ai-governance) | review | sonnet-5-5 | declared | 63,072 | 7 | 9,010 | 113% | ⚠ density |
+| public-ask-the-docs | Stage 7 compliance (re-spawn) (compliance-reviewer) | review | sonnet-5-5 | declared | 83,754 | 21 | 3,988 | 50% | — |
+| public-ask-the-docs | Patch UX copy for disclosures (ui-designer) | review | sonnet-5-5 | declared | 34,508 | 6 | 5,751 | 72% | — |
+| public-ask-the-docs | Stage 8 backend service (backend-architect) | review | sonnet-5-5 | declared | 146,111 | 36 | 4,059 | 51% | — |
+| public-ask-the-docs | Stage 9 Anthropic judge adapter (ai-engineer) | review | sonnet-5-5 | declared | 46,201 | 16 | 2,888 | 36% | — |
+| public-ask-the-docs | Stage 10 public page (frontend-developer) | review | sonnet-5-5 | declared | 75,644 | 20 | 3,782 | 47% | — |
+| public-ask-the-docs | Stage 11 infra and image (cloud-deployment) | review | sonnet-5-5 | declared | 69,025 | 25 | 2,761 | 35% | — |
+| public-ask-the-docs | Amend tech spec work split (software-architect) | review | opus-5-5 | declared | 28,716 | 10 | 2,872 | 36% | — |
+| public-ask-the-docs | Stage 11c Dockerfile and Azure checks (backend-architect) | review | sonnet-5-5 | declared | 53,412 | 16 | 3,338 | 42% | — |
+| public-ask-the-docs | Review round 1 fixes (Backend) (backend-architect) | review | sonnet-5-5 | declared | 70,008 | 19 | 3,685 | 46% | — |
+| public-ask-the-docs | Stage 13 QA evidence (qa-evidence) | review | sonnet-5-5 | declared | 144,154 | 57 | 2,529 | 32% | — |
+| public-ask-the-docs | Stage 14 adversarial security review (security-privacy) | review | opus-5-5 | declared | 225,649 | 63 | 3,582 | 45% | ⚠ over cap |
+| public-ask-the-docs | S-A2 SDK egress pinning (AI Engineer) (ai-engineer) | review | sonnet-5-5 | declared | 28,514 | null | — | — | — |
+| public-ask-the-docs | S-A4, S-A6, S-A8 service hardening (Backend) (backend-architect) | review | sonnet-5-5 | declared | 36,185 | 11 | 3,290 | 41% | — |
+| public-ask-the-docs | Stage 15a safety words and architecture doc (software-architect) | review | opus-5-5 | declared | 202,516 | null | — | — | ⚠ over cap |
+| public-ask-the-docs | Stage 15b README, status, runbook (tech-writer) | review | sonnet-5-5 | declared | 118,548 | null | — | — | — |
+| public-ask-the-docs | Stage 15c words check (re-spawn) (compliance-reviewer) | review | sonnet-5-5 | declared | 180,118 | 44 | 4,094 | 51% | ⚠ over cap |
+| public-ask-the-docs | Apply curable safety-text rewordings (software-architect) | review | opus-5-5 | declared | 52,279 | 11 | 4,753 | 59% | — |
+| public-ask-the-docs | Stage 16 Release Gate tier 3 (release-manager) | review | sonnet-5-5 | declared | 197,438 | null | — | — | ⚠ over cap |
+| public-ask-the-docs | Runbook processor record and monitoring section (tech-writer) | review | sonnet-5-5 | declared | 49,605 | null | — | — | — |
+| public-ask-the-docs | INV-5 reading notes N1 and N4 (software-architect) | review | opus-5-5 | declared | 38,254 | null | — | — | — |
+| public-ask-the-docs | Release Manager smoke re-check, switch-on gate (release-manager) | review | sonnet-5-5 | declared | 54,024 | null | — | — | — |
+| public-ask-the-docs | Stage 18 production verification (from saved evidence) (production-verification) | review | sonnet-5-5 | declared | 48,664 | null | — | — | — |
+| public-ask-the-docs | Docs: record the measured figures (README, status, runbook) (tech-writer) | review | sonnet-5-5 | declared | 55,131 | null | — | — | — |
+| public-ask-the-docs | Stage 19 post-launch learning (post-launch-learning) | review | sonnet-5-5 | declared | 39,124 | null | — | — | — |
 
 ## Untraced stages
 
@@ -152,13 +195,15 @@ excludes them** — treat slice costs as a floor, not a total.
 | docs-retrieval-3-proof | Close-out | `executor` (trace@2) |
 | docs-retrieval-4 | Intake | `executor` (trace@2) |
 | docs-abstention | Intake | `executor` (trace@2) |
+| land-answerability | Setup phase | `executor` (trace@2) |
+| land-answerability | Code review layer (/code-review high) | `executor` (trace@2) |
 
 ## Gate catches
 
 Defects the gates caught before they shipped — the pipeline earning its keep.
 **A floor, not a total:** 5 run(s) predate the `gateCatches` field (docs-retrieval, docs-retrieval-2, docs-retrieval-2-proof, docs-retrieval-3, docs-retrieval-3-proof) and recorded catches only in prose, so a real block — e.g. Security stopping the http-layer bind — is not counted here.
 
-**Structured catches: 9**
+**Structured catches: 23**
 
 | Run | Gate | Verdict | Severity | Finding | Recovery |
 |-----|------|---------|----------|--------|----------|
@@ -171,6 +216,20 @@ Defects the gates caught before they shipped — the pipeline earning its keep.
 | docs-answerability-2 | Security | fail | required-fix | S6: a wide local permission rule for seen_payload.py; the file was removed on the owner's word (verified absent). | — |
 | docs-answerability-2 | Release Gate (QA run) | fail | required-fix | ruff exit 1: 23 errors in the committed security probe scripts; fixed with a first-line noqa (D6), acknowledged by the owner. | — |
 | docs-answerability-2 | Release Gate (tier 3) | fail | required-fix | Six tier 3 items not met: release-action approval, change request approval, vendor risk and DPA (unknown), plus governance gates unruled; owner holds conditions T1 to T11. | — |
+| land-answerability | Orchestrator code review | fail | required-fix | Run permission rules (git branch *, git commit *, ...) committed into shared .claude/settings.json | — |
+| land-answerability | Security | fail | required-fix | R1: hostile-id test accepted r001\n and touched the real tree; passed only because index/models were absent | — |
+| land-answerability | AI Governance | fail | required-fix | S5 fix removed test_refuses_wrong_argument_count cited by INV-5; restored | — |
+| public-ask-the-docs | Orchestrator code review | fail | required-fix | CR-1: in-flight spend reservations could close the whole day for everyone (one visitor, 10 concurrent requests) | — |
+| public-ask-the-docs | Orchestrator code review | fail | required-fix | CR-2: unbilled judge failures charged a full reservation, so an outage or a rejected request drains the daily share | — |
+| public-ask-the-docs | Orchestrator code review | fail | advisory | CR-5, CR-6: stale day at UTC midnight; error responses skipped the page and its security headers | — |
+| public-ask-the-docs | QA | fail | required-fix | QA-1: the redundant kill-switch check in the pipeline had no test (mutation survived) | — |
+| public-ask-the-docs | Security | fail | required-fix | S-R1: refused-after-retrieval requests unbounded per visitor, and /health queued behind them (825 retrievals in 12 s, health 6 ms to 1.15 s) | — |
+| public-ask-the-docs | Security | fail | advisory | S-A2, S-A4, S-A6, S-A8: SDK env redirect, reply-length parity, trailing-slash redirect reflecting Host, cross-site form POST (all fixed) | — |
+| public-ask-the-docs | Compliance | fail | required-fix | The page copy lacked the AI-disclosure, Anthropic-as-recipient and no-personal-data lines (fixed before build) | — |
+| public-ask-the-docs | Different-model words check | fail | blocker | Two Charter stops in the INV-4/INV-5 words (S10, S11b) and four wording errors; Charter v2 approved by the owner | — |
+| public-ask-the-docs | Release Manager | fail | required-fix | No Approvals rows for gated actions (P1) and no processor record in the runbook (P3), fixed before deploy | — |
+| public-ask-the-docs | Live first deploy | fail | blocker | F-LIVE-1: index and models written 0600 were unreadable by the runtime uid, container crash-looped (startup_failed index); Dockerfile fixed, rebuilt, redeployed | — |
+| public-ask-the-docs | Live first call | fail | blocker | First judge call returned judge error: the stored key was bad (cause not logged by design); owner re-stored it, kill switch back on at once, second call answered | — |
 
 
 ## Outliers
@@ -209,6 +268,13 @@ Defects the gates caught before they shipped — the pipeline earning its keep.
 - **Stage 7 judge spawns (48, driver session)** (docs-answerability-2, review): 411,000 tok / 0 calls — 2.7× the 150k per-stage token cap
 - **Security Review (adversarial)** (docs-answerability-2, review): 157,000 tok / 54 calls — 1.0× the 150k per-stage token cap
 - **Release Gate verdict at tier 3** (docs-answerability-2, review): 152,000 tok / 56 calls — 1.0× the 150k per-stage token cap
+- **Release Gate tier 3** (land-answerability, review): 187,000 tok / 0 calls — 1.2× the 150k per-stage token cap
+- **Stage 5 tech spec (software-architect)** (public-ask-the-docs, review): 214,927 tok / 79 calls — 1.4× the 150k per-stage token cap
+- **Stage 6 AI governance (re-spawn) (ai-governance)** (public-ask-the-docs, review): 63,072 tok / 7 calls — 1.1× the 8.0k review-density cap
+- **Stage 14 adversarial security review (security-privacy)** (public-ask-the-docs, review): 225,649 tok / 63 calls — 1.5× the 150k per-stage token cap
+- **Stage 15a safety words and architecture doc (software-architect)** (public-ask-the-docs, review): 202,516 tok / null calls — 1.4× the 150k per-stage token cap
+- **Stage 15c words check (re-spawn) (compliance-reviewer)** (public-ask-the-docs, review): 180,118 tok / 44 calls — 1.2× the 150k per-stage token cap
+- **Stage 16 Release Gate tier 3 (release-manager)** (public-ask-the-docs, review): 197,438 tok / null calls — 1.3× the 150k per-stage token cap
 
 ## Baselines
 
