@@ -49,3 +49,4 @@ T6.1's figure matches the spec (overshoot 9,342,000 = $0.009342). All required t
 4. Pipeline detail: non-transport exceptions keep one `per_attempt` (as spec); `_judged` initial `charge = 0` is overwritten on every path that settles.
 5. **Not done: the smoke script** `runs/fix-service-accounting/10-smoke/smoke.py` (spec §8.1/§12 assign it to stage 3; the Orchestrator's brief did not list it). Needs a separate instruction.
 6. The spec's §5 step 1 `03-implementation.md` is replaced by this note (`08-backend-note.md`) as instructed.
+- 2026-10-23 addendum: smoke script written at runs/fix-service-accounting/10-smoke/smoke.py per spec 8.1 (deviation 5 closed); only its --dry-run mode was run, no live call.
