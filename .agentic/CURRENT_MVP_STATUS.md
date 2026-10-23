@@ -40,17 +40,29 @@
     is a measurement, not a capability claim. Judge errors 0 in 20 calls. Answerable
     sources overlap earlier sets' files (may flatter Bar 2). S-A5 (invisible-character
     injection) not covered; no stronger live attack was run.
-  - **Recorded figures:** cost per judged question about $0.0079 at Anthropic's
+  - **Recorded figures:** cost per judged question about $0.0078 at Anthropic's
     published prices for `claude-sonnet-5-5` ($2 and $10 per million tokens,
     confirmed 2026-10-23 from the live pricing page and models overview; $0.1569
-    for 20, recomputed from 71,151 input and 1,460 output tokens; the first live
-    question $0.0099). The service's counter, at its built-in $3 and $15, reads
-    50% high ($0.2354 for the same 20), a safe error. About 1,270 questions a
-    month fit in the $10 console limit; the service's daily pause comes at about
-    27 questions a day by its counter (about 41 at the real price). The tech spec
+    for 20, $0.1569 / 20, recomputed from 71,151 input and 1,460 output tokens;
+    the first live question $0.0099). About 1,270 questions a month fit in the
+    $10 console limit (estimate). The tech spec
     had estimated $0.008; response time median 1.66 s, 90th percentile 4.14 s,
     slowest 5.09 s (n = 20, from one client, a Mac, to East US 2); cold start 30.8 s
     to the first `/health` answer from zero replicas after more than an hour idle.
+  - **Spend accounting (slice `fix-service-accounting`, issues #6, #7, #8; on
+    its branch, not merged, not deployed):** the code makes the counter default
+    to $2 and $10 per million tokens (2000 and 10000 nano-dollars per token;
+    source and date 2026-10-23 in a code comment), reserves both possible
+    attempts at admission and returns the unused part at settlement, and charges
+    each attempt on its own outcome. Recorded by QA: 668 tests passed on the
+    branch head, each fix with a test that fails on the base commit
+    (`runs/fix-service-accounting/13-qa-evidence.md`). The live revision still
+    runs the earlier defaults until the redeploy. **Estimate, not measured:** the
+    daily pause comes at about 33 questions a day by the counter with two
+    attempts reserved (assumes about $0.030 reserved per attempt); the 41 the
+    intent expected is not what this design gives. The counter's new price and
+    the 33 are to be confirmed by the live smoke after the redeploy; the smoke
+    figures come later.
   - **Live checks:** first answered call succeeded after the key was stored again
     with whitespace stripped (HTTP 200, 9 passages, 1.83 s; an earlier first call
     ended in `judge error`, cause probable, not proven); the 9 live passages equal
@@ -144,16 +156,14 @@
   Release Manager's and is not stated here. **Not measured:** the monthly Azure
   cost (Azure's cost data lags about a day; no figure is stated), IPv6 clients
   (the service has no AAAA record), a screen reader, real visitors and adversarial
-  load, the previous-image rollback. Price confirmed (see recorded figures). Open
-  item: set the service's price env values to 2000 and 10000
-  (`ASK_PRICE_IN_NANO_PER_TOKEN`, `ASK_PRICE_OUT_NANO_PER_TOKEN`) if the owner
-  wants the counter exact; a parameter change on redeploy, not done, the owner's
-  call. The `effort` field is accepted
+  load, the previous-image rollback. Price confirmed (see recorded figures). The
+  counter's price default is now 2000 and 10000 in the branch code; not deployed
+  yet, to be confirmed by the live smoke after the redeploy. The `effort` field is accepted
   (the owner's direct test and the first live call). Open owner decisions from
   the Security review (D1 to D7): D1 the daily pause holds per replica lifetime, so an
   attacker could use the month's $10 in hours; D2 what to do if the ingress
   address is not per client; D3 whether to reduce the public `/health` after the
-  gate; D4 about 40 questions from a few addresses pause the service for everyone
+  gate; D4 a few dozen questions (recorded as about 40; about 33 by estimate once the two-attempt reservation is deployed) from a few addresses pause the service for everyone
   until 00:00 UTC; D5 Azure spend is outside the $10: partly answered on 2026-10-23, a budget alert
   now exists (`bud-aveto-ask`, $20 a month, resource group `rg-aveto-ask`,
   notifies the Owner role at 50%, 80%, 100% actual and 100% forecast, created by
