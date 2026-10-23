@@ -122,7 +122,7 @@ def test_health_never_calls_model(capfd: pytest.CaptureFixture[str]) -> None:
     c.post("/ask", json={"question": QUESTION})
     h = c.get("/health").json()
     assert (h["judged_today"], h["input_tokens_today"], h["output_tokens_today"]) == (1, 2400, 20)
-    assert h["spend_today_usd"] == "0.007500"
+    assert h["spend_today_usd"] == "0.005000"  # 2400 * 2000 + 20 * 10000 nano-dollars
 
 
 def test_health_reports_kill_switch_on() -> None:

@@ -17,6 +17,7 @@ from typing import Any
 
 from aveto_service.abuse_log import Outcome, emit_abuse
 from aveto_service.judge_port import (
+    MAX_ATTEMPTS,
     JudgeCall,
     JudgeClient,
     JudgeNotConfiguredError,
@@ -54,7 +55,6 @@ _ADMITTED = frozenset({Outcome.ANSWER, Outcome.NO_CONFIDENT_MATCH, Outcome.JUDGE
 NO_CONFIDENT_MATCH_TEXT = "no confident match"
 JUDGE_ERROR_TEXT = "judge error"
 TOP_OF_FILE = "(top of file)"
-_NEVER_BILLED = frozenset({"status_4xx", "connection"})
 
 
 @dataclass(frozen=True)
@@ -189,7 +189,7 @@ class AskService:
         self._lock = threading.Lock()  # admission and counters
         self._retrieval_lock = threading.Lock()  # the ONNX session: one thread at a time
         self._system_bytes = len(runtime.system_prompt.encode("utf-8"))
-        self._floor = self._spend.reservation_amount(self._system_bytes, 0)
+        self._floor = MAX_ATTEMPTS * self._spend.reservation_amount(self._system_bytes, 0)
 
     # --- request-level helpers -------------------------------------------------
 
@@ -243,7 +243,7 @@ class AskService:
             return AskResult(Outcome.UNUSABLE_QUESTION)
         except Exception:  # noqa: BLE001 - fail closed: any failure is a refusal
             return AskResult(Outcome.JUDGE_ERROR)
-        amount = self._spend.reservation_amount(
+        per_attempt = self._spend.reservation_amount(
             self._system_bytes, len(payload.encode("utf-8"))
         )
         with self._lock:  # 7: day and time are taken again, so a midnight straddle is safe
@@ -251,41 +251,40 @@ class AskService:
             now = self._mono()
             if not self._rate.allowed(key, now):
                 return AskResult(Outcome.RATE_LIMITED)
-            reservation = self._spend.reserve(day, amount)
+            reservation = self._spend.reserve(day, MAX_ATTEMPTS * per_attempt)  # every attempt
             if reservation is None:
                 return AskResult(Outcome.PAUSED)
             self._rate.record(key, now)
-        return self._judged(found, payload, reservation, amount)  # 8, 9
+        return self._judged(found, payload, reservation, per_attempt)  # 8, 9
 
     def _judged(
-        self, found: RetrievalResult, payload: str, reservation: Reservation, amount: int
+        self, found: RetrievalResult, payload: str, reservation: Reservation, per_attempt: int
     ) -> AskResult:
+        """Each attempt is charged on its own outcome; what was reserved and not used returns."""
         call: JudgeCall | None = None
-        attempts = 1
-        unbilled = False  # a failure the provider never bills (or nothing was sent)
+        charge = 0
+        in_tokens = out_tokens = 0
         try:
             call = self._judge.judge(self._runtime.system_prompt, payload)
-            attempts = max(1, call.attempts)
         except JudgeNotConfiguredError:
             with self._lock:
                 self._spend.settle(reservation, 0, 0, 0, counted=False)
             return AskResult(Outcome.JUDGE_ERROR)
         except JudgeTransportError as exc:
-            attempts = max(1, exc.attempts)
-            if exc.category in _NEVER_BILLED or exc.attempts == 0:
-                unbilled = True
+            charge = exc.billable_failures * per_attempt
         except Exception:  # noqa: BLE001 - an unexpected adapter failure is a failed attempt
-            attempts = 1  # it keeps its full reservation below
-        in_tokens = out_tokens = 0
-        if call is None or call.input_tokens is None or call.output_tokens is None:
-            charge = amount  # a failed attempt may have been billed: keep the full reservation
-        else:
-            in_tokens, out_tokens = call.input_tokens, call.output_tokens
-            charge = self._spend.cost(in_tokens, out_tokens)
-        # The adapter retries by itself; each attempt beyond the first is charged in full.
-        charge += (attempts - 1) * amount
-        if unbilled:
-            charge = 0
+            charge = per_attempt  # one attempt, in full
+        if call is not None:
+            failed = (
+                call.billable_failures
+                if call.billable_failures is not None
+                else max(0, call.attempts - 1)
+            )
+            if call.input_tokens is None or call.output_tokens is None:
+                charge = per_attempt + failed * per_attempt
+            else:
+                in_tokens, out_tokens = call.input_tokens, call.output_tokens
+                charge = self._spend.cost(in_tokens, out_tokens) + failed * per_attempt
         with self._lock:
             self._spend.settle(reservation, charge, in_tokens, out_tokens)
         if call is None:

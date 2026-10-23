@@ -382,3 +382,61 @@ def test_custom_headers_env_fails_closed(
 def test_injected_client_skips_env_check(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("ANTHROPIC_CUSTOM_HEADERS", "X-Evil: 1")
     AnthropicJudgeClient(KEY, client=SimpleNamespace(messages=FakeMessages()))
+
+
+def _timeout() -> Any:
+    return anthropic.APITimeoutError(request=_req())
+
+
+def _conn() -> Any:
+    return anthropic.APIConnectionError(request=_req())
+
+
+@pytest.mark.parametrize(
+    ("script", "category", "attempts", "billable"),
+    [
+        (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 1),
+        (lambda: [_status(anthropic.RateLimitError, 429), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 0),
+        (lambda: [_conn(), _conn()], "connection", 2, 0),
+        (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.InternalServerError, 503)], "status_5xx", 2, 2),
+        (lambda: [_status(anthropic.InternalServerError, 503), message(stop="max_tokens")], "stop_reason", 2, 2),
+        (lambda: [_timeout()], "timeout", 1, 1),
+        (lambda: [_status(anthropic.BadRequestError, 400)], "status_4xx", 1, 0),
+        (lambda: [message(stop="max_tokens")], "stop_reason", 1, 1),
+    ],
+)
+def test_billable_failures_counted_per_attempt(
+    script: Callable[[], list[Any]], category: str, attempts: int, billable: int
+) -> None:
+    client, _, _ = make(*script())
+    with pytest.raises(JudgeTransportError) as info:
+        client.judge(PROMPT, PAYLOAD)
+    err = info.value
+    assert (err.category, err.attempts, err.billable_failures) == (category, attempts, billable)
+    assert type(err.billable_failures) is int
+    assert err.args == (category,)
+    assert SECRET not in repr(err) + str(err)
+
+
+@pytest.mark.parametrize(
+    ("script", "attempts", "billable"),
+    [
+        (lambda: [message()], 1, 0),
+        (lambda: [_status(anthropic.RateLimitError, 429), message()], 2, 0),
+        (lambda: [_status(anthropic.InternalServerError, 503), message()], 2, 1),
+        (lambda: [_conn(), message()], 2, 0),
+    ],
+)
+def test_billable_failures_on_success(
+    script: Callable[[], list[Any]], attempts: int, billable: int
+) -> None:
+    client, _, _ = make(*script())
+    call = client.judge(PROMPT, PAYLOAD)
+    assert (call.attempts, call.billable_failures) == (attempts, billable)
+
+
+def test_prompt_hash_mismatch_bills_nothing() -> None:
+    client, _, _ = make(message())
+    with pytest.raises(JudgeTransportError) as info:
+        client.judge("other prompt", PAYLOAD)
+    assert info.value.billable_failures == 0

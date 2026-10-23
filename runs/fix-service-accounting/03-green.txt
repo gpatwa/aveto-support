@@ -1,0 +1,38 @@
+Resolved 39 packages in 3ms
+Audited 36 packages in 6ms
+Success: no issues found in 45 source files
+All checks passed!
+============================= test session starts ==============================
+platform darwin -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/gopalpatwa/opt/aveto-support/.claude/worktrees/fix-service-accounting
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1
+collected 680 items / 12 deselected / 668 selected
+
+tests/test_anthropic_judge.py .......................................... [  6%]
+                                                                         [  6%]
+tests/test_evaluate.py .......................                           [  9%]
+tests/test_index.py ........................                             [ 13%]
+tests/test_infra_static.py .........                                     [ 14%]
+tests/test_ingest.py ................................................... [ 22%]
+....                                                                     [ 22%]
+tests/test_judge.py .................................................... [ 30%]
+.................................................                        [ 38%]
+tests/test_judge_artefacts.py ........                                   [ 39%]
+tests/test_judge_eval.py ...................                             [ 42%]
+tests/test_judge_run.py ................................................ [ 49%]
+...........                                                              [ 50%]
+tests/test_judge_seen_skill.py ......................................... [ 57%]
+.............................                                            [ 61%]
+tests/test_rerank.py .............................                       [ 65%]
+tests/test_search.py .....................................               [ 71%]
+tests/test_service_api.py .............................................. [ 78%]
+.                                                                        [ 78%]
+tests/test_service_limits.py ........................................... [ 84%]
+.........................................                                [ 90%]
+tests/test_service_logging.py ....                                       [ 91%]
+tests/test_service_pages.py .........................                    [ 95%]
+tests/test_service_pipeline.py ................................          [100%]
+
+===================== 668 passed, 12 deselected in 15.00s ======================

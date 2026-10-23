@@ -27,11 +27,13 @@ param clientKey string = 'xff_last'
 @description('Set the 7-day retention on the two platform log tables. Only once the tables exist.')
 param configureLogRetention bool = false
 
+// claude-sonnet-5-5: $2 per million input tokens, $10 per million output tokens; read
+// 2026-10-23 from Anthropic's pricing page and matched by the owner's console bill.
 @description('Model price, nano-dollars per input token.')
-param priceInNanoPerToken int = 3000
+param priceInNanoPerToken int = 2000
 
 @description('Model price, nano-dollars per output token.')
-param priceOutNanoPerToken int = 15000
+param priceOutNanoPerToken int = 10000
 
 @description('Monthly spend cap in US dollars.')
 param monthlyCapUsd int = 10

@@ -1,12 +1,18 @@
 from __future__ import annotations
 
 import threading
+from collections.abc import Callable
 from datetime import UTC, datetime
 from decimal import Decimal
+from types import SimpleNamespace
+from typing import Any
 
+import anthropic
+import httpx2 as httpx
 import pytest
 from fastapi.testclient import TestClient
 from service_fakes import (
+    ANSWERABLE_REPLY,
     CANARY,
     NOT_ANSWERABLE_REPLY,
     CountingEmbedder,
@@ -20,7 +26,8 @@ from service_fakes import (
 )
 
 from aveto_service.abuse_log import Outcome
-from aveto_service.judge_port import JudgeCall, JudgeTransportError
+from aveto_service.anthropic_judge import AnthropicJudgeClient
+from aveto_service.judge_port import MAX_ATTEMPTS, JudgeCall, JudgeTransportError
 from aveto_service.limits import (
     RETRIEVALS_PER_VISITOR_PER_HOUR,
     RateLimiter,
@@ -351,8 +358,9 @@ def test_inflight_reservations_do_not_close_the_day() -> None:
     amount = service._spend.reservation_amount(
         service._system_bytes, len(fake.calls[0][1].encode())
     )
+    reserved = MAX_ATTEMPTS * amount  # admission reserves every attempt the adapter may make
     # room for three in flight, and the floor check still passes for a fourth
-    service._spend.cap = service._spend.spent + 3 * amount + service._floor
+    service._spend.cap = service._spend.spent + 3 * reserved + service._floor
     results: list[Outcome] = []
     lock = threading.Lock()
 
@@ -446,7 +454,7 @@ def test_spend_reservation_bounds_and_settles() -> None:
     service.ask(QUESTION, IP)
     payload_bytes = len(fake.calls[0][1].encode())
     reserved = spend.reservation_amount(service._system_bytes, payload_bytes)
-    actual = 1000 * 3000 + 10 * 15000
+    actual = 1000 * 2000 + 10 * 10000
     assert reserved > actual  # the reservation is an upper bound
     assert (spend.spent, spend.in_flight, spend.input_tokens, spend.output_tokens) == (
         actual, 0, 1000, 10)
@@ -486,7 +494,7 @@ def test_not_answerable_is_charged_like_any_judged_call() -> None:
     fake = FakeJudgeClient(default=JudgeCall(NOT_ANSWERABLE_REPLY, 100, 10))
     service = make_service(fake)
     service.ask(QUESTION, IP)
-    assert service._spend.spent == 100 * 3000 + 10 * 15000
+    assert service._spend.spent == 100 * 2000 + 10 * 10000
 
 
 def test_concurrent_admissions_never_exceed_cap() -> None:
@@ -507,7 +515,8 @@ def test_concurrent_admissions_never_exceed_cap() -> None:
     payload_bytes = len(fake.calls[0][1].encode())
     amount = service._spend.reservation_amount(service._system_bytes, payload_bytes)
     spent = service._spend.spent
-    service._spend.cap = spent + 3 * amount + amount // 2  # room for exactly three in flight
+    reserved = MAX_ATTEMPTS * amount  # admission reserves every attempt the adapter may make
+    service._spend.cap = spent + 3 * reserved + reserved // 2  # room for exactly three in flight
     results: list[Outcome] = []
     lock = threading.Lock()
 
@@ -529,7 +538,7 @@ def test_concurrent_admissions_never_exceed_cap() -> None:
         deadline.wait(0.05)
     with lock:
         assert results == [Outcome.PAUSED] * 7
-    assert service._spend.in_flight == 3 * amount
+    assert service._spend.in_flight == 3 * reserved
     release.set()
     for t in threads:
         t.join(10)
@@ -562,3 +571,160 @@ def test_settings_repr_and_str_hide_the_api_key() -> None:
     settings = Settings(api_key="sk-ant-secret-canary-9911")
     assert "secret-canary" not in repr(settings) and "secret-canary" not in str(settings)
     assert settings.api_key == "sk-ant-secret-canary-9911"
+
+
+# --- retries are reserved, and each attempt is charged on its own outcome (#6, #7) --------
+
+PRICES = {"price_in_nano_per_token": 2000, "price_out_nano_per_token": 10000}
+USAGE_COST = 4421 * 2000 + 50 * 10000  # 9_342_000 nano-dollars: the successful attempt
+
+
+class ScriptedMessages:
+    def __init__(self, *outcomes: Any) -> None:
+        self.outcomes = list(outcomes)
+        self.requests: list[dict[str, Any]] = []
+
+    def create(self, **kwargs: Any) -> Any:
+        self.requests.append(kwargs)
+        out = self.outcomes.pop(0)
+        if isinstance(out, BaseException):
+            raise out
+        return out
+
+
+def _reply() -> Any:
+    return SimpleNamespace(
+        stop_reason="end_turn",
+        content=[SimpleNamespace(type="text", text=ANSWERABLE_REPLY)],
+        usage=SimpleNamespace(input_tokens=4421, output_tokens=50),
+    )
+
+
+def _api_error(cls: type, code: int) -> Any:
+    request = httpx.Request("POST", "https://api.anthropic.com/v1/messages")
+    return cls("x", response=httpx.Response(code, request=request), body=None)
+
+
+def _connection_error() -> Any:
+    return anthropic.APIConnectionError(
+        request=httpx.Request("POST", "https://api.anthropic.com/v1/messages")
+    )
+
+
+def _e503() -> Any:
+    return _api_error(anthropic.InternalServerError, 503)
+
+
+def _e400() -> Any:
+    return _api_error(anthropic.BadRequestError, 400)
+
+
+def _e429() -> Any:
+    return _api_error(anthropic.RateLimitError, 429)
+
+
+def _real_adapter_service(
+    *outcomes: Any, cap: Callable[[int], int] | None = None
+) -> tuple[AskService, ScriptedMessages, int]:
+    """A service over the REAL adapter (fake messages client). Returns the service, the fake
+    API and R, this question's per-attempt reservation at $2/$10."""
+    probe_fake = FakeJudgeClient()
+    probe = make_service(probe_fake, settings=make_settings(**PRICES))
+    probe.ask(QUESTION, IP)
+    per_attempt = probe._spend.reservation_amount(
+        probe._system_bytes, len(probe_fake.calls[0][1].encode())
+    )
+    messages = ScriptedMessages(*outcomes)
+    adapter = AnthropicJudgeClient(
+        "test-key", client=SimpleNamespace(messages=messages), sleep=lambda _s: None
+    )
+    service = make_service(adapter, settings=make_settings(**PRICES))  # type: ignore[arg-type]
+    if cap is not None:
+        service._spend.cap = cap(per_attempt)
+    return service, messages, per_attempt
+
+
+def test_retry_never_settles_above_cap() -> None:
+    service, messages, per_attempt = _real_adapter_service(
+        _e503(), _reply(), cap=lambda r: r
+    )
+    result = service.ask(QUESTION, IP)
+    assert service._spend.spent <= service._spend.cap, (service._spend.spent, service._spend.cap)
+    assert service._spend.in_flight == 0
+    assert result.outcome is Outcome.PAUSED and messages.requests == []
+    assert per_attempt > 0
+
+
+def test_retry_settles_within_both_reserved_attempts() -> None:
+    service, messages, per_attempt = _real_adapter_service(
+        _e503(), _reply(), cap=lambda r: 2 * r
+    )
+    result = service.ask(QUESTION, IP)
+    assert result.outcome is Outcome.ANSWER
+    assert len(messages.requests) == 2
+    assert service._spend.spent == per_attempt + USAGE_COST
+    assert service._spend.spent <= service._spend.cap
+    assert service._spend.in_flight == 0
+
+
+def test_5xx_then_4xx_charges_the_first_attempt() -> None:
+    service, messages, per_attempt = _real_adapter_service(_e503(), _e400())
+    result = service.ask(QUESTION, IP)
+    assert result.outcome is Outcome.JUDGE_ERROR
+    assert len(messages.requests) == 2
+    assert service._spend.spent == per_attempt
+    assert service._spend.in_flight == 0
+
+
+@pytest.mark.parametrize(
+    "script",
+    [
+        pytest.param([_e429, _e400], id="429-then-400"),
+        pytest.param([_connection_error, _connection_error], id="connection-twice"),
+        pytest.param([_e429, _e429], id="429-twice"),
+    ],
+)
+def test_never_billed_attempts_charge_zero(script: list[Callable[[], Any]]) -> None:
+    service, messages, _ = _real_adapter_service(*[make() for make in script])
+    result = service.ask(QUESTION, IP)
+    assert result.outcome is Outcome.JUDGE_ERROR
+    assert service._spend.spent == 0
+    assert service._spend.in_flight == 0
+    assert len(messages.requests) == 2
+
+
+def test_never_billed_retry_then_success_charges_usage_only() -> None:
+    service, messages, _ = _real_adapter_service(_e429(), _reply())
+    result = service.ask(QUESTION, IP)
+    assert result.outcome is Outcome.ANSWER
+    assert len(messages.requests) == 2
+    assert service._spend.spent == USAGE_COST
+
+
+@pytest.mark.parametrize(
+    ("category", "attempts"),
+    [
+        ("status_4xx", 1), ("connection", 1), ("connection", 2),
+        ("timeout", 1), ("status_5xx", 2), ("stop_reason", 1),
+        ("tool_use", 1), ("other", 1), ("prompt_hash", 0),
+    ],
+)
+def test_port_defaults_reproduce_the_old_charge(category: str, attempts: int) -> None:
+    expected = 0 if category in {"status_4xx", "connection"} or attempts == 0 else attempts
+    assert JudgeTransportError(category, attempts=attempts).billable_failures == expected
+    assert JudgeCall("x", 1, 1, attempts=2).billable_failures is None
+    explicit = JudgeTransportError("status_4xx", attempts=2, billable_failures=1)
+    assert explicit.billable_failures == 1 and explicit.args == ("status_4xx",)
+
+
+def test_price_defaults_are_2000_and_10000() -> None:
+    assert (Settings().price_in_nano_per_token, Settings().price_out_nano_per_token) == (
+        2000, 10000)
+    env = {"ASK_KILL_SWITCH": "off"}
+    from_env = Settings.from_env(env)
+    assert (from_env.price_in_nano_per_token, from_env.price_out_nano_per_token) == (2000, 10000)
+    override = Settings.from_env(
+        {**env, "ASK_PRICE_IN_NANO_PER_TOKEN": "3000", "ASK_PRICE_OUT_NANO_PER_TOKEN": "15000"}
+    )
+    assert (override.price_in_nano_per_token, override.price_out_nano_per_token) == (3000, 15000)
+    assert override.kill_switch == "off"

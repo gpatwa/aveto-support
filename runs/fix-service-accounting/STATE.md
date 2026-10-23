@@ -3,7 +3,7 @@
 - **Ask:** intents/fix-service-accounting.md — make the public service's spend accounting correct (issues #6, #7, #8) and redeploy
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 3 Fixes and fail-first tests
+- **Current stage:** 4 Review layer
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents and teammates from this repo's `.claude/agents/`
 - **Telemetry:** self-reported
@@ -19,7 +19,7 @@
 | Charter | Human | approved | runs/fix-service-accounting/CHARTER.md | approval by hash |
 | 1 Scope review | Engineering Manager | done: one slice accepted (about 11 files, flagged), stage list sufficient, #7 also needs judge_port.py and the adapter, `$0.0118` is nowhere in the repo | runs/fix-service-accounting/01-scope.md | — |
 | 2 Tech spec | Software Architect | done: #6 option A (reserve 2 attempts, refund at settle; pipeline only, port signature unchanged); #7 per-attempt rule, `billable_failures` int on port types; #8 2000/10000; 9 fail-first/guard tests named; deploy sheet literal (one placeholder `<TAG12>`); smoke g01, g03, g04, gu15, gu18 from `retrieval-heldout-5.toml`; band $0.0078; no safety-text change (C5.0 holds); `docs/ARCHITECTURE.md` steps 5, 7, 8 updated | runs/fix-service-accounting/05-tech-spec.md | — |
-| 3 Fixes and fail-first tests | Backend Architect | pending | — | local regression green |
+| 3 Fixes and fail-first tests | Backend Architect | done: fail-first proven on 87178bd (T6.1 22466000 vs cap 13124000; T7.1 0 vs R; T7.4 R+C vs C; T7.3/T7.5 AttributeError; T8.1/T8.2 3000/15000); 668 passed, mypy and ruff clean; section 6 checks clean; smoke script not written; test_service_api.py needed a price edit | runs/fix-service-accounting/08-backend-note.md | local regression green |
 | 4 Review layer | Orchestrator | pending | — | findings resolved |
 | 5 QA evidence | QA Evidence | pending | — | — |
 | 6 Security Review (standard) | Security & Privacy | pending | — | — |
@@ -72,6 +72,6 @@ Ceiling 950k (C2.2); hard cap 1,200k (C2.3). The Orchestrator's own session is n
 
 ## Next action
 
-Spawn stage 3 (Backend Architect) with `05-tech-spec.md` §1 to §6 and §8.1; est. 110k, check budget before the spawn.
+Stage 4 review layer on the stage 3 commit (`08-backend-note.md`). Open: smoke script `10-smoke/smoke.py` (spec 8.1) was not part of the stage 3 brief and is not written; decide who writes it before stage 9.
 
 - 2026-10-23 Orchestrator, after stage 2: Architect spent 239k against 90k (2.7×). Projection: 305k + 590k remaining estimates = 895k, above the 730k plan and under the 950k ceiling (C2.2); notice sent, run continues. Rulings on the Architect's open items: (1) the workspace id read (`az monitor log-analytics workspace show`) is read-only and outside C6.P's list; it is run at stage 10 and recorded in END_REVIEW as a C6.P miss, not a stop; (2) `revision activate` untried, kill switch is the fallback, as C8.1 already says; (3) `evals/public-gate-1.toml` not used; (4) smoke figures go into the docs by a Tech Writer addendum after stage 10, inside stage 11's budget; (5) spec name `05-tech-spec.md` kept; (6) `docs/ARCHITECTURE.md` edit accepted (not a non-goal under C1.3). The 429-then-success charge change goes to Security at stage 6 for a ruling.

@@ -145,3 +145,15 @@ def test_runtime_user_can_read_index_and_models() -> None:
     assert m, "group read is not granted on index and models"
     assert runtime.index("chmod") > runtime.rindex("--chown=root:10001")
     assert runtime.index("chmod") < runtime.index("USER 10001")
+
+
+def test_bicep_price_defaults() -> None:
+    from aveto_service import settings
+
+    price_in = re.search(r"param priceInNanoPerToken int = (\d+)\b", BICEP)
+    price_out = re.search(r"param priceOutNanoPerToken int = (\d+)\b", BICEP)
+    assert price_in and price_out
+    assert (price_in.group(1), price_out.group(1)) == ("2000", "10000")
+    assert int(price_in.group(1)) == settings.DEFAULT_PRICE_IN_NANO
+    assert int(price_out.group(1)) == settings.DEFAULT_PRICE_OUT_NANO
+    assert "priceInNanoPerToken" not in PARAMS and "priceOutNanoPerToken" not in PARAMS
