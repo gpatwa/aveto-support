@@ -27,6 +27,15 @@
    "requestedAt": "2026-10-21",
    "decidedAt": "2026-10-21T20:29:11Z",
    "record": "runs/public-ask-the-docs/APPROVAL_RECORD-2.md"
+  },
+  {
+   "action": "Approve the page's AI-disclosure wording and privacy statements as served (render.py sha256 a0bc17f0f4fa229675b78bd7ff83fe8477387a755bc8c2700dfd47a716e5cbfb, PR head dbc8b8190900)",
+   "rule": "owner's own legal and privacy decision (06 R2, 07 G8)",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-22",
+   "decidedAt": "2026-10-23T06:37:20Z",
+   "record": "runs/public-ask-the-docs/APPROVAL_RECORD-3.md"
   }
  ],
  "gateCatches": [
