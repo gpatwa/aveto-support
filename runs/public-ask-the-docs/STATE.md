@@ -45,6 +45,7 @@
 | Deploy to rg-aveto-ask; kill switch on/off | rule 3 | covered | stage 17 (kill switch ON first) | Gopal Patwa via Charter v2 | 2026-10-21 | CHARTER-v2.md#C8.3 |
 | Kill switch OFF (tech spec §7 step 5): the public service starts answering | rule 3 | covered; switch-on gate S1-S9 met per `17-switch-on-recheck.md` (GO WITH CONDITIONS, conditions C1-C4 saved in `17-deploy/conditions-c1-c4.txt`) | executing 2026-10-22 | Gopal Patwa via Charter v2 | 2026-10-22 | CHARTER-v2.md#C8.3 (sha256 e04b8253…ead4) |
 | Page AI-disclosure wording and privacy statements as served (render.py sha256 a0bc17f0…5cbfb at head dbc8b8190900) | legal and privacy items 06 R2, 07 G8 (owner's own decision) | requested in END_REVIEW | approved | Gopal Patwa | 2026-10-23T06:37:20Z | runs/public-ask-the-docs/APPROVAL_RECORD-3.md |
+| Confirm the Anthropic price (read-only) and create an Azure budget alert on rg-aveto-ask (outside Charter v2's resource list) | owner's direct instruction in chat | requested | done | Gopal Patwa | 2026-10-23T06:47:21Z | runs/public-ask-the-docs/APPROVAL_RECORD-4.md |
 | Push claude/public-ask-the-docs; PR into main | rule 3 | covered | stage 19 | Gopal Patwa via Charter v2 | 2026-10-21 | CHARTER-v2.md#C8.2 |
 | Approve Charter v2 (amendment 1: C4.1 SDK headers, C5.2 one sentence) | Charter section 9.1 and 9.5 | yes | approved | Gopal Patwa | 2026-10-21T20:29:11Z | runs/public-ask-the-docs/APPROVAL_RECORD-2.md |
 | Approve the Charter | Charter | yes | approved | Gopal Patwa | 2026-10-21T06:42:08Z | runs/public-ask-the-docs/APPROVAL_RECORD-1.md |

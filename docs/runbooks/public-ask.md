@@ -8,7 +8,7 @@
 > (`runs/public-ask-the-docs/17-deploy/`). Commands marked "not run" were written
 > from the design and have never been executed. Measured: kill-switch change 65 s
 > (on) and 66 s plus about 6 s (off), cold start 30.8 s, cost per question about
-> $0.0118 at default prices (unconfirmed), response median 1.66 s and slowest
+> $0.0079 at Anthropic's published prices (the service's counter reads 50% high), response median 1.66 s and slowest
 > 5.09 s from one client (`18-gate/RESULT.md`). **Not measured:** the monthly
 > Azure cost.
 >
@@ -115,7 +115,7 @@ model and writes no log line. It is public. Fields:
 | `kill_switch` | `"on"` or `"off"`, as read at startup. |
 | `day` | The current UTC date, `YYYY-MM-DD`. |
 | `judged_today` | Questions that reached the model since this replica started on this UTC day. |
-| `input_tokens_today`, `output_tokens_today` | Tokens the API reported for those calls. Stage 18 read cost per question from the change in these across a batch: about $0.0118 per question at the default prices (unconfirmed). |
+| `input_tokens_today`, `output_tokens_today` | Tokens the API reported for those calls. Stage 18 read cost per question from the change in these across a batch: about $0.0079 per question at Anthropic's published prices; the service's own counter, at its $3 and $15 defaults, reads 50% high (see section 8). |
 | `spend_today_usd` | The service's own running total for the day, six decimals. It is the service's count, not Anthropic's bill. |
 | `daily_cap_usd` | The day's share of the monthly cap: $10 / 31 = `0.322580`. |
 
@@ -234,8 +234,50 @@ or sets the limit. The service's own daily counter is a second control, not the
 cap: because it resets with the replica, the console limit is what keeps the
 month at $10. Whether the console limit is a hard stop, and its period, rests on
 the owner's statement and has not been verified by any agent (owner decision D7).
-Azure charges are separate and not under that $10 (decision D5); an Azure
-budget alert is the owner's choice.
+Azure charges are separate and not under that $10 (decision D5); see "Budget
+alert" below.
+
+### Cost and capacity
+
+- Real cost: about $0.0079 per question ($0.1569 for the 20 gate questions;
+  71,151 input and 1,460 output tokens). The first live question cost $0.0099.
+- About 1,270 questions a month fit inside the $10 console limit at that price.
+- The service's daily pause comes at about 27 questions a day by its own counter
+  (about 41 at the real price).
+
+### Pricing (confirmed 2026-10-23)
+
+Confirmed from Anthropic's live pricing page and models overview:
+`claude-sonnet-5-5` is $2 per million input tokens and $10 per million output
+tokens (5-minute cache writes $2.50, 1-hour $4, cache reads $0.10, Batch API $1
+and $5). There is no long-context surcharge. The id `claude-sonnet-5-5` is a
+pinned snapshot (the dateless id is its own snapshot), with retirement not
+sooner than 2027-09-28. The `effort` parameter defaults to `high` on this model.
+
+The service's built-in defaults assume $3 and $15 (`ASK_PRICE_IN_NANO_PER_TOKEN=3000`,
+`ASK_PRICE_OUT_NANO_PER_TOKEN=15000`), so its spend counter overstates real cost
+by 50%. That error is on the safe side. Setting the two values to `2000` and
+`10000` is a parameter change on redeploy (tech spec section 7). **It has not
+been done; it is the owner's call.**
+
+### Budget alert
+
+Created 2026-10-23 on the owner's instruction:
+
+- Budget `bud-aveto-ask`, scope resource group `rg-aveto-ask`, $20 per month
+  (a figure chosen by the Orchestrator; adjustable), monthly from 2026-10-01 to
+  2028-10-31.
+- Notifications to the Owner role (one holder) at 50%, 80% and 100% of actual
+  cost and at 100% of forecast cost.
+- It only notifies. It does not stop or cap spending. Decision D5 is therefore
+  partly answered: alert yes, cap no.
+- It is not in `infra/main.bicep` (the Charter's resource list names no budget).
+  It was created by hand with `az rest` PUT on `Microsoft.Consumption/budgets`
+  (API 2023-05-01).
+- Remove it with:
+  `az rest --method delete --uri https://management.azure.com/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.Consumption/budgets/bud-aveto-ask?api-version=2023-05-01`
+- A separate subscription budget, `compass-pilot-budget` ($100), belongs to the
+  owner's other work and is untouched.
 
 ## 9. Pre-switch-on checklist (Security conditions S-C1 to S-C3)
 

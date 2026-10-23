@@ -36,6 +36,15 @@
    "requestedAt": "2026-10-22",
    "decidedAt": "2026-10-23T06:37:20Z",
    "record": "runs/public-ask-the-docs/APPROVAL_RECORD-3.md"
+  },
+  {
+   "action": "Confirm the Anthropic price (read-only) and set an Azure budget alert (bud-aveto-ask, $20 a month, rg-aveto-ask)",
+   "rule": "owner's direct instruction (an action outside Charter v2's resource list)",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-23",
+   "decidedAt": "2026-10-23T06:47:21Z",
+   "record": "runs/public-ask-the-docs/APPROVAL_RECORD-4.md"
   }
  ],
  "gateCatches": [

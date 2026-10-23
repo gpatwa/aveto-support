@@ -34,3 +34,6 @@ Counters: the service's spend and rate counters reset on every revision change a
 Real visitors, adversarial load, IPv6 clients, a screen reader, the monthly Azure bill, a different judge model or prompt.
 
 ## Note (2026-10-22, end of run): after the gate was scored, `score.py` was edited only to satisfy the repo's lint (imports one per line; the gate file opened in a `with` block). No logic changed; `score.py report` on the saved responses still prints Bar 1 10/10 and Bar 2 8/10.
+
+## Addendum 2026-10-23: price confirmed, cost figure restated
+The cost row above was computed at the service's default prices ($3 and $15 per million tokens), which were unconfirmed. Anthropic's published prices for `claude-sonnet-5-5` are **$2 input and $10 output per million tokens** (read 2026-10-23; `APPROVAL_RECORD-4.md`). From the same recorded tokens (71,151 input, 1,460 output over the 20 questions) the real cost is **$0.1569 in total, $0.00785 per question** (the first live question: $0.00988). The service's own counter, at its $3/$15 defaults, read $0.2354 for the same calls (50% high, a safe error). The table above is left as recorded; this addendum supersedes its cost figure. Nothing else in this result changes.

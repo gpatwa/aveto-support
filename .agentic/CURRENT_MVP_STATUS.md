@@ -40,10 +40,15 @@
     is a measurement, not a capability claim. Judge errors 0 in 20 calls. Answerable
     sources overlap earlier sets' files (may flatter Bar 2). S-A5 (invisible-character
     injection) not covered; no stronger live attack was run.
-  - **Recorded figures:** cost per judged question about $0.0118 ($0.2354 for 20;
-    71,151 input and 1,460 output tokens) at the service's default prices of $3
-    and $15 per million tokens, **unconfirmed** for `claude-sonnet-5-5` (the tech
-    spec estimated $0.008); response time median 1.66 s, 90th percentile 4.14 s,
+  - **Recorded figures:** cost per judged question about $0.0079 at Anthropic's
+    published prices for `claude-sonnet-5-5` ($2 and $10 per million tokens,
+    confirmed 2026-10-23 from the live pricing page and models overview; $0.1569
+    for 20, recomputed from 71,151 input and 1,460 output tokens; the first live
+    question $0.0099). The service's counter, at its built-in $3 and $15, reads
+    50% high ($0.2354 for the same 20), a safe error. About 1,270 questions a
+    month fit in the $10 console limit; the service's daily pause comes at about
+    27 questions a day by its counter (about 41 at the real price). The tech spec
+    had estimated $0.008; response time median 1.66 s, 90th percentile 4.14 s,
     slowest 5.09 s (n = 20, from one client, a Mac, to East US 2); cold start 30.8 s
     to the first `/health` answer from zero replicas after more than an hour idle.
   - **Live checks:** first answered call succeeded after the key was stored again
@@ -139,14 +144,20 @@
   Release Manager's and is not stated here. **Not measured:** the monthly Azure
   cost (Azure's cost data lags about a day; no figure is stated), IPv6 clients
   (the service has no AAAA record), a screen reader, real visitors and adversarial
-  load, the previous-image rollback, whether the default prices ($3 and $15 per
-  million tokens) match `claude-sonnet-5-5`. The `effort` field is accepted
+  load, the previous-image rollback. Price confirmed (see recorded figures). Open
+  item: set the service's price env values to 2000 and 10000
+  (`ASK_PRICE_IN_NANO_PER_TOKEN`, `ASK_PRICE_OUT_NANO_PER_TOKEN`) if the owner
+  wants the counter exact; a parameter change on redeploy, not done, the owner's
+  call. The `effort` field is accepted
   (the owner's direct test and the first live call). Open owner decisions from
   the Security review (D1 to D7): D1 the daily pause holds per replica lifetime, so an
   attacker could use the month's $10 in hours; D2 what to do if the ingress
   address is not per client; D3 whether to reduce the public `/health` after the
   gate; D4 about 40 questions from a few addresses pause the service for everyone
-  until 00:00 UTC; D5 Azure spend is outside the $10 and no budget alert exists;
+  until 00:00 UTC; D5 Azure spend is outside the $10: partly answered on 2026-10-23, a budget alert
+  now exists (`bud-aveto-ask`, $20 a month, resource group `rg-aveto-ask`,
+  notifies the Owner role at 50%, 80%, 100% actual and 100% forecast, created by
+  hand, not in `infra/main.bicep`) but it only notifies and no cap exists;
   D6 the identity can read every secret in the vault; D7 the console limit rests
   on the owner's word. Linking the page from aveto.dev is not done.
 - Tier 3 is ruled (owner, 2026-10-16). The remaining tier 3 items are carried
