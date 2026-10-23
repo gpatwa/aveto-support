@@ -1,0 +1,6 @@
+G5 canary: search every table for the first live question's words, after ingestion (2026-10-22T17:27:14Z)
+install Aveto: PrimaryResult	0
+product repo: PrimaryResult	0
+How do I install: PrimaryResult	0
+abuse rows since the first call:
+PrimaryResult	{"t":"2026-10-22T17:23:43Z","ip":"57a79c66d23f4d5f","o":"answer"}

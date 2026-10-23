@@ -1,0 +1,56 @@
+# Conditions C1 to C4 of 17-switch-on-recheck.md, 2026-10-22T07:23:12Z
+
+## C1a: step-1 abuse rows (kill switch ON), saved from the workspace
+05:57:38 {"t":"2026-10-22T05:57:37Z","ip":"f0dc6b0b54a5e4b4","o":"service_off"}
+05:57:40 {"t":"2026-10-22T05:57:40Z","ip":"f0dc6b0b54a5e4b4","o":"service_off"}
+05:57:42 {"t":"2026-10-22T05:57:42Z","ip":"f0dc6b0b54a5e4b4","o":"service_off"}
+05:57:45 {"t":"2026-10-22T05:57:44Z","ip":"f0dc6b0b54a5e4b4","o":"service_off"}
+05:57:48 {"t":"2026-10-22T05:57:47Z","ip":"f0dc6b0b54a5e4b4","o":"service_off"}
+05:57:49 {"t":"2026-10-22T05:57:49Z","ip":"f0dc6b0b54a5e4b4","o":"service_off"}
+05:57:53 {"t":"2026-10-22T05:57:51Z","ip":"f0dc6b0b54a5e4b4","o":"service_off"}
+05:57:54 {"t":"2026-10-22T05:57:54Z","ip":"f0dc6b0b54a5e4b4","o":"service_off"}
+05:57:56 {"t":"2026-10-22T05:57:56Z","ip":"f0dc6b0b54a5e4b4","o":"service_off"}
+05:57:58 {"t":"2026-10-22T05:57:58Z","ip":"f0dc6b0b54a5e4b4","o":"service_off"}
+05:58:01 {"t":"2026-10-22T05:58:00Z","ip":"f0dc6b0b54a5e4b4","o":"service_off"}
+05:58:04 {"t":"2026-10-22T05:58:03Z","ip":"f0dc6b0b54a5e4b4","o":"service_off"}
+05:58:05 {"t":"2026-10-22T05:58:05Z","ip":"f0dc6b0b54a5e4b4","o":"service_off"}
+
+## C1b: any IPv4-shaped string in either _CL table 07:15-07:25 UTC (phone window), and this Mac's current address (masked)
+PrimaryResult	1	Startup probe failed: Get "http://100.100.0.100:8000/health": dial tcp 100.100.0.100:8000: connect: connection refused    ReplicaUnhealthy
+(no rows above = 0 IPv4-shaped strings)
+(no rows above = 0 hits for this Mac's address)
+
+## tables listing (names, retention)
+ContainerAppSystemLogs	30	30
+ContainerAppHTTPLogs	30	30
+ContainerAppConsoleLogs	30	30
+ContainerAppSystemLogs_CL	7	7
+ContainerAppConsoleLogs_CL	7	7
+
+## C3: /health and active revision
+{"status":"ok","kill_switch":"on","day":"2026-10-22","judged_today":0,"input_tokens_today":0,"output_tokens_today":0,"spend_today_usd":"0.000000","daily_cap_usd":"0.322580"}
+ca-aveto-ask--0000001	True	Healthy	acravetoaskgp.azurecr.io/aveto-ask:879cae23690b
+
+## C4: git diff --stat 73363c56d6d3 879cae23690b
+ Dockerfile                                         |   7 +-
+ runs/public-ask-the-docs/11c-infra-checks.md       |   7 +
+ .../public-ask-the-docs/17-deploy/step1-create.txt |  16 ++
+ .../public-ask-the-docs/17-deploy/step1-whatif.txt |  10 +
+ .../17-deploy/step2-build-start.txt                |   2 +
+ runs/public-ask-the-docs/17-deploy/step2-build.log | 240 +++++++++++++++++++++
+ .../public-ask-the-docs/17-deploy/step3-create.txt |  16 ++
+ .../17-deploy/step3-offstate.txt                   |  18 ++
+ .../public-ask-the-docs/17-deploy/step3-whatif.txt |  10 +
+ runs/public-ask-the-docs/17-p2-recheck-2.txt       |   1 +
+ runs/public-ask-the-docs/17-p2-recheck.txt         |  32 +++
+ runs/public-ask-the-docs/STATE.md                  |   1 +
+ tests/test_infra_static.py                         |  15 ++
+ 13 files changed, 373 insertions(+), 2 deletions(-)
+
+## INV word removals vs main (HEAD)
+[-it runs only in the-]
+[-and-]
+[-the-]
+[-exception,-]
+## method files vs main
+(empty = identical)

@@ -1,0 +1,3 @@
+M3: live vs local retrieve, same index sha256 (f36ef5d4…)
+files 5 passages compared 9 all byte-identical text + lines + links: True
+docs commit live: 3a83b669a8b53dfdff869a1bbe361bdb156e3a13 local: 3a83b669a8b53dfdff869a1bbe361bdb156e3a13

@@ -1,0 +1,6 @@
+S6 first call 2026-10-22T07:24:44Z
+http 502 total 0.427777s
+outcome: judge_error
+{'outcome': 'judge_error', 'text': 'judge error'}
+== /health after
+{"status":"ok","kill_switch":"off","day":"2026-10-22","judged_today":1,"input_tokens_today":0,"output_tokens_today":0,"spend_today_usd":"0.000000","daily_cap_usd":"0.322580"}

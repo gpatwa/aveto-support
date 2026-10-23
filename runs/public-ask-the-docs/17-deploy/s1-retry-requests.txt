@@ -1,0 +1,4 @@
+# S-C1 step 2 retry, same replica as the phone requests
+A 07:20:02 xff='' http 503
+A 07:20:04 xff='1.2.3.4' http 503
+A 07:20:06 xff='198.51.100.7' http 503

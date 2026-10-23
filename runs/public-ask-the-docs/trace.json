@@ -1,0 +1,397 @@
+{
+ "schema": "agentic-sdlc/trace@2",
+ "slice": "public-ask-the-docs",
+ "tier": 3,
+ "overlay": false,
+ "landed": false,
+ "started": "2026-10-20",
+ "operator": "Gopal Patwa",
+ "leastPrivilegeEnforced": true,
+ "leastPrivilegeNote": "Role stages ran as the pack's generated subagents from this repo's worktree with their tool limits enforced (the write-scope guard denied Cloud Deployment three files, SR-1). Because Cloud Deployment, Release Manager, Tech Writer, Software Architect and Production Verification have no shell, the Orchestrator's session ran every live command (az, curl, the gate scorer, the local regression and checks) and saved their output for those roles. Code review ran in the Orchestrator session via the local /code-review skill (unscored). Usage-limit interruptions at stages 6, 7 and 15c were infrastructure, not retries.",
+ "telemetrySource": "self-reported",
+ "approvals": [
+  {
+   "action": "Approve Charter v1 sha256 d0acc5346a80e199e3f95ac57e23a2c01fec43e56d93dbda3b4a03e6a99fa74c",
+   "rule": "Charter (Process v2)",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-20",
+   "decidedAt": "2026-10-21T06:42:08Z",
+   "record": "runs/public-ask-the-docs/APPROVAL_RECORD-1.md"
+  },
+  {
+   "action": "Approve Charter v2 sha256 e04b82539e1fe17ed86d945a93b761dafef4f19c1af30dc4353f31743fc8ead4 (C4.1 SDK headers, C5.2 one sentence)",
+   "rule": "Charter section 9.1 and 9.5; rules 4 and 6",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-21",
+   "decidedAt": "2026-10-21T20:29:11Z",
+   "record": "runs/public-ask-the-docs/APPROVAL_RECORD-2.md"
+  },
+  {
+   "action": "Approve the page's AI-disclosure wording and privacy statements as served (render.py sha256 a0bc17f0f4fa229675b78bd7ff83fe8477387a755bc8c2700dfd47a716e5cbfb, PR head dbc8b8190900)",
+   "rule": "owner's own legal and privacy decision (06 R2, 07 G8)",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-22",
+   "decidedAt": "2026-10-23T06:37:20Z",
+   "record": "runs/public-ask-the-docs/APPROVAL_RECORD-3.md"
+  },
+  {
+   "action": "Confirm the Anthropic price (read-only) and set an Azure budget alert (bud-aveto-ask, $20 a month, rg-aveto-ask)",
+   "rule": "owner's direct instruction (an action outside Charter v2's resource list)",
+   "decision": "approved",
+   "approver": "Gopal Patwa",
+   "requestedAt": "2026-10-23",
+   "decidedAt": "2026-10-23T06:47:21Z",
+   "record": "runs/public-ask-the-docs/APPROVAL_RECORD-4.md"
+  }
+ ],
+ "gateCatches": [
+  {
+   "gate": "Orchestrator code review",
+   "verdict": "fail",
+   "severity": "required-fix",
+   "finding": "CR-1: in-flight spend reservations could close the whole day for everyone (one visitor, 10 concurrent requests)"
+  },
+  {
+   "gate": "Orchestrator code review",
+   "verdict": "fail",
+   "severity": "required-fix",
+   "finding": "CR-2: unbilled judge failures charged a full reservation, so an outage or a rejected request drains the daily share"
+  },
+  {
+   "gate": "Orchestrator code review",
+   "verdict": "fail",
+   "severity": "advisory",
+   "finding": "CR-5, CR-6: stale day at UTC midnight; error responses skipped the page and its security headers"
+  },
+  {
+   "gate": "QA",
+   "verdict": "fail",
+   "severity": "required-fix",
+   "finding": "QA-1: the redundant kill-switch check in the pipeline had no test (mutation survived)"
+  },
+  {
+   "gate": "Security",
+   "verdict": "fail",
+   "severity": "required-fix",
+   "finding": "S-R1: refused-after-retrieval requests unbounded per visitor, and /health queued behind them (825 retrievals in 12 s, health 6 ms to 1.15 s)"
+  },
+  {
+   "gate": "Security",
+   "verdict": "fail",
+   "severity": "advisory",
+   "finding": "S-A2, S-A4, S-A6, S-A8: SDK env redirect, reply-length parity, trailing-slash redirect reflecting Host, cross-site form POST (all fixed)"
+  },
+  {
+   "gate": "Compliance",
+   "verdict": "fail",
+   "severity": "required-fix",
+   "finding": "The page copy lacked the AI-disclosure, Anthropic-as-recipient and no-personal-data lines (fixed before build)"
+  },
+  {
+   "gate": "Different-model words check",
+   "verdict": "fail",
+   "severity": "blocker",
+   "finding": "Two Charter stops in the INV-4/INV-5 words (S10, S11b) and four wording errors; Charter v2 approved by the owner"
+  },
+  {
+   "gate": "Release Manager",
+   "verdict": "fail",
+   "severity": "required-fix",
+   "finding": "No Approvals rows for gated actions (P1) and no processor record in the runbook (P3), fixed before deploy"
+  },
+  {
+   "gate": "Live first deploy",
+   "verdict": "fail",
+   "severity": "blocker",
+   "finding": "F-LIVE-1: index and models written 0600 were unreadable by the runtime uid, container crash-looped (startup_failed index); Dockerfile fixed, rebuilt, redeployed"
+  },
+  {
+   "gate": "Live first call",
+   "verdict": "fail",
+   "severity": "blocker",
+   "finding": "First judge call returned judge error: the stored key was bad (cause not logged by design); owner re-stored it, kill switch back on at once, second call answered"
+  }
+ ],
+ "stages": [
+  {
+   "stage": "Stage 1 scope review (engineering-manager)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 46779,
+   "toolCalls": 16,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 2 PRD (product-manager)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 35923,
+   "toolCalls": 9,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 3 feature spec (ux-researcher)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 31984,
+   "toolCalls": 7,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 4 UX spec (ui-designer)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 26080,
+   "toolCalls": 9,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 5 tech spec (software-architect)",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared",
+   "tokens": 214927,
+   "toolCalls": 79,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 6 AI governance (re-spawn) (ai-governance)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 63072,
+   "toolCalls": 7,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 7 compliance (re-spawn) (compliance-reviewer)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 83754,
+   "toolCalls": 21,
+   "retries": 0
+  },
+  {
+   "stage": "Patch UX copy for disclosures (ui-designer)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 34508,
+   "toolCalls": 6,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 8 backend service (backend-architect)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 146111,
+   "toolCalls": 36,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 9 Anthropic judge adapter (ai-engineer)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 46201,
+   "toolCalls": 16,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 10 public page (frontend-developer)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 75644,
+   "toolCalls": 20,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 11 infra and image (cloud-deployment)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 69025,
+   "toolCalls": 25,
+   "retries": 0
+  },
+  {
+   "stage": "Amend tech spec work split (software-architect)",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared",
+   "tokens": 28716,
+   "toolCalls": 10,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 11c Dockerfile and Azure checks (backend-architect)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 53412,
+   "toolCalls": 16,
+   "retries": 0
+  },
+  {
+   "stage": "Review round 1 fixes (Backend) (backend-architect)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 70008,
+   "toolCalls": 19,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 13 QA evidence (qa-evidence)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 144154,
+   "toolCalls": 57,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 14 adversarial security review (security-privacy)",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared",
+   "tokens": 225649,
+   "toolCalls": 63,
+   "retries": 0
+  },
+  {
+   "stage": "S-A2 SDK egress pinning (AI Engineer) (ai-engineer)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 28514,
+   "toolCalls": null,
+   "retries": 0
+  },
+  {
+   "stage": "S-A4, S-A6, S-A8 service hardening (Backend) (backend-architect)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 36185,
+   "toolCalls": 11,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 15a safety words and architecture doc (software-architect)",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared",
+   "tokens": 202516,
+   "toolCalls": null,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 15b README, status, runbook (tech-writer)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 118548,
+   "toolCalls": null,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 15c words check (re-spawn) (compliance-reviewer)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 180118,
+   "toolCalls": 44,
+   "retries": 0
+  },
+  {
+   "stage": "Apply curable safety-text rewordings (software-architect)",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared",
+   "tokens": 52279,
+   "toolCalls": 11,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 16 Release Gate tier 3 (release-manager)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 197438,
+   "toolCalls": null,
+   "retries": 0
+  },
+  {
+   "stage": "Runbook processor record and monitoring section (tech-writer)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 49605,
+   "toolCalls": null,
+   "retries": 0
+  },
+  {
+   "stage": "INV-5 reading notes N1 and N4 (software-architect)",
+   "executor": "subagent",
+   "model": "opus-5-5",
+   "effort": "declared",
+   "tokens": 38254,
+   "toolCalls": null,
+   "retries": 0
+  },
+  {
+   "stage": "Release Manager smoke re-check, switch-on gate (release-manager)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 54024,
+   "toolCalls": null,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 18 production verification (from saved evidence) (production-verification)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 48664,
+   "toolCalls": null,
+   "retries": 0
+  },
+  {
+   "stage": "Docs: record the measured figures (README, status, runbook) (tech-writer)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 55131,
+   "toolCalls": null,
+   "retries": 0
+  },
+  {
+   "stage": "Stage 19 post-launch learning (post-launch-learning)",
+   "executor": "subagent",
+   "model": "sonnet-5-5",
+   "effort": "declared",
+   "tokens": 39124,
+   "toolCalls": null,
+   "retries": 0
+  }
+ ],
+ "notes": {
+  "gate": "Bar 1 10/10 met; Bar 2 8/10 met exactly at the bar (2 over-abstentions); scored once 2026-10-22; see runs/public-ask-the-docs/18-gate/RESULT.md",
+  "peakContextSum": 2496347,
+  "planTotal": 2000000,
+  "ceiling": 3000000,
+  "hardCap": 3600000
+ }
+}

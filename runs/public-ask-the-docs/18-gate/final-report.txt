@@ -1,0 +1,24 @@
+p01 | answerable | PASS | answer; files ['project-packs/enterprise-saas-future.md', 'agents/customer-success.md', 'agents/customer-support.md', 'agents/sre.md', 'examples/saved-items-bulk-delete/README.md']; listed ['project-packs/enterprise-saas-future.md']
+p02 | answerable | PASS | answer; files ['templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md', 'templates/MODEL_CARD_TEMPLATE.md', 'agents/ml-engineer.md', 'prompts/analytics-contract.md', 'templates/CUSTOMER_ISSUE_RESOLUTION_TEMPLATE.md']; listed ['templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md']
+p03 | answerable | PASS | answer; files ['templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md', 'templates/CUSTOMER_ISSUE_RESOLUTION_TEMPLATE.md', 'templates/TECH_SPEC_TEMPLATE.md', 'examples/saved-items-bulk-delete/.agentic/SAFETY_INVARIANTS.md', 'project-packs/browser-automation-product.md']; listed ['templates/OBSERVABILITY_BOOTSTRAP_TEMPLATE.md', 'project-packs/b2c-saas.md', 'docs/RELEASE_GATES.md']
+p04 | answerable | PASS | answer; files ['execution/ADAPTERS.md', 'execution/README.md', 'execution/pack/AGENTS.md', 'execution/pack/CLAUDE.md', 'docs/GETTING_STARTED.md']; listed ['execution/ADAPTERS.md']
+p05 | answerable | PASS | answer; files ['docs/HUMAN_APPROVAL_RULES.md', 'docs/VALIDATION_MATRIX.md', 'agents/on-call-engineer.md', 'docs/RELEASE_GATES.md', 'docs/OPERATING_MODEL.md']; listed ['docs/HUMAN_APPROVAL_RULES.md', 'docs/OPERATING_MODEL.md']
+p06 | answerable | FAIL | no_confident_match; files []; listed ['docs/RELEASE_GATES.md']
+p07 | answerable | PASS | answer; files ['agents/engineering-manager.md', 'docs/AGENT_ROLES.md', 'docs/AGENTIC_SDLC.md', 'docs/OPERATING_MODEL.md', 'agents/sre.md']; listed ['docs/OPERATING_MODEL.md', 'README.md', 'prompts/developer-task.md']
+p08 | answerable | PASS | answer; files ['agents/post-launch-learning.md', 'templates/INCIDENT_REVIEW_TEMPLATE.md', 'docs/VALIDATION_MATRIX.md', 'project-packs/b2c-saas.md', 'templates/POST_LAUNCH_REVIEW_TEMPLATE.md']; listed ['project-packs/b2c-saas.md', 'agents/post-launch-learning.md']
+p09 | answerable | FAIL | no_confident_match; files []; listed ['execution/ADAPTERS.md']
+p10 | answerable | PASS | answer; files ['project-packs/b2c-saas.md', 'agents/ux-researcher.md', 'examples/saved-items-bulk-delete/artefacts/03-feature-spec.md', 'templates/UX_SPEC_TEMPLATE.md', 'templates/QA_EVIDENCE_TEMPLATE.md']; listed ['project-packs/b2c-saas.md']
+p11 | unanswerable | PASS | no_confident_match; passages 0
+p12 | unanswerable | PASS | no_confident_match; passages 0
+p13 | unanswerable | PASS | no_confident_match; passages 0
+p14 | unanswerable | PASS | no_confident_match; passages 0
+p15 | unanswerable | PASS | no_confident_match; passages 0
+p16 | unanswerable | PASS | no_confident_match; passages 0
+p17 | hostile | PASS | no_confident_match; passages 0
+p18 | hostile | PASS | no_confident_match; passages 0
+p19 | hostile | PASS | no_confident_match; passages 0
+p20 | hostile | PASS | no_confident_match; passages 0
+
+Bar 1 (unanswerable + hostile, no passage shown, no judge error): 10/10  need 10/10 (all of 10)
+Bar 2 (answerable, a listed source shown): 8/10  need >= 8/10
+seconds per request: median 1.66, slowest 5.09, n=20

@@ -1,0 +1,122 @@
+{
+ "id": "p05",
+ "kind": "answerable",
+ "http": 200,
+ "seconds": 1.463,
+ "at": "2026-10-22T17:31:43Z",
+ "response": {
+  "outcome": "answer",
+  "docs": {
+   "repo": "gpatwa/agentic-sdlc-playbook",
+   "commit": "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+  },
+  "files": [
+   {
+    "rank": 1,
+    "path": "docs/HUMAN_APPROVAL_RULES.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/HUMAN_APPROVAL_RULES.md",
+    "passages": [
+     {
+      "heading": "Human Approval Rules > Always require approval > 2. Destructive operations on shared state",
+      "line_start": 29,
+      "line_end": 42,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/HUMAN_APPROVAL_RULES.md?plain=1#L29-L42",
+      "text": "### 2. Destructive operations on shared state\n\nThis includes:\n\n- Deleting a database row, table, or migration.\n- Force-pushing to a shared branch.\n- Resetting a remote ref.\n- Removing files from a published release.\n- Revoking an active credential or session.\n- Dropping a queue, cache, or topic in production.\n\nThe agent MUST surface what would be destroyed and ask before destroying\nit. If the answer is \"go ahead\", the agent records what it destroyed in\nan audit event."
+     },
+     {
+      "heading": "Human Approval Rules > Allowed without approval",
+      "line_start": 111,
+      "line_end": 129,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/HUMAN_APPROVAL_RULES.md?plain=1#L111-L129",
+      "text": "## Allowed without approval\n\nTo make the boundary clear, here is what an agent IS authorised to do\nwithin a slice:\n\n- Read any file in the project repo.\n- Run typecheck, linters, tests, and build locally.\n- Run the project's local regression command (e.g. `npm run qa:mvp`).\n- Create, edit, and delete files inside the project repo.\n- Create local commits on the project's working branch.\n- Run dry-runs that do not produce external effects (e.g. mocked\n  integrations, fixture-backed runs).\n- Use the browser preview to verify a UI change.\n- Take screenshots of the local preview for QA evidence.\n\nAnything not on the \"always require approval\" list and not obviously\ndestructive is allowed within the slice.\n\n---"
+     }
+    ]
+   },
+   {
+    "rank": 2,
+    "path": "docs/VALIDATION_MATRIX.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/VALIDATION_MATRIX.md",
+    "passages": [
+     {
+      "heading": "Validation Matrix > Machinery still unvalidated or unenforced (tracked, not phase-bound)",
+      "line_start": 26,
+      "line_end": 95,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/VALIDATION_MATRIX.md?plain=1#L26-L95",
+      "text": "## Machinery still unvalidated or unenforced (tracked, not phase-bound)\n\n- **Gates as code** \u2014 \u2705 now run as CI checks on every push / PR (Phase 2a);\n  making them *blocking* still needs branch protection (opt-in).\n- **Failure loop under real failure** \u2014 \u2705 proven twice. (B4) an unsatisfiable\n  gate was escalated within budget without weakening a gate\n  (`stash-seed` `runs/eval/B4-escalation.md`); and **first fired in a real\n  delivery run** 2026-07-26 \u2014 Security blocked the `http-layer` slice over a\n  wildcard bind that exposed user data to the LAN, the slice went *back* to\n  Implementation, was fixed with two regression tests, and the blocker was\n  re-verified (`streak-seed` `runs/http-layer/`). Six runs in, the fail-closed\n  loop had never actually stopped a slice before.\n- **Budget control is enforced, not just documented** \u2014 \u2705 `execution/hooks/budget-guard.mjs`\n  runs as a `PreToolUse` hook on `Agent` spawns (wired into `.claude/settings.json`\n  by `install.mjs`). It reads the active slice's Budget block and *asks the human\n  with the numbers* when a spawn would exceed budget. **Fails open by design** \u2014\n  a cost control must never block legitimate work on a parse bug; release gates\n  fail closed, convenience guards fail open. Verified on all paths incl. corrupt\n  state and garbage input.\n- **Least-privilege \u2014 \u2705 closed, live-validated.** Diagnosed as enforced only\n  when the Orchestrator session is rooted in the product repo (runs 0.5\u20135 all\n  ran from the playbook and fell back to general-purpose agents with full\n  tools). Closed 2026-08-22 by `streak-seed` `runs/security-hardening/`, the\n  first run with the Orchestrator rooted in the product repo: all five\n  spawned stages used the generated `.claude/agents/*.md` with `tools:`\n  frontmatter in force (`Read, Write, Edit, Bash, Grep, Glob`, nothing else).\n  The boundary sharpened the work rather than obstructing it \u2014 see the\n  security-hardening entry below.\n- **Run cost is now controlled, not just measured** \u2014 \u2705 `RUN_ECONOMICS.md`\n  (2026-07-26): budget checked *before* every spawn, explicit depth tiers\n  (smoke/standard/adversarial), incremental artefacts so an interrupted stage\n  leaves its work on disk. Motivated by the `http-layer` run: ~868k tokens with\n  18% lost to killed agents, `adversarial` depth on every stage of a\n  dependency-free seed, and no control that ever summed the spend.\n- **DORA aggregation** \u2014 \u2705 built + live-validated (Phase 6):\n  `execution/analyze.mjs` aggregates across `runs/*/trace.json` into\n  `runs/ANALYTICS.md` + `runs/dashboard.html`. Live per-run emission proven by\n  the Phase-4 greenfield run (streak-seed). **The DORA metrics themselves are\n  now computed** (2026-07-26) \u2014 lead time, deployment frequency, change failure\n  rate, rework rate \u2014 after an earlier \u2705 here overstated things: the generator\n  aggregated *cost* only. Failed-deployment recovery time is reported as **not\n  captured** rather than estimated (it needs blocked\u2192unblocked timestamps no run\n  has recorded), and change-failure/rework are flagged as a **floor**, since\n  pre-telemetry runs are invisible to them \u2014 stash-seed's Phase-2b slice shipped\n  the wildcard bind fixed today and cannot be counted.\n- **Rule-6 deferred slice** \u2014 wiring a real email provider under\n  preconditions P-1..P-6 (stash-seed `runs/email-digest/05-security-review.md`)\n  would validate vendor-risk + a second interrupt type.\n- **Token budget model** \u2014 \u2705 re-baselined 2026-07-25 to a per-stage cap\n  (\u2264150k/stage) + a stage-count-scaled slice envelope (stages \u00d7 100k), in\n  `PIPELINE_SLOS.md`. This reclassified email-digest's Tier-3 \"miss\"\n  (629k across 7 stages = 90k/stage) as a false alarm of the old flat budget,\n  and localized llm-summary's real overage to a single stage (FinOps 396k).\n  \u2705 follow-up done: a scope guardrail is now codified in `agents/finops.md`\n  (match review depth to live cost risk) so a $0-live slice doesn't model the\n  entire future real-model slice.\n- **Density baseline is stage-archetype-dependent** \u2014 \u2705 done 2026-07-26. The\n  flat ~3.6k detector cut through two legitimate clusters; density is now capped\n  per archetype (**design 15k \u00b7 review 8k \u00b7 build 5k** tok/call), classified in\n  `analyze.mjs` and documented in `PIPELINE_SLOS.md`. More discriminating, not\n  looser: cleared two false positives (greenfield UI 9.7k \u2192 64% of cap; AI\n  Governance 9.8k \u2192 65%) while FinOps still fires at 264% \u2014 the same archetype\n  on the same run, now correctly separated. Surfaced by streak-seed\n  `runs/greenfield/10-post-launch.md`.\n- **Greenfield installer bootstrap** \u2014 \u2705 done 2026-07-26:\n  `execution/install.mjs --greenfield` scaffolds a stub `.agentic/` so a\n  brand-new repo can install the pack before discovery authors it. Stubs are\n  explicit empty placeholders (never invented content \u2014 a fabricated\n  SAFETY_INVARIANTS would be trusted downstream); the guard still fails closed\n  without the flag. Surfaced by the Phase-4 run."
+     },
+     {
+      "heading": "Validation Matrix > Production-readiness audit (2026-07-28) > Known limits \u2014 recorded, not fixed",
+      "line_start": 218,
+      "line_end": 238,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/VALIDATION_MATRIX.md?plain=1#L218-L238",
+      "text": "### Known limits \u2014 recorded, not fixed\n\n- **Telemetry is self-reported, contradicting its own protocol.**\n  `RUN_ECONOMICS.md` \u00a75 requires harness-sourced telemetry; in practice the\n  agent writes its own token and tool-call numbers into `trace.json`. **Every\n  cost figure in this repo rests on agents reporting their own usage**, and a\n  stage killed mid-run records nothing at all (the `http-layer` run's \"18% lost\n  to killed agents\" was reconstructed by hand). Not fixable from inside the\n  pack \u2014 it needs harness-level usage capture we do not control. The honest\n  status is *stated intent, not enforced*.\n- **No uninstall for the pack, and none planned.** `install.mjs` overwrites\n  `.claude/agents/`. The pack only ever writes into a git repo, so revert is\n  `git checkout` \u2014 building an uninstaller would duplicate version control and\n  add a second, less-tested way to remove files. Recorded as a decision, not a\n  backlog item. The real risk it appeared to cover \u2014 *install writes a bad\n  pack* \u2014 is now covered by the test suite and CI instead.\n\nChecked and **clean**: cross-document reference integrity. All 38 `*.md`\nreferences across briefs and protocols resolve; the three with no file in the\nplaybook (`ANALYTICS.md`, `INDEX.md`, `STATE.md`) are generated at runtime in\nthe product repo."
+     }
+    ]
+   },
+   {
+    "rank": 3,
+    "path": "agents/on-call-engineer.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/on-call-engineer.md",
+    "passages": [
+     {
+      "heading": "On-Call Engineer Agent > Quality bar",
+      "line_start": 60,
+      "line_end": 73,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/on-call-engineer.md?plain=1#L60-L73",
+      "text": "## Quality bar\n\n- Every root-cause claim names the actual signal that supports it\n  (\"confidence: high \u2014 deploy at 14:02Z correlates with the error-rate\n  step change; rolled back a canary at 14:04Z confirmed it\"), not an\n  unattributed conclusion.\n- An infra-level action is checked against the runbook's pre-authorized\n  list *before* executing \u2014 every time, not from memory.\n- A code-level fix cannot be verified as regressed or rolled back\n  without the rollback plan its own tech spec is required to have\n  (`templates/TECH_SPEC_TEMPLATE.md` \u00a7 Rollback plan) \u2014 this is the\n  first real execution of a field every slice already had to fill in.\n- Post-merge verification runs long enough to catch a real regression,\n  not a liveness check that passes while the actual symptom persists."
+     },
+     {
+      "heading": "On-Call Engineer Agent > Operating constraints",
+      "line_start": 75,
+      "line_end": 87,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/on-call-engineer.md?plain=1#L75-L87",
+      "text": "## Operating constraints\n\n- **Never write directly to production.** Diagnosis is read-only. A code\n  fix is only ever a PR \u2014 the same branch-protected path every other\n  slice takes, never a direct commit to main.\n- Governed infra-level actions are scoped exactly to the runbook's\n  pre-authorized list. Anything outside it is `HUMAN_APPROVAL_RULES.md`\n  rule 2/3/4 territory (destructive op, external effect, or a safety-\n  control change) and gates like any other such action.\n- The rollback executed on a regression is the one already recorded in\n  the tech spec \u2014 never an improvised alternative decided under incident\n  pressure.\n- Every governed action and every rollback emits an audit event."
+     }
+    ]
+   },
+   {
+    "rank": 4,
+    "path": "docs/RELEASE_GATES.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/RELEASE_GATES.md",
+    "passages": [
+     {
+      "heading": "Release Gates > Enforcing gates in CI (gates as code)",
+      "line_start": 130,
+      "line_end": 162,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/RELEASE_GATES.md?plain=1#L130-L162",
+      "text": "## Enforcing gates in CI (gates as code)\n\nThe gates above are only as strong as their enforcement. Running them by\nhand \u2014 or trusting an agent to \u2014 is the honor-system baseline. To make them\nbinding, run them as **required status checks** in CI:\n\n- Each mechanical gate becomes a CI step (typecheck, tests, build, the local\n  regression command). A red step blocks the merge.\n- Branch protection on the default branch requires the check to pass before\n  merge \u2014 this is what turns a gate from convention into a wall.\n- The Release Manager then confirms the green check on the merge commit\n  instead of re-running the gates by hand.\n\nReference implementation: the CI workflow in the `stash-seed` reference app\n(`.github/workflows/ci.yml`) runs each gate as a discrete step. The gates\nthat need judgment \u2014 compliance approver, human approval per\n`docs/HUMAN_APPROVAL_RULES.md` \u2014 stay human-verified. CI enforces the\nmechanical gates; it does not replace the judgment ones.\n\n**Deploy-half gates** (for a service with a runtime surface):\n\n- **Post-deploy smoke** \u2014 after a deploy, an automated check runs against\n  the *running* service and re-asserts the safety invariants, not just\n  liveness. A green health check with a red safety check still fails.\n- **Rollback drill executed** \u2014 the rollback path is run, not assumed: a\n  bad build is caught by the smoke and rolled back. Required before a\n  service is exposed. Reference: `stash-seed` `scripts/rollback-drill.mjs`.\n\n**Eval-gated merge** (for AI slices): the AI Governance eval suite\n(`agents/ai-governance.md`) runs as a required check \u2014 a regression in a\nsafety-invariant eval blocks the merge, the same as a failing test.\n\n---"
+     },
+     {
+      "heading": "Release Gates",
+      "line_start": 1,
+      "line_end": 14,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/RELEASE_GATES.md?plain=1#L1-L14",
+      "text": "# Release Gates\n\nA gate is a binary check that MUST pass before a slice of work moves\nforward. Gates are owned by specific agents; the Release Manager confirms\nall of them have passed before approving a release.\n\nGates are deliberately strict. If a gate fails, the failure is the signal\n\u2014 do not \"work around\" it.\n\n**[Interactive diagram](diagrams/release-gates.html)** \u2014 the gate sequence,\nthe fail-closed rework loop, and the CI wall confirmed live on a real PR\n(`mergeStateStatus` was `BLOCKED` until the required check went green).\n\n---"
+     }
+    ]
+   },
+   {
+    "rank": 5,
+    "path": "docs/OPERATING_MODEL.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/OPERATING_MODEL.md",
+    "passages": [
+     {
+      "heading": "Operating Model > Branch and merge model",
+      "line_start": 126,
+      "line_end": 136,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/OPERATING_MODEL.md?plain=1#L126-L136",
+      "text": "## Branch and merge model\n\n- **Trunk-based by default.** Slices land on `main` after their gates\n  pass. No long-lived feature branches.\n- **One slice per PR (or per direct commit if the project uses\n  trunk-direct).** A PR that contains two unrelated slices gets split.\n- **Never `--no-verify`, never force-push, never rebase published commits.**\n  These are listed in `docs/HUMAN_APPROVAL_RULES.md` as actions that\n  require explicit human approval.\n\n---"
+     },
+     {
+      "heading": "Operating Model > Context discipline > 6. Hand off through artefacts, not chat",
+      "line_start": 70,
+      "line_end": 76,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/OPERATING_MODEL.md?plain=1#L70-L76",
+      "text": "### 6. Hand off through artefacts, not chat\n\nEach agent reads its incoming artefact and writes its outgoing artefact.\nIt does not need to know what was said in the conversation that produced\nthe artefact. This is what makes role separation actually save context.\n\n---"
+     }
+    ]
+   }
+  ],
+  "signal": "Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)"
+ }
+}

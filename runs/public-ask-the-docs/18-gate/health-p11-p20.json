@@ -1,0 +1,22 @@
+{
+ "before": {
+  "status": "ok",
+  "kill_switch": "off",
+  "day": "2026-10-22",
+  "judged_today": 0,
+  "input_tokens_today": 0,
+  "output_tokens_today": 0,
+  "spend_today_usd": "0.000000",
+  "daily_cap_usd": "0.322580"
+ },
+ "after": {
+  "status": "ok",
+  "kill_switch": "off",
+  "day": "2026-10-22",
+  "judged_today": 10,
+  "input_tokens_today": 35916,
+  "output_tokens_today": 470,
+  "spend_today_usd": "0.114798",
+  "daily_cap_usd": "0.322580"
+ }
+}

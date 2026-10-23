@@ -1,0 +1,122 @@
+{
+ "id": "p01",
+ "kind": "answerable",
+ "http": 200,
+ "seconds": 2.801,
+ "at": "2026-10-22T17:31:28Z",
+ "response": {
+  "outcome": "answer",
+  "docs": {
+   "repo": "gpatwa/agentic-sdlc-playbook",
+   "commit": "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+  },
+  "files": [
+   {
+    "rank": 1,
+    "path": "project-packs/enterprise-saas-future.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/project-packs/enterprise-saas-future.md",
+    "passages": [
+     {
+      "heading": "Project Pack \u2014 Enterprise SaaS (Future Roadmap) > Product principles",
+      "line_start": 24,
+      "line_end": 34,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/project-packs/enterprise-saas-future.md?plain=1#L24-L34",
+      "text": "## Product principles\n\n- **Admin separation.** Admin actions and end-user actions live in\n  separate surfaces. Admin actions have stricter approval and audit.\n- **RBAC by default.** Every record carries a tenant ID and a user ID.\n  Cross-tenant access is impossible by construction.\n- **Audit log is a product surface.** The customer admin can inspect\n  what their users did and what the system did on their behalf.\n- **Configurable safety.** Customers can tighten safety rules (more\n  approval gates, narrower data retention) but never loosen the floor\n  the product enforces."
+     },
+     {
+      "heading": "Project Pack \u2014 Enterprise SaaS (Future Roadmap) > Safety invariants (recommended floor)",
+      "line_start": 72,
+      "line_end": 83,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/project-packs/enterprise-saas-future.md?plain=1#L72-L83",
+      "text": "## Safety invariants (recommended floor)\n\n- Tenant ID + user ID on every record. Always.\n- Cross-tenant queries throw at the service boundary, not just the\n  query builder.\n- Audit log is append-only and exportable.\n- PII fields have explicit retention policies in code.\n- SSO / API key revocation is immediate and audited.\n- No customer data flows to a third-party processor without explicit\n  configuration the customer can audit, a vendor risk assessment\n  (`templates/VENDOR_RISK_TEMPLATE.md`), and the approval required by\n  `docs/HUMAN_APPROVAL_RULES.md` rule 6."
+     }
+    ]
+   },
+   {
+    "rank": 2,
+    "path": "agents/customer-success.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/customer-success.md",
+    "passages": [
+     {
+      "heading": "Customer Success Agent > Mission",
+      "line_start": 3,
+      "line_end": 12,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/customer-success.md?plain=1#L3-L12",
+      "text": "## Mission\n\nTurn live-customer signal \u2014 support patterns, health scores, QBR notes,\nrenewal risk \u2014 into product-actionable carry-forward. This is the\naccount-level, qualitative mirror of the Data Analyst (who works in\naggregate quant) and the demand-side mirror of the Market Researcher (who\nvalidates problems before build). It runs in post-launch, once the product\nhas customers.\n\nThis is an enterprise overlay role (see the enterprise project pack)."
+     },
+     {
+      "heading": "Customer Success Agent > Operating constraints",
+      "line_start": 61,
+      "line_end": 69,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/customer-success.md?plain=1#L61-L69",
+      "text": "## Operating constraints\n\n- Never expose one customer's data or identity in another customer's\n  context.\n- Don't commit roadmap to a customer; surface signal internally and let\n  the Orchestrator + human decide.\n- Distinguish the loudest account from the most representative one.\n- A recurring, validated problem is handed to the Market Researcher for\n  the next discovery loop, not pushed straight into a build."
+     }
+    ]
+   },
+   {
+    "rank": 3,
+    "path": "agents/customer-support.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/customer-support.md",
+    "passages": [
+     {
+      "heading": "Customer Support Agent > Mission",
+      "line_start": 3,
+      "line_end": 14,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/customer-support.md?plain=1#L3-L14",
+      "text": "## Mission\n\nTriage an inbound customer issue, resolve what's answerable directly\nfrom account and product context, escalate anything technical to\n`agents/on-call-engineer.md`, and draft \u2014 never send \u2014 the customer-\nfacing reply once a resolution is known.\n\nThis is an enterprise / operations overlay role (see the enterprise\nproject pack), paired with On-Call Engineer for technical issues and\ndistinct from `agents/customer-success.md`: this role resolves *one\ncustomer's* issue; Customer Success finds the *pattern* across many.\nBoth matter; neither substitutes for the other."
+     },
+     {
+      "heading": "Customer Support Agent > Decisions the Customer Support Agent does NOT own",
+      "line_start": 43,
+      "line_end": 51,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/customer-support.md?plain=1#L43-L51",
+      "text": "## Decisions the Customer Support Agent does NOT own\n\n- **Sending the reply.** Always gated per `docs/HUMAN_APPROVAL_RULES.md`\n  rule 1 \u2014 sending on a user's behalf is the one invariant that never\n  relaxes, not for a canned response, not for a trusted category of issue.\n- The root cause of a technical issue (On-Call owns; this role does not\n  guess at one).\n- Whether a recurring pattern becomes a product change (Customer\n  Success owns, at the aggregate level)."
+     }
+    ]
+   },
+   {
+    "rank": 4,
+    "path": "agents/sre.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/sre.md",
+    "passages": [
+     {
+      "heading": "Site Reliability Engineer Agent > Operating constraints",
+      "line_start": 69,
+      "line_end": 80,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/sre.md?plain=1#L69-L80",
+      "text": "## Operating constraints\n\n- Destructive or external-effect mitigations during an incident still\n  follow `docs/HUMAN_APPROVAL_RULES.md`. A runbook MAY pre-authorise\n  specific, named mitigation steps; anything outside the runbook needs\n  in-the-moment approval. Every mitigation that changes production state\n  produces an audit event.\n- Never change an SLO to make the error budget look green. SLO changes\n  are reviewed and recorded with a rationale.\n- Don't page humans for conditions a runbook can auto-remediate.\n- Don't let an incident review close without at least one preventative\n  (not just mitigative) action item."
+     },
+     {
+      "heading": "Site Reliability Engineer Agent > Mission",
+      "line_start": 3,
+      "line_end": 13,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/sre.md?plain=1#L3-L13",
+      "text": "## Mission\n\nOwn production after the slice ships: define what \"reliable enough\" means,\ndetect when it isn't, and turn failures into systemic fixes. This is the\nrole that exists between Release and the next slice \u2014 the one that keeps\nthe service alive, pages a human only when it should, and feeds incident\nlearnings back into the lifecycle.\n\nThis is an enterprise / operations overlay role (see the enterprise\nproject pack). A B2C MVP can defer it; a product with uptime commitments\ncannot."
+     }
+    ]
+   },
+   {
+    "rank": 5,
+    "path": "examples/saved-items-bulk-delete/README.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/examples/saved-items-bulk-delete/README.md",
+    "passages": [
+     {
+      "heading": "Worked Example \u2014 Bulk-delete saved items (Stash) > What this example validates",
+      "line_start": 40,
+      "line_end": 49,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/examples/saved-items-bulk-delete/README.md?plain=1#L40-L49",
+      "text": "## What this example validates\n\n- The artefacts **chain**: each stage's output is enough for the next stage\n  to act without re-deriving context.\n- The **compression rule** works: the EM skips Market Research with a\n  recorded reason.\n- A **safety invariant** flows from `.agentic/SAFETY_INVARIANTS.md` \u2192\n  PRD constraint \u2192 tech spec design \u2192 QA verification \u2192 security sign-off.\n- The **release tier** logic: this is Tier 2 (behavioural, no external\n  effect), so it needs QA + security + rollback but no human-approval gate."
+     },
+     {
+      "heading": "Worked Example \u2014 Bulk-delete saved items (Stash) > Why this slice",
+      "line_start": 12,
+      "line_end": 17,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/examples/saved-items-bulk-delete/README.md?plain=1#L12-L17",
+      "text": "## Why this slice\n\nIt's small and generic (CRUD), but it touches a **product safety\ninvariant** \u2014 destructive actions must be confirmed, soft-deleted, and\naudited \u2014 so the example shows the QA, security, and release gates doing\nreal work rather than rubber-stamping."
+     }
+    ]
+   }
+  ],
+  "signal": "Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)"
+ }
+}

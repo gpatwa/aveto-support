@@ -23,6 +23,15 @@
 > words that cover it are approved and live in `.agentic/SAFETY_INVARIANTS.md`.
 > Tech specs: `runs/docs-retrieval/02-tech-spec.md` (retrieval);
 > `runs/docs-answerability-2/02-tech-spec.md` (the judge step).
+>
+> **Branch `claude/public-ask-the-docs` (2026-10-21, not merged, not yet
+> deployed)** adds a public ask-the-docs service, package `aveto_service`,
+> beside the unchanged program: a page and `POST /ask` that return `retrieve`'s
+> verbatim passages or `no confident match`, judged through the Anthropic
+> Messages API, under fixed limits, on Azure Container Apps
+> ([ADR 0009](adr/0009-public-ask-service-on-azure-container-apps.md),
+> proposed). See "Public ask service". Tech spec:
+> `runs/public-ask-the-docs/05-tech-spec.md`.
 
 ## What exists
 
@@ -30,13 +39,19 @@ Aveto Support will be a support agent that drafts grounded replies to GitHub
 issues and Discussions from a product's own docs, and never posts without a
 person's approval. Today, only **step 2 of the pipeline, retrieval, exists**, as a
 command-line tool, plus, on this branch, an **attended judge step** that can turn
-a retrieval result into `no confident match`. It has no server and no database.
+a retrieval result into `no confident match`. The program has no server and no
+database. On branch `claude/public-ask-the-docs`, a separate package,
+`aveto_service`, puts the same retrieval and the same judge prompt and parser
+behind a public HTTPS page (see "Public ask service"); it has no database
+either.
 
 The program runs **only local, non-generative models**: a small embedding model
 on the CPU, and optionally a cross-encoder reranker. They rank passages and never
 write text. The judge step's model is **not run by the program**: it is a
 subagent in the operator's own Claude Code session, which returns one verdict
-token that the program applies.
+token that the program applies. The public service (not the program) calls the
+same judge model through the Anthropic Messages API and keeps only the same
+verdict token.
 
 ```
                     ┌──────────────── today ───────────────────────────────────────────────┐
@@ -177,6 +192,177 @@ The reasoning is in [ADR 0003](adr/0003-hybrid-embedding-retrieval.md), which
 supersedes the ranking and confidence parts of
 [ADR 0002](adr/0002-lexical-retrieval-calibrated-abstention.md).
 
+## Public ask service (branch `claude/public-ask-the-docs`)
+
+A visitor types a question on a public page and gets either `retrieve`'s
+verbatim passages or `no confident match`, decided by the answerability judge
+(`claude-sonnet-5-5`, prompt `answerability-judge-v1`) called through the
+Anthropic Messages API. Decision record:
+[ADR 0009](adr/0009-public-ask-service-on-azure-container-apps.md) (proposed).
+State on this branch: built and tested offline; not yet deployed; no live
+Anthropic call has been made. The authoritative safety words are INV-4 and
+INV-5 in [`.agentic/SAFETY_INVARIANTS.md`](../.agentic/SAFETY_INVARIANTS.md).
+
+### Package layout
+
+`aveto_service/` is a top-level package beside `aveto_support/`, not inside
+it, so INV-5's "the program" (`python -m aveto_support`) keeps its meaning and
+`aveto_support/` imports nothing from the service or its dependencies
+(`test_aveto_support_imports_no_service_deps`). The service imports and calls
+the core unchanged (`judge.normalise_question`, `retrieve_for_judge`,
+`format_judge_input`, `parse_verdict`, `signal_line`, `search.Searcher`,
+`index.load_index`, `embed.OnnxEmbedder`); `test_core_files_unchanged` pins
+the core, the prompt and the attended judge's files to their hashes at
+`2919c87`.
+
+| Module | Responsibility |
+|---|---|
+| `settings.py` | Reads the environment once at startup into a frozen `Settings`. Any kill-switch value other than exactly `off`, or any unparsable price, cap or client-key setting, means the kill switch is on. The key is hidden from `repr` |
+| `judge_port.py` | The model boundary as a `Protocol` (`JudgeClient.judge(system_prompt, payload) -> JudgeCall`), `JudgeTransportError` with a fixed category, and `PlaceholderJudgeClient`, which raises "answerability judge LLM adapter is not configured in this build." and is used whenever no key is set |
+| `anthropic_judge.py` | **The only generative-model adapter and the only network client.** Builds the request (`model`, `max_tokens` 1024, `system`, one user message, `output_config.effort` `high`; no tools), host fixed to `https://api.anthropic.com`, 20 s timeout, at most two attempts, SDK loggers muted, every failure mapped to a fixed category with the exception text dropped. Refuses to be built if `ANTHROPIC_CUSTOM_HEADERS` is set |
+| `limits.py` | Question validation, client-address resolution and hashing, the per-visitor sliding-window limiters, the spend counter in integer nano-dollars |
+| `abuse_log.py` | The service's only log lines (abuse line, fixed ops codes) and `configure_logging()`, which silences every library logger |
+| `pipeline.py` | `AskService.ask`: the gates below in a fixed order, retrieval, admission, the judge call, the parse, and the mapping to an `AskResult` (which has no question field) |
+| `app.py` | `load_runtime` (prompt hash check, index, embedder; any failure is one `startup_failed` ops line and exit 1) and the FastAPI app: `POST /ask`, `GET /health`, and, with a renderer, `GET /`, `GET /result/{token}`, `GET /static/{name}`. No OpenAPI or docs routes, no trailing-slash redirects, telemetry auto-configuration off |
+| `html_port.py`, `pages.py`, `render.py`, `static/` | The page: HTML from `string.Template` with every value escaped, a small script (`enhance.js`) that posts JSON, and a stylesheet; strict security headers, no cookies, no external resource |
+| `result_store.py` | The post-redirect-get store for form posts (below) |
+| `main.py` | Composition root (`uvicorn aveto_service.main:app`): the real adapter only when `ANTHROPIC_API_KEY` is non-empty, else the placeholder |
+
+### Request flow
+
+`POST /ask` is the only route that reaches the judge. Each request runs these
+steps in this order; every step before the model call fails closed, makes no
+model call, and refuses with a fixed outcome; every `POST /ask` writes exactly
+one abuse line (the route's own catch-all writes the `unhandled` ops line
+instead).
+
+1. **Kill switch** (before the body is read): `service_off` (HTTP 503). The
+   pipeline checks it again before any work.
+2. **Cross-site refusal** (before the body is read): `Sec-Fetch-Site:
+   cross-site`, or an `Origin` whose host is not the request's `Host`, is
+   `bad_request` (400).
+3. **Body cap and shape**: over 16,384 bytes (declared or streamed) is
+   `body_too_large` (413); anything but a JSON object `{"question": "<string>"}`
+   or a form with exactly one `question` field is `bad_request`.
+4. **Question**: empty is `empty_question`; over 500 code points is
+   `too_long`; a control or format character, or nothing searchable, is
+   `unusable_question` (all 400).
+5. **Per-visitor limits and spend peek**, under one lock, keyed by a salted
+   per-process HMAC of the visitor's address (the rightmost `X-Forwarded-For`
+   entry, or the peer; IPv6 by /64): at most 10 admitted questions and at most
+   30 retrievals per rolling hour (`rate_limited`, 429); then the day's spend
+   must leave room for the smallest possible request (`paused`, 503). The
+   request is then counted against the 30-retrieval cap, whatever happens
+   next.
+6. **Retrieval**: `retrieve_for_judge` then `format_judge_input`, one at a time
+   under a lock. A passage that would forge a payload boundary, or any error,
+   is `judge_error` with no model call.
+7. **Admission with reservation**, atomic under the lock: the hourly limit is
+   checked again and the request's worst-case cost (from the payload's size
+   and `max_tokens`) is reserved against the day's share
+   (`ASK_MONTHLY_CAP_USD` / 31, per UTC day); no room is `paused`. Only from
+   here does the request count against the visitor's 10 an hour.
+8. **Judge**: one Anthropic Messages call, at most two attempts. A timeout,
+   connection error, HTTP error status, stop reason other than `end_turn`,
+   tool-use block or prompt-hash mismatch is a failed call. The reservation is
+   then settled: actual cost from the response's token usage on success; on
+   failure, the full reservation per attempt, except HTTP 4xx, connection
+   errors, a prompt-hash mismatch and a missing key, which are charged
+   nothing.
+9. **Parse**: a failed call, a reply over 4,096 bytes, or any reply
+   `parse_verdict` refuses is `judge_error` (502). Of the reply only the
+   verdict token is kept.
+10. **Map**: `ANSWERABLE` → `answer` (200) with every file and passage of the
+    same retrieval result, each passage's full verbatim text with path,
+    heading, line range and pinned-commit permalink, and the deciding-signal
+    line in the JSON; `NOT_ANSWERABLE` → `no_confident_match` (200). The page
+    renders the same result; a form post that reached step 8 is stored and
+    answered with a 303 to `/result/<token>`, so a reload never asks again.
+
+`GET /health` (async, so it never waits behind retrieval) returns the kill
+switch, the UTC day and the day's judged count, token counts, spend and cap;
+it never calls a model and writes no abuse line. The probes use it.
+
+```mermaid
+flowchart LR
+  v[visitor's browser] -->|HTTPS| ing[Container Apps ingress]
+  ing --> ask[POST /ask]
+  ask --> g1[1 kill switch] --> g2[2 cross-site] --> g3[3 body cap and shape] --> g4[4 question]
+  g4 --> g5[5 per-visitor limits<br/>10 questions, 30 retrievals an hour<br/>spend peek]
+  g5 --> r[6 retrieve_for_judge<br/>format_judge_input]
+  idx[(index + embedding model<br/>built into the image)] --> r
+  r --> adm[7 admission<br/>reserve against the day's share]
+  adm --> j[8 anthropic_judge<br/>POST api.anthropic.com/v1/messages]
+  kv[(Key Vault secret<br/>anthropic-api-key)] -. env ANTHROPIC_API_KEY .-> j
+  j --> p[9 length check + parse_verdict<br/>token only]
+  p --> m[10 map: answer / no_confident_match / judge_error]
+  m --> v
+  ask -. one abuse line per request .-> log[(Log Analytics)]
+```
+
+### What is stored
+
+Nothing on disk, and no question anywhere. In memory, per process: the
+per-visitor timestamps (keyed by the salted hash; the salt is random per
+process and never logged), the day's spend and token counters, and the result
+store (form posts only: the outcome and public passages under a random token,
+10 minutes, at most 1,000 entries, no question text). All of it is lost when
+the replica stops. The process's stdout goes to Log Analytics and holds only
+the abuse line `{"t","ip","o"}` (a time, the first 16 hex characters of the
+hash, an outcome code) and the ops lines `startup_ok`, `startup_failed` with a
+fixed category, and `unhandled`. The two console and system log tables are set
+to 7-day retention by the Bicep's `configureLogRetention` step; until it is
+applied and read back, the kill switch stays on.
+
+### Azure resources (Charter C8.3, `infra/main.bicep`)
+
+All in resource group `rg-aveto-ask` (eastus2): user-assigned identity
+`id-aveto-ask`; container registry `acravetoaskgp` (Basic, admin user off);
+Log Analytics workspace `log-aveto-ask` (daily ingestion cap, retention set on
+its two Container Apps tables); Container Apps environment `cae-aveto-ask`;
+Container App `ca-aveto-ask` (0.5 vCPU / 1 GiB, `minReplicas` 0,
+`maxReplicas` 1, external HTTPS ingress, insecure traffic not allowed, single
+revision mode, probes on `/health`); role assignments `Key Vault Secrets User`
+on the owner's existing vault `kv-aveto-ask-gp` and `AcrPull` on the registry,
+both for the identity. The key reaches the container only as a Container Apps
+secret reference to `kv-aveto-ask-gp/secrets/anthropic-api-key`, surfaced as
+`ANTHROPIC_API_KEY`. The image is built from the branch by `az acr build`:
+digest-pinned bases, `uv sync --locked --no-dev`, and `ingest` run inside the
+build (INV-5's two GETs, no reranker), so the index and model ship in the
+image; it runs as a non-root user. The kill switch is the Bicep parameter
+`killSwitch` (default `on`), applied with `az deployment group create`;
+rollback is that command with the kill switch on or the previous image tag.
+Commands: `runs/public-ask-the-docs/11-infra-note.md` and the tech spec §7.
+
+### Known limits (stated plainly)
+
+- **The limits reset with the replica (CR-3, owner decision D1).** The hourly
+  limits and the day's spend are in memory. They start again from zero when
+  the replica scales to zero after idling, restarts, or a new revision starts
+  (every kill-switch change or deploy). So the daily pause holds per replica
+  lifetime, not per day. The month's money is bounded only by the Anthropic
+  console's monthly limit, which rests on the owner's statement (C6.6) and was
+  not verified by an agent; Security estimated that a determined attacker can
+  use it up within hours and leave the service answering "judge error" until
+  it resets. Accepting this, or amending the Charter, is the owner's decision.
+- **One shared daily share (D4).** A few addresses can use up the day's share
+  and pause the service for everyone until 00:00 UTC; that is the intended
+  fail-closed trade.
+- **The visitor key depends on the ingress (CR-4).** Using the rightmost
+  `X-Forwarded-For` entry is right only if the ingress appends the client's
+  address; that is checked with the kill switch on at deployment, before the
+  service is switched on.
+- **The kill switch is a new revision**, not an in-place toggle: no image
+  build, but the replica is replaced (and the counters reset).
+- **Azure spend is not under the Anthropic cap** (S-A11); `maxReplicas` 1 and
+  the log ingestion cap bound it.
+- **`/health` is public** and shows the day's aggregate counters (CR-8, owner
+  decision D3 after the gate).
+
+Cost per question, cold start, latency and the public gate's results are not
+stated here: none has been measured yet. They are measured at stage 18 and
+recorded in `runs/public-ask-the-docs/`.
+
 ## Model adapter boundaries
 
 - **Embedding (retrieval, step 2): real and local.** `Embedder` is a
@@ -202,8 +388,17 @@ supersedes the ranking and confidence parts of
   A missing, empty or unusable reply is `judge error` (exit 4), never passages
   and never a pass-through. Tests feed reply bytes directly; they need no
   model, network or key.
-- **FastAPI** routes, once an HTTP surface is needed, wrap the same service
-  functions.
+- **Answerability judge in the public service (branch
+  `claude/public-ask-the-docs`): a real adapter, outside the program.**
+  `aveto_service/judge_port.py` holds the `JudgeClient` protocol and
+  `PlaceholderJudgeClient`, which throws by default and is used whenever no
+  key is set (every question is then `judge error`, with no network call).
+  `aveto_service/anthropic_judge.py` is the real client; it receives only the
+  system prompt and the payload (its signature has no visitor parameter).
+  Tests use a fake client or the real SDK client against a mock transport or
+  the autouse network block; they need no key and make no call.
+- **FastAPI** routes wrap the same service functions the CLI calls: the
+  public service's routes call `aveto_support` unchanged.
 
 ## Safety stance (this slice)
 
@@ -212,13 +407,17 @@ supersedes the ranking and confidence parts of
 > approved by the owner under rule 4
 > (`runs/docs-answerability-2/APPROVAL_RECORD-5.md`, and
 > `APPROVAL_RECORD-8.md` for one INV-5 edit). Where this summary and that file
-> differ, the file wins.
+> differ, the file wins. On branch `claude/public-ask-the-docs`, the words
+> covering the public service were added within the bounds of that run's
+> Charter C5.1 and C5.2 (`runs/public-ask-the-docs/CHARTER.md`, approved in
+> its `APPROVAL_RECORD-1.md`); INV-1 to INV-3 are unchanged.
 
 - **Sources, never answers (INV-4).** `retrieve` returns only verbatim passages
   and does not abstain. A model may rank passages, decide confidence, and, in
-  the operator-run judge step only, return a verdict that decides whether
-  `retrieve`'s whole output or `no confident match` is printed. No model
-  produces, selects among or alters the text shown.
+  the operator-run judge step and the public service's `POST /ask` only,
+  return a verdict that decides whether `retrieve`'s whole output (in the
+  service, every retrieved passage in full) or `no confident match` is shown.
+  No model produces, selects among or alters the text shown.
 - **Provenance is always visible.** A passage can only be printed together with
   its path, heading, line range and commit permalink.
 - **Not silent when the docs do not answer.** `retrieve` alone always returns
@@ -251,12 +450,19 @@ supersedes the ranking and confidence parts of
   text anywhere:** `retrieve`, `eval` (with or without `--verdicts`),
   `judge-input` and `judge-apply` make no network call and start no process
   (`test_program_offline_no_model`), and the default test suite blocks the
-  network. **The operator's session is the one exception, and it is not the
-  program:** when the operator runs the judge step, the question, the payload,
+  network. **The operator's session is the one exception on the attended
+  judge step, and it is not the program:** when the operator runs the judge step, the question, the payload,
   the reply and the session context the harness attaches go to that session's
   model provider (Anthropic, approved as data processor under
   `runs/docs-answerability-2/APPROVAL_RECORD-3.md`, attended only). INV-5
-  lists what is attached, as measured.
+  lists what is attached, as measured. **On branch
+  `claude/public-ask-the-docs`, the public service is the other exception,
+  and it is not the program either:** an HTTPS POST to
+  `https://api.anthropic.com/v1/messages` carrying, of the question and the
+  docs, only the fixed judge prompt and `judge-input`'s payload (Charter C4.1
+  of that run), plus fixed protocol fields and the SDK's own headers about the
+  service's runtime; no visitor address, identifier or request header. INV-5
+  names the fields and headers.
 - **Nothing posts.** There is no GitHub write client and no credential of any
   kind (INV-1).
 
@@ -305,3 +511,7 @@ score is printed on the `eval` step's stdout, and CI gates on the **exit code**.
   operator-run `claude-sonnet-5-5` judge, method registered before it runs.
   *Proposed; built on branch `claude/docs-answerability-2`; both registered
   bars met once (stage 5 and stage 7). Acceptance is the owner's.*
+- [ADR 0009](adr/0009-public-ask-service-on-azure-container-apps.md): a public
+  ask-the-docs service on Azure Container Apps, judging through the Anthropic
+  API. *Proposed; built on branch `claude/public-ask-the-docs`, not yet
+  deployed.*

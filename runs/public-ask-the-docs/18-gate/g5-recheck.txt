@@ -1,0 +1,27 @@
+G5 re-check after the 20 gate calls (2026-10-22T23:14:19Z): 3-word phrases from the 20 gate questions searched across every workspace table since 17:00 UTC
+phrases searched: 20; total hits: 0; phrases with hits: []
+console-table lines by outcome/ops since 17:00:
+   PrimaryResult	5		
+   PrimaryResult	5		startup_ok
+   PrimaryResult	1	service_off	
+   PrimaryResult	9	answer	
+   PrimaryResult	12	no_confident_match	
+IPv4-shaped strings in the two _CL tables since 17:00:
+   Startup probe failed: Get "http://100.100.0.35:8000/health": dial tcp 100.100.0.35:8000: connect: connection refused 	PrimaryResult
+   Readiness probe failed: Get "http://100.100.0.56:8000/health": dial tcp 100.100.0.56:8000: connect: connection refused 	PrimaryResult
+   Readiness probe failed: Get "http://100.100.0.56:8000/health": dial tcp 100.100.0.56:8000: connect: connection refused 	PrimaryResult
+   Readiness probe failed: Get "http://100.100.0.56:8000/health": dial tcp 100.100.0.56:8000: connect: connection refused 	PrimaryResult
+   Startup probe failed: Get "http://100.100.0.80:8000/health": dial tcp 100.100.0.80:8000: connect: connection refused 	PrimaryResult
+   Readiness probe failed: Get "http://100.100.0.35:8000/health": dial tcp 100.100.0.35:8000: connect: connection refused 	PrimaryResult
+   Readiness probe failed: Get "http://100.100.0.35:8000/health": dial tcp 100.100.0.35:8000: connect: connection refused 	PrimaryResult
+   Startup probe failed: Get "http://100.100.0.12:8000/health": dial tcp 100.100.0.12:8000: connect: connection refused 	PrimaryResult
+   Startup probe failed: Get "http://100.100.0.12:8000/health": dial tcp 100.100.0.12:8000: connect: connection refused 	PrimaryResult
+   Startup probe failed: Get "http://100.100.0.56:8000/health": dial tcp 100.100.0.56:8000: connect: connection refused 	PrimaryResult
+   Readiness probe failed: Get "http://100.100.0.80:8000/health": dial tcp 100.100.0.80:8000: connect: connection refused 	PrimaryResult
+   Readiness probe failed: Get "http://100.100.0.80:8000/health": dial tcp 100.100.0.80:8000: connect: connection refused 	PrimaryResult
+   Readiness probe failed: Get "http://100.100.0.80:8000/health": dial tcp 100.100.0.80:8000: connect: connection refused 	PrimaryResult
+   Startup probe failed: Get "http://100.100.0.90:8000/health": dial tcp 100.100.0.90:8000: connect: connection refused 	PrimaryResult
+   Readiness probe failed: Get "http://100.100.0.12:8000/health": dial tcp 100.100.0.12:8000: connect: connection refused 	PrimaryResult
+   Readiness probe failed: Get "http://100.100.0.12:8000/health": dial tcp 100.100.0.12:8000: connect: connection refused 	PrimaryResult
+   Readiness probe failed: Get "http://100.100.0.12:8000/health": dial tcp 100.100.0.12:8000: connect: connection refused 	PrimaryResult
+

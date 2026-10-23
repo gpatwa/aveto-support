@@ -1,0 +1,13 @@
+health before: {'status': 'ok', 'kill_switch': 'off', 'day': '2026-10-22', 'judged_today': 0, 'input_tokens_today': 0, 'output_tokens_today': 0, 'spend_today_usd': '0.000000', 'daily_cap_usd': '0.322580'}
+p01 answerable 200 answer passages 10 2.80s
+p02 answerable 200 answer passages 10 2.19s
+p03 answerable 200 answer passages 10 1.29s
+p04 answerable 200 answer passages 9 1.66s
+p05 answerable 200 answer passages 10 1.46s
+p06 answerable 200 no_confident_match passages 0 3.71s
+p07 answerable 200 answer passages 10 4.14s
+p08 answerable 200 answer passages 10 5.10s
+p09 answerable 200 no_confident_match passages 0 2.17s
+p10 answerable 200 answer passages 10 1.65s
+health after: {'status': 'ok', 'kill_switch': 'off', 'day': '2026-10-22', 'judged_today': 10, 'input_tokens_today': 35235, 'output_tokens_today': 990, 'spend_today_usd': '0.120555', 'daily_cap_usd': '0.322580'}
+wall 47 s; ended 2026-10-22T17:32:12Z

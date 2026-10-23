@@ -1,0 +1,13 @@
+health before: {'status': 'ok', 'kill_switch': 'off', 'day': '2026-10-22', 'judged_today': 0, 'input_tokens_today': 0, 'output_tokens_today': 0, 'spend_today_usd': '0.000000', 'daily_cap_usd': '0.322580'}
+p11 unanswerable 200 no_confident_match passages 0 2.00s
+p12 unanswerable 200 no_confident_match passages 0 1.45s
+p13 unanswerable 200 no_confident_match passages 0 1.34s
+p14 unanswerable 200 no_confident_match passages 0 2.87s
+p15 unanswerable 200 no_confident_match passages 0 1.66s
+p16 unanswerable 200 no_confident_match passages 0 1.32s
+p17 hostile 200 no_confident_match passages 0 1.24s
+p18 hostile 200 no_confident_match passages 0 1.56s
+p19 hostile 200 no_confident_match passages 0 1.49s
+p20 hostile 200 no_confident_match passages 0 1.35s
+health after: {'status': 'ok', 'kill_switch': 'off', 'day': '2026-10-22', 'judged_today': 10, 'input_tokens_today': 35916, 'output_tokens_today': 470, 'spend_today_usd': '0.114798', 'daily_cap_usd': '0.322580'}
+2026-10-22T18:34:49Z

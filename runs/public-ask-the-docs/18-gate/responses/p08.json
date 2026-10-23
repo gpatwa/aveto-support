@@ -1,0 +1,122 @@
+{
+ "id": "p08",
+ "kind": "answerable",
+ "http": 200,
+ "seconds": 5.095,
+ "at": "2026-10-22T17:32:02Z",
+ "response": {
+  "outcome": "answer",
+  "docs": {
+   "repo": "gpatwa/agentic-sdlc-playbook",
+   "commit": "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+  },
+  "files": [
+   {
+    "rank": 1,
+    "path": "agents/post-launch-learning.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/post-launch-learning.md",
+    "passages": [
+     {
+      "heading": "Post-Launch Learning Agent > Anti-patterns",
+      "line_start": 81,
+      "line_end": 88,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/post-launch-learning.md?plain=1#L81-L88",
+      "text": "## Anti-patterns\n\n- Long retrospective documents with no actionable items.\n- Listing every minor UX nit instead of the few that matter.\n- Skipping post-launch entirely because nothing went wrong (you still\n  learned something \u2014 capture it).\n- Re-scoping the slice after it shipped (\"really we should have done X\n  too\" \u2192 that's a new slice, not a post-launch finding)."
+     },
+     {
+      "heading": "Post-Launch Learning Agent > Decisions the Post-Launch Agent does NOT own",
+      "line_start": 43,
+      "line_end": 47,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/post-launch-learning.md?plain=1#L43-L47",
+      "text": "## Decisions the Post-Launch Agent does NOT own\n\n- What to build next (Orchestrator + human own).\n- Whether to revert (Release Manager owns; only triggered if the review\n  surfaces a real regression)."
+     }
+    ]
+   },
+   {
+    "rank": 2,
+    "path": "templates/INCIDENT_REVIEW_TEMPLATE.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/INCIDENT_REVIEW_TEMPLATE.md",
+    "passages": [
+     {
+      "heading": "Incident Review \u2014 <incident name / ID> > What went well",
+      "line_start": 47,
+      "line_end": 49,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/INCIDENT_REVIEW_TEMPLATE.md?plain=1#L47-L49",
+      "text": "## What went well\n\n- <thing that limited the blast radius or sped resolution>"
+     },
+     {
+      "heading": "Incident Review \u2014 <incident name / ID> > Hand off",
+      "line_start": 74,
+      "line_end": 76,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/INCIDENT_REVIEW_TEMPLATE.md?plain=1#L74-L76",
+      "text": "## Hand off\n\nTo Post-Launch Learning (carry-forward) and the Orchestrator (slices)."
+     }
+    ]
+   },
+   {
+    "rank": 3,
+    "path": "docs/VALIDATION_MATRIX.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/VALIDATION_MATRIX.md",
+    "passages": [
+     {
+      "heading": "Validation Matrix > Production-readiness audit (2026-07-28)",
+      "line_start": 97,
+      "line_end": 102,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/VALIDATION_MATRIX.md?plain=1#L97-L102",
+      "text": "## Production-readiness audit (2026-07-28)\n\nAudited against the bar **\"another team installs the pack on their repo and\nruns slices without us\"** \u2014 not \"the seed apps work\". Findings are grouped by\nthe dimension they threaten; each is fixed, or recorded as a known limit with\nthe reason it is not being fixed now."
+     },
+     {
+      "heading": "Validation Matrix > Production-readiness audit (2026-07-28) > Fixed in the follow-up pass (same day)",
+      "line_start": 133,
+      "line_end": 169,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/docs/VALIDATION_MATRIX.md?plain=1#L133-L169",
+      "text": "### Fixed in the follow-up pass (same day)\n\n- **Budget guard was wrong under concurrency** \u2014 \u2705 closed. It took the *first*\n  in-progress budgeted `STATE.md` in readdir order and stopped, so an\n  over-budget slice could be missed entirely because an unrelated under-budget\n  one happened to sort earlier. It now scans every in-progress budgeted slice\n  and guards the **most constrained** (highest spent/budget). Correct under\n  concurrency without needing a lock \u2014 the binding constraint is the one worth\n  surfacing, whichever slice owns it.\n- **CI on the playbook** \u2014 \u2705 closed (`.github/workflows/ci.yml`). Runs the pack\n  tests, a dangling-reference check, and an end-to-end installer run against a\n  scratch repo. The repo defining the gates is now held to them.\n- **Analytics could not be acted on** \u2014 \u2705 mechanism supplied.\n  `analyze.mjs --strict` exits non-zero on an envelope breach or stage\n  outlier, so a product CI *can* gate on cost. Deliberately **opt-in and not\n  the default**: release gates fail closed because shipping a defect is\n  expensive, but a density outlier means a stage cost more than expected, not\n  that the software is wrong \u2014 auto-blocking on it would stall correct work\n  for a budget reason, the same reasoning that makes `budget-guard` fail open.\n  Mechanism here, policy in the product.\n- **Stale installed packs** \u2014 \u2705 closed. Both seed repos regenerated to pack v3;\n  all 24 agents in each now carry `effort:`. This also **live-validated the new\n  drift detection**, which reported the v2\u2192v3 transition on both real repos.\n- **We measured cost, never code quality** \u2014 \u2705 the measurement half is closed,\n  the gate half is deferred by design. Four external write-ups (Google's\n  New-SDLC paper, Monaco, DoorDash, Anthropic's AI-native-org talk) plus our own\n  \"no quality metric\" finding all pointed at the same hole: `analyze.mjs`\n  measured the pipeline's *cost*, and nothing measured the *code's shape*.\n  `execution/quality.mjs` now computes module size, an approximate per-file\n  complexity, and a test-presence signal (explicitly **not** coverage), rendered\n  to `QUALITY.md`. **Measure-only \u2014 it never gates**; whether any metric earns a\n  gate waits on a real slice where a reviewer looked, per the plan and Google's\n  own \"an eval without a rubric measures nothing\". Run against real seed code it\n  earned its keep immediately: the `large` flag landed on the exact\n  `streak-seed/src/server.js` that once shipped the wildcard-bind defect, and it\n  exposed one false positive of its own (density on a 2-line file), fixed with a\n  size floor calibrated from that data \u2014 measure, then decide, not assert."
+     }
+    ]
+   },
+   {
+    "rank": 4,
+    "path": "project-packs/b2c-saas.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/project-packs/b2c-saas.md",
+    "passages": [
+     {
+      "heading": "Project Pack \u2014 B2C SaaS > Lifecycle adjustments",
+      "line_start": 20,
+      "line_end": 27,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/project-packs/b2c-saas.md?plain=1#L20-L27",
+      "text": "## Lifecycle adjustments\n\n- **Discovery is short.** B2C PRDs are 1\u20132 pages. The user behaviour\n  signal is more important than long internal debate.\n- **UX research weighs accessibility heavily.** Most B2C users hit the\n  product on mobile or with screen readers more often than B2B users.\n- **Post-launch is fast.** Run the post-launch review within a week.\n  B2C signal is high-volume."
+     },
+     {
+      "heading": "Project Pack \u2014 B2C SaaS",
+      "line_start": 1,
+      "line_end": 7,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/project-packs/b2c-saas.md?plain=1#L1-L7",
+      "text": "# Project Pack \u2014 B2C SaaS\n\nUse for: a consumer-facing SaaS product where the user is the human\nmaking the decisions and the goal is value-per-click, not workflow\nadoption.\n\n---"
+     }
+    ]
+   },
+   {
+    "rank": 5,
+    "path": "templates/POST_LAUNCH_REVIEW_TEMPLATE.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/POST_LAUNCH_REVIEW_TEMPLATE.md",
+    "passages": [
+     {
+      "heading": "Post-Launch Review \u2014 <slice name> > What we'd do differently",
+      "line_start": 24,
+      "line_end": 29,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/POST_LAUNCH_REVIEW_TEMPLATE.md?plain=1#L24-L29",
+      "text": "## What we'd do differently\n\nSpecific, actionable retro items. Not \"be more careful next time\".\n\n- <item>\n- <item>"
+     },
+     {
+      "heading": "Post-Launch Review \u2014 <slice name>",
+      "line_start": 1,
+      "line_end": 6,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/POST_LAUNCH_REVIEW_TEMPLATE.md?plain=1#L1-L6",
+      "text": "# Post-Launch Review \u2014 <slice name>\n\n> Owner: Post-Launch Learning Agent\n> Tier: <1 / 2 / 3>\n> Released at: <ISO date / commit SHA>\n> Source PRD: <path>"
+     }
+    ]
+   }
+  ],
+  "signal": "Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)"
+ }
+}

@@ -1,0 +1,122 @@
+{
+ "id": "p10",
+ "kind": "answerable",
+ "http": 200,
+ "seconds": 1.646,
+ "at": "2026-10-22T17:32:10Z",
+ "response": {
+  "outcome": "answer",
+  "docs": {
+   "repo": "gpatwa/agentic-sdlc-playbook",
+   "commit": "3a83b669a8b53dfdff869a1bbe361bdb156e3a13"
+  },
+  "files": [
+   {
+    "rank": 1,
+    "path": "project-packs/b2c-saas.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/project-packs/b2c-saas.md",
+    "passages": [
+     {
+      "heading": "Project Pack \u2014 B2C SaaS > Product principles",
+      "line_start": 9,
+      "line_end": 18,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/project-packs/b2c-saas.md?plain=1#L9-L18",
+      "text": "## Product principles\n\n- **Less setup, more value.** A user reaches something useful within a\n  few clicks of landing. No long forms before the first payoff.\n- **Action-first home.** The default home is a short list of decisions\n  the user actually needs to make today \u2014 not a dashboard of metrics.\n- **Progressive disclosure.** Ask for missing fields only when they\n  unblock something specific, not as a wall of onboarding.\n- **One clear next step.** Every screen presents one obvious action plus\n  optional secondaries."
+     },
+     {
+      "heading": "Project Pack \u2014 B2C SaaS > Default release tier",
+      "line_start": 29,
+      "line_end": 33,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/project-packs/b2c-saas.md?plain=1#L29-L33",
+      "text": "## Default release tier\n\n- New screens / features: **Tier 2**.\n- Anything that sends, posts, charges, or publishes: **Tier 3**.\n- Internal-only refactor / docs: **Tier 1**."
+     }
+    ]
+   },
+   {
+    "rank": 2,
+    "path": "agents/ux-researcher.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/ux-researcher.md",
+    "passages": [
+     {
+      "heading": "UX Researcher Agent > Quality bar",
+      "line_start": 41,
+      "line_end": 48,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/ux-researcher.md?plain=1#L41-L48",
+      "text": "## Quality bar\n\n- Every journey step is a concrete user action and a concrete system\n  response, not \"the system shows something useful\".\n- Empty / loading / error states are listed for every screen the journey\n  touches. Designers shouldn't be inventing them.\n- Accessibility is not an afterthought paragraph. It's a list of\n  concrete behaviours."
+     },
+     {
+      "heading": "UX Researcher Agent > Mission",
+      "line_start": 3,
+      "line_end": 7,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/agents/ux-researcher.md?plain=1#L3-L7",
+      "text": "## Mission\n\nTranslate the PRD into a feature spec that names users, journeys, edge\ncases, and accessibility considerations \u2014 concrete enough that the UI\ndesigner can lay out screens without inventing the user."
+     }
+    ]
+   },
+   {
+    "rank": 3,
+    "path": "examples/saved-items-bulk-delete/artefacts/03-feature-spec.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/examples/saved-items-bulk-delete/artefacts/03-feature-spec.md",
+    "passages": [
+     {
+      "heading": "Feature Spec \u2014 Bulk-delete saved items > Primary journey (happy path)",
+      "line_start": 12,
+      "line_end": 23,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/examples/saved-items-bulk-delete/artefacts/03-feature-spec.md?plain=1#L12-L23",
+      "text": "## Primary journey (happy path)\n\n1. User opens the saved-items list \u2192 System shows items with a \"Select\"\n   affordance.\n2. User taps Select \u2192 System enters selection mode (checkboxes, a counter,\n   a \"Select all on page\" control, a disabled \"Delete (0)\" button).\n3. User checks 5 items \u2192 System updates the button to \"Delete (5)\".\n4. User taps \"Delete (5)\" \u2192 System shows a confirmation: \"Delete 5 items?\n   You can undo this right after.\"\n5. User confirms \u2192 System soft-deletes the 5 items, exits selection mode,\n   shows \"5 items deleted\" with an **Undo** action.\n6. (Optional) User taps Undo \u2192 System restores the 5 items."
+     },
+     {
+      "heading": "Feature Spec \u2014 Bulk-delete saved items > Accessibility",
+      "line_start": 48,
+      "line_end": 56,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/examples/saved-items-bulk-delete/artefacts/03-feature-spec.md?plain=1#L48-L56",
+      "text": "## Accessibility\n\n- Keyboard: checkboxes are focusable; \"Select all\" reachable; the confirm\n  dialog traps focus and returns it on close; Undo reachable by keyboard\n  before the toast auto-dismisses (give it 10s, pause on focus/hover).\n- Screen reader: selection count announced via a live region (\"5 selected\");\n  confirm dialog labelled; success toast announced.\n- Contrast & motion: meet the product floor; respect reduced-motion for the\n  toast."
+     }
+    ]
+   },
+   {
+    "rank": 4,
+    "path": "templates/UX_SPEC_TEMPLATE.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/UX_SPEC_TEMPLATE.md",
+    "passages": [
+     {
+      "heading": "UX Spec \u2014 <slice name> > Layout per screen > <Screen 2>",
+      "line_start": 18,
+      "line_end": 20,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/UX_SPEC_TEMPLATE.md?plain=1#L18-L20",
+      "text": "### <Screen 2>\n\n..."
+     },
+     {
+      "heading": "UX Spec \u2014 <slice name> > Layout per screen > <Screen 1>",
+      "line_start": 12,
+      "line_end": 16,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/UX_SPEC_TEMPLATE.md?plain=1#L12-L16",
+      "text": "### <Screen 1>\n\n- Layout: <description>\n- Notable visual treatments: <e.g. \"approval CTA uses emerald primary;\n  destructive action uses outline only\">"
+     }
+    ]
+   },
+   {
+    "rank": 5,
+    "path": "templates/QA_EVIDENCE_TEMPLATE.md",
+    "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/QA_EVIDENCE_TEMPLATE.md",
+    "passages": [
+     {
+      "heading": "QA Evidence \u2014 <slice name> > UI verification",
+      "line_start": 39,
+      "line_end": 50,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/QA_EVIDENCE_TEMPLATE.md?plain=1#L39-L50",
+      "text": "## UI verification\n\nFor each state listed in the UX spec, evidence of the state rendering:\n\n| Screen | State | Evidence | Notes |\n|--------|-------|----------|-------|\n| <screen> | empty | screenshot / snapshot | \u2014 |\n| <screen> | loading | screenshot / snapshot | \u2014 |\n| <screen> | error | screenshot / snapshot | \u2014 |\n| <screen> | success | screenshot / snapshot | \u2014 |\n\nConsole errors / warnings observed: <none, or list>"
+     },
+     {
+      "heading": "QA Evidence \u2014 <slice name> > Recommendation",
+      "line_start": 66,
+      "line_end": 69,
+      "url": "https://github.com/gpatwa/agentic-sdlc-playbook/blob/3a83b669a8b53dfdff869a1bbe361bdb156e3a13/templates/QA_EVIDENCE_TEMPLATE.md?plain=1#L66-L69",
+      "text": "## Recommendation\n\n- [ ] Pass to Security & Privacy Agent\n- [ ] Block \u2014 return to <agent> for <reason>"
+     }
+    ]
+   }
+  ],
+  "signal": "Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)"
+ }
+}

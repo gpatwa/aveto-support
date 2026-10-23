@@ -1,0 +1,32 @@
+# P2 re-check at the commit to be built, 2026-10-22T05:35:28Z
+git status:
+?? runs/public-ask-the-docs/17-p2-recheck.txt
+(empty above = clean)
+HEAD12: 73363c56d6d3
+git diff --check:
+(empty above = clean)
+files changed since b0cf09d under code paths (must list none):
+(end)
+method files vs main:
+(empty above = identical)
+Success: no issues found in 45 source files
+All checks passed!
+636 passed, 12 deselected in 15.25s
+word removals:
+[-it runs only in the-]
+[-and-]
+[-the-]
+[-exception,-]
+approvals rows:
+C3.1 1
+C4.1 1
+C4.2 1
+C5.1 1
+C5.2 1
+C8.3 1
+C8.2 1
+runbook greps:
+text unread: 1
+5%: 1
+M1: 1
+note: the word-level removals list now has a fourth entry, [-the-], from the N1 reword inside the C5.2-allowed sentence ('is the one exception,' -> 'is one of two exceptions, the other being the service,'); checklist P2 expected three. Inside C5.2; recorded for the Release Manager re-check.

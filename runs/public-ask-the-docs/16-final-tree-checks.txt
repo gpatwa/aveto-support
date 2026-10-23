@@ -1,0 +1,48 @@
+# Final-tree checks (Orchestrator, for the Release Manager, who has no shell)
+HEAD b0cf09d at 2026-10-21T20:29:38Z
+
+## uv sync --locked
+Resolved 39 packages in 19ms
+Audited 36 packages in 10ms
+
+## mypy
+Success: no issues found in 45 source files
+## ruff
+All checks passed!
+## pytest (3 runs)
+636 passed, 12 deselected in 18.94s
+636 passed, 12 deselected in 16.45s
+636 passed, 12 deselected in 17.80s
+
+## method files vs main (must be empty): aveto_support prompts .claude
+## .agentic changes vs main (INV words, status only)
+ .agentic/CURRENT_MVP_STATUS.md |  60 ++++++++++++++--
+ .agentic/SAFETY_INVARIANTS.md  | 151 +++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 200 insertions(+), 11 deletions(-)
+
+## prompt sha256 vs pin
+24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427  prompts/answerability-judge-v1.txt
+24:PROMPT_SHA256 = "24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427"
+
+## files changed vs main outside allowed paths
+(end)
+
+## word-level removals in SAFETY_INVARIANTS.md vs main
+[-it runs only in the-]
+[-and-]
+[-exception,-]
+
+## INV-1..INV-3 region untouched (lines before INV-4 header changed?)
+@@ -42,2 +42,16 @@
+@@ -66,0 +81,30 @@
+@@ -89,0 +134,24 @@
+
+## Charter v2 check
+charter complete: runs/public-ask-the-docs/CHARTER-v2.md
+sha256 e04b82539e1fe17ed86d945a93b761dafef4f19c1af30dc4353f31743fc8ead4
+
+## secrets scan (names only)
+4867:+        assert not re.search(r"sk-ant-", text)
+7012:+KEY = "sk-ant-test-key-zzz999"
+7246:+    assert "sk-ant" not in src
+(none above = clean)
