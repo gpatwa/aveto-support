@@ -3,7 +3,7 @@
 - **Ask:** intents/fix-service-accounting.md — make the public service's spend accounting correct (issues #6, #7, #8) and redeploy
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 6 Security Review and 7 Docs (parallel)
+- **Current stage:** 8 Release Gate tier 3
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents and teammates from this repo's `.claude/agents/`
 - **Telemetry:** self-reported
@@ -22,9 +22,9 @@
 | 3 Fixes and fail-first tests | Backend Architect | done: fail-first proven on 87178bd (T6.1 22466000 vs cap 13124000; T7.1 0 vs R; T7.4 R+C vs C; T7.3/T7.5 AttributeError; T8.1/T8.2 3000/15000); 668 passed, mypy and ruff clean; section 6 checks clean; smoke script not written; test_service_api.py needed a price edit | runs/fix-service-accounting/08-backend-note.md | local regression green |
 | 4 Review layer | Orchestrator | done — 5 findings, 0 Important, tier High, unscored | runs/fix-service-accounting/code-review.md | findings resolved |
 | 5 QA evidence | QA Evidence | done: GO WITH CONDITIONS; 668 passed x3, mypy/ruff clean; 27 of 31 new tests fail on 87178bd with the spec figures (4 guards pass); mutations for #6, #7, #8 each caught; nothing-else-moves byte-identical; docs lines and smoke NOT YET | runs/fix-service-accounting/13-qa-evidence.md | local regression green |
-| 6 Security Review (standard) | Security & Privacy | in-progress | — | — |
-| 7 Docs | Tech Writer | in-progress | — | — |
-| 8 Release Gate tier 3 | Release Manager | pending | — | — |
+| 6 Security Review (standard) | Security & Privacy | done — PASS, 0 required fixes, advisories A1-A6 (A1/A2 owner decisions) | runs/fix-service-accounting/14-security-review.md |
+| 7 Docs | Tech Writer | done — old price, 50%-high and 27/day removed; ~33/day labelled estimate | runs/fix-service-accounting/15-docs-note.md |
+| 8 Release Gate tier 3 | Release Manager | in-progress | — | — |
 | 9 Deploy | Cloud Deployment, Orchestrator | pending | — | — |
 | 10 Live smoke | Orchestrator, Production Verification | pending | — | — |
 | 11 Post-launch, END_REVIEW, PR | Post-Launch Learning, Orchestrator | pending | — | — |
@@ -40,8 +40,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 730k tokens  ·  **Depth:** standard
-- **Spent:** 565k (77% of plan)  ·  **Remaining:** 165k to plan, 385k to ceiling
-- **Next stage:** 6 Security Review (security-privacy) est. 70k and 7 Docs (tech-writer) est. 50k → **PROCEED**
+- **Spent:** 775k (106% of plan)  ·  **Remaining:** 175k to ceiling, 425k to hard cap
+- **Next stage:** 8 Release Gate (release-manager) est. 80k → **PROCEED**
 
 Ceiling 950k (C2.2); hard cap 1,200k (C2.3). The Orchestrator's own session is not counted in spawn spend.
 
@@ -75,6 +75,8 @@ Ceiling 950k (C2.2); hard cap 1,200k (C2.3). The Orchestrator's own session is n
 
 - 2026-10-23 Orchestrator, after stage 5: QA GO WITH CONDITIONS (668 passed x3; fail-first and mutations confirmed; nothing else moves). Smoke script committed 8aee3b4 (dry run only); its follow-up spawn spent 104k, more than the stage it supported. Spent 565k; projection 925k, under the 950k ceiling. Stages 6 and 7 run in parallel: Security reads code only, Docs edits docs only; neither edits STATE.md.
 
+- 2026-10-23 Orchestrator, after stages 6 and 7: Security PASS (stage spent 127k), Docs done (83k, committed by the Orchestrator; the role has no shell). Spent 775k, above the 730k plan. Projection 775k + 240k = 1,015k: above the 950k ceiling (C2.2: continue with a notice), under the 1,200k hard cap. charter-check re-run and saved; events-verify output saved; log copied to EVENTS.jsonl.
+
 ## Next action
 
-Stages 6 and 7 running in parallel; then stage 8 Release Gate (re-run charter-check, save events-verify output and EVENTS.jsonl first).
+Stage 8 Release Gate tier 3 (spawned); then stage 9 deploy per tech spec §7 under C8.3.

@@ -1,0 +1,56 @@
+/Users/gopalpatwa/opt/aveto-support/.claude/events/b964fb4e-04f7-4fbf-b787-36bfe8d105df.jsonl: chain intact; 531 lines; head e4fc36eb85c4ece2
+  backend-architect: 26 calls, 0 failed
+  engineering-manager: 25 calls, 0 failed
+  main: 63 calls, 3 failed
+  qa-evidence: 21 calls, 0 failed
+  security-privacy: 33 calls, 0 failed
+  software-architect: 72 calls, 0 failed
+  tech-writer: 26 calls, 0 failed
+  ! seq 37: main wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/00-slice-plan.md, outside the allowed paths
+  ! seq 45: main wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/00-slice-plan.md, outside the allowed paths
+  ! seq 47: main wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/00-slice-plan.md, outside the allowed paths
+  ! seq 49: main wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/00-slice-plan.md, outside the allowed paths
+  ! seq 59: main wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/CHARTER.md, outside the allowed paths
+  ! seq 61: main wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/STATE.md, outside the allowed paths
+  ! seq 67: main wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/STATE.md, outside the allowed paths
+  ! seq 123: engineering-manager wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/01-scope.md, outside the allowed paths
+  ! seq 125: engineering-manager wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/STATE.md, outside the allowed paths
+  ! seq 127: engineering-manager wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/STATE.md, outside the allowed paths
+  ! seq 129: engineering-manager wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/STATE.md, outside the allowed paths
+  ! seq 239: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/05-tech-spec.md, outside the allowed paths
+  ! seq 241: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/05-tech-spec.md, outside the allowed paths
+  ! seq 243: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/05-tech-spec.md, outside the allowed paths
+  ! seq 245: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/05-tech-spec.md, outside the allowed paths
+  ! seq 247: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/05-tech-spec.md, outside the allowed paths
+  ! seq 249: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/05-tech-spec.md, outside the allowed paths
+  ! seq 251: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/05-tech-spec.md, outside the allowed paths
+  ! seq 253: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/05-tech-spec.md, outside the allowed paths
+  ! seq 257: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/05-tech-spec.md, outside the allowed paths
+  ! seq 261: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/05-tech-spec.md, outside the allowed paths
+  ! seq 263: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/05-tech-spec.md, outside the allowed paths
+  ! seq 265: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/05-tech-spec.md, outside the allowed paths
+  ! seq 267: software-architect wrote .claude/worktrees/fix-service-accounting/docs/ARCHITECTURE.md, outside the allowed paths
+  ! seq 269: software-architect wrote .claude/worktrees/fix-service-accounting/docs/ARCHITECTURE.md, outside the allowed paths
+  ! seq 271: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/STATE.md, outside the allowed paths
+  ! seq 273: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/STATE.md, outside the allowed paths
+  ! seq 275: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/STATE.md, outside the allowed paths
+  ! seq 277: software-architect wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/STATE.md, outside the allowed paths
+  ! seq 401: qa-evidence wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/13-qa-evidence.md, outside the allowed paths
+  ! seq 451: tech-writer wrote .claude/worktrees/fix-service-accounting/README.md, outside the allowed paths
+  ! seq 453: tech-writer wrote .claude/worktrees/fix-service-accounting/README.md, outside the allowed paths
+  ! seq 455: tech-writer wrote .claude/worktrees/fix-service-accounting/docs/runbooks/public-ask.md, outside the allowed paths
+  ! seq 457: tech-writer wrote .claude/worktrees/fix-service-accounting/docs/runbooks/public-ask.md, outside the allowed paths
+  ! seq 459: tech-writer wrote .claude/worktrees/fix-service-accounting/docs/runbooks/public-ask.md, outside the allowed paths
+  ! seq 461: tech-writer wrote .claude/worktrees/fix-service-accounting/docs/runbooks/public-ask.md, outside the allowed paths
+  ! seq 463: tech-writer wrote .claude/worktrees/fix-service-accounting/docs/runbooks/public-ask.md, outside the allowed paths
+  ! seq 465: tech-writer wrote .claude/worktrees/fix-service-accounting/docs/runbooks/public-ask.md, outside the allowed paths
+  ! seq 467: tech-writer wrote .claude/worktrees/fix-service-accounting/docs/runbooks/public-ask.md, outside the allowed paths
+  ! seq 469: tech-writer wrote .claude/worktrees/fix-service-accounting/docs/runbooks/public-ask.md, outside the allowed paths
+  ! seq 471: tech-writer wrote .claude/worktrees/fix-service-accounting/.agentic/CURRENT_MVP_STATUS.md, outside the allowed paths
+  ! seq 473: tech-writer wrote .claude/worktrees/fix-service-accounting/.agentic/CURRENT_MVP_STATUS.md, outside the allowed paths
+  ! seq 475: tech-writer wrote .claude/worktrees/fix-service-accounting/.agentic/CURRENT_MVP_STATUS.md, outside the allowed paths
+  ! seq 477: tech-writer wrote .claude/worktrees/fix-service-accounting/.agentic/CURRENT_MVP_STATUS.md, outside the allowed paths
+  ! seq 481: tech-writer wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/15-docs-note.md, outside the allowed paths
+  ! seq 501: security-privacy wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/14-security-review.md, outside the allowed paths
+  ! seq 527: security-privacy wrote .claude/worktrees/fix-service-accounting/runs/fix-service-accounting/14-security-review.md, outside the allowed paths
+  ! seq 531: main attempted Bash cd #69381804e3bf with no outcome recorded (denied, blocked or interrupted)
