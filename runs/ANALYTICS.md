@@ -1,13 +1,13 @@
 # Pipeline Analytics — generated
 
-_Generated 2026-10-22T23:29:11Z. **Do not edit by hand** — regenerate with `node <playbook>/execution/analyze.mjs .` from the repo root._
+_Generated 2026-10-24T07:04:22Z. **Do not edit by hand** — regenerate with `node <playbook>/execution/analyze.mjs .` from the repo root._
 
 ## Fleet
 
-- Runs traced: **10**
-- Stages: **110** · Tokens: **33,388,192** · Tool calls: **2,364**
-- **Untraced stages: 8** across 5 run(s) — executed by the Orchestrator rather than spawned, so they carry no tokens or tool calls
-- Envelope breaches: **5/10** · Stage outliers: **41**
+- Runs traced: **11**
+- Stages: **120** · Tokens: **34,307,192** · Tool calls: **2,649**
+- **Untraced stages: 11** across 6 run(s) — executed by the Orchestrator rather than spawned, so they carry no tokens or tool calls
+- Envelope breaches: **5/11** · Stage outliers: **42**
 
 ## Per run
 
@@ -23,6 +23,7 @@ _Generated 2026-10-22T23:29:11Z. **Do not edit by hand** — regenerate with `no
 | docs-answerability-2 | 3 | 22 | 2,772,517 | 766 | 2,200,000 | ❌ over 573k |
 | land-answerability | 3 | 11 | 651,000 | 0 | 900,000 | ✅ pass |
 | public-ask-the-docs | 3 | 30 | 2,496,347 | 482 | 3,000,000 | ✅ pass |
+| fix-service-accounting | 3 | 13 | 919,000 | 285 | 1,000,000 | ✅ pass |
 
 ## Pipeline completeness
 
@@ -44,6 +45,7 @@ this table) can say whether a given skip was earned.
 | docs-answerability-2 | ⚠ Intake | Market Research, Discovery, UX Research, UI Design | Stage 1 measurement (2 judge spawns, owner-started session), Smoke r049 + stage 5 judge spawns (49), Stage 6 label review, Stage 7 judge spawns (48, driver session), Docs finish (Architect, resumed), Docs finish, tier wording (Architect, resumed again) |
 | land-answerability | ⚠ Intake, Scope Review, Implementation | Market Research, Discovery, UX Research, UI Design, Post-Launch | S5 fix, Rollback rehearsal, Vendor risk, Records and docs, Setup phase, Code review layer (/code-review high) |
 | public-ask-the-docs | ⚠ Intake | Market Research, UI Design | Stage 5 tech spec (software-architect), Stage 8 backend service (backend-architect), Stage 9 Anthropic judge adapter (ai-engineer), Stage 10 public page (frontend-developer), Stage 11 infra and image (cloud-deployment), Amend tech spec work split (software-architect), Stage 11c Dockerfile and Azure checks (backend-architect), Review round 1 fixes (Backend) (backend-architect), S-A4, S-A6, S-A8 service hardening (Backend) (backend-architect), Stage 15b README, status, runbook (tech-writer), Apply curable safety-text rewordings (software-architect), Runbook processor record and monitoring section (tech-writer), INV-5 reading notes N1 and N4 (software-architect), Stage 18 production verification (from saved evidence) (production-verification), Docs: record the measured figures (README, status, runbook) (tech-writer) |
+| fix-service-accounting | ⚠ Implementation | Market Research, Discovery, UX Research, UI Design, Architecture | Stage 2 tech spec (software-architect), Stage 3 fixes, fail-first tests, smoke script (backend-architect, two passes), Stage 4 review layer (/code-review high), Stage 7 docs (tech-writer), Stage 9 deploy D1/D2, Stage 10 live smoke (orchestrator) and verdict (production-verification), Stage 11 docs addendum (tech-writer) |
 
 ## DORA
 
@@ -63,7 +65,7 @@ Tokens per tool call, measured against each archetype's own cap.
 
 | Archetype | What it does | Cap | Observed (n) | Range | Avg |
 |-----------|--------------|-----|--------------|-------|-----|
-| **review** | read artefacts → verdict | 8,000 | 50 | 654–7,000 | 2,988 |
+| **review** | read artefacts → verdict | 8,000 | 59 | 654–7,000 | 3,034 |
 | **build** | heavy file / test I/O | 5,000 | 2 | 3,420–3,828 | 3,624 |
 
 ## Per stage
@@ -180,6 +182,16 @@ Tokens per tool call, measured against each archetype's own cap.
 | public-ask-the-docs | Stage 18 production verification (from saved evidence) (production-verification) | review | sonnet-5-5 | declared | 48,664 | null | — | — | — |
 | public-ask-the-docs | Docs: record the measured figures (README, status, runbook) (tech-writer) | review | sonnet-5-5 | declared | 55,131 | null | — | — | — |
 | public-ask-the-docs | Stage 19 post-launch learning (post-launch-learning) | review | sonnet-5-5 | declared | 39,124 | null | — | — | — |
+| fix-service-accounting | Stage 1 scope review (engineering-manager) | review | sonnet-5-5 | medium | 64,000 | 25 | 2,560 | 32% | — |
+| fix-service-accounting | Stage 2 tech spec (software-architect) | review | opus-5-5 | high | 236,000 | 72 | 3,278 | 41% | ⚠ over cap |
+| fix-service-accounting | Stage 3 fixes, fail-first tests, smoke script (backend-architect, two passes) | review | sonnet-5-5 | medium | 103,000 | 26 | 3,962 | 50% | — |
+| fix-service-accounting | Stage 5 QA evidence (qa-evidence) | review | sonnet-5-5 | high | 65,000 | 21 | 3,095 | 39% | — |
+| fix-service-accounting | Stage 6 Security Review standard (security-privacy) | review | opus-5-5 | high | 125,000 | 33 | 3,788 | 47% | — |
+| fix-service-accounting | Stage 7 docs (tech-writer) | review | sonnet-5-5 | medium | 81,000 | 26 | 3,115 | 39% | — |
+| fix-service-accounting | Stage 8 Release Gate tier 3 (release-manager) | review | sonnet-5-5 | high | 117,000 | 33 | 3,545 | 44% | — |
+| fix-service-accounting | Stage 10 live smoke (orchestrator) and verdict (production-verification) | review | sonnet-5-5 | medium | 46,000 | 21 | 2,190 | 27% | — |
+| fix-service-accounting | Stage 11 docs addendum (tech-writer) | review | sonnet-5-5 | medium | 30,000 | 19 | 1,579 | 20% | — |
+| fix-service-accounting | Stage 11 post-launch learning (post-launch-learning) | review | sonnet-5-5 | medium | 52,000 | 9 | 5,778 | 72% | — |
 
 ## Untraced stages
 
@@ -197,13 +209,16 @@ excludes them** — treat slice costs as a floor, not a total.
 | docs-abstention | Intake | `executor` (trace@2) |
 | land-answerability | Setup phase | `executor` (trace@2) |
 | land-answerability | Code review layer (/code-review high) | `executor` (trace@2) |
+| fix-service-accounting | Intake, setup, Charter | `executor` (trace@2) |
+| fix-service-accounting | Stage 4 review layer (/code-review high) | `executor` (trace@2) |
+| fix-service-accounting | Stage 9 deploy D1/D2 | `executor` (trace@2) |
 
 ## Gate catches
 
 Defects the gates caught before they shipped — the pipeline earning its keep.
 **A floor, not a total:** 5 run(s) predate the `gateCatches` field (docs-retrieval, docs-retrieval-2, docs-retrieval-2-proof, docs-retrieval-3, docs-retrieval-3-proof) and recorded catches only in prose, so a real block — e.g. Security stopping the http-layer bind — is not counted here.
 
-**Structured catches: 23**
+**Structured catches: 29**
 
 | Run | Gate | Verdict | Severity | Finding | Recovery |
 |-----|------|---------|----------|--------|----------|
@@ -230,6 +245,12 @@ Defects the gates caught before they shipped — the pipeline earning its keep.
 | public-ask-the-docs | Release Manager | fail | required-fix | No Approvals rows for gated actions (P1) and no processor record in the runbook (P3), fixed before deploy | — |
 | public-ask-the-docs | Live first deploy | fail | blocker | F-LIVE-1: index and models written 0600 were unreadable by the runtime uid, container crash-looped (startup_failed index); Dockerfile fixed, rebuilt, redeployed | — |
 | public-ask-the-docs | Live first call | fail | blocker | First judge call returned judge error: the stored key was bad (cause not logged by design); owner re-stored it, kill switch back on at once, second call answered | — |
+| fix-service-accounting | Setup baseline | fail | required-fix | test_core_files_unchanged red on main after pack v28 added event-log.mjs; repaired test-only under Charter C1.4 | — |
+| fix-service-accounting | Scope review | fail | advisory | #7 needs the adapter to carry earlier billable attempts out; anthropic_judge.py and judge_port.py join the diff | — |
+| fix-service-accounting | Orchestrator code review | pass | advisory | 5 findings, 0 Important: CR-3 (day pauses at about 33, not 41) routed to Docs and Security | — |
+| fix-service-accounting | Security | pass | advisory | A1: connection error then success now charges usage only (a dropped read may hide a billed attempt); A2: 429 not billed is unconfirmed; owner decisions | — |
+| fix-service-accounting | Release Manager | pass | required-fix | GO WITH CONDITIONS: P2 re-run of nothing-else-moves on the final tree, P4 smoke.py unreviewed until read, P5 budget notice | — |
+| fix-service-accounting | Live smoke tooling | fail | advisory | watch on failed TLS verification on every poll (local python.org CA bundle), D1 toggle time not measured; smoke ask needed PYTHONPATH | — |
 
 
 ## Outliers
@@ -275,6 +296,7 @@ Defects the gates caught before they shipped — the pipeline earning its keep.
 - **Stage 15a safety words and architecture doc (software-architect)** (public-ask-the-docs, review): 202,516 tok / null calls — 1.4× the 150k per-stage token cap
 - **Stage 15c words check (re-spawn) (compliance-reviewer)** (public-ask-the-docs, review): 180,118 tok / 44 calls — 1.2× the 150k per-stage token cap
 - **Stage 16 Release Gate tier 3 (release-manager)** (public-ask-the-docs, review): 197,438 tok / null calls — 1.3× the 150k per-stage token cap
+- **Stage 2 tech spec (software-architect)** (fix-service-accounting, review): 236,000 tok / 72 calls — 1.6× the 150k per-stage token cap
 
 ## Baselines
 

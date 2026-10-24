@@ -3,7 +3,7 @@
 - **Ask:** intents/fix-service-accounting.md — make the public service's spend accounting correct (issues #6, #7, #8) and redeploy
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 9 Deploy
+- **Current stage:** 11 Close-out (pull request open, awaiting the owner's merge)
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents and teammates from this repo's `.claude/agents/`
 - **Telemetry:** self-reported
@@ -25,9 +25,9 @@
 | 6 Security Review (standard) | Security & Privacy | done — PASS, 0 required fixes, advisories A1-A6 (A1/A2 owner decisions) | runs/fix-service-accounting/14-security-review.md |
 | 7 Docs | Tech Writer | done — old price, 50%-high and 27/day removed; ~33/day labelled estimate | runs/fix-service-accounting/15-docs-note.md |
 | 8 Release Gate tier 3 | Release Manager | done — GO WITH CONDITIONS (P1-P5, P-D; 10 post-deploy checks); tier High re-derived | runs/fix-service-accounting/16-release-checklist-tier3.md |
-| 9 Deploy | Orchestrator (command sheet = tech spec §7; no separate Cloud Deployment spawn) | in-progress | — | — |
-| 10 Live smoke | Orchestrator, Production Verification | pending | — | — |
-| 11 Post-launch, END_REVIEW, PR | Post-Launch Learning, Orchestrator | pending | — | — |
+| 9 Deploy | Orchestrator | done — D1 0000007 (switch on, 503 service_off), D2 0000008 (switch off, 71.4 s), image d067b9a95ac6 | runs/fix-service-accounting/09-deploy/ | what-if pass rules met |
+| 10 Live smoke | Orchestrator, Production Verification | done — 5/5 outcomes, byte-equal, $0.008544/question, counter exact, no question in logs; HEALTHY WITH WATCH ITEMS | runs/fix-service-accounting/18-production-verification.md | no C8.1 trigger |
+| 11 Post-launch, END_REVIEW, PR | Post-Launch Learning, Orchestrator | done — END_REVIEW written, PR opened (C8.2) | runs/fix-service-accounting/END_REVIEW.md | owner merges |
 
 ## Approvals
 
@@ -40,8 +40,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 730k tokens  ·  **Depth:** standard
-- **Spent:** 894k (122% of plan, 94% of ceiling)  ·  **Remaining:** 56k to ceiling, 306k to hard cap
-- **Next stage:** 9 Deploy (Orchestrator's session, no spawn) → **PROCEED**
+- **Spent:** 919k (126% of plan, 97% of ceiling; harness peak context per role, usage.mjs)  ·  **Remaining:** 31k to ceiling
+- **Next stage:** none (run complete) → **STOP**
 
 Ceiling 950k (C2.2); hard cap 1,200k (C2.3). The Orchestrator's own session is not counted in spawn spend.
 
@@ -81,4 +81,4 @@ Ceiling 950k (C2.2); hard cap 1,200k (C2.3). The Orchestrator's own session is n
 
 ## Next action
 
-Stage 9: image build running (tag d067b9a95ac6); then D1 (killSwitch=on) what-if/create, D2 (off), then stage 10 smoke.
+Owner reviews END_REVIEW.md and merges the pull request (C8.2: the run never merges).
