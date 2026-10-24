@@ -123,7 +123,7 @@ model and writes no log line. It is public. Fields:
 | `kill_switch` | `"on"` or `"off"`, as read at startup. |
 | `day` | The current UTC date, `YYYY-MM-DD`. |
 | `judged_today` | Questions that reached the model since this replica started on this UTC day. |
-| `input_tokens_today`, `output_tokens_today` | Tokens the API reported for those calls. Stage 18 read cost per question from the change in these across a batch: about $0.0078 per question at Anthropic's published prices. The service's own counter uses $2 and $10 by default from the fix-service-accounting change (not deployed yet; see section 8). |
+| `input_tokens_today`, `output_tokens_today` | Tokens the API reported for those calls. Stage 18 read cost per question from the change in these across a batch: about $0.0078 per question at Anthropic's published prices. The service's own counter uses $2 and $10 by default from the fix-service-accounting change (deployed 2026-10-24, revision `ca-aveto-ask--0000008`; see section 8). The live smoke that day read $0.008544 per question (n = 5) and spend equal to the token cost at $2 and $10. |
 | `spend_today_usd` | The service's own running total for the day, six decimals. It is the service's count, not Anthropic's bill. |
 | `daily_cap_usd` | The day's share of the monthly cap: $10 / 31 = `0.322580`. |
 
@@ -270,7 +270,17 @@ alert" below.
   size is not measured). By spend alone about 41 questions fit in the day's
   share, but admission needs room for two attempts, so the pause comes earlier;
   41 is not what this design gives. The earlier 27 a day counted at the wrong
-  price and is withdrawn. To be confirmed by the live smoke after the redeploy.
+  price and is withdrawn. The 33 stays an estimate; the live smoke (2026-10-24,
+  five questions) did not run to the pause.
+- Live smoke, 2026-10-24, revision `ca-aveto-ask--0000008` (five questions from
+  `evals/retrieval-heldout-5.toml`): g01, g03, g04 answered, byte-identical to
+  `retrieve`; gu15, gu18 no confident match. Cost per judged question $0.008544
+  (n = 5, from `/health` counters: 20,304 input and 211 output tokens), within
+  15% of $0.0078. The counter's spend equals the token cost at $2/$10 exactly.
+  No question text in any log table. Kill switch off took 71.4 s; the on toggle
+  was not measured (watcher TLS error; about 73 s upper bound from deploy
+  timestamps). Previous-revision rollback not rehearsed; the kill switch is the
+  proven fallback.
 
 ### Pricing (confirmed 2026-10-23)
 
@@ -287,9 +297,9 @@ token is $1 per million tokens, so $2 and $10), in `aveto_service/settings.py`
 and `infra/main.bicep`, with the source and date (2026-10-23) in a comment next
 to each. Setting `ASK_PRICE_*` still overrides them. The Bicep passes the price
 to the container, so the deployed revision takes the values from the template
-default on the next deploy. **This change is not deployed yet:** the live
-revision (`ca-aveto-ask--0000006`) still runs the earlier defaults until the
-redeploy; to be confirmed by the live smoke after the redeploy.
+default. **Deployed 2026-10-24** as revision `ca-aveto-ask--0000008` (image
+`aveto-ask:d067b9a95ac6`); defaults 2000/10000 are live, and the live smoke
+confirmed the counter's spend equals the token cost at $2 and $10.
 
 ### Budget alert
 

@@ -27,8 +27,9 @@
   `docs/runbooks/public-ask.md`. Recorded checks: 606 tests passed on the QA
   run (`runs/public-ask-the-docs/13-qa-evidence.md`) and Security review verdict
   PASS WITH REQUIRED FIXES (`14-security-review.md`; later rounds recorded in the
-  git history). The image is built and deployed (revision `ca-aveto-ask--0000006`,
-  image `aveto-ask:879cae23690b` at the gate). The attended `/aveto-judge` path
+  git history). The image is built and deployed (revision `ca-aveto-ask--0000008`,
+  image `aveto-ask:d067b9a95ac6`, deployed 2026-10-24; the gate was scored on
+  revision `0000006`, image `879cae23690b`). The attended `/aveto-judge` path
   below is unchanged and is still attended and internal; only the public service
   is no longer described that way.
   - **Gate, scored once** (`evals/public-gate-1.toml`, sha256 `7eb4f588…064f`,
@@ -50,19 +51,25 @@
     slowest 5.09 s (n = 20, from one client, a Mac, to East US 2); cold start 30.8 s
     to the first `/health` answer from zero replicas after more than an hour idle.
   - **Spend accounting (slice `fix-service-accounting`, issues #6, #7, #8; on
-    its branch, not merged, not deployed):** the code makes the counter default
+    its branch, not merged; deployed 2026-10-24 as revision
+    `ca-aveto-ask--0000008`, image `aveto-ask:d067b9a95ac6`):** the code makes the counter default
     to $2 and $10 per million tokens (2000 and 10000 nano-dollars per token;
     source and date 2026-10-23 in a code comment), reserves both possible
     attempts at admission and returns the unused part at settlement, and charges
     each attempt on its own outcome. Recorded by QA: 668 tests passed on the
     branch head, each fix with a test that fails on the base commit
-    (`runs/fix-service-accounting/13-qa-evidence.md`). The live revision still
-    runs the earlier defaults until the redeploy. **Estimate, not measured:** the
-    daily pause comes at about 33 questions a day by the counter with two
-    attempts reserved (assumes about $0.030 reserved per attempt); the 41 the
-    intent expected is not what this design gives. The counter's new price and
-    the 33 are to be confirmed by the live smoke after the redeploy; the smoke
-    figures come later.
+    (`runs/fix-service-accounting/13-qa-evidence.md`). The live revision runs the
+    new defaults (2000/10000). **Estimate, not measured:** the daily pause comes
+    at about 33 questions a day by the counter with two attempts reserved
+    (assumes about $0.030 reserved per attempt); the 41 the intent expected is
+    not what this design gives. **Live smoke, 2026-10-24** (five questions from
+    `evals/retrieval-heldout-5.toml`): g01, g03, g04 answered, byte-identical to
+    `retrieve`; gu15, gu18 no confident match. Cost per judged question
+    $0.008544 (n = 5, from `/health` counters: 20,304 input and 211 output
+    tokens), within 15% of $0.0078; the counter's spend equals the token cost at
+    $2/$10 exactly. No question text in any log table. Kill switch off took
+    71.4 s; the on toggle was not measured (watcher TLS error; about 73 s upper
+    bound from deploy timestamps). Previous-revision rollback not rehearsed.
   - **Live checks:** first answered call succeeded after the key was stored again
     with whitespace stripped (HTTP 200, 9 passages, 1.83 s; an earlier first call
     ended in `judge error`, cause probable, not proven); the 9 live passages equal
@@ -157,8 +164,8 @@
   cost (Azure's cost data lags about a day; no figure is stated), IPv6 clients
   (the service has no AAAA record), a screen reader, real visitors and adversarial
   load, the previous-image rollback. Price confirmed (see recorded figures). The
-  counter's price default is now 2000 and 10000 in the branch code; not deployed
-  yet, to be confirmed by the live smoke after the redeploy. The `effort` field is accepted
+  counter's price default is now 2000 and 10000 and live (revision
+  `ca-aveto-ask--0000008`, deployed 2026-10-24; smoke recorded above). The `effort` field is accepted
   (the owner's direct test and the first live call). Open owner decisions from
   the Security review (D1 to D7): D1 the daily pause holds per replica lifetime, so an
   attacker could use the month's $10 in hours; D2 what to do if the ingress

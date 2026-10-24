@@ -27,6 +27,23 @@ Recorded (stated as fact): 71,151 input and 1,460 output tokens for 20 gate ques
 
 Estimate (each says so in the text): about 33 questions a day (assumes about $0.030 per attempt, request of about 10,000 bytes, not measured); about five all-5xx questions pause the day (same assumption); about 1,270 a month (10 / 0.00785, inherited, labelled estimate). Unconfirmed: that the deployed counter charges $2/$10 and the 33; both are marked "to be confirmed by the live smoke after the redeploy". Smoke figures come in an addendum after stage 10.
 
+## Addendum after stage 10
+
+Source: `18-production-verification.md` and the facts the Orchestrator gave (I did not re-open `smoke-result.json`). Every "not deployed yet" and "to be confirmed by the live smoke after the redeploy" line is replaced.
+
+| File | Place | Change |
+|---|---|---|
+| README.md | recorded-figures cost row | deployed 2026-10-24 as `ca-aveto-ask--0000008`, image `d067b9a95ac6`, 2000/10000 live; gate was scored on `0000006` (kept as history); smoke cost $0.008544 (n = 5, 20,304 in / 211 out), within 15% of $0.0078; counter spend equals token cost at $2/$10 |
+| README.md | "How the service counts spend" | heading now "deployed 2026-10-24, revision 0000008"; closing line replaced: 33 stays an estimate; smoke paragraph (g01/g03/g04 answered byte-identical, gu15/gu18 no confident match, no question text in logs, off 71.4 s, on not measured with about 73 s upper bound, rollback not rehearsed) |
+| runbook | section 3 `/health` token row | deployed 2026-10-24, 0000008; smoke $0.008544 and spend equal to token cost |
+| runbook | section 8 Cost and capacity | "to be confirmed" replaced; new smoke bullet with the same facts |
+| runbook | section 8 Pricing | "not deployed yet" replaced by deployed 2026-10-24, 0000008, image `d067b9a95ac6`, smoke confirmation |
+| CURRENT_MVP_STATUS | public service line | current revision 0000008 / `d067b9a95ac6`; `0000006` / `879cae23690b` named as the gate's revision |
+| CURRENT_MVP_STATUS | "Spend accounting" | deployed, not merged; "runs earlier defaults" removed; smoke facts added; 33 kept as estimate |
+| CURRENT_MVP_STATUS | "Not yet done" price line | now live, smoke recorded above |
+
+Kept on purpose: README gate table "Revision `0000006`" and runbook "image `879cae23690b`" (F-LIVE-1) are history of what the gate and that fix used, not current claims. "Not merged" stays true. No release claim made. Not touched: SAFETY_INVARIANTS.md, code, STATE.md. The 33 a day is labelled an estimate. At $0.008544 per question the day pauses near 37 on cost alone (W2), so 33 stays binding.
+
 ## For the Orchestrator
 
 1. **$0.0079 versus $0.0078.** The brief said to state $0.0079 "i.e. $0.1569/20". That quotient is $0.007845, which is $0.0078; the spec 3.3 recommends $0.0078 and the intent and Charter say $0.0078, so I wrote $0.0078 everywhere. Other places (earlier run records) may still say $0.0079.
