@@ -81,4 +81,4 @@ Ceiling 950k (C2.2); hard cap 1,200k (C2.3). The Orchestrator's own session is n
 
 ## Next action
 
-Owner reviews END_REVIEW.md and merges the pull request (C8.2: the run never merges).
+Owner reviews END_REVIEW.md and merges https://github.com/gpatwa/aveto-support/pull/9 (C8.2: the run never merges). C6.P rules file deleted after the PR opened.

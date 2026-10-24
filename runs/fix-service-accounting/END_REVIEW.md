@@ -57,4 +57,4 @@ Read the change itself: `git diff main...claude/fix-service-accounting -- aveto_
 
 ## Where things are
 
-Branch `claude/fix-service-accounting`; pull request linked in `STATE.md`. Live: `https://ca-aveto-ask.salmonsmoke-fa1fa863.eastus2.azurecontainerapps.io`, revision `0000008`. Local `.claude/settings.local.json` (the C6.P rules) deleted after the pull request opened.
+Branch `claude/fix-service-accounting`; pull request https://github.com/gpatwa/aveto-support/pull/9. Live: `https://ca-aveto-ask.salmonsmoke-fa1fa863.eastus2.azurecontainerapps.io`, revision `0000008`. Local `.claude/settings.local.json` (the C6.P rules) deleted after the pull request opened.
