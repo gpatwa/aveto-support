@@ -79,6 +79,8 @@ Ceiling 950k (C2.2); hard cap 1,200k (C2.3). The Orchestrator's own session is n
 
 - 2026-10-24 Orchestrator, after stage 8: Release Gate GO WITH CONDITIONS (spent 119k). Spent 894k. Budget notice: the projection passes the 950k ceiling (C2.2: continue with a notice). To save spend, the Cloud Deployment command-sheet spawn is dropped (tech spec §7 is already the literal sheet the Release Manager checked) and stage 9 runs in the Orchestrator's session. P1 tree clean at d067b9a95ac6 (only runs/ commits after the checklist); P2 saved `09-deploy/p2-nothing-else-moves.txt` (14 paths: the 13 of spec §6 plus the disclosed `tests/test_service_api.py`); P3 pre-flight `09-deploy/7.0-preflight.txt` passes; P4 Orchestrator read smoke.py; P5 notice sent. The code-review model reconciles: the owner switched the session back to `claude-opus-5-5` before stage 4, so the review ran on Opus as `code-review.md` says.
 
+- 2026-10-24T07:13:38Z Owner, at the end review: "I accept the 33-a-day pause, A1 and A2 as they are; record that in END_REVIEW.md." Recorded in END_REVIEW.md (Blocked on you, items 1 to 3 closed as accepted). Rollback rehearsal and the carried items stay open.
+
 ## Next action
 
 Owner reviews END_REVIEW.md and merges https://github.com/gpatwa/aveto-support/pull/9 (C8.2: the run never merges). C6.P rules file deleted after the PR opened.
