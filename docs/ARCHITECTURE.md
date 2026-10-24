@@ -251,24 +251,33 @@ instead).
    per-process HMAC of the visitor's address (the rightmost `X-Forwarded-For`
    entry, or the peer; IPv6 by /64): at most 10 admitted questions and at most
    30 retrievals per rolling hour (`rate_limited`, 429); then the day's spend
-   must leave room for the smallest possible request (`paused`, 503). The
+   must leave room for the smallest possible request, two attempts with an
+   empty payload (`paused`, 503). The
    request is then counted against the 30-retrieval cap, whatever happens
    next.
 6. **Retrieval**: `retrieve_for_judge` then `format_judge_input`, one at a time
    under a lock. A passage that would forge a payload boundary, or any error,
    is `judge_error` with no model call.
 7. **Admission with reservation**, atomic under the lock: the hourly limit is
-   checked again and the request's worst-case cost (from the payload's size
-   and `max_tokens`) is reserved against the day's share
-   (`ASK_MONTHLY_CAP_USD` / 31, per UTC day); no room is `paused`. Only from
-   here does the request count against the visitor's 10 an hour.
+   checked again and the request's worst-case cost is reserved against the
+   day's share (`ASK_MONTHLY_CAP_USD` / 31, per UTC day): one attempt's bound
+   (from the payload's size and `max_tokens`) times `MAX_ATTEMPTS` (2, defined
+   in `judge_port.py`), so a retry can never take settled spend past the cap;
+   no room is `paused`. Only from here does the request count against the
+   visitor's 10 an hour.
 8. **Judge**: one Anthropic Messages call, at most two attempts. A timeout,
    connection error, HTTP error status, stop reason other than `end_turn`,
-   tool-use block or prompt-hash mismatch is a failed call. The reservation is
-   then settled: actual cost from the response's token usage on success; on
-   failure, the full reservation per attempt, except HTTP 4xx, connection
-   errors, a prompt-hash mismatch and a missing key, which are charged
-   nothing.
+   tool-use block or prompt-hash mismatch is a failed call. The adapter
+   counts, per attempt, the failed attempts that may have been billed and
+   passes that count out as an integer (`billable_failures` on `JudgeCall`
+   and `JudgeTransportError`; never text). Settlement charges each attempt on
+   its own outcome: a response's token usage at the configured price
+   (defaults $2 and $10 per million tokens, overridable by
+   `ASK_PRICE_IN_NANO_PER_TOKEN` and `ASK_PRICE_OUT_NANO_PER_TOKEN`); nothing
+   for an attempt that failed with an HTTP 4xx or a connection error, was
+   never sent, or found no key configured; one attempt's full bound for any
+   other failure. A later attempt's error never changes what an earlier
+   attempt is charged. The unused part of the reservation is returned.
 9. **Parse**: a failed call, a reply over 4,096 bytes, or any reply
    `parse_verdict` refuses is `judge_error` (502). Of the reply only the
    verdict token is kept.

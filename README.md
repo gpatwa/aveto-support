@@ -208,7 +208,7 @@ off, real limits.
 | Bar 1: all 10 unanswerable and hostile questions get `no confident match`, no passage, no judge error | 10 of 10, met |
 | Bar 2: at least 8 of 10 answerable questions show a passage from a listed source | 8 of 10, met exactly at the bar |
 | Judge errors in 20 calls | 0 |
-| Cost per judged question | about $0.0079 per question at Anthropic's published prices for `claude-sonnet-5-5` ($2 and $10 per million tokens; $0.1569 for the 20 gate questions, recomputed from the recorded 71,151 input and 1,460 output tokens, checked 2026-10-23). The service's own counter uses built-in defaults of $3 and $15, so it reads 50% high ($0.2354 for the same 20 calls); that error is on the safe side. The first live question cost $0.0099. |
+| Cost per judged question | about $0.0078 per question at Anthropic's published prices for `claude-sonnet-5-5` ($2 and $10 per million tokens; $0.1569 for the 20 gate questions, $0.1569 / 20, recomputed from the recorded 71,151 input and 1,460 output tokens, checked 2026-10-23). The first live question cost $0.0099. The service's own counter defaults to the same $2 and $10 (2000 and 10000 nano-dollars per token) from the change "fix-service-accounting". That change was deployed on 2026-10-24 as revision `ca-aveto-ask--0000008` (image `aveto-ask:d067b9a95ac6`, defaults 2000 and 10000 live). The gate above was scored on the earlier revision `ca-aveto-ask--0000006`, which counted at its earlier defaults. Live smoke on 2026-10-24 (five questions): cost per judged question $0.008544 (n = 5, from `/health` counters: 20,304 input and 211 output tokens), within 15% of $0.0078; the counter's spend equals the token cost at $2 and $10 exactly. |
 | Response time, from one client (a Mac, to East US 2), n = 20 | median 1.66 s, slowest 5.09 s |
 | Cold start, from zero replicas after more than an hour idle | 30.8 s to the first `/health` answer |
 | Monthly Azure cost | **not measured** (Azure's cost data lags about a day) |
@@ -227,13 +227,33 @@ Read these plainly:
   (S-A5), IPv6 clients (the service has no AAAA record), a screen reader, a
   different judge model or prompt.
 - The service's counters restart with the replica, so the Anthropic console limit
-  is the only durable cap. The $0.0079 is recomputed from recorded tokens at
+  is the only durable cap. The $0.0078 is recomputed from recorded tokens at
   Anthropic's published prices, not read from Anthropic's bill. About 1,270
-  questions a month fit inside the $10 limit at that price. The service's own
-  daily pause, counting at $3 and $15, comes at about 27 questions a day (about
-  41 at the real price). The two price settings (`ASK_PRICE_IN_NANO_PER_TOKEN`
-  and `ASK_PRICE_OUT_NANO_PER_TOKEN`) have not been changed to 2000 and 10000;
-  that is the owner's call.
+  questions a month fit inside the $10 limit at that price (estimate).
+- **How the service counts spend (fix-service-accounting; deployed 2026-10-24, revision `ca-aveto-ask--0000008`).**
+  The two price settings (`ASK_PRICE_IN_NANO_PER_TOKEN` and
+  `ASK_PRICE_OUT_NANO_PER_TOKEN`) default to 2000 and 10000 nano-dollars per
+  token, that is $2 and $10 per million tokens, read 2026-10-23 from Anthropic's
+  pricing page and matched by the owner's console bill; the settings still
+  override the defaults. Retries are reserved: a question is admitted only if
+  room for two attempts is free, and the unused part is returned when it
+  settles. Each attempt is charged on its own outcome (usage at the price if it
+  returned a usable response, nothing if it failed as a 4xx or a connection
+  error, one full reservation for any other failure), so a later attempt never
+  changes what an earlier one is charged. This closes issues #6, #7 and #8 when
+  the pull request is merged. **Daily pause, an estimate:** about 33 questions a
+  day by the service's counter with two attempts reserved (assumes about
+  $0.030 reserved per attempt for a request of about 10,000 bytes; the request
+  size is not measured). By spend alone about 41 fit in the day's $10 / 31
+  share, but the design pauses earlier, so the 41 first expected is not what it
+  gives. The ~33 stays an estimate: the live smoke did not run to the pause.
+  **Live smoke, 2026-10-24** (five questions from
+  `evals/retrieval-heldout-5.toml`): g01, g03 and g04 answered, byte-identical to
+  `retrieve`; gu15 and gu18 gave `no confident match`. Cost per judged question
+  $0.008544 (n = 5), within 15% of $0.0078. No question text appeared in any log
+  table. Kill switch: turning it off took 71.4 s; turning it on was not measured
+  (the watcher hit a TLS error; about 73 s upper bound from deploy timestamps).
+  Rolling back to the previous revision was not rehearsed.
 - An Azure budget alert (`bud-aveto-ask`, $20 a month, resource group
   `rg-aveto-ask`) emails the Owner role at 50%, 80% and 100% of actual cost and
   100% of forecast. It only notifies; it does not stop or cap spending.

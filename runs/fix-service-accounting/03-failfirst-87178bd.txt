@@ -1,0 +1,702 @@
+...........................................................F..FF...F.F.. [ 43%]
+.FFFFFFFFFFF.............................FFFFFFFFFFFFF........F......... [ 86%]
+.......................                                                  [100%]
+=================================== FAILURES ===================================
+__________________ test_spend_reservation_bounds_and_settles ___________________
+
+    def test_spend_reservation_bounds_and_settles() -> None:
+        fake = FakeJudgeClient(
+            [JudgeCall("Q1 ANSWERABLE", 1000, 10), JudgeTransportError("timeout"),
+             JudgeTransportError("status_5xx", attempts=2)]
+        )
+        service = make_service(fake)
+        spend = service._spend
+        service.ask(QUESTION, IP)
+        payload_bytes = len(fake.calls[0][1].encode())
+        reserved = spend.reservation_amount(service._system_bytes, payload_bytes)
+        actual = 1000 * 2000 + 10 * 10000
+        assert reserved > actual  # the reservation is an upper bound
+>       assert (spend.spent, spend.in_flight, spend.input_tokens, spend.output_tokens) == (
+            actual, 0, 1000, 10)
+E       assert (3150000, 0, 1000, 10) == (2100000, 0, 1000, 10)
+E         
+E         At index 0 diff: 3150000 != 2100000
+E         Use -v to get more diff
+
+tests/test_service_limits.py:460: AssertionError
+_____________ test_not_answerable_is_charged_like_any_judged_call ______________
+
+    def test_not_answerable_is_charged_like_any_judged_call() -> None:
+        fake = FakeJudgeClient(default=JudgeCall(NOT_ANSWERABLE_REPLY, 100, 10))
+        service = make_service(fake)
+        service.ask(QUESTION, IP)
+>       assert service._spend.spent == 100 * 2000 + 10 * 10000
+E       assert 450000 == ((100 * 2000) + (10 * 10000))
+E        +  where 450000 = <aveto_service.limits.SpendCounter object at 0x1137b7c50>.spent
+E        +    where <aveto_service.limits.SpendCounter object at 0x1137b7c50> = <aveto_service.pipeline.AskService object at 0x1137b62a0>._spend
+
+tests/test_service_limits.py:498: AssertionError
+_________________ test_concurrent_admissions_never_exceed_cap __________________
+
+    def test_concurrent_admissions_never_exceed_cap() -> None:
+        release = threading.Event()
+        in_judge = threading.Semaphore(0)
+    
+        class BlockingJudge(FakeJudgeClient):
+            def judge(self, system_prompt: str, payload: str) -> JudgeCall:
+                in_judge.release()
+                assert release.wait(10)
+                return super().judge(system_prompt, payload)
+    
+        fake = BlockingJudge()
+        service = make_service(fake)
+        release.set()
+        service.ask(QUESTION, "192.0.2.200")  # learn this question's reservation
+        release.clear()
+        payload_bytes = len(fake.calls[0][1].encode())
+        amount = service._spend.reservation_amount(service._system_bytes, payload_bytes)
+        spent = service._spend.spent
+        reserved = MAX_ATTEMPTS * amount  # admission reserves every attempt the adapter may make
+        service._spend.cap = spent + 3 * reserved + reserved // 2  # room for exactly three in flight
+        results: list[Outcome] = []
+        lock = threading.Lock()
+    
+        def worker(i: int) -> None:
+            outcome = service.ask(QUESTION, f"192.0.2.{i}").outcome
+            with lock:
+                results.append(outcome)
+    
+        threads = [threading.Thread(target=worker, args=(i,)) for i in range(1, 11)]
+        for t in threads:
+            t.start()
+        for _ in range(3):
+            assert in_judge.acquire(timeout=10)
+        deadline = threading.Event()
+        for _ in range(200):  # the other seven are refused while the three are held
+            with lock:
+                if len(results) == 7:
+                    break
+            deadline.wait(0.05)
+        with lock:
+>           assert results == [Outcome.PAUSED] * 7
+E           AssertionError: assert [<Outcome.PAU..._error'>, ...] == [<Outcome.PAU...paused'>, ...]
+E             
+E             At index 3 diff: <Outcome.JUDGE_ERROR: 'judge_error'> != <Outcome.PAUSED: 'paused'>
+E             Left contains 3 more items, first extra item: <Outcome.JUDGE_ERROR: 'judge_error'>
+E             Use -v to get more diff
+
+tests/test_service_limits.py:541: AssertionError
+______________________ test_retry_never_settles_above_cap ______________________
+
+    def test_retry_never_settles_above_cap() -> None:
+        service, messages, per_attempt = _real_adapter_service(
+            _e503(), _reply(), cap=lambda r: r
+        )
+        result = service.ask(QUESTION, IP)
+>       assert service._spend.spent <= service._spend.cap, (service._spend.spent, service._spend.cap)
+E       AssertionError: (22466000, 13124000)
+E       assert 22466000 <= 13124000
+E        +  where 22466000 = <aveto_service.limits.SpendCounter object at 0x11375d070>.spent
+E        +    where <aveto_service.limits.SpendCounter object at 0x11375d070> = <aveto_service.pipeline.AskService object at 0x113974fe0>._spend
+E        +  and   13124000 = <aveto_service.limits.SpendCounter object at 0x11375d070>.cap
+E        +    where <aveto_service.limits.SpendCounter object at 0x11375d070> = <aveto_service.pipeline.AskService object at 0x113974fe0>._spend
+
+tests/test_service_limits.py:653: AssertionError
+_________________ test_5xx_then_4xx_charges_the_first_attempt __________________
+
+    def test_5xx_then_4xx_charges_the_first_attempt() -> None:
+        service, messages, per_attempt = _real_adapter_service(_e503(), _e400())
+        result = service.ask(QUESTION, IP)
+        assert result.outcome is Outcome.JUDGE_ERROR
+        assert len(messages.requests) == 2
+>       assert service._spend.spent == per_attempt
+E       assert 0 == 13124000
+E        +  where 0 = <aveto_service.limits.SpendCounter object at 0x1137e4b30>.spent
+E        +    where <aveto_service.limits.SpendCounter object at 0x1137e4b30> = <aveto_service.pipeline.AskService object at 0x1137d35f0>._spend
+
+tests/test_service_limits.py:676: AssertionError
+___________ test_never_billed_retry_then_success_charges_usage_only ____________
+
+    def test_never_billed_retry_then_success_charges_usage_only() -> None:
+        service, messages, _ = _real_adapter_service(_e429(), _reply())
+        result = service.ask(QUESTION, IP)
+        assert result.outcome is Outcome.ANSWER
+        assert len(messages.requests) == 2
+>       assert service._spend.spent == USAGE_COST
+E       assert 22466000 == 9342000
+E        +  where 22466000 = <aveto_service.limits.SpendCounter object at 0x1137e6540>.spent
+E        +    where <aveto_service.limits.SpendCounter object at 0x1137e6540> = <aveto_service.pipeline.AskService object at 0x1137e70b0>._spend
+
+tests/test_service_limits.py:702: AssertionError
+__________ test_port_defaults_reproduce_the_old_charge[status_4xx-1] ___________
+
+category = 'status_4xx', attempts = 1
+
+    @pytest.mark.parametrize(
+        ("category", "attempts"),
+        [
+            ("status_4xx", 1), ("connection", 1), ("connection", 2),
+            ("timeout", 1), ("status_5xx", 2), ("stop_reason", 1),
+            ("tool_use", 1), ("other", 1), ("prompt_hash", 0),
+        ],
+    )
+    def test_port_defaults_reproduce_the_old_charge(category: str, attempts: int) -> None:
+        expected = 0 if category in {"status_4xx", "connection"} or attempts == 0 else attempts
+>       assert JudgeTransportError(category, attempts=attempts).billable_failures == expected
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_service_limits.py:715: AttributeError
+__________ test_port_defaults_reproduce_the_old_charge[connection-1] ___________
+
+category = 'connection', attempts = 1
+
+    @pytest.mark.parametrize(
+        ("category", "attempts"),
+        [
+            ("status_4xx", 1), ("connection", 1), ("connection", 2),
+            ("timeout", 1), ("status_5xx", 2), ("stop_reason", 1),
+            ("tool_use", 1), ("other", 1), ("prompt_hash", 0),
+        ],
+    )
+    def test_port_defaults_reproduce_the_old_charge(category: str, attempts: int) -> None:
+        expected = 0 if category in {"status_4xx", "connection"} or attempts == 0 else attempts
+>       assert JudgeTransportError(category, attempts=attempts).billable_failures == expected
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_service_limits.py:715: AttributeError
+__________ test_port_defaults_reproduce_the_old_charge[connection-2] ___________
+
+category = 'connection', attempts = 2
+
+    @pytest.mark.parametrize(
+        ("category", "attempts"),
+        [
+            ("status_4xx", 1), ("connection", 1), ("connection", 2),
+            ("timeout", 1), ("status_5xx", 2), ("stop_reason", 1),
+            ("tool_use", 1), ("other", 1), ("prompt_hash", 0),
+        ],
+    )
+    def test_port_defaults_reproduce_the_old_charge(category: str, attempts: int) -> None:
+        expected = 0 if category in {"status_4xx", "connection"} or attempts == 0 else attempts
+>       assert JudgeTransportError(category, attempts=attempts).billable_failures == expected
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_service_limits.py:715: AttributeError
+____________ test_port_defaults_reproduce_the_old_charge[timeout-1] ____________
+
+category = 'timeout', attempts = 1
+
+    @pytest.mark.parametrize(
+        ("category", "attempts"),
+        [
+            ("status_4xx", 1), ("connection", 1), ("connection", 2),
+            ("timeout", 1), ("status_5xx", 2), ("stop_reason", 1),
+            ("tool_use", 1), ("other", 1), ("prompt_hash", 0),
+        ],
+    )
+    def test_port_defaults_reproduce_the_old_charge(category: str, attempts: int) -> None:
+        expected = 0 if category in {"status_4xx", "connection"} or attempts == 0 else attempts
+>       assert JudgeTransportError(category, attempts=attempts).billable_failures == expected
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_service_limits.py:715: AttributeError
+__________ test_port_defaults_reproduce_the_old_charge[status_5xx-2] ___________
+
+category = 'status_5xx', attempts = 2
+
+    @pytest.mark.parametrize(
+        ("category", "attempts"),
+        [
+            ("status_4xx", 1), ("connection", 1), ("connection", 2),
+            ("timeout", 1), ("status_5xx", 2), ("stop_reason", 1),
+            ("tool_use", 1), ("other", 1), ("prompt_hash", 0),
+        ],
+    )
+    def test_port_defaults_reproduce_the_old_charge(category: str, attempts: int) -> None:
+        expected = 0 if category in {"status_4xx", "connection"} or attempts == 0 else attempts
+>       assert JudgeTransportError(category, attempts=attempts).billable_failures == expected
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_service_limits.py:715: AttributeError
+__________ test_port_defaults_reproduce_the_old_charge[stop_reason-1] __________
+
+category = 'stop_reason', attempts = 1
+
+    @pytest.mark.parametrize(
+        ("category", "attempts"),
+        [
+            ("status_4xx", 1), ("connection", 1), ("connection", 2),
+            ("timeout", 1), ("status_5xx", 2), ("stop_reason", 1),
+            ("tool_use", 1), ("other", 1), ("prompt_hash", 0),
+        ],
+    )
+    def test_port_defaults_reproduce_the_old_charge(category: str, attempts: int) -> None:
+        expected = 0 if category in {"status_4xx", "connection"} or attempts == 0 else attempts
+>       assert JudgeTransportError(category, attempts=attempts).billable_failures == expected
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_service_limits.py:715: AttributeError
+___________ test_port_defaults_reproduce_the_old_charge[tool_use-1] ____________
+
+category = 'tool_use', attempts = 1
+
+    @pytest.mark.parametrize(
+        ("category", "attempts"),
+        [
+            ("status_4xx", 1), ("connection", 1), ("connection", 2),
+            ("timeout", 1), ("status_5xx", 2), ("stop_reason", 1),
+            ("tool_use", 1), ("other", 1), ("prompt_hash", 0),
+        ],
+    )
+    def test_port_defaults_reproduce_the_old_charge(category: str, attempts: int) -> None:
+        expected = 0 if category in {"status_4xx", "connection"} or attempts == 0 else attempts
+>       assert JudgeTransportError(category, attempts=attempts).billable_failures == expected
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_service_limits.py:715: AttributeError
+_____________ test_port_defaults_reproduce_the_old_charge[other-1] _____________
+
+category = 'other', attempts = 1
+
+    @pytest.mark.parametrize(
+        ("category", "attempts"),
+        [
+            ("status_4xx", 1), ("connection", 1), ("connection", 2),
+            ("timeout", 1), ("status_5xx", 2), ("stop_reason", 1),
+            ("tool_use", 1), ("other", 1), ("prompt_hash", 0),
+        ],
+    )
+    def test_port_defaults_reproduce_the_old_charge(category: str, attempts: int) -> None:
+        expected = 0 if category in {"status_4xx", "connection"} or attempts == 0 else attempts
+>       assert JudgeTransportError(category, attempts=attempts).billable_failures == expected
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_service_limits.py:715: AttributeError
+__________ test_port_defaults_reproduce_the_old_charge[prompt_hash-0] __________
+
+category = 'prompt_hash', attempts = 0
+
+    @pytest.mark.parametrize(
+        ("category", "attempts"),
+        [
+            ("status_4xx", 1), ("connection", 1), ("connection", 2),
+            ("timeout", 1), ("status_5xx", 2), ("stop_reason", 1),
+            ("tool_use", 1), ("other", 1), ("prompt_hash", 0),
+        ],
+    )
+    def test_port_defaults_reproduce_the_old_charge(category: str, attempts: int) -> None:
+        expected = 0 if category in {"status_4xx", "connection"} or attempts == 0 else attempts
+>       assert JudgeTransportError(category, attempts=attempts).billable_failures == expected
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_service_limits.py:715: AttributeError
+____________________ test_price_defaults_are_2000_and_10000 ____________________
+
+    def test_price_defaults_are_2000_and_10000() -> None:
+>       assert (Settings().price_in_nano_per_token, Settings().price_out_nano_per_token) == (
+            2000, 10000)
+E       assert (3000, 15000) == (2000, 10000)
+E         
+E         At index 0 diff: 3000 != 2000
+E         Use -v to get more diff
+
+tests/test_service_limits.py:722: AssertionError
+_____ test_billable_failures_counted_per_attempt[<lambda>-status_4xx-2-1] ______
+
+script = <function <lambda> at 0x113721da0>, category = 'status_4xx'
+attempts = 2, billable = 1
+
+    @pytest.mark.parametrize(
+        ("script", "category", "attempts", "billable"),
+        [
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 1),
+            (lambda: [_status(anthropic.RateLimitError, 429), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 0),
+            (lambda: [_conn(), _conn()], "connection", 2, 0),
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.InternalServerError, 503)], "status_5xx", 2, 2),
+            (lambda: [_status(anthropic.InternalServerError, 503), message(stop="max_tokens")], "stop_reason", 2, 2),
+            (lambda: [_timeout()], "timeout", 1, 1),
+            (lambda: [_status(anthropic.BadRequestError, 400)], "status_4xx", 1, 0),
+            (lambda: [message(stop="max_tokens")], "stop_reason", 1, 1),
+        ],
+    )
+    def test_billable_failures_counted_per_attempt(
+        script: Callable[[], list[Any]], category: str, attempts: int, billable: int
+    ) -> None:
+        client, _, _ = make(*script())
+        with pytest.raises(JudgeTransportError) as info:
+            client.judge(PROMPT, PAYLOAD)
+        err = info.value
+>       assert (err.category, err.attempts, err.billable_failures) == (category, attempts, billable)
+                                            ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_anthropic_judge.py:415: AttributeError
+_____ test_billable_failures_counted_per_attempt[<lambda>-status_4xx-2-0] ______
+
+script = <function <lambda> at 0x113721e40>, category = 'status_4xx'
+attempts = 2, billable = 0
+
+    @pytest.mark.parametrize(
+        ("script", "category", "attempts", "billable"),
+        [
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 1),
+            (lambda: [_status(anthropic.RateLimitError, 429), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 0),
+            (lambda: [_conn(), _conn()], "connection", 2, 0),
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.InternalServerError, 503)], "status_5xx", 2, 2),
+            (lambda: [_status(anthropic.InternalServerError, 503), message(stop="max_tokens")], "stop_reason", 2, 2),
+            (lambda: [_timeout()], "timeout", 1, 1),
+            (lambda: [_status(anthropic.BadRequestError, 400)], "status_4xx", 1, 0),
+            (lambda: [message(stop="max_tokens")], "stop_reason", 1, 1),
+        ],
+    )
+    def test_billable_failures_counted_per_attempt(
+        script: Callable[[], list[Any]], category: str, attempts: int, billable: int
+    ) -> None:
+        client, _, _ = make(*script())
+        with pytest.raises(JudgeTransportError) as info:
+            client.judge(PROMPT, PAYLOAD)
+        err = info.value
+>       assert (err.category, err.attempts, err.billable_failures) == (category, attempts, billable)
+                                            ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_anthropic_judge.py:415: AttributeError
+_____ test_billable_failures_counted_per_attempt[<lambda>-connection-2-0] ______
+
+script = <function <lambda> at 0x113721ee0>, category = 'connection'
+attempts = 2, billable = 0
+
+    @pytest.mark.parametrize(
+        ("script", "category", "attempts", "billable"),
+        [
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 1),
+            (lambda: [_status(anthropic.RateLimitError, 429), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 0),
+            (lambda: [_conn(), _conn()], "connection", 2, 0),
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.InternalServerError, 503)], "status_5xx", 2, 2),
+            (lambda: [_status(anthropic.InternalServerError, 503), message(stop="max_tokens")], "stop_reason", 2, 2),
+            (lambda: [_timeout()], "timeout", 1, 1),
+            (lambda: [_status(anthropic.BadRequestError, 400)], "status_4xx", 1, 0),
+            (lambda: [message(stop="max_tokens")], "stop_reason", 1, 1),
+        ],
+    )
+    def test_billable_failures_counted_per_attempt(
+        script: Callable[[], list[Any]], category: str, attempts: int, billable: int
+    ) -> None:
+        client, _, _ = make(*script())
+        with pytest.raises(JudgeTransportError) as info:
+            client.judge(PROMPT, PAYLOAD)
+        err = info.value
+>       assert (err.category, err.attempts, err.billable_failures) == (category, attempts, billable)
+                                            ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_anthropic_judge.py:415: AttributeError
+_____ test_billable_failures_counted_per_attempt[<lambda>-status_5xx-2-2] ______
+
+script = <function <lambda> at 0x113721f80>, category = 'status_5xx'
+attempts = 2, billable = 2
+
+    @pytest.mark.parametrize(
+        ("script", "category", "attempts", "billable"),
+        [
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 1),
+            (lambda: [_status(anthropic.RateLimitError, 429), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 0),
+            (lambda: [_conn(), _conn()], "connection", 2, 0),
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.InternalServerError, 503)], "status_5xx", 2, 2),
+            (lambda: [_status(anthropic.InternalServerError, 503), message(stop="max_tokens")], "stop_reason", 2, 2),
+            (lambda: [_timeout()], "timeout", 1, 1),
+            (lambda: [_status(anthropic.BadRequestError, 400)], "status_4xx", 1, 0),
+            (lambda: [message(stop="max_tokens")], "stop_reason", 1, 1),
+        ],
+    )
+    def test_billable_failures_counted_per_attempt(
+        script: Callable[[], list[Any]], category: str, attempts: int, billable: int
+    ) -> None:
+        client, _, _ = make(*script())
+        with pytest.raises(JudgeTransportError) as info:
+            client.judge(PROMPT, PAYLOAD)
+        err = info.value
+>       assert (err.category, err.attempts, err.billable_failures) == (category, attempts, billable)
+                                            ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_anthropic_judge.py:415: AttributeError
+_____ test_billable_failures_counted_per_attempt[<lambda>-stop_reason-2-2] _____
+
+script = <function <lambda> at 0x113722020>, category = 'stop_reason'
+attempts = 2, billable = 2
+
+    @pytest.mark.parametrize(
+        ("script", "category", "attempts", "billable"),
+        [
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 1),
+            (lambda: [_status(anthropic.RateLimitError, 429), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 0),
+            (lambda: [_conn(), _conn()], "connection", 2, 0),
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.InternalServerError, 503)], "status_5xx", 2, 2),
+            (lambda: [_status(anthropic.InternalServerError, 503), message(stop="max_tokens")], "stop_reason", 2, 2),
+            (lambda: [_timeout()], "timeout", 1, 1),
+            (lambda: [_status(anthropic.BadRequestError, 400)], "status_4xx", 1, 0),
+            (lambda: [message(stop="max_tokens")], "stop_reason", 1, 1),
+        ],
+    )
+    def test_billable_failures_counted_per_attempt(
+        script: Callable[[], list[Any]], category: str, attempts: int, billable: int
+    ) -> None:
+        client, _, _ = make(*script())
+        with pytest.raises(JudgeTransportError) as info:
+            client.judge(PROMPT, PAYLOAD)
+        err = info.value
+>       assert (err.category, err.attempts, err.billable_failures) == (category, attempts, billable)
+                                            ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_anthropic_judge.py:415: AttributeError
+_______ test_billable_failures_counted_per_attempt[<lambda>-timeout-1-1] _______
+
+script = <function <lambda> at 0x1137220c0>, category = 'timeout', attempts = 1
+billable = 1
+
+    @pytest.mark.parametrize(
+        ("script", "category", "attempts", "billable"),
+        [
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 1),
+            (lambda: [_status(anthropic.RateLimitError, 429), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 0),
+            (lambda: [_conn(), _conn()], "connection", 2, 0),
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.InternalServerError, 503)], "status_5xx", 2, 2),
+            (lambda: [_status(anthropic.InternalServerError, 503), message(stop="max_tokens")], "stop_reason", 2, 2),
+            (lambda: [_timeout()], "timeout", 1, 1),
+            (lambda: [_status(anthropic.BadRequestError, 400)], "status_4xx", 1, 0),
+            (lambda: [message(stop="max_tokens")], "stop_reason", 1, 1),
+        ],
+    )
+    def test_billable_failures_counted_per_attempt(
+        script: Callable[[], list[Any]], category: str, attempts: int, billable: int
+    ) -> None:
+        client, _, _ = make(*script())
+        with pytest.raises(JudgeTransportError) as info:
+            client.judge(PROMPT, PAYLOAD)
+        err = info.value
+>       assert (err.category, err.attempts, err.billable_failures) == (category, attempts, billable)
+                                            ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_anthropic_judge.py:415: AttributeError
+_____ test_billable_failures_counted_per_attempt[<lambda>-status_4xx-1-0] ______
+
+script = <function <lambda> at 0x113722160>, category = 'status_4xx'
+attempts = 1, billable = 0
+
+    @pytest.mark.parametrize(
+        ("script", "category", "attempts", "billable"),
+        [
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 1),
+            (lambda: [_status(anthropic.RateLimitError, 429), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 0),
+            (lambda: [_conn(), _conn()], "connection", 2, 0),
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.InternalServerError, 503)], "status_5xx", 2, 2),
+            (lambda: [_status(anthropic.InternalServerError, 503), message(stop="max_tokens")], "stop_reason", 2, 2),
+            (lambda: [_timeout()], "timeout", 1, 1),
+            (lambda: [_status(anthropic.BadRequestError, 400)], "status_4xx", 1, 0),
+            (lambda: [message(stop="max_tokens")], "stop_reason", 1, 1),
+        ],
+    )
+    def test_billable_failures_counted_per_attempt(
+        script: Callable[[], list[Any]], category: str, attempts: int, billable: int
+    ) -> None:
+        client, _, _ = make(*script())
+        with pytest.raises(JudgeTransportError) as info:
+            client.judge(PROMPT, PAYLOAD)
+        err = info.value
+>       assert (err.category, err.attempts, err.billable_failures) == (category, attempts, billable)
+                                            ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_anthropic_judge.py:415: AttributeError
+_____ test_billable_failures_counted_per_attempt[<lambda>-stop_reason-1-1] _____
+
+script = <function <lambda> at 0x113722200>, category = 'stop_reason'
+attempts = 1, billable = 1
+
+    @pytest.mark.parametrize(
+        ("script", "category", "attempts", "billable"),
+        [
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 1),
+            (lambda: [_status(anthropic.RateLimitError, 429), _status(anthropic.BadRequestError, 400)], "status_4xx", 2, 0),
+            (lambda: [_conn(), _conn()], "connection", 2, 0),
+            (lambda: [_status(anthropic.InternalServerError, 503), _status(anthropic.InternalServerError, 503)], "status_5xx", 2, 2),
+            (lambda: [_status(anthropic.InternalServerError, 503), message(stop="max_tokens")], "stop_reason", 2, 2),
+            (lambda: [_timeout()], "timeout", 1, 1),
+            (lambda: [_status(anthropic.BadRequestError, 400)], "status_4xx", 1, 0),
+            (lambda: [message(stop="max_tokens")], "stop_reason", 1, 1),
+        ],
+    )
+    def test_billable_failures_counted_per_attempt(
+        script: Callable[[], list[Any]], category: str, attempts: int, billable: int
+    ) -> None:
+        client, _, _ = make(*script())
+        with pytest.raises(JudgeTransportError) as info:
+            client.judge(PROMPT, PAYLOAD)
+        err = info.value
+>       assert (err.category, err.attempts, err.billable_failures) == (category, attempts, billable)
+                                            ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_anthropic_judge.py:415: AttributeError
+_______________ test_billable_failures_on_success[<lambda>-1-0] ________________
+
+script = <function <lambda> at 0x113722340>, attempts = 1, billable = 0
+
+    @pytest.mark.parametrize(
+        ("script", "attempts", "billable"),
+        [
+            (lambda: [message()], 1, 0),
+            (lambda: [_status(anthropic.RateLimitError, 429), message()], 2, 0),
+            (lambda: [_status(anthropic.InternalServerError, 503), message()], 2, 1),
+            (lambda: [_conn(), message()], 2, 0),
+        ],
+    )
+    def test_billable_failures_on_success(
+        script: Callable[[], list[Any]], attempts: int, billable: int
+    ) -> None:
+        client, _, _ = make(*script())
+        call = client.judge(PROMPT, PAYLOAD)
+>       assert (call.attempts, call.billable_failures) == (attempts, billable)
+                               ^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeCall' object has no attribute 'billable_failures'
+
+tests/test_anthropic_judge.py:435: AttributeError
+______________ test_billable_failures_on_success[<lambda>-2-0_0] _______________
+
+script = <function <lambda> at 0x1137223e0>, attempts = 2, billable = 0
+
+    @pytest.mark.parametrize(
+        ("script", "attempts", "billable"),
+        [
+            (lambda: [message()], 1, 0),
+            (lambda: [_status(anthropic.RateLimitError, 429), message()], 2, 0),
+            (lambda: [_status(anthropic.InternalServerError, 503), message()], 2, 1),
+            (lambda: [_conn(), message()], 2, 0),
+        ],
+    )
+    def test_billable_failures_on_success(
+        script: Callable[[], list[Any]], attempts: int, billable: int
+    ) -> None:
+        client, _, _ = make(*script())
+        call = client.judge(PROMPT, PAYLOAD)
+>       assert (call.attempts, call.billable_failures) == (attempts, billable)
+                               ^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeCall' object has no attribute 'billable_failures'
+
+tests/test_anthropic_judge.py:435: AttributeError
+_______________ test_billable_failures_on_success[<lambda>-2-1] ________________
+
+script = <function <lambda> at 0x113722480>, attempts = 2, billable = 1
+
+    @pytest.mark.parametrize(
+        ("script", "attempts", "billable"),
+        [
+            (lambda: [message()], 1, 0),
+            (lambda: [_status(anthropic.RateLimitError, 429), message()], 2, 0),
+            (lambda: [_status(anthropic.InternalServerError, 503), message()], 2, 1),
+            (lambda: [_conn(), message()], 2, 0),
+        ],
+    )
+    def test_billable_failures_on_success(
+        script: Callable[[], list[Any]], attempts: int, billable: int
+    ) -> None:
+        client, _, _ = make(*script())
+        call = client.judge(PROMPT, PAYLOAD)
+>       assert (call.attempts, call.billable_failures) == (attempts, billable)
+                               ^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeCall' object has no attribute 'billable_failures'
+
+tests/test_anthropic_judge.py:435: AttributeError
+______________ test_billable_failures_on_success[<lambda>-2-0_1] _______________
+
+script = <function <lambda> at 0x113722520>, attempts = 2, billable = 0
+
+    @pytest.mark.parametrize(
+        ("script", "attempts", "billable"),
+        [
+            (lambda: [message()], 1, 0),
+            (lambda: [_status(anthropic.RateLimitError, 429), message()], 2, 0),
+            (lambda: [_status(anthropic.InternalServerError, 503), message()], 2, 1),
+            (lambda: [_conn(), message()], 2, 0),
+        ],
+    )
+    def test_billable_failures_on_success(
+        script: Callable[[], list[Any]], attempts: int, billable: int
+    ) -> None:
+        client, _, _ = make(*script())
+        call = client.judge(PROMPT, PAYLOAD)
+>       assert (call.attempts, call.billable_failures) == (attempts, billable)
+                               ^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeCall' object has no attribute 'billable_failures'
+
+tests/test_anthropic_judge.py:435: AttributeError
+___________________ test_prompt_hash_mismatch_bills_nothing ____________________
+
+    def test_prompt_hash_mismatch_bills_nothing() -> None:
+        client, _, _ = make(message())
+        with pytest.raises(JudgeTransportError) as info:
+            client.judge("other prompt", PAYLOAD)
+>       assert info.value.billable_failures == 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'JudgeTransportError' object has no attribute 'billable_failures'
+
+tests/test_anthropic_judge.py:442: AttributeError
+__________________________ test_bicep_price_defaults ___________________________
+
+    def test_bicep_price_defaults() -> None:
+        from aveto_service import settings
+    
+        price_in = re.search(r"param priceInNanoPerToken int = (\d+)\b", BICEP)
+        price_out = re.search(r"param priceOutNanoPerToken int = (\d+)\b", BICEP)
+        assert price_in and price_out
+>       assert (price_in.group(1), price_out.group(1)) == ("2000", "10000")
+E       AssertionError: assert ('3000', '15000') == ('2000', '10000')
+E         
+E         At index 0 diff: '3000' != '2000'
+E         Use -v to get more diff
+
+tests/test_infra_static.py:156: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_service_limits.py::test_spend_reservation_bounds_and_settles
+FAILED tests/test_service_limits.py::test_not_answerable_is_charged_like_any_judged_call
+FAILED tests/test_service_limits.py::test_concurrent_admissions_never_exceed_cap
+FAILED tests/test_service_limits.py::test_retry_never_settles_above_cap - Ass...
+FAILED tests/test_service_limits.py::test_5xx_then_4xx_charges_the_first_attempt
+FAILED tests/test_service_limits.py::test_never_billed_retry_then_success_charges_usage_only
+FAILED tests/test_service_limits.py::test_port_defaults_reproduce_the_old_charge[status_4xx-1]
+FAILED tests/test_service_limits.py::test_port_defaults_reproduce_the_old_charge[connection-1]
+FAILED tests/test_service_limits.py::test_port_defaults_reproduce_the_old_charge[connection-2]
+FAILED tests/test_service_limits.py::test_port_defaults_reproduce_the_old_charge[timeout-1]
+FAILED tests/test_service_limits.py::test_port_defaults_reproduce_the_old_charge[status_5xx-2]
+FAILED tests/test_service_limits.py::test_port_defaults_reproduce_the_old_charge[stop_reason-1]
+FAILED tests/test_service_limits.py::test_port_defaults_reproduce_the_old_charge[tool_use-1]
+FAILED tests/test_service_limits.py::test_port_defaults_reproduce_the_old_charge[other-1]
+FAILED tests/test_service_limits.py::test_port_defaults_reproduce_the_old_charge[prompt_hash-0]
+FAILED tests/test_service_limits.py::test_price_defaults_are_2000_and_10000
+FAILED tests/test_anthropic_judge.py::test_billable_failures_counted_per_attempt[<lambda>-status_4xx-2-1]
+FAILED tests/test_anthropic_judge.py::test_billable_failures_counted_per_attempt[<lambda>-status_4xx-2-0]
+FAILED tests/test_anthropic_judge.py::test_billable_failures_counted_per_attempt[<lambda>-connection-2-0]
+FAILED tests/test_anthropic_judge.py::test_billable_failures_counted_per_attempt[<lambda>-status_5xx-2-2]
+FAILED tests/test_anthropic_judge.py::test_billable_failures_counted_per_attempt[<lambda>-stop_reason-2-2]
+FAILED tests/test_anthropic_judge.py::test_billable_failures_counted_per_attempt[<lambda>-timeout-1-1]
+FAILED tests/test_anthropic_judge.py::test_billable_failures_counted_per_attempt[<lambda>-status_4xx-1-0]
+FAILED tests/test_anthropic_judge.py::test_billable_failures_counted_per_attempt[<lambda>-stop_reason-1-1]
+FAILED tests/test_anthropic_judge.py::test_billable_failures_on_success[<lambda>-1-0]
+FAILED tests/test_anthropic_judge.py::test_billable_failures_on_success[<lambda>-2-0_0]
+FAILED tests/test_anthropic_judge.py::test_billable_failures_on_success[<lambda>-2-1]
+FAILED tests/test_anthropic_judge.py::test_billable_failures_on_success[<lambda>-2-0_1]
+FAILED tests/test_anthropic_judge.py::test_prompt_hash_mismatch_bills_nothing
+FAILED tests/test_infra_static.py::test_bicep_price_defaults - AssertionError...
+30 failed, 137 passed in 22.69s

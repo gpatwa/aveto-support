@@ -1,0 +1,1263 @@
+{
+  "changes": [
+    {
+      "after": {
+        "apiVersion": "2024-03-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.App/containerApps/ca-aveto-ask",
+        "identity": {
+          "type": "UserAssigned",
+          "userAssignedIdentities": {
+            "/subscriptions/<id>/resourcegroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask": {}
+          }
+        },
+        "location": "eastus2",
+        "name": "ca-aveto-ask",
+        "properties": {
+          "configuration": {
+            "activeRevisionsMode": "Single",
+            "ingress": {
+              "allowInsecure": false,
+              "external": true,
+              "targetPort": 8000,
+              "transport": "Auto"
+            },
+            "registries": [
+              {
+                "identity": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask",
+                "server": "[reference('/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ContainerRegistry/registries/acravetoaskgp', '2023-07-01').loginServer]"
+              }
+            ],
+            "secrets": [
+              {
+                "identity": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask",
+                "keyVaultUrl": "https://kv-aveto-ask-gp.vault.azure.net/secrets/anthropic-api-key",
+                "name": "anthropic-api-key"
+              }
+            ]
+          },
+          "environmentId": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.App/managedEnvironments/cae-aveto-ask",
+          "managedEnvironmentId": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.App/managedEnvironments/cae-aveto-ask",
+          "template": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "ANTHROPIC_API_KEY",
+                    "secretRef": "anthropic-api-key"
+                  },
+                  {
+                    "name": "ASK_KILL_SWITCH",
+                    "value": "on"
+                  },
+                  {
+                    "name": "ASK_CLIENT_KEY",
+                    "value": "xff_last"
+                  },
+                  {
+                    "name": "ASK_PRICE_IN_NANO_PER_TOKEN",
+                    "value": "2000"
+                  },
+                  {
+                    "name": "ASK_PRICE_OUT_NANO_PER_TOKEN",
+                    "value": "10000"
+                  },
+                  {
+                    "name": "ASK_MONTHLY_CAP_USD",
+                    "value": "10"
+                  }
+                ],
+                "image": "[format('{0}/aveto-ask:{1}', reference('/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ContainerRegistry/registries/acravetoaskgp', '2023-07-01').loginServer, 'd067b9a95ac6')]",
+                "name": "aveto-ask",
+                "probes": [
+                  {
+                    "failureThreshold": 24,
+                    "httpGet": {
+                      "path": "/health",
+                      "port": 8000
+                    },
+                    "periodSeconds": 5,
+                    "type": "Startup"
+                  },
+                  {
+                    "httpGet": {
+                      "path": "/health",
+                      "port": 8000
+                    },
+                    "periodSeconds": 10,
+                    "type": "Readiness"
+                  },
+                  {
+                    "httpGet": {
+                      "path": "/health",
+                      "port": 8000
+                    },
+                    "periodSeconds": 30,
+                    "type": "Liveness"
+                  }
+                ],
+                "resources": {
+                  "cpu": 0.5,
+                  "memory": "1Gi"
+                }
+              }
+            ],
+            "scale": {
+              "maxReplicas": 1,
+              "minReplicas": 0,
+              "rules": [
+                {
+                  "http": {
+                    "metadata": {
+                      "concurrentRequests": "10"
+                    }
+                  },
+                  "name": "http"
+                }
+              ]
+            }
+          }
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.App/containerApps"
+      },
+      "before": {
+        "apiVersion": "2024-03-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.App/containerApps/ca-aveto-ask",
+        "identity": {
+          "type": "UserAssigned",
+          "userAssignedIdentities": {
+            "/subscriptions/<id>/resourcegroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask": {}
+          }
+        },
+        "location": "eastus2",
+        "name": "ca-aveto-ask",
+        "properties": {
+          "configuration": {
+            "activeRevisionsMode": "Single",
+            "ingress": {
+              "allowInsecure": false,
+              "exposedPort": 0,
+              "external": true,
+              "targetPort": 8000,
+              "traffic": [
+                {
+                  "latestRevision": true,
+                  "weight": 100
+                }
+              ],
+              "transport": "Auto"
+            },
+            "registries": [
+              {
+                "identity": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask",
+                "server": "acravetoaskgp.azurecr.io"
+              }
+            ],
+            "secrets": [
+              {
+                "identity": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask",
+                "keyVaultUrl": "https://kv-aveto-ask-gp.vault.azure.net/secrets/anthropic-api-key",
+                "name": "anthropic-api-key"
+              }
+            ]
+          },
+          "environmentId": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.App/managedEnvironments/cae-aveto-ask",
+          "managedEnvironmentId": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.App/managedEnvironments/cae-aveto-ask",
+          "runningStatus": "Running",
+          "template": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "ANTHROPIC_API_KEY",
+                    "secretRef": "anthropic-api-key"
+                  },
+                  {
+                    "name": "ASK_KILL_SWITCH",
+                    "value": "off"
+                  },
+                  {
+                    "name": "ASK_CLIENT_KEY",
+                    "value": "xff_last"
+                  },
+                  {
+                    "name": "ASK_PRICE_IN_NANO_PER_TOKEN",
+                    "value": "3000"
+                  },
+                  {
+                    "name": "ASK_PRICE_OUT_NANO_PER_TOKEN",
+                    "value": "15000"
+                  },
+                  {
+                    "name": "ASK_MONTHLY_CAP_USD",
+                    "value": "10"
+                  }
+                ],
+                "image": "acravetoaskgp.azurecr.io/aveto-ask:879cae23690b",
+                "name": "aveto-ask",
+                "probes": [
+                  {
+                    "httpGet": {
+                      "path": "/health",
+                      "port": 8000
+                    },
+                    "periodSeconds": 30,
+                    "type": "Liveness"
+                  },
+                  {
+                    "httpGet": {
+                      "path": "/health",
+                      "port": 8000
+                    },
+                    "periodSeconds": 10,
+                    "type": "Readiness"
+                  },
+                  {
+                    "failureThreshold": 24,
+                    "httpGet": {
+                      "path": "/health",
+                      "port": 8000
+                    },
+                    "periodSeconds": 5,
+                    "type": "Startup"
+                  }
+                ],
+                "resources": {
+                  "cpu": 0.5,
+                  "memory": "1Gi"
+                }
+              }
+            ],
+            "scale": {
+              "maxReplicas": 1,
+              "minReplicas": 0,
+              "rules": [
+                {
+                  "http": {
+                    "metadata": {
+                      "concurrentRequests": "10"
+                    }
+                  },
+                  "name": "http"
+                }
+              ]
+            }
+          }
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.App/containerApps"
+      },
+      "changeType": "Modify",
+      "delta": [
+        {
+          "after": null,
+          "before": 0,
+          "children": null,
+          "path": "properties.configuration.ingress.exposedPort",
+          "propertyChangeType": "Delete"
+        },
+        {
+          "after": null,
+          "before": [
+            {
+              "latestRevision": true,
+              "weight": 100
+            }
+          ],
+          "children": null,
+          "path": "properties.configuration.ingress.traffic",
+          "propertyChangeType": "Delete"
+        },
+        {
+          "after": null,
+          "before": null,
+          "children": [
+            {
+              "after": null,
+              "before": null,
+              "children": [
+                {
+                  "after": "[reference('/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ContainerRegistry/registries/acravetoaskgp', '2023-07-01').loginServer]",
+                  "before": "acravetoaskgp.azurecr.io",
+                  "children": null,
+                  "path": "server",
+                  "propertyChangeType": "Modify"
+                }
+              ],
+              "path": "0",
+              "propertyChangeType": "Modify"
+            }
+          ],
+          "path": "properties.configuration.registries",
+          "propertyChangeType": "Array"
+        },
+        {
+          "after": null,
+          "before": "Running",
+          "children": null,
+          "path": "properties.runningStatus",
+          "propertyChangeType": "Delete"
+        },
+        {
+          "after": null,
+          "before": null,
+          "children": [
+            {
+              "after": null,
+              "before": null,
+              "children": [
+                {
+                  "after": null,
+                  "before": null,
+                  "children": [
+                    {
+                      "after": null,
+                      "before": null,
+                      "children": [
+                        {
+                          "after": "on",
+                          "before": "off",
+                          "children": null,
+                          "path": "value",
+                          "propertyChangeType": "Modify"
+                        }
+                      ],
+                      "path": "1",
+                      "propertyChangeType": "Modify"
+                    },
+                    {
+                      "after": null,
+                      "before": null,
+                      "children": [
+                        {
+                          "after": "2000",
+                          "before": "3000",
+                          "children": null,
+                          "path": "value",
+                          "propertyChangeType": "Modify"
+                        }
+                      ],
+                      "path": "3",
+                      "propertyChangeType": "Modify"
+                    },
+                    {
+                      "after": null,
+                      "before": null,
+                      "children": [
+                        {
+                          "after": "10000",
+                          "before": "15000",
+                          "children": null,
+                          "path": "value",
+                          "propertyChangeType": "Modify"
+                        }
+                      ],
+                      "path": "4",
+                      "propertyChangeType": "Modify"
+                    }
+                  ],
+                  "path": "env",
+                  "propertyChangeType": "Array"
+                },
+                {
+                  "after": "[format('{0}/aveto-ask:{1}', reference('/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ContainerRegistry/registries/acravetoaskgp', '2023-07-01').loginServer, 'd067b9a95ac6')]",
+                  "before": "acravetoaskgp.azurecr.io/aveto-ask:879cae23690b",
+                  "children": null,
+                  "path": "image",
+                  "propertyChangeType": "Modify"
+                },
+                {
+                  "after": null,
+                  "before": null,
+                  "children": [
+                    {
+                      "after": null,
+                      "before": null,
+                      "children": [
+                        {
+                          "after": 5,
+                          "before": 30,
+                          "children": null,
+                          "path": "periodSeconds",
+                          "propertyChangeType": "Modify"
+                        },
+                        {
+                          "after": "Startup",
+                          "before": "Liveness",
+                          "children": null,
+                          "path": "type",
+                          "propertyChangeType": "Modify"
+                        },
+                        {
+                          "after": 24,
+                          "before": null,
+                          "children": null,
+                          "path": "failureThreshold",
+                          "propertyChangeType": "Create"
+                        }
+                      ],
+                      "path": "0",
+                      "propertyChangeType": "Modify"
+                    },
+                    {
+                      "after": null,
+                      "before": null,
+                      "children": [
+                        {
+                          "after": null,
+                          "before": 24,
+                          "children": null,
+                          "path": "failureThreshold",
+                          "propertyChangeType": "Delete"
+                        },
+                        {
+                          "after": 30,
+                          "before": 5,
+                          "children": null,
+                          "path": "periodSeconds",
+                          "propertyChangeType": "Modify"
+                        },
+                        {
+                          "after": "Liveness",
+                          "before": "Startup",
+                          "children": null,
+                          "path": "type",
+                          "propertyChangeType": "Modify"
+                        }
+                      ],
+                      "path": "2",
+                      "propertyChangeType": "Modify"
+                    }
+                  ],
+                  "path": "probes",
+                  "propertyChangeType": "Array"
+                }
+              ],
+              "path": "0",
+              "propertyChangeType": "Modify"
+            }
+          ],
+          "path": "properties.template.containers",
+          "propertyChangeType": "Array"
+        }
+      ],
+      "deploymentId": null,
+      "extension": null,
+      "identifiers": null,
+      "resourceId": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.App/containerApps/ca-aveto-ask",
+      "symbolicName": null,
+      "unsupportedReason": null
+    },
+    {
+      "after": {
+        "apiVersion": "2024-03-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.App/managedEnvironments/cae-aveto-ask",
+        "location": "eastus2",
+        "name": "cae-aveto-ask",
+        "properties": {
+          "appLogsConfiguration": {
+            "destination": "log-analytics",
+            "logAnalyticsConfiguration": {
+              "customerId": "[reference('/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.OperationalInsights/workspaces/log-aveto-ask', '2023-09-01').customerId]",
+              "sharedKey": "*******"
+            }
+          },
+          "zoneRedundant": false
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.App/managedEnvironments"
+      },
+      "before": {
+        "apiVersion": "2024-03-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.App/managedEnvironments/cae-aveto-ask",
+        "location": "eastus2",
+        "name": "cae-aveto-ask",
+        "properties": {
+          "appLogsConfiguration": {
+            "destination": "log-analytics",
+            "logAnalyticsConfiguration": {
+              "customerId": "4c594f2b-4b78-4d27-9f9e-3dbe5b4c3047",
+              "sharedKey": "*******"
+            }
+          },
+          "peerAuthentication": {
+            "mtls": {
+              "enabled": false
+            }
+          },
+          "peerTrafficConfiguration": {
+            "encryption": {
+              "enabled": false
+            }
+          },
+          "zoneRedundant": false
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.App/managedEnvironments"
+      },
+      "changeType": "Modify",
+      "delta": [
+        {
+          "after": "[reference('/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.OperationalInsights/workspaces/log-aveto-ask', '2023-09-01').customerId]",
+          "before": "4c594f2b-4b78-4d27-9f9e-3dbe5b4c3047",
+          "children": null,
+          "path": "properties.appLogsConfiguration.logAnalyticsConfiguration.customerId",
+          "propertyChangeType": "Modify"
+        },
+        {
+          "after": null,
+          "before": {
+            "mtls": {
+              "enabled": false
+            }
+          },
+          "children": null,
+          "path": "properties.peerAuthentication",
+          "propertyChangeType": "Delete"
+        },
+        {
+          "after": null,
+          "before": {
+            "encryption": {
+              "enabled": false
+            }
+          },
+          "children": null,
+          "path": "properties.peerTrafficConfiguration",
+          "propertyChangeType": "Delete"
+        }
+      ],
+      "deploymentId": null,
+      "extension": null,
+      "identifiers": null,
+      "resourceId": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.App/managedEnvironments/cae-aveto-ask",
+      "symbolicName": null,
+      "unsupportedReason": null
+    },
+    {
+      "after": {
+        "apiVersion": "2023-07-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ContainerRegistry/registries/acravetoaskgp",
+        "location": "eastus2",
+        "name": "acravetoaskgp",
+        "properties": {
+          "adminUserEnabled": false,
+          "networkRuleBypassOptions": "AzureServices",
+          "policies": {
+            "exportPolicy": {
+              "status": "enabled"
+            },
+            "quarantinePolicy": {
+              "status": "disabled"
+            },
+            "retentionPolicy": {
+              "days": 7,
+              "status": "disabled"
+            },
+            "trustPolicy": {
+              "status": "disabled",
+              "type": "Notary"
+            }
+          },
+          "publicNetworkAccess": "Enabled",
+          "zoneRedundancy": "Disabled"
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "sku": {
+          "name": "Basic"
+        },
+        "type": "Microsoft.ContainerRegistry/registries"
+      },
+      "before": {
+        "apiVersion": "2023-07-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ContainerRegistry/registries/acravetoaskgp",
+        "location": "eastus2",
+        "name": "acravetoaskgp",
+        "properties": {
+          "adminUserEnabled": false,
+          "anonymousPullEnabled": false,
+          "dataEndpointEnabled": false,
+          "encryption": {
+            "status": "disabled"
+          },
+          "networkRuleBypassOptions": "AzureServices",
+          "policies": {
+            "azureADAuthenticationAsArmPolicy": {
+              "status": "enabled"
+            },
+            "exportPolicy": {
+              "status": "enabled"
+            },
+            "quarantinePolicy": {
+              "status": "disabled"
+            },
+            "retentionPolicy": {
+              "days": 7,
+              "status": "disabled"
+            },
+            "trustPolicy": {
+              "status": "disabled",
+              "type": "Notary"
+            }
+          },
+          "publicNetworkAccess": "Enabled",
+          "zoneRedundancy": "Disabled"
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "sku": {
+          "name": "Basic"
+        },
+        "type": "Microsoft.ContainerRegistry/registries"
+      },
+      "changeType": "Modify",
+      "delta": [
+        {
+          "after": null,
+          "before": false,
+          "children": null,
+          "path": "properties.anonymousPullEnabled",
+          "propertyChangeType": "Delete"
+        },
+        {
+          "after": null,
+          "before": false,
+          "children": null,
+          "path": "properties.dataEndpointEnabled",
+          "propertyChangeType": "Delete"
+        },
+        {
+          "after": null,
+          "before": {
+            "status": "disabled"
+          },
+          "children": null,
+          "path": "properties.encryption",
+          "propertyChangeType": "Delete"
+        },
+        {
+          "after": null,
+          "before": {
+            "status": "enabled"
+          },
+          "children": null,
+          "path": "properties.policies.azureADAuthenticationAsArmPolicy",
+          "propertyChangeType": "Delete"
+        }
+      ],
+      "deploymentId": null,
+      "extension": null,
+      "identifiers": null,
+      "resourceId": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ContainerRegistry/registries/acravetoaskgp",
+      "symbolicName": null,
+      "unsupportedReason": null
+    },
+    {
+      "after": {
+        "apiVersion": "2022-04-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ContainerRegistry/registries/acravetoaskgp/providers/Microsoft.Authorization/roleAssignments/09cd3d1e-7d5e-58ee-b631-31cdd0e587fd",
+        "name": "09cd3d1e-7d5e-58ee-b631-31cdd0e587fd",
+        "properties": {
+          "principalId": "[reference('/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask', '2023-01-31').principalId]",
+          "roleDefinitionId": "/subscriptions/<id>/providers/Microsoft.Authorization/roleDefinitions/7f951dda-4ed3-4680-a7ca-43fe172d538d"
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.Authorization/roleAssignments"
+      },
+      "before": {
+        "apiVersion": "2022-04-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ContainerRegistry/registries/acravetoaskgp/providers/Microsoft.Authorization/roleAssignments/09cd3d1e-7d5e-58ee-b631-31cdd0e587fd",
+        "name": "09cd3d1e-7d5e-58ee-b631-31cdd0e587fd",
+        "properties": {
+          "principalId": "d4c06fe2-aa78-401c-924d-c34b4a24607c",
+          "roleDefinitionId": "/subscriptions/<id>/providers/Microsoft.Authorization/roleDefinitions/7f951dda-4ed3-4680-a7ca-43fe172d538d"
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.Authorization/roleAssignments"
+      },
+      "changeType": "Modify",
+      "delta": [
+        {
+          "after": "[reference('/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask', '2023-01-31').principalId]",
+          "before": "d4c06fe2-aa78-401c-924d-c34b4a24607c",
+          "children": null,
+          "path": "properties.principalId",
+          "propertyChangeType": "Modify"
+        },
+        {
+          "after": "ServicePrincipal",
+          "before": null,
+          "children": null,
+          "path": "properties.principalType",
+          "propertyChangeType": "NoEffect"
+        }
+      ],
+      "deploymentId": null,
+      "extension": null,
+      "identifiers": null,
+      "resourceId": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ContainerRegistry/registries/acravetoaskgp/providers/Microsoft.Authorization/roleAssignments/09cd3d1e-7d5e-58ee-b631-31cdd0e587fd",
+      "symbolicName": null,
+      "unsupportedReason": null
+    },
+    {
+      "after": {
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.KeyVault/vaults/kv-aveto-ask-gp",
+        "location": "eastus2",
+        "name": "kv-aveto-ask-gp",
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.KeyVault/vaults"
+      },
+      "before": {
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.KeyVault/vaults/kv-aveto-ask-gp",
+        "location": "eastus2",
+        "name": "kv-aveto-ask-gp",
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.KeyVault/vaults"
+      },
+      "changeType": "Ignore",
+      "delta": null,
+      "deploymentId": null,
+      "extension": null,
+      "identifiers": null,
+      "resourceId": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.KeyVault/vaults/kv-aveto-ask-gp",
+      "symbolicName": null,
+      "unsupportedReason": null
+    },
+    {
+      "after": {
+        "apiVersion": "2022-04-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.KeyVault/vaults/kv-aveto-ask-gp/providers/Microsoft.Authorization/roleAssignments/56c99a1e-c130-5239-b805-b61d26f7d56f",
+        "name": "56c99a1e-c130-5239-b805-b61d26f7d56f",
+        "properties": {
+          "principalId": "[reference('/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask', '2023-01-31').principalId]",
+          "roleDefinitionId": "/subscriptions/<id>/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6"
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.Authorization/roleAssignments"
+      },
+      "before": {
+        "apiVersion": "2022-04-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.KeyVault/vaults/kv-aveto-ask-gp/providers/Microsoft.Authorization/roleAssignments/56c99a1e-c130-5239-b805-b61d26f7d56f",
+        "name": "56c99a1e-c130-5239-b805-b61d26f7d56f",
+        "properties": {
+          "principalId": "d4c06fe2-aa78-401c-924d-c34b4a24607c",
+          "roleDefinitionId": "/subscriptions/<id>/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6"
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.Authorization/roleAssignments"
+      },
+      "changeType": "Modify",
+      "delta": [
+        {
+          "after": "[reference('/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask', '2023-01-31').principalId]",
+          "before": "d4c06fe2-aa78-401c-924d-c34b4a24607c",
+          "children": null,
+          "path": "properties.principalId",
+          "propertyChangeType": "Modify"
+        },
+        {
+          "after": "ServicePrincipal",
+          "before": null,
+          "children": null,
+          "path": "properties.principalType",
+          "propertyChangeType": "NoEffect"
+        }
+      ],
+      "deploymentId": null,
+      "extension": null,
+      "identifiers": null,
+      "resourceId": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.KeyVault/vaults/kv-aveto-ask-gp/providers/Microsoft.Authorization/roleAssignments/56c99a1e-c130-5239-b805-b61d26f7d56f",
+      "symbolicName": null,
+      "unsupportedReason": null
+    },
+    {
+      "after": {
+        "apiVersion": "2023-01-31",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask",
+        "location": "eastus2",
+        "name": "id-aveto-ask",
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+      },
+      "before": {
+        "apiVersion": "2023-01-31",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask",
+        "location": "eastus2",
+        "name": "id-aveto-ask",
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.ManagedIdentity/userAssignedIdentities"
+      },
+      "changeType": "NoChange",
+      "delta": [],
+      "deploymentId": null,
+      "extension": null,
+      "identifiers": null,
+      "resourceId": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.ManagedIdentity/userAssignedIdentities/id-aveto-ask",
+      "symbolicName": null,
+      "unsupportedReason": null
+    },
+    {
+      "after": {
+        "apiVersion": "2023-09-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.OperationalInsights/workspaces/log-aveto-ask",
+        "location": "eastus2",
+        "name": "log-aveto-ask",
+        "properties": {
+          "publicNetworkAccessForIngestion": "Enabled",
+          "publicNetworkAccessForQuery": "Enabled",
+          "retentionInDays": 30,
+          "sku": {
+            "name": "PerGB2018"
+          },
+          "workspaceCapping": {
+            "dailyQuotaGb": 0.5
+          }
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.OperationalInsights/workspaces"
+      },
+      "before": {
+        "apiVersion": "2023-09-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.OperationalInsights/workspaces/log-aveto-ask",
+        "location": "eastus2",
+        "name": "log-aveto-ask",
+        "properties": {
+          "publicNetworkAccessForIngestion": "Enabled",
+          "publicNetworkAccessForQuery": "Enabled",
+          "retentionInDays": 30,
+          "sku": {
+            "name": "PerGB2018"
+          },
+          "workspaceCapping": {
+            "dailyQuotaGb": 0.5
+          }
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.OperationalInsights/workspaces"
+      },
+      "changeType": "NoChange",
+      "delta": [],
+      "deploymentId": null,
+      "extension": null,
+      "identifiers": null,
+      "resourceId": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.OperationalInsights/workspaces/log-aveto-ask",
+      "symbolicName": null,
+      "unsupportedReason": null
+    },
+    {
+      "after": {
+        "apiVersion": "2022-10-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.OperationalInsights/workspaces/log-aveto-ask/tables/ContainerAppConsoleLogs_CL",
+        "name": "ContainerAppConsoleLogs_CL",
+        "properties": {
+          "retentionInDays": 7,
+          "totalRetentionInDays": 7
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.OperationalInsights/workspaces/tables"
+      },
+      "before": {
+        "apiVersion": "2022-10-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.OperationalInsights/workspaces/log-aveto-ask/tables/ContainerAppConsoleLogs_CL",
+        "name": "ContainerAppConsoleLogs_CL",
+        "properties": {
+          "plan": "Analytics",
+          "retentionInDays": 7,
+          "schema": {
+            "columns": [
+              {
+                "displayName": "_timestamp_d",
+                "name": "_timestamp_d",
+                "type": "real"
+              },
+              {
+                "displayName": "ContainerGroupName_s",
+                "name": "ContainerGroupName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "ContainerId_s",
+                "name": "ContainerId_s",
+                "type": "string"
+              },
+              {
+                "displayName": "ContainerImage_s",
+                "name": "ContainerImage_s",
+                "type": "string"
+              },
+              {
+                "displayName": "time_s",
+                "name": "time_s",
+                "type": "string"
+              },
+              {
+                "displayName": "EnvironmentName_s",
+                "name": "EnvironmentName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "Log_s",
+                "name": "Log_s",
+                "type": "string"
+              },
+              {
+                "displayName": "Category",
+                "name": "Category",
+                "type": "string"
+              },
+              {
+                "displayName": "ContainerAppName_s",
+                "name": "ContainerAppName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "RevisionName_s",
+                "name": "RevisionName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "ContainerName_s",
+                "name": "ContainerName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "ContainerGroupId_g",
+                "name": "ContainerGroupId_g",
+                "type": "guid"
+              },
+              {
+                "displayName": "Stream_s",
+                "name": "Stream_s",
+                "type": "string"
+              }
+            ],
+            "displayName": "ContainerAppConsoleLogs_CL",
+            "isTroubleshootingAllowed": true,
+            "name": "ContainerAppConsoleLogs_CL"
+          },
+          "totalRetentionInDays": 7
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.OperationalInsights/workspaces/tables"
+      },
+      "changeType": "Modify",
+      "delta": [
+        {
+          "after": null,
+          "before": "Analytics",
+          "children": null,
+          "path": "properties.plan",
+          "propertyChangeType": "Delete"
+        },
+        {
+          "after": null,
+          "before": {
+            "columns": [
+              {
+                "displayName": "_timestamp_d",
+                "name": "_timestamp_d",
+                "type": "real"
+              },
+              {
+                "displayName": "ContainerGroupName_s",
+                "name": "ContainerGroupName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "ContainerId_s",
+                "name": "ContainerId_s",
+                "type": "string"
+              },
+              {
+                "displayName": "ContainerImage_s",
+                "name": "ContainerImage_s",
+                "type": "string"
+              },
+              {
+                "displayName": "time_s",
+                "name": "time_s",
+                "type": "string"
+              },
+              {
+                "displayName": "EnvironmentName_s",
+                "name": "EnvironmentName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "Log_s",
+                "name": "Log_s",
+                "type": "string"
+              },
+              {
+                "displayName": "Category",
+                "name": "Category",
+                "type": "string"
+              },
+              {
+                "displayName": "ContainerAppName_s",
+                "name": "ContainerAppName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "RevisionName_s",
+                "name": "RevisionName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "ContainerName_s",
+                "name": "ContainerName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "ContainerGroupId_g",
+                "name": "ContainerGroupId_g",
+                "type": "guid"
+              },
+              {
+                "displayName": "Stream_s",
+                "name": "Stream_s",
+                "type": "string"
+              }
+            ],
+            "displayName": "ContainerAppConsoleLogs_CL",
+            "isTroubleshootingAllowed": true,
+            "name": "ContainerAppConsoleLogs_CL"
+          },
+          "children": null,
+          "path": "properties.schema",
+          "propertyChangeType": "Delete"
+        }
+      ],
+      "deploymentId": null,
+      "extension": null,
+      "identifiers": null,
+      "resourceId": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.OperationalInsights/workspaces/log-aveto-ask/tables/ContainerAppConsoleLogs_CL",
+      "symbolicName": null,
+      "unsupportedReason": null
+    },
+    {
+      "after": {
+        "apiVersion": "2022-10-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.OperationalInsights/workspaces/log-aveto-ask/tables/ContainerAppSystemLogs_CL",
+        "name": "ContainerAppSystemLogs_CL",
+        "properties": {
+          "retentionInDays": 7,
+          "totalRetentionInDays": 7
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.OperationalInsights/workspaces/tables"
+      },
+      "before": {
+        "apiVersion": "2022-10-01",
+        "id": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.OperationalInsights/workspaces/log-aveto-ask/tables/ContainerAppSystemLogs_CL",
+        "name": "ContainerAppSystemLogs_CL",
+        "properties": {
+          "plan": "Analytics",
+          "retentionInDays": 7,
+          "schema": {
+            "columns": [
+              {
+                "displayName": "time_t",
+                "name": "time_t",
+                "type": "datetime"
+              },
+              {
+                "displayName": "_timestamp_d",
+                "name": "_timestamp_d",
+                "type": "real"
+              },
+              {
+                "displayName": "time_s",
+                "name": "time_s",
+                "type": "string"
+              },
+              {
+                "displayName": "EnvironmentName_s",
+                "name": "EnvironmentName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "EventSource_s",
+                "name": "EventSource_s",
+                "type": "string"
+              },
+              {
+                "displayName": "Count_d",
+                "name": "Count_d",
+                "type": "real"
+              },
+              {
+                "displayName": "Log_s",
+                "name": "Log_s",
+                "type": "string"
+              },
+              {
+                "displayName": "TimeStamp_s",
+                "name": "TimeStamp_s",
+                "type": "string"
+              },
+              {
+                "displayName": "RevisionName_s",
+                "name": "RevisionName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "Type_s",
+                "name": "Type_s",
+                "type": "string"
+              },
+              {
+                "displayName": "ReplicaName_s",
+                "name": "ReplicaName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "ContainerAppName_s",
+                "name": "ContainerAppName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "ExecutionName_s",
+                "name": "ExecutionName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "Reason_s",
+                "name": "Reason_s",
+                "type": "string"
+              },
+              {
+                "displayName": "Level",
+                "name": "Level",
+                "type": "string"
+              },
+              {
+                "displayName": "JobName_s",
+                "name": "JobName_s",
+                "type": "string"
+              }
+            ],
+            "displayName": "ContainerAppSystemLogs_CL",
+            "isTroubleshootingAllowed": true,
+            "name": "ContainerAppSystemLogs_CL"
+          },
+          "totalRetentionInDays": 7
+        },
+        "resourceGroup": "rg-aveto-ask",
+        "type": "Microsoft.OperationalInsights/workspaces/tables"
+      },
+      "changeType": "Modify",
+      "delta": [
+        {
+          "after": null,
+          "before": "Analytics",
+          "children": null,
+          "path": "properties.plan",
+          "propertyChangeType": "Delete"
+        },
+        {
+          "after": null,
+          "before": {
+            "columns": [
+              {
+                "displayName": "time_t",
+                "name": "time_t",
+                "type": "datetime"
+              },
+              {
+                "displayName": "_timestamp_d",
+                "name": "_timestamp_d",
+                "type": "real"
+              },
+              {
+                "displayName": "time_s",
+                "name": "time_s",
+                "type": "string"
+              },
+              {
+                "displayName": "EnvironmentName_s",
+                "name": "EnvironmentName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "EventSource_s",
+                "name": "EventSource_s",
+                "type": "string"
+              },
+              {
+                "displayName": "Count_d",
+                "name": "Count_d",
+                "type": "real"
+              },
+              {
+                "displayName": "Log_s",
+                "name": "Log_s",
+                "type": "string"
+              },
+              {
+                "displayName": "TimeStamp_s",
+                "name": "TimeStamp_s",
+                "type": "string"
+              },
+              {
+                "displayName": "RevisionName_s",
+                "name": "RevisionName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "Type_s",
+                "name": "Type_s",
+                "type": "string"
+              },
+              {
+                "displayName": "ReplicaName_s",
+                "name": "ReplicaName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "ContainerAppName_s",
+                "name": "ContainerAppName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "ExecutionName_s",
+                "name": "ExecutionName_s",
+                "type": "string"
+              },
+              {
+                "displayName": "Reason_s",
+                "name": "Reason_s",
+                "type": "string"
+              },
+              {
+                "displayName": "Level",
+                "name": "Level",
+                "type": "string"
+              },
+              {
+                "displayName": "JobName_s",
+                "name": "JobName_s",
+                "type": "string"
+              }
+            ],
+            "displayName": "ContainerAppSystemLogs_CL",
+            "isTroubleshootingAllowed": true,
+            "name": "ContainerAppSystemLogs_CL"
+          },
+          "children": null,
+          "path": "properties.schema",
+          "propertyChangeType": "Delete"
+        }
+      ],
+      "deploymentId": null,
+      "extension": null,
+      "identifiers": null,
+      "resourceId": "/subscriptions/<id>/resourceGroups/rg-aveto-ask/providers/Microsoft.OperationalInsights/workspaces/log-aveto-ask/tables/ContainerAppSystemLogs_CL",
+      "symbolicName": null,
+      "unsupportedReason": null
+    }
+  ],
+  "diagnostics": null,
+  "error": null,
+  "potentialChanges": null,
+  "status": "Succeeded"
+}

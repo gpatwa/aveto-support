@@ -205,6 +205,7 @@ def test_core_files_unchanged() -> None:
     }
     assert {p.name for p in (ROOT / ".claude/hooks").iterdir()} == {
         "budget-guard.mjs",
+        "event-log.mjs",
         "write-scope-guard.mjs",
     }
 

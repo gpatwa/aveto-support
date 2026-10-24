@@ -8,7 +8,7 @@
 > (`runs/public-ask-the-docs/17-deploy/`). Commands marked "not run" were written
 > from the design and have never been executed. Measured: kill-switch change 65 s
 > (on) and 66 s plus about 6 s (off), cold start 30.8 s, cost per question about
-> $0.0079 at Anthropic's published prices (the service's counter reads 50% high), response median 1.66 s and slowest
+> $0.0078 at Anthropic's published prices, response median 1.66 s and slowest
 > 5.09 s from one client (`18-gate/RESULT.md`). **Not measured:** the monthly
 > Azure cost.
 >
@@ -64,6 +64,14 @@ Notes that apply to these commands:
   was run before each create at stage 17.
 - `killSwitch` defaults to `on`: a deploy that forgets the parameter comes up
   off.
+- **Pass `killSwitch` explicitly on every deploy**, as the commands above do
+  (`killSwitch=on` or `killSwitch=off`); never rely on the default. The shell
+  variables (`$RG`, `$F`, `$P`, `$TAG`) are for a person typing the commands;
+  the Orchestrator's session runs the same commands with literal values (absolute
+  paths, the 12-character commit as the tag) and without a price parameter:
+  the price comes from the Bicep defaults (2000 and 10000), and
+  `monthlyCapUsd` and `clientKey` are left at their defaults, which equal the
+  live values.
 
 ## 2. Rollback
 
@@ -115,7 +123,7 @@ model and writes no log line. It is public. Fields:
 | `kill_switch` | `"on"` or `"off"`, as read at startup. |
 | `day` | The current UTC date, `YYYY-MM-DD`. |
 | `judged_today` | Questions that reached the model since this replica started on this UTC day. |
-| `input_tokens_today`, `output_tokens_today` | Tokens the API reported for those calls. Stage 18 read cost per question from the change in these across a batch: about $0.0079 per question at Anthropic's published prices; the service's own counter, at its $3 and $15 defaults, reads 50% high (see section 8). |
+| `input_tokens_today`, `output_tokens_today` | Tokens the API reported for those calls. Stage 18 read cost per question from the change in these across a batch: about $0.0078 per question at Anthropic's published prices. The service's own counter uses $2 and $10 by default from the fix-service-accounting change (deployed 2026-10-24, revision `ca-aveto-ask--0000008`; see section 8). The live smoke that day read $0.008544 per question (n = 5) and spend equal to the token cost at $2 and $10. |
 | `spend_today_usd` | The service's own running total for the day, six decimals. It is the service's count, not Anthropic's bill. |
 | `daily_cap_usd` | The day's share of the monthly cap: $10 / 31 = `0.322580`. |
 
@@ -131,8 +139,17 @@ The container's readiness and liveness probes call `/health`. Do not make
 - The service allows a day's share of the monthly cap, `10 / 31` dollars
   (`322,580,645` nano-dollars; the longest month, so 31 days never exceed $10).
 - It reserves the worst-case cost of a question before calling the model and
-  settles to the reported usage afterwards. A failed 5xx or timed-out call keeps
-  the full reservation; a 4xx or connection failure is charged nothing.
+  settles afterwards. **Retries are reserved:** the adapter makes at most two
+  attempts per question, so admission reserves two full per-attempt
+  reservations and settlement returns the unused part. **Each attempt is
+  charged on its own outcome:** its reported usage at the configured price if it
+  returned a usable response, nothing if it failed as a 4xx or a connection
+  error (or was never sent), and one full per-attempt reservation for any other
+  failure (5xx, timeout, bad stop reason); a later attempt's category never
+  changes what an earlier attempt is charged. (This replaces the earlier rule,
+  where the last error's category could erase an earlier attempt's cost. Not
+  deployed yet; the live revision still follows the earlier rule until the
+  redeploy.)
 - When the room left is too small for the next reservation, the service answers
   "Paused for today" and calls no model.
 - **The day resets at 00:00:00 UTC.** A closed day reopens then. The public page
@@ -179,13 +196,16 @@ used up on this replica. It is not a fault. Check `GET /health`:
 - `spend_today_usd` close to `daily_cap_usd` and `judged_today` plausible:
   the day's share is spent. It reopens at 00:00 UTC. Nothing to do.
 - The page shows the same copy for a short-lived shortfall while slow calls are
-  in flight, and during an Anthropic outage (failed 5xx calls keep their
-  reservation, so about three failed questions can pause the day). The page
+  in flight, and during an Anthropic outage (a question whose two attempts both
+  fail with a 5xx is charged two reservations, so about five such questions can
+  pause the day; estimate, assuming about $0.030 per attempt). The page
   text "has been used" is not accurate in those two cases (Security S-A3,
   recorded, not fixed).
 - A rise in `paused` lines in the abuse log from a handful of `ip` values is the
-  intended fail-closed behaviour of a small daily share: about 40 questions from
-  a few addresses pause the service for everyone until 00:00 UTC (decision D4).
+  intended fail-closed behaviour of a small daily share: a few dozen questions
+  from a few addresses pause the service for everyone until 00:00 UTC (decision
+  D4, recorded as about 40; about 33 by the estimate in section 8 once the
+  two-attempt reservation is deployed).
 
 **"We couldn't decide this time"** (`judge_error`, HTTP 502) covers an
 unusable reply and any call failure: timeout, 4xx, 5xx, a stop reason other
@@ -239,11 +259,28 @@ alert" below.
 
 ### Cost and capacity
 
-- Real cost: about $0.0079 per question ($0.1569 for the 20 gate questions;
-  71,151 input and 1,460 output tokens). The first live question cost $0.0099.
-- About 1,270 questions a month fit inside the $10 console limit at that price.
-- The service's daily pause comes at about 27 questions a day by its own counter
-  (about 41 at the real price).
+- Real cost (recorded): about $0.0078 per question ($0.1569 for the 20 gate
+  questions, $0.1569 / 20; 71,151 input and 1,460 output tokens). The first live
+  question cost $0.0099.
+- About 1,270 questions a month fit inside the $10 console limit at that price
+  (estimate).
+- **Estimate, not measured:** the service's daily pause comes at about 33
+  questions a day by its own counter with two attempts reserved (assumes about
+  $0.030 reserved per attempt for a request of about 10,000 bytes; the request
+  size is not measured). By spend alone about 41 questions fit in the day's
+  share, but admission needs room for two attempts, so the pause comes earlier;
+  41 is not what this design gives. The earlier 27 a day counted at the wrong
+  price and is withdrawn. The 33 stays an estimate; the live smoke (2026-10-24,
+  five questions) did not run to the pause.
+- Live smoke, 2026-10-24, revision `ca-aveto-ask--0000008` (five questions from
+  `evals/retrieval-heldout-5.toml`): g01, g03, g04 answered, byte-identical to
+  `retrieve`; gu15, gu18 no confident match. Cost per judged question $0.008544
+  (n = 5, from `/health` counters: 20,304 input and 211 output tokens), within
+  15% of $0.0078. The counter's spend equals the token cost at $2/$10 exactly.
+  No question text in any log table. Kill switch off took 71.4 s; the on toggle
+  was not measured (watcher TLS error; about 73 s upper bound from deploy
+  timestamps). Previous-revision rollback not rehearsed; the kill switch is the
+  proven fallback.
 
 ### Pricing (confirmed 2026-10-23)
 
@@ -254,11 +291,15 @@ and $5). There is no long-context surcharge. The id `claude-sonnet-5-5` is a
 pinned snapshot (the dateless id is its own snapshot), with retirement not
 sooner than 2027-09-28. The `effort` parameter defaults to `high` on this model.
 
-The service's built-in defaults assume $3 and $15 (`ASK_PRICE_IN_NANO_PER_TOKEN=3000`,
-`ASK_PRICE_OUT_NANO_PER_TOKEN=15000`), so its spend counter overstates real cost
-by 50%. That error is on the safe side. Setting the two values to `2000` and
-`10000` is a parameter change on redeploy (tech spec section 7). **It has not
-been done; it is the owner's call.**
+The service's built-in defaults are `ASK_PRICE_IN_NANO_PER_TOKEN=2000` and
+`ASK_PRICE_OUT_NANO_PER_TOKEN=10000` (nano-dollars per token; 1 nano-dollar per
+token is $1 per million tokens, so $2 and $10), in `aveto_service/settings.py`
+and `infra/main.bicep`, with the source and date (2026-10-23) in a comment next
+to each. Setting `ASK_PRICE_*` still overrides them. The Bicep passes the price
+to the container, so the deployed revision takes the values from the template
+default. **Deployed 2026-10-24** as revision `ca-aveto-ask--0000008` (image
+`aveto-ask:d067b9a95ac6`); defaults 2000/10000 are live, and the live smoke
+confirmed the counter's spend equals the token cost at $2 and $10.
 
 ### Budget alert
 

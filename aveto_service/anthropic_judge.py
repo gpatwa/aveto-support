@@ -16,7 +16,12 @@ from typing import Any
 
 import anthropic
 
-from aveto_service.judge_port import JudgeCall, JudgeTransportError
+from aveto_service.judge_port import (
+    MAX_ATTEMPTS,
+    NEVER_BILLED,
+    JudgeCall,
+    JudgeTransportError,
+)
 from aveto_support import judge as core_judge
 
 MODEL = "claude-sonnet-5-5"
@@ -24,7 +29,6 @@ EFFORT = "high"
 MAX_TOKENS = 1024
 TIMEOUT_SECONDS = 20.0
 BACKOFF_SECONDS = 1.0
-MAX_ATTEMPTS = 2
 BASE_URL = "https://api.anthropic.com"
 ADAPTER_ID = "anthropic-messages-judge-v1"
 # The SDK's DEBUG logging prints the request options, which hold the payload: mute it here too.
@@ -118,6 +122,7 @@ class AnthropicJudgeClient:
             raise JudgeTransportError("prompt_hash", attempts=0)
         request = build_request(system_prompt, payload)
         attempts = 0
+        billable = 0  # failed attempts so far that may have been billed
         while True:
             attempts += 1
             try:
@@ -129,14 +134,22 @@ class AnthropicJudgeClient:
                     input_tokens=_count(getattr(usage, "input_tokens", None)),
                     output_tokens=_count(getattr(usage, "output_tokens", None)),
                     attempts=attempts,
+                    billable_failures=billable,
                 )
-            except JudgeTransportError as exc:
-                raise JudgeTransportError(exc.category, attempts=attempts) from None
+            except JudgeTransportError as exc:  # a response arrived: it may have been billed
+                raise JudgeTransportError(
+                    exc.category, attempts=attempts, billable_failures=billable + 1
+                ) from None
             except Exception as exc:  # noqa: BLE001 - all failures map to a fixed category
+                category = _category(exc)
+                if category not in NEVER_BILLED:
+                    billable += 1
                 if attempts < MAX_ATTEMPTS and _retryable(exc):
                     self._sleep(BACKOFF_SECONDS)
                     continue
-                raise JudgeTransportError(_category(exc), attempts=attempts) from None
+                raise JudgeTransportError(
+                    category, attempts=attempts, billable_failures=billable
+                ) from None
 
 
 def _count(value: object) -> int | None:

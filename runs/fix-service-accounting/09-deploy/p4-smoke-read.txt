@@ -1,0 +1,1 @@
+Orchestrator read smoke.py end to end 2026-10-24 (P4): one host, no POST retry, ids/codes/counts only; accepted together with the Release Manager's read.

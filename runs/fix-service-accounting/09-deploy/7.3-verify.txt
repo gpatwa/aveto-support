@@ -1,0 +1,37 @@
+ca-aveto-ask--0000007	0	Healthy
+ca-aveto-ask--0000008	100	Healthy
+{
+  "env": [
+    {
+      "n": "ANTHROPIC_API_KEY",
+      "s": "anthropic-api-key",
+      "v": null
+    },
+    {
+      "n": "ASK_KILL_SWITCH",
+      "s": null,
+      "v": "off"
+    },
+    {
+      "n": "ASK_CLIENT_KEY",
+      "s": null,
+      "v": "xff_last"
+    },
+    {
+      "n": "ASK_PRICE_IN_NANO_PER_TOKEN",
+      "s": null,
+      "v": "2000"
+    },
+    {
+      "n": "ASK_PRICE_OUT_NANO_PER_TOKEN",
+      "s": null,
+      "v": "10000"
+    },
+    {
+      "n": "ASK_MONTHLY_CAP_USD",
+      "s": null,
+      "v": "10"
+    }
+  ],
+  "image": "acravetoaskgp.azurecr.io/aveto-ask:d067b9a95ac6"
+}

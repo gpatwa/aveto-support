@@ -1,0 +1,48 @@
+# §6 checks on de0cc3df630e 2026-10-24T06:31:29Z
+$ git diff --exit-code 87178bd -- aveto_support prompts .claude .agentic :(exclude).agentic/CURRENT_MVP_STATUS.md
+exit 0
+$ git diff --exit-code 87178bd -- aveto_support
+exit 0
+$ git diff --exit-code 87178bd -- prompts
+exit 0
+$ git diff --exit-code 87178bd -- .claude
+exit 0
+$ git diff --exit-code 87178bd -- .agentic/SAFETY_INVARIANTS.md
+exit 0
+$ git status --porcelain -- aveto_support prompts .claude .agentic
+$ git diff --name-only 87178bd -- . :(exclude)runs
+.agentic/CURRENT_MVP_STATUS.md
+README.md
+aveto_service/anthropic_judge.py
+aveto_service/judge_port.py
+aveto_service/pipeline.py
+aveto_service/settings.py
+docs/ARCHITECTURE.md
+docs/runbooks/public-ask.md
+infra/main.bicep
+tests/test_anthropic_judge.py
+tests/test_infra_static.py
+tests/test_service_api.py
+tests/test_service_limits.py
+tests/test_service_pipeline.py
+$ git diff --check 87178bd
+runs/fix-service-accounting/03-failfirst-87178bd.txt:22: trailing whitespace.
++E         
+runs/fix-service-accounting/03-failfirst-87178bd.txt:44: trailing whitespace.
++    
+runs/fix-service-accounting/03-failfirst-87178bd.txt:50: trailing whitespace.
++    
+runs/fix-service-accounting/03-failfirst-87178bd.txt:63: trailing whitespace.
++    
+runs/fix-service-accounting/03-failfirst-87178bd.txt:68: trailing whitespace.
++    
+runs/fix-service-accounting/03-failfirst-87178bd.txt:83: trailing whitespace.
++E             
+runs/fix-service-accounting/03-failfirst-87178bd.txt:308: trailing whitespace.
++E         
+runs/fix-service-accounting/03-failfirst-87178bd.txt:660: trailing whitespace.
++    
+runs/fix-service-accounting/03-failfirst-87178bd.txt:666: trailing whitespace.
++E         
+runs/fix-service-accounting/05-tech-spec.md:410: new blank line at EOF.
+exit 2

@@ -1,0 +1,9 @@
+/Users/gopalpatwa/opt/aveto-support/.claude/events/b964fb4e-04f7-4fbf-b787-36bfe8d105df.jsonl: chain intact; 533 lines; head 09cd9606a74c6953
+  backend-architect: 26 calls, 0 failed
+  engineering-manager: 25 calls, 0 failed
+  main: 64 calls, 3 failed
+  qa-evidence: 21 calls, 0 failed
+  security-privacy: 33 calls, 0 failed
+  software-architect: 72 calls, 0 failed
+  tech-writer: 26 calls, 0 failed
+  ! seq 533: main attempted Bash cd #91ac531793ea with no outcome recorded (denied, blocked or interrupted)

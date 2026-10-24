@@ -12,8 +12,11 @@ from dataclasses import dataclass, field
 from decimal import Decimal, InvalidOperation
 from typing import Literal
 
-DEFAULT_PRICE_IN_NANO = 3000
-DEFAULT_PRICE_OUT_NANO = 15000
+# claude-sonnet-5-5: $2 per million input tokens, $10 per million output tokens (1 nano-dollar
+# per token is $1 per million). Read 2026-10-23 from Anthropic's pricing page and matched by
+# the owner's console bill.
+DEFAULT_PRICE_IN_NANO = 2000
+DEFAULT_PRICE_OUT_NANO = 10000
 DEFAULT_MONTHLY_CAP_USD = "10"
 DAYS_IN_LONGEST_MONTH = 31
 NANO = 10**9
