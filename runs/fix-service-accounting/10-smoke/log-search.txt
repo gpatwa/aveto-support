@@ -1,0 +1,10 @@
+2026-10-24T06:55:30Z
+Q1 abuse lines
+{"t":"2026-10-24T06:46:50Z","ip":"2f977b1cd87ceacc","o":"service_off"}	PrimaryResult	2026-10-24T06:46:51.9286635Z
+{"t":"2026-10-24T06:49:10Z","ip":"a7d465483ba153d6","o":"answer"}	PrimaryResult	2026-10-24T06:49:10.9271349Z
+{"t":"2026-10-24T06:49:13Z","ip":"a7d465483ba153d6","o":"answer"}	PrimaryResult	2026-10-24T06:49:14.8945895Z
+{"t":"2026-10-24T06:49:11Z","ip":"a7d465483ba153d6","o":"answer"}	PrimaryResult	2026-10-24T06:49:11.8763349Z
+{"t":"2026-10-24T06:49:15Z","ip":"a7d465483ba153d6","o":"no_confident_match"}	PrimaryResult	2026-10-24T06:49:16.1268811Z
+{"t":"2026-10-24T06:49:17Z","ip":"a7d465483ba153d6","o":"no_confident_match"}	PrimaryResult	2026-10-24T06:49:17.8867496Z
+Q2 phrases
+Q3 words

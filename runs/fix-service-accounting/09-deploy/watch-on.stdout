@@ -1,0 +1,2 @@
+{"end_utc": "2026-10-24T06:45:56Z", "mode": "watch on", "ok": false, "polls": 213, "reached": false, "seconds_to_first_wanted_state": null, "start_utc": "2026-10-24T06:35:53Z"}
+exit 1

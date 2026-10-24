@@ -1,0 +1,86 @@
+{
+  "byte_equality_established": true,
+  "end_utc": "2026-10-24T06:49:17Z",
+  "figures": {
+    "cost_per_judged_question_usd": "0.008544",
+    "delta_input_tokens": 20304,
+    "delta_judged": 5,
+    "delta_output_tokens": 211,
+    "delta_spend_nano": 42718000,
+    "issue_8_check": "pass: counter charges at $2/$10",
+    "spend_minus_token_cost_nano": 0,
+    "token_cost_nano": 42718000,
+    "window_valid": true,
+    "within_15pct_band_of_0.0078": true
+  },
+  "health_after": {
+    "daily_cap_usd": "0.322580",
+    "day": "2026-10-24",
+    "input_tokens_today": 20304,
+    "judged_today": 5,
+    "kill_switch": "off",
+    "output_tokens_today": 211,
+    "spend_today_usd": "0.042718",
+    "status": "ok"
+  },
+  "health_before": {
+    "daily_cap_usd": "0.322580",
+    "day": "2026-10-24",
+    "input_tokens_today": 0,
+    "judged_today": 0,
+    "kill_switch": "off",
+    "output_tokens_today": 0,
+    "spend_today_usd": "0.000000",
+    "status": "ok"
+  },
+  "index_matches_build_ingest_prefix": true,
+  "index_sha256": "f36ef5d4fbf4b3f5542f59381867d992fe6619a6450cbbb19526f8493804a756",
+  "questions": [
+    {
+      "byte_equal": true,
+      "expected_outcome": "answer",
+      "first_difference": null,
+      "id": "g01",
+      "outcome": "answer",
+      "seconds": 2.3,
+      "status": 200
+    },
+    {
+      "byte_equal": true,
+      "expected_outcome": "answer",
+      "first_difference": null,
+      "id": "g03",
+      "outcome": "answer",
+      "seconds": 2.0,
+      "status": 200
+    },
+    {
+      "byte_equal": true,
+      "expected_outcome": "answer",
+      "first_difference": null,
+      "id": "g04",
+      "outcome": "answer",
+      "seconds": 1.8,
+      "status": 200
+    },
+    {
+      "byte_equal": null,
+      "expected_outcome": "no_confident_match",
+      "first_difference": null,
+      "id": "gu15",
+      "outcome": "no_confident_match",
+      "seconds": 1.5,
+      "status": 200
+    },
+    {
+      "byte_equal": null,
+      "expected_outcome": "no_confident_match",
+      "first_difference": null,
+      "id": "gu18",
+      "outcome": "no_confident_match",
+      "seconds": 1.5,
+      "status": 200
+    }
+  ],
+  "start_utc": "2026-10-24T06:49:04Z"
+}

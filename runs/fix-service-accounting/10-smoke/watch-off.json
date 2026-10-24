@@ -1,0 +1,9 @@
+{
+  "end_utc": "2026-10-24T06:48:41Z",
+  "mode": "watch off",
+  "ok": true,
+  "polls": 27,
+  "reached": true,
+  "seconds_to_first_wanted_state": 71.4,
+  "start_utc": "2026-10-24T06:47:23Z"
+}

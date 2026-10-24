@@ -1,0 +1,41 @@
+?? runs/fix-service-accounting/09-deploy/7.0-preflight.txt
+d067b9a95ac6
+Visual Studio Enterprise Subscription	Enabled
+ca-aveto-ask--0000006	100	Healthy
+{
+  "env": [
+    {
+      "n": "ANTHROPIC_API_KEY",
+      "s": "anthropic-api-key",
+      "v": null
+    },
+    {
+      "n": "ASK_KILL_SWITCH",
+      "s": null,
+      "v": "off"
+    },
+    {
+      "n": "ASK_CLIENT_KEY",
+      "s": null,
+      "v": "xff_last"
+    },
+    {
+      "n": "ASK_PRICE_IN_NANO_PER_TOKEN",
+      "s": null,
+      "v": "3000"
+    },
+    {
+      "n": "ASK_PRICE_OUT_NANO_PER_TOKEN",
+      "s": null,
+      "v": "15000"
+    },
+    {
+      "n": "ASK_MONTHLY_CAP_USD",
+      "s": null,
+      "v": "10"
+    }
+  ],
+  "image": "acravetoaskgp.azurecr.io/aveto-ask:879cae23690b"
+}
+WARNING: A new Bicep release is available: v0.48.1. Upgrade now by running "az bicep upgrade".
+bicep-ok

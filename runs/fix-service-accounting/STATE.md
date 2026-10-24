@@ -3,7 +3,7 @@
 - **Ask:** intents/fix-service-accounting.md — make the public service's spend accounting correct (issues #6, #7, #8) and redeploy
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 8 Release Gate tier 3
+- **Current stage:** 9 Deploy
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents and teammates from this repo's `.claude/agents/`
 - **Telemetry:** self-reported
@@ -24,8 +24,8 @@
 | 5 QA evidence | QA Evidence | done: GO WITH CONDITIONS; 668 passed x3, mypy/ruff clean; 27 of 31 new tests fail on 87178bd with the spec figures (4 guards pass); mutations for #6, #7, #8 each caught; nothing-else-moves byte-identical; docs lines and smoke NOT YET | runs/fix-service-accounting/13-qa-evidence.md | local regression green |
 | 6 Security Review (standard) | Security & Privacy | done — PASS, 0 required fixes, advisories A1-A6 (A1/A2 owner decisions) | runs/fix-service-accounting/14-security-review.md |
 | 7 Docs | Tech Writer | done — old price, 50%-high and 27/day removed; ~33/day labelled estimate | runs/fix-service-accounting/15-docs-note.md |
-| 8 Release Gate tier 3 | Release Manager | in-progress | — | — |
-| 9 Deploy | Cloud Deployment, Orchestrator | pending | — | — |
+| 8 Release Gate tier 3 | Release Manager | done — GO WITH CONDITIONS (P1-P5, P-D; 10 post-deploy checks); tier High re-derived | runs/fix-service-accounting/16-release-checklist-tier3.md |
+| 9 Deploy | Orchestrator (command sheet = tech spec §7; no separate Cloud Deployment spawn) | in-progress | — | — |
 | 10 Live smoke | Orchestrator, Production Verification | pending | — | — |
 | 11 Post-launch, END_REVIEW, PR | Post-Launch Learning, Orchestrator | pending | — | — |
 
@@ -40,8 +40,8 @@
 Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled after.
 
 - **Budget:** 730k tokens  ·  **Depth:** standard
-- **Spent:** 775k (106% of plan)  ·  **Remaining:** 175k to ceiling, 425k to hard cap
-- **Next stage:** 8 Release Gate (release-manager) est. 80k → **PROCEED**
+- **Spent:** 894k (122% of plan, 94% of ceiling)  ·  **Remaining:** 56k to ceiling, 306k to hard cap
+- **Next stage:** 9 Deploy (Orchestrator's session, no spawn) → **PROCEED**
 
 Ceiling 950k (C2.2); hard cap 1,200k (C2.3). The Orchestrator's own session is not counted in spawn spend.
 
@@ -77,6 +77,8 @@ Ceiling 950k (C2.2); hard cap 1,200k (C2.3). The Orchestrator's own session is n
 
 - 2026-10-23 Orchestrator, after stages 6 and 7: Security PASS (stage spent 127k), Docs done (83k, committed by the Orchestrator; the role has no shell). Spent 775k, above the 730k plan. Projection 775k + 240k = 1,015k: above the 950k ceiling (C2.2: continue with a notice), under the 1,200k hard cap. charter-check re-run and saved; events-verify output saved; log copied to EVENTS.jsonl.
 
+- 2026-10-24 Orchestrator, after stage 8: Release Gate GO WITH CONDITIONS (spent 119k). Spent 894k. Budget notice: the projection passes the 950k ceiling (C2.2: continue with a notice). To save spend, the Cloud Deployment command-sheet spawn is dropped (tech spec §7 is already the literal sheet the Release Manager checked) and stage 9 runs in the Orchestrator's session. P1 tree clean at d067b9a95ac6 (only runs/ commits after the checklist); P2 saved `09-deploy/p2-nothing-else-moves.txt` (14 paths: the 13 of spec §6 plus the disclosed `tests/test_service_api.py`); P3 pre-flight `09-deploy/7.0-preflight.txt` passes; P4 Orchestrator read smoke.py; P5 notice sent. The code-review model reconciles: the owner switched the session back to `claude-opus-5-5` before stage 4, so the review ran on Opus as `code-review.md` says.
+
 ## Next action
 
-Stage 8 Release Gate tier 3 (spawned); then stage 9 deploy per tech spec §7 under C8.3.
+Stage 9: image build running (tag d067b9a95ac6); then D1 (killSwitch=on) what-if/create, D2 (off), then stage 10 smoke.
