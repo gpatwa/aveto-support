@@ -1,0 +1,434 @@
+# Fail-first record for polished-chat-experience stage 4, commit 1 (tests first)
+# Date (UTC): 2026-10-26T22:05:59Z
+$ git rev-parse HEAD
+b3ef4451150594386875ea2b6487edb343c3d84d
+$ git diff --stat 32e54a6 -- aveto_service aveto_support prompts   (must print nothing)
+[exit 0]
+$ uv run pytest --continue-on-collection-errors tests/test_page_cards.py tests/test_service_counts.py tests/test_service_new_routes.py tests/test_service_scorecard.py tests/test_service_ask_bytes.py -v
+============================= test session starts ==============================
+platform darwin -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/gopalpatwa/opt/aveto-support/.claude/worktrees/interesting-shannon-67bff6/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/gopalpatwa/opt/aveto-support/.claude/worktrees/interesting-shannon-67bff6
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 18 items / 1 error
+
+tests/test_page_cards.py::test_refusal_card_shows_no_model_written_text FAILED [  5%]
+tests/test_page_cards.py::test_resting_state_at_the_cap FAILED           [ 11%]
+tests/test_page_cards.py::test_receipts_drawer_shows_only_what_the_service_held FAILED [ 16%]
+tests/test_page_cards.py::test_answer_card_holds_only_text_from_a_listed_passage FAILED [ 22%]
+tests/test_page_cards.py::test_every_aria_reference_resolves FAILED      [ 27%]
+tests/test_page_cards.py::test_page_script_builds_no_result_card FAILED  [ 33%]
+tests/test_page_cards.py::test_disclosure_block_byte_identical PASSED    [ 38%]
+tests/test_service_counts.py::test_counts_record_no_question_text FAILED [ 44%]
+tests/test_service_counts.py::test_docs_click_rules FAILED               [ 50%]
+tests/test_service_new_routes.py::test_warm_never_reaches_the_judge_or_spends FAILED [ 55%]
+tests/test_service_new_routes.py::test_warm_reports_not_ready_when_the_search_fails FAILED [ 61%]
+tests/test_service_new_routes.py::test_get_root_at_the_cap_passes_paused_without_spending FAILED [ 66%]
+tests/test_service_new_routes.py::test_route_inventory FAILED            [ 72%]
+tests/test_service_new_routes.py::test_no_route_but_ask_reaches_the_judge FAILED [ 77%]
+tests/test_service_new_routes.py::test_new_routes_write_no_log_line FAILED [ 83%]
+tests/test_service_ask_bytes.py::test_ask_json_bytes_equal_main PASSED   [ 88%]
+tests/test_service_ask_bytes.py::test_security_and_json_header_sets_are_byte_identical PASSED [ 94%]
+tests/test_service_ask_bytes.py::test_new_routes_carry_existing_header_sets FAILED [100%]
+
+==================================== ERRORS ====================================
+_______________ ERROR collecting tests/test_service_scorecard.py _______________
+ImportError while importing test module '/Users/gopalpatwa/opt/aveto-support/.claude/worktrees/interesting-shannon-67bff6/tests/test_service_scorecard.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_service_scorecard.py:13: in <module>
+    from aveto_service.scorecard import (
+E   ModuleNotFoundError: No module named 'aveto_service.scorecard'
+=================================== FAILURES ===================================
+________________ test_refusal_card_shows_no_model_written_text _________________
+
+    def test_refusal_card_shows_no_model_written_text() -> None:
+        client, _, runtime = make_client(
+            FakeJudgeClient(default=JudgeCall(f"Q1 NOT_ANSWERABLE {MODEL_CANARY}", 100, 5))
+        )
+        page = followed(client, QUESTION)
+        res = result_of(page)
+        c7 = runtime.searcher.index.commit[:7]
+        assert MODEL_CANARY not in page
+        for s in ("Deciding signal", "NOT_ANSWERABLE", "answerability-judge-v1", judge.PROMPT_SHA256):
+            assert s not in page
+        assert res.pre_runs == [] and 'class="passages"' not in res.raw
+        assert not any(path in res.raw for path in DOCS)
+        required = {
+            "The docs don't answer this",
+            REFUSAL_BODY,
+            F1,
+            "Open a GitHub issue",
+            "Read the docs on GitHub",
+            F2,
+            SA1,
+            SA2,
+            SA3,
+            D2,
+            "Outcome",
+            "Docs version",
+            f"Commit {c7} on GitHub",
+            "Passages listed",
+            D5,
+        }
+>       assert required <= set(res.runs) <= required | {D7, D8}
+E       assert {'Can I keep ...ndo it?', ...} <= {'No confiden... answer this"}
+E         
+E         Extra items in the left set:
+E         'Can I keep a long-lived feature branch going while the agents work on it?'
+E         'If a deploy of the Aveto website goes wrong, how do I undo it?'
+E         'Rephrasing can help: name the command, setting or feature you mean, and ask about one thing at a time.'
+E         'Read the docs on GitHub'
+E         'Commit ccccccc on GitHub'...
+E         
+E         ...Full output truncated (7 lines hidden), use '-vv' to show
+
+tests/test_page_cards.py:304: AssertionError
+________________________ test_resting_state_at_the_cap _________________________
+
+    def test_resting_state_at_the_cap() -> None:
+        embedder = CountingEmbedder()
+        client, fake, _ = make_client(runtime=make_runtime(embedder=embedder))
+        service = client.app.state.service  # type: ignore[attr-defined]
+        service._spend.cap = service._floor - 1  # the day's share cannot fit one more request
+        before = client.get("/health").json()
+        r = client.get("/")
+        text = htmllib.unescape(r.text)
+        assert r.status_code == 200
+>       assert "Paused for today" in text and REST1 in text and REST3 in text
+E       assert ('Paused for today' in '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<title>Ask the Aveto docs</title>\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<meta name="referrer" content="no-referrer">\n<link rel="stylesheet" href="/static/style.css">\n<script src="/static/enhance.js" defer></script>\n</head>\n<body>\n<main>\n<h1>Ask the Aveto docs</h1>\n<p>Verbatim passages from Aveto\'s docs; an AI model decides only whether they answer. Nothing on this page is written by an AI model.</p>\n<h2 class="plain">What to expect</h2>\n<ul>\n<li>You get passages copied word for word from the docs, with the file and line numbers, or a plain note that the docs don\'t answer your question.</li>\n<li>Limits: 10 questions an hour and 500 characters a question. The service pauses for the day when the day\'s allowance is used.</li>\n<li>Please don\'t put personal or confidential information in your question.</li>\n<li>This service does not store or log your question. To decide whether the passages answer, your question and the passages found are sent to Anthropic, the company that makes the AI model. Anthropic handles them under its own terms, which this page does not control....t US 2).</li>\n<li>The docs are in English. One question at a time; nothing is remembered between questions.</li>\n</ul>\n<form id="ask-form" method="post" action="/ask#result">\n<label for="q">Your question about Aveto</label>\n<textarea id="q" name="question" rows="4" autocomplete="off" spellcheck="true" aria-describedby="q-hint q-count q-error"></textarea>\n<p id="q-hint">Up to 500 characters.</p>\n<p id="q-count">0 of 500 characters</p>\n<p id="q-status" class="visually-hidden" role="status"></p>\n<p id="q-error" class="error"></p>\n<button type="submit" id="ask-button">Ask</button>\n</form>\n<section id="result" tabindex="-1" aria-labelledby="result-title"><div id="result-live" aria-live="polite" aria-atomic="true"></div><div id="result-extra"></div></section>\n</main>\n<footer>\n<p><a id="link-issue" href="https://github.com/acme/docs/issues/new?title=Docs+question+not+answered" rel="noopener noreferrer">Open a GitHub issue</a>. Add your question to the issue yourself if you wish.</p>\n<p><a id="link-docs" href="https://github.com/acme/docs/tree/cccccccccccccccccccccccccccccccccccccccc" rel="noopener noreferrer">Read the docs on GitHub</a></p>\n</footer>\n</body>\n</html>\n')
+
+tests/test_page_cards.py:320: AssertionError
+____________ test_receipts_drawer_shows_only_what_the_service_held _____________
+
+    def test_receipts_drawer_shows_only_what_the_service_held() -> None:
+        client, _, runtime = make_client()
+        c7 = runtime.searcher.index.commit[:7]
+        docs_url = docs_url_of(runtime)
+        github = "https://github.com/gpatwa/aveto-support/"
+        # answer
+        res = result_of(followed(client, QUESTION))
+        listed = listed_passages(runtime)
+        n = len(listed)
+>       assert res.drawers == 1  # exactly one details.receipts inside #result
+        ^^^^^^^^^^^^^^^^^^^^^^^
+E       assert 0 == 1
+E        +  where 0 = <test_page_cards.ResultText object at 0x11839f7a0>.drawers
+
+tests/test_page_cards.py:352: AssertionError
+____________ test_answer_card_holds_only_text_from_a_listed_passage ____________
+
+    def test_answer_card_holds_only_text_from_a_listed_passage() -> None:
+        client, _, runtime = make_client(
+            FakeJudgeClient(default=JudgeCall(f"Q1 ANSWERABLE {MODEL_CANARY}", 2400, 20))
+        )
+        page = followed(client, QUESTION)
+        res = result_of(page)
+        c7 = runtime.searcher.index.commit[:7]
+        listed = listed_passages(runtime)
+        n = len(listed)
+        assert n >= 1
+        assert res.pre_runs == [m.passage.text for _, m in listed]  # type: ignore[attr-defined]
+        assert MODEL_CANARY not in page
+        for s in ("Deciding signal", "ANSWERABLE", "answerability-judge-v1", judge.PROMPT_SHA256):
+            assert s not in page
+        found = "Found 1 passage." if n == 1 else f"Found {n} passages."
+        required = {
+            "The docs answer this",
+            found,
+            D1,
+            "Outcome",
+            "Docs version",
+            f"Commit {c7} on GitHub",
+            "Passages listed",
+        }
+        allowed = required | {CAPTION, COPY, str(n), D7, D8}
+        for path, m in listed:
+            per = {
+                path,
+                f"Section: {heading(m)}. {cap_span(m)}",
+                f"View {span(m)} of {path} on GitHub",
+                f"to {path}, {span(m)}",
+                f"{path}, {span(m)}",
+            }
+            required |= per
+            allowed |= per
+>       assert required <= set(res.non_pre_runs) <= allowed
+E       AssertionError: assert {'Commit cccc... listed', ...} <= {'Found 5 pas... 5 to 7', ...}
+E         
+E         Extra items in the left set:
+E         'to notes/faq.md, lines 1 to 3'
+E         'How this answer was made'
+E         'to guide/install.md, lines 1 to 3'
+E         'to guide/install.md, lines 5 to 7'
+E         'to README.md, lines 1 to 3'...
+E         
+E         ...Full output truncated (10 lines hidden), use '-vv' to show
+
+tests/test_page_cards.py:459: AssertionError
+______________________ test_every_aria_reference_resolves ______________________
+
+    def test_every_aria_reference_resolves() -> None:
+        client, _, runtime = make_client()
+        rclient, _, _ = refusing(runtime)
+        resting, _, _ = make_client()
+        rs = resting.app.state.service  # type: ignore[attr-defined]
+        rs._spend.cap = rs._floor - 1
+        docs = {
+            "get": client.get("/").text,
+            "answer": followed(client, QUESTION),
+            "refusal": followed(rclient, QUESTION),
+            "resting": resting.get("/").text,
+            "scorecard": client.get("/scorecard").text,
+        }
+        for name, d in docs.items():
+            ids = set(re.findall(r'\sid="([^"]+)"', d))
+            for attr in ("aria-labelledby", "aria-describedby"):
+                for value in re.findall(rf'\s{attr}="([^"]+)"', d):
+>                   assert set(value.split()) <= ids, (name, attr, value)
+E                   AssertionError: ('get', 'aria-labelledby', 'result-title')
+E                   assert {'result-title'} <= {'ask-button'...q-count', ...}
+E                     
+E                     Extra items in the left set:
+E                     'result-title'
+
+tests/test_page_cards.py:483: AssertionError
+____________________ test_page_script_builds_no_result_card ____________________
+
+    def test_page_script_builds_no_result_card() -> None:
+        client, _, _ = make_client()
+        js = client.get("/static/enhance.js").text
+        for s in (
+            "The docs answer this",
+            "The docs don't answer this",
+            "Paused for today",
+            "The service is off",
+            "Question limit reached",
+            "We couldn't decide this time",
+            "Your question is too long",
+            "Please enter a question",
+            "Found ",
+            "Section: ",
+            "No confident match",
+        ):
+>           assert s not in js
+E           assert 'The docs answer this' not in '(function (...();\n})();\n'
+E             
+E             'The docs answer this' is contained here:
+E               (function () {
+E                 "use strict";
+E                 var LIMIT = 500;
+E                 var form = document.getElementById("ask-form");
+E                 if (!form || !window.fetch) { return; }...
+E             
+E             ...Full output truncated (201 lines hidden), use '-vv' to show
+
+tests/test_page_cards.py:509: AssertionError
+_____________________ test_counts_record_no_question_text ______________________
+
+    def test_counts_record_no_question_text() -> None:
+        fake = FakeJudgeClient([JudgeCall(ANSWERABLE_REPLY, 2400, 20), JudgeCall(NOT_ANSWERABLE_REPLY, 2400, 20)])
+        runtime = make_runtime()
+        app = make_app(fake, runtime=runtime, html=HtmlPages(runtime))
+        c = TestClient(app, client=("203.0.113.9", 5000), follow_redirects=False)
+        secret = f"{QUESTION} {CANARY}"
+        assert c.get("/").status_code == 200
+        assert c.post("/ask", json={"question": secret}).json()["outcome"] == "answer"
+        assert c.post("/ask", content=urlencode({"question": secret}), headers=FORM).status_code == 303
+        r = c.post("/count/docs-click")
+>       assert (r.status_code, r.content) == (204, b"")
+E       assert (404, b'{"det..."Not Found"}') == (204, b'')
+E         
+E         At index 0 diff: 404 != 204
+E         
+E         Full diff:
+E           (
+E         -     204,
+E         ?     ^...
+E         
+E         ...Full output truncated (5 lines hidden), use '-vv' to show
+
+tests/test_service_counts.py:82: AssertionError
+____________________________ test_docs_click_rules _____________________________
+
+self = <starlette.datastructures.State object at 0x1188eecf0>, key = 'counts'
+
+    def __getattr__(self, key: Any) -> Any:
+        try:
+>           return self._state[key]
+                   ^^^^^^^^^^^^^^^^
+E           KeyError: 'counts'
+
+.venv/lib/python3.12/site-packages/starlette/datastructures.py:695: KeyError
+
+During handling of the above exception, another exception occurred:
+
+    def test_docs_click_rules() -> None:
+        clock = FakeClock()
+        runtime = make_runtime()
+        app = make_app(FakeJudgeClient(), runtime=runtime, html=HtmlPages(runtime), clock=clock)
+        c = TestClient(app, client=("203.0.113.9", 5000), follow_redirects=False)
+>       counts = app.state.counts
+                 ^^^^^^^^^^^^^^^^
+
+tests/test_service_counts.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <starlette.datastructures.State object at 0x1188eecf0>, key = 'counts'
+
+    def __getattr__(self, key: Any) -> Any:
+        try:
+            return self._state[key]
+        except KeyError:
+            message = "'{}' object has no attribute '{}'"
+>           raise AttributeError(message.format(self.__class__.__name__, key))
+E           AttributeError: 'State' object has no attribute 'counts'
+
+.venv/lib/python3.12/site-packages/starlette/datastructures.py:698: AttributeError
+_________________ test_warm_never_reaches_the_judge_or_spends __________________
+
+capfd = <_pytest.capture.CaptureFixture object at 0x1188904a0>
+
+    def test_warm_never_reaches_the_judge_or_spends(capfd: pytest.CaptureFixture[str]) -> None:
+        embedder = CountingEmbedder()
+        c, fake = _client(embedder=embedder)
+        h0 = c.get("/health").json()
+        capfd.readouterr()
+        r = c.post("/warm")
+>       assert (r.status_code, r.content) == (200, b'{"ready":true}')
+E       assert (404, b'{"det..."Not Found"}') == (200, b'{"ready":true}')
+E         
+E         At index 0 diff: 404 != 200
+E         
+E         Full diff:
+E           (
+E         -     200,
+E         ?     ^ ^...
+E         
+E         ...Full output truncated (5 lines hidden), use '-vv' to show
+
+tests/test_service_new_routes.py:47: AssertionError
+______________ test_warm_reports_not_ready_when_the_search_fails _______________
+
+    def test_warm_reports_not_ready_when_the_search_fails() -> None:
+        class Broken(CountingEmbedder):
+            def embed_query(self, question: str) -> bytes:
+                raise RuntimeError("model missing")
+    
+        c, fake = _client(embedder=Broken())
+>       assert c.post("/warm").content == b'{"ready":false}'
+E       assert b'{"detail":"Not Found"}' == b'{"ready":false}'
+E         
+E         At index 2 diff: b'd' != b'r'
+E         
+E         Full diff:
+E         - (b'{"ready":false}')
+E         + (b'{"detail":"Not Found"}')
+
+tests/test_service_new_routes.py:81: AssertionError
+___________ test_get_root_at_the_cap_passes_paused_without_spending ____________
+
+    def test_get_root_at_the_cap_passes_paused_without_spending() -> None:
+        html = RecordingHtml()
+        embedder = CountingEmbedder()
+        fake = FakeJudgeClient()
+        app = make_app(fake, runtime=make_runtime(embedder=embedder), html=html)
+        c = TestClient(app, client=PEER)
+        service = app.state.service
+>       assert service.resting() is False  # a fresh service with the default cap
+               ^^^^^^^^^^^^^^^
+E       AttributeError: 'AskService' object has no attribute 'resting'
+
+tests/test_service_new_routes.py:111: AttributeError
+_____________________________ test_route_inventory _____________________________
+
+    def test_route_inventory() -> None:
+        c, _ = _client()
+        routes = sorted(
+            (r.path, sorted(r.methods or ())) for r in c.app.routes if isinstance(r, APIRoute)  # type: ignore[attr-defined]
+        )
+>       assert routes == [
+            ("/", ["GET"]),
+            ("/ask", ["POST"]),
+            ("/count/docs-click", ["POST"]),
+            ("/health", ["GET"]),
+            ("/result/{token}", ["GET"]),
+            ("/scorecard", ["GET"]),
+            ("/static/{name}", ["GET"]),
+            ("/warm", ["POST"]),
+        ]
+E       AssertionError: assert [('/', ['GET'...e}', ['GET'])] == [('/', ['GET'...['GET']), ...]
+E         
+E         At index 2 diff: ('/health', ['GET']) != ('/count/docs-click', ['POST'])
+E         Right contains 3 more items, first extra item: ('/scorecard', ['GET'])
+E         
+E         Full diff:
+E           [
+E               (...
+E         
+E         ...Full output truncated (48 lines hidden), use '-vv' to show
+
+tests/test_service_new_routes.py:136: AssertionError
+___________________ test_no_route_but_ask_reaches_the_judge ____________________
+
+    def test_no_route_but_ask_reaches_the_judge() -> None:
+        c, fake = _client()
+        assert c.get("/").status_code == 200
+        assert c.get("/result/x").status_code == 200
+        assert c.get("/static/style.css").status_code == 200
+>       assert c.get("/scorecard").status_code == 200
+E       AssertionError: assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+E        +    where <Response [404 Not Found]> = get('/scorecard')
+E        +      where get = <starlette.testclient.TestClient object at 0x118a49490>.get
+
+tests/test_service_new_routes.py:159: AssertionError
+______________________ test_new_routes_write_no_log_line _______________________
+
+capfd = <_pytest.capture.CaptureFixture object at 0x118a1b3b0>
+
+    @pytest.mark.usefixtures("logging_state")
+    def test_new_routes_write_no_log_line(capfd: pytest.CaptureFixture[str]) -> None:
+        configure_logging()
+        c, _ = _client()
+        capfd.readouterr()
+        assert c.get("/").status_code == 200
+>       assert c.get("/scorecard").status_code == 200
+E       AssertionError: assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+E        +    where <Response [404 Not Found]> = get('/scorecard')
+E        +      where get = <starlette.testclient.TestClient object at 0x118a1b740>.get
+
+tests/test_service_new_routes.py:173: AssertionError
+__________________ test_new_routes_carry_existing_header_sets __________________
+
+    def test_new_routes_carry_existing_header_sets() -> None:
+        client, fake = _html_client()
+        card = client.get("/scorecard")
+>       assert card.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/test_service_ask_bytes.py:232: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_page_cards.py::test_refusal_card_shows_no_model_written_text
+FAILED tests/test_page_cards.py::test_resting_state_at_the_cap - assert ('Pau...
+FAILED tests/test_page_cards.py::test_receipts_drawer_shows_only_what_the_service_held
+FAILED tests/test_page_cards.py::test_answer_card_holds_only_text_from_a_listed_passage
+FAILED tests/test_page_cards.py::test_every_aria_reference_resolves - Asserti...
+FAILED tests/test_page_cards.py::test_page_script_builds_no_result_card - ass...
+FAILED tests/test_service_counts.py::test_counts_record_no_question_text - as...
+FAILED tests/test_service_counts.py::test_docs_click_rules - AttributeError: ...
+FAILED tests/test_service_new_routes.py::test_warm_never_reaches_the_judge_or_spends
+FAILED tests/test_service_new_routes.py::test_warm_reports_not_ready_when_the_search_fails
+FAILED tests/test_service_new_routes.py::test_get_root_at_the_cap_passes_paused_without_spending
+FAILED tests/test_service_new_routes.py::test_route_inventory - AssertionErro...
+FAILED tests/test_service_new_routes.py::test_no_route_but_ask_reaches_the_judge
+FAILED tests/test_service_new_routes.py::test_new_routes_write_no_log_line - ...
+FAILED tests/test_service_ask_bytes.py::test_new_routes_carry_existing_header_sets
+ERROR tests/test_service_scorecard.py
+==================== 15 failed, 3 passed, 1 error in 0.82s =====================
