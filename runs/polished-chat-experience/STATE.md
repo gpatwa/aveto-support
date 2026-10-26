@@ -26,7 +26,9 @@
 | 7 QA evidence | QA Evidence | done, offline (GO WITH CONDITIONS; no P0/P1; 6 P2; 730 passed, mypy and ruff clean; C1.4.1 golden re-derived byte-identical; 4 intent tests fail first and fail under mutation; a11y, 375 px, keyboard, timings, live checks not verifiable here) | runs/polished-chat-experience/13-qa-evidence.md | n/a |
 | 9 Security review | Security & Privacy | done, standard (PASS WITH CONDITIONS; no P0/P1; 2 P2: S1 result-store bound in F1 does not hold for zero-spend JUDGE_ERROR, pre-existing on main; S2 counts unauthenticated and inflatable; 4 advisories; 92 passed in touched tests; conditions: S1/S2 to END_REVIEW, re-run test_service_scorecard and check links after the D8 fill) | runs/polished-chat-experience/14-security-review.md | n/a |
 | 10 Docs | Tech Writer | done (README, runbook, status file updated; flag: scorecard.toml/10-figures say 731 tests, 13-qa-evidence records 730) | runs/polished-chat-experience/15-docs-note.md | n/a |
-| 8, 11 to 14 | see plan | 8: see 08-browser-checks.md (Orchestrator records); 11 to 14 pending | — | — |
+| 8 Browser checks | Orchestrator | done (see 08-browser-checks.md) | runs/polished-chat-experience/08-browser-checks.md | n/a |
+| 11 Release Gate | Release Manager | done: GO WITH CONDITIONS (tier 3 confirmed; C1.4 bars 1, 2, 3, 6, 7, 8 PASS, 4 PASS bar one unexecuted clause, 5 partial by design; no P0/P1; 5 pre-deploy preconditions P1 to P5 before `az acr build`) | runs/polished-chat-experience/16-release-checklist-tier3.md | go with conditions |
+| 12 to 14 | see plan | pending | — | — |
 
 ## Approvals
 
@@ -59,4 +61,4 @@
 
 ## Next action
 
-Stage 10 done (15-docs-note.md): resolve the 731 vs 730 test-count row in scorecard.toml before the Release Gate. Stage 9 done (14-security-review.md, PASS WITH CONDITIONS, no P0/P1, GO). Next: D8 figures fill, then the docs stage; per D8 re-run the full suite, C1.4.1, C1.4.7 and tests/test_service_scorecard.py on the final tree, confirm any scorecard links are https://github.com/ to a repository confirmed public (D9), and carry S1, S2 (and A1 to A4 as notes) into END_REVIEW.md before the Release Gate.
+Stage 11 done: GO WITH CONDITIONS (16-release-checklist-tier3.md). Before `az acr build` the Orchestrator completes and saves P1 to P5 (section 4): gated-HEAD re-run (full suite, C1.4.1 diff, settings.json diff, git diff --check; commit first, then read the tag), clean tree (an uncommitted `runs/fix-service-accounting/STATE.md` was present at session start), keyboard-follow of a source link locally (C1.4.4), a dry run of 13-live/live.py against the local dev server, and the sheet's literal substitutions and 12.0 pre-flight. Then stage 12 (deploy sheet, tech spec section 12), adding an Approvals row per gated action citing CHARTER.md#C8.3 / C3.1 / C8.2 and the sha256. Carry the section 7 list into END_REVIEW.md (S1, S2, A1 to A4, Q1 to Q6, D1 to D13 items, copy deck, axe 4.10.2). Re-run events-verify at close-out.
