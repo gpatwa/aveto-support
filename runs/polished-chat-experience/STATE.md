@@ -22,7 +22,9 @@
 | 3 Tech spec | Software Architect | done (no STOP-FLAG; two readings for the Orchestrator to rule, 05-tech-spec.md section 15; offline retrieval of the suggestions not run by me, handed to stage 4 step 2) | runs/polished-chat-experience/05-tech-spec.md; docs/ARCHITECTURE.md; docs/adr/0010, 0011, 0012 | n/a |
 | 4 Backend | Backend Architect | done at the checkpoint (commit 1 tests first cd4d4b1; commit 2 checkpoint: mypy and ruff clean, 714 passed, 6 failed = the stage 5 contract in tests/test_page_cards.py, as 14.1 step 4 requires); suggestions pass offline retrieval, no reserve needed | runs/polished-chat-experience/04-implementation.md; 04-failfirst-32e54a6.txt; 04-checkpoint.txt; 04-retrieval-check.json | n/a |
 | 5 Frontend | Frontend Developer | done (730 passed, 0 failed; mypy, ruff clean; the 6 frozen page-card tests pass; no browser preview possible for the role, left to stage 8; one test assertion widened, see 05-frontend.md) | runs/polished-chat-experience/05-frontend.md; 05-failfirst-base.txt | n/a |
-| 6 to 14 | see plan | pending | — | — |
+| 6 Code review | Orchestrator | done (round 1 and 2, 0 open; F2 fixed f5c139c) | runs/polished-chat-experience/code-review.md | n/a |
+| 7 QA evidence | QA Evidence | done, offline (GO WITH CONDITIONS; no P0/P1; 6 P2; 730 passed, mypy and ruff clean; C1.4.1 golden re-derived byte-identical; 4 intent tests fail first and fail under mutation; a11y, 375 px, keyboard, timings, live checks not verifiable here) | runs/polished-chat-experience/13-qa-evidence.md | n/a |
+| 8 to 14 | see plan | pending | — | — |
 
 ## Approvals
 
@@ -55,4 +57,4 @@
 
 ## Next action
 
-Stage 5 done and committed. Rule on the two test-related readings in 05-frontend.md (the `#` prefix added to test_no_external_origin_in_page_or_static for the UX skip link; refusal suggestions/drawer placed in #result-extra). Then stage 6 (review layer) onward; stage 8 is the first real browser look at the page.
+Stage 7 done (13-qa-evidence.md, GO WITH CONDITIONS, no P0/P1). Next: stage 8 browser checks (axe, 375 px, keyboard, local timings), then stage 9 Security Review (read QA section 9 Q1 first). Per D8 re-run the full suite and the C1.4.1 and C1.4.7 commands on the final tree after the figures fill and the docs stage.
