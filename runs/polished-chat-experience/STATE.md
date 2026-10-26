@@ -28,7 +28,8 @@
 | 10 Docs | Tech Writer | done (README, runbook, status file updated; flag: scorecard.toml/10-figures say 731 tests, 13-qa-evidence records 730) | runs/polished-chat-experience/15-docs-note.md | n/a |
 | 8 Browser checks | Orchestrator | done (see 08-browser-checks.md) | runs/polished-chat-experience/08-browser-checks.md | n/a |
 | 11 Release Gate | Release Manager | done: GO WITH CONDITIONS (tier 3 confirmed; C1.4 bars 1, 2, 3, 6, 7, 8 PASS, 4 PASS bar one unexecuted clause, 5 partial by design; no P0/P1; 5 pre-deploy preconditions P1 to P5 before `az acr build`) | runs/polished-chat-experience/16-release-checklist-tier3.md | go with conditions |
-| 12 to 14 | see plan | pending | — | — |
+| 13 Production verification | Production Verification | done: HEALTHY WITH WATCH ITEMS (all pre-registered rules in tech spec 12.4 to 12.8 pass; W1 check-new.json is the post-forward run, not revision 0000009; W2 log-search.txt empty and query time unrecorded; W3 cold idle/replica count only in README; W4 minor record flaws; W5 TLS wrapper unseen) | runs/polished-chat-experience/18-production-verification.md | go |
+| 12, 14 | see plan | 12 done per 12-deploy/; 14 pending | — | — |
 
 ## Approvals
 
@@ -60,5 +61,7 @@
 | **Total** | | | | | | 0 | 0 | |
 
 ## Next action
+
+Stage 13 done: HEALTHY WITH WATCH ITEMS (18-production-verification.md). Orchestrator corrects the README row for check-new.json (W1), notes W2 to W5, then hands to SRE and carries the watch items and the not-checked-live list into END_REVIEW.md. Earlier note follows.
 
 Stage 11 done: GO WITH CONDITIONS (16-release-checklist-tier3.md). Before `az acr build` the Orchestrator completes and saves P1 to P5 (section 4): gated-HEAD re-run (full suite, C1.4.1 diff, settings.json diff, git diff --check; commit first, then read the tag), clean tree (an uncommitted `runs/fix-service-accounting/STATE.md` was present at session start), keyboard-follow of a source link locally (C1.4.4), a dry run of 13-live/live.py against the local dev server, and the sheet's literal substitutions and 12.0 pre-flight. Then stage 12 (deploy sheet, tech spec section 12), adding an Approvals row per gated action citing CHARTER.md#C8.3 / C3.1 / C8.2 and the sha256. Carry the section 7 list into END_REVIEW.md (S1, S2, A1 to A4, Q1 to Q6, D1 to D13 items, copy deck, axe 4.10.2). Re-run events-verify at close-out.
