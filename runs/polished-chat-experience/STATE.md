@@ -17,7 +17,8 @@
 | Intent | Human | confirmed (2026-10-26, in the intent file) | runs/polished-chat-experience/intent.md | human confirms |
 | Intake | Orchestrator | done | runs/polished-chat-experience/00-slice-plan.md | n/a |
 | Charter | Human | approved | runs/polished-chat-experience/CHARTER.md | approval by hash |
-| 1 to 14 | see plan | pending | — | — |
+| 1 Scope review | Engineering Manager | done, with a STOP-FLAG (S1: refusal card "nearest passages" contradicts INV-4(b); needs owner decision before stage 2) | runs/polished-chat-experience/01-scope.md | n/a |
+| 2 to 14 | see plan | pending | — | — |
 
 ## Approvals
 
@@ -50,4 +51,4 @@
 
 ## Next action
 
-Spawn stage 1 (Engineering Manager).
+Read 01-scope.md. Put S1 to the owner (option A: refusal card without nearest passages, recommended; option B: amend INV-4(b) and the Charter, new hash). Confirm the S3 reading and accept or overrule the recorded oversize deviation. Then spawn stage 2 (UI Designer).
