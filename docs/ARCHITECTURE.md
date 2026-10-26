@@ -24,14 +24,25 @@
 > Tech specs: `runs/docs-retrieval/02-tech-spec.md` (retrieval);
 > `runs/docs-answerability-2/02-tech-spec.md` (the judge step).
 >
-> **Branch `claude/public-ask-the-docs` (2026-10-21, not merged, not yet
-> deployed)** adds a public ask-the-docs service, package `aveto_service`,
-> beside the unchanged program: a page and `POST /ask` that return `retrieve`'s
-> verbatim passages or `no confident match`, judged through the Anthropic
-> Messages API, under fixed limits, on Azure Container Apps
+> **The public ask-the-docs service**, package `aveto_service`, sits beside the
+> unchanged program: a page and `POST /ask` that return `retrieve`'s verbatim
+> passages or `no confident match`, judged through the Anthropic Messages API,
+> under fixed limits, on Azure Container Apps
 > ([ADR 0009](adr/0009-public-ask-service-on-azure-container-apps.md),
-> proposed). See "Public ask service". Tech spec:
-> `runs/public-ask-the-docs/05-tech-spec.md`.
+> proposed). Built in `runs/public-ask-the-docs/`, corrected in
+> `runs/fix-service-accounting/` (live as revision `ca-aveto-ask--0000008`,
+> 2026-10-24, per the runbook). See "Public ask service".
+>
+> **Slice `polished-chat-experience` (2026-10-26, specified, not yet built or
+> deployed when this was written)** changes only the experience around the
+> answering: answer and refusal cards rendered once on the server
+> ([ADR 0010](adr/0010-server-rendered-results-one-renderer.md)), suggested
+> questions, a warm-up, a resting state on page load, a receipts drawer, a
+> scorecard page from recorded figures and content-free counts
+> ([ADR 0011](adr/0011-content-free-counts-and-recorded-figures-scorecard.md)).
+> The service is not framed by aveto.dev
+> ([ADR 0012](adr/0012-service-not-framed-aveto-dev-links-to-it.md)).
+> Tech spec: `runs/polished-chat-experience/05-tech-spec.md`.
 
 ## What exists
 
@@ -192,16 +203,19 @@ The reasoning is in [ADR 0003](adr/0003-hybrid-embedding-retrieval.md), which
 supersedes the ranking and confidence parts of
 [ADR 0002](adr/0002-lexical-retrieval-calibrated-abstention.md).
 
-## Public ask service (branch `claude/public-ask-the-docs`)
+## Public ask service
 
 A visitor types a question on a public page and gets either `retrieve`'s
 verbatim passages or `no confident match`, decided by the answerability judge
 (`claude-sonnet-5-5`, prompt `answerability-judge-v1`) called through the
 Anthropic Messages API. Decision record:
 [ADR 0009](adr/0009-public-ask-service-on-azure-container-apps.md) (proposed).
-State on this branch: built and tested offline; not yet deployed; no live
-Anthropic call has been made. The authoritative safety words are INV-4 and
-INV-5 in [`.agentic/SAFETY_INVARIANTS.md`](../.agentic/SAFETY_INVARIANTS.md).
+State: deployed; the live revision and its measured figures are in
+[`docs/runbooks/public-ask.md`](runbooks/public-ask.md) and the run records it
+names. The page, scorecard, counts and warm-up below are as specified by slice
+`polished-chat-experience`; until that slice's deploy is recorded, the live
+page is the earlier one. The authoritative safety words are INV-4 and INV-5 in
+[`.agentic/SAFETY_INVARIANTS.md`](../.agentic/SAFETY_INVARIANTS.md).
 
 ### Package layout
 
@@ -223,9 +237,11 @@ the core, the prompt and the attended judge's files to their hashes at
 | `limits.py` | Question validation, client-address resolution and hashing, the per-visitor sliding-window limiters, the spend counter in integer nano-dollars |
 | `abuse_log.py` | The service's only log lines (abuse line, fixed ops codes) and `configure_logging()`, which silences every library logger |
 | `pipeline.py` | `AskService.ask`: the gates below in a fixed order, retrieval, admission, the judge call, the parse, and the mapping to an `AskResult` (which has no question field) |
-| `app.py` | `load_runtime` (prompt hash check, index, embedder; any failure is one `startup_failed` ops line and exit 1) and the FastAPI app: `POST /ask`, `GET /health`, and, with a renderer, `GET /`, `GET /result/{token}`, `GET /static/{name}`. No OpenAPI or docs routes, no trailing-slash redirects, telemetry auto-configuration off |
-| `html_port.py`, `pages.py`, `render.py`, `static/` | The page: HTML from `string.Template` with every value escaped, a small script (`enhance.js`) that posts JSON, and a stylesheet; strict security headers, no cookies, no external resource |
-| `result_store.py` | The post-redirect-get store for form posts (below) |
+| `app.py` | `load_runtime` (prompt hash check, index, embedder; any failure is one `startup_failed` ops line and exit 1) and the FastAPI app: `POST /ask`, `GET /health`, and, with a renderer, `GET /` (reads `AskService.resting()` to show the resting state on load; counts a visit), `GET /result/{token}`, `GET /static/{name}`, `GET /scorecard`, `POST /warm`, `POST /count/docs-click`. No OpenAPI or docs routes, no trailing-slash redirects, telemetry auto-configuration off |
+| `html_port.py`, `pages.py`, `render.py`, `static/` | The page: HTML built by hand with every value escaped, the only builder of result cards ([ADR 0010](adr/0010-server-rendered-results-one-renderer.md)); a small script (`enhance.js`) that posts the form, swaps in the server's result region, shows the waiting state, runs the warm-up and sends the docs-click beacon; one stylesheet; strict security headers, no cookies, no external resource. `suggestions.toml` holds the four suggested questions, copied from a spent eval set |
+| `counts.py` | Content-free usage counts in memory: visits, answered, refused, docs clicks (at most 60 counted an hour), and the start time ([ADR 0011](adr/0011-content-free-counts-and-recorded-figures-scorecard.md)) |
+| `scorecard.py`, `scorecard.toml` | The scorecard page from a committed file of recorded figures, each naming its record; a strict reader that fails closed; the build links the receipts drawer also uses |
+| `result_store.py` | The post-redirect-get store for form posts and the page script's posts (below) |
 | `main.py` | Composition root (`uvicorn aveto_service.main:app`): the real adapter only when `ANTHROPIC_API_KEY` is non-empty, else the placeholder |
 
 ### Request flow
@@ -292,6 +308,22 @@ instead).
 switch, the UTC day and the day's judged count, token counts, spend and cap;
 it never calls a model and writes no abuse line. The probes use it.
 
+The page's other routes reach neither the judge nor the spend counter, and
+write no log line:
+- `GET /` shows the resting state ("back after midnight UTC", form disabled)
+  when `AskService.resting()` reads that the day is closed or settled spend
+  leaves no room for the smallest request; the read changes no counter.
+- `POST /warm` runs one retrieval of a fixed internal question once per
+  process (never a visitor's text) and answers `{"ready":true|false}`; nothing
+  with the kill switch on, cross-site, or resting.
+- `POST /count/docs-click` counts an empty same-origin request, at most 60 an
+  hour, and always answers 204.
+- `GET /scorecard` renders the recorded figures and the counts.
+
+The page script sends questions through the form path, so the page and a
+no-JS visitor see the same server HTML; `POST /ask` JSON is unchanged for API
+clients.
+
 ```mermaid
 flowchart LR
   v[visitor's browser] -->|HTTPS| ing[Container Apps ingress]
@@ -313,10 +345,13 @@ flowchart LR
 
 Nothing on disk, and no question anywhere. In memory, per process: the
 per-visitor timestamps (keyed by the salted hash; the salt is random per
-process and never logged), the day's spend and token counters, and the result
-store (form posts only: the outcome and public passages under a random token,
-10 minutes, at most 1,000 entries, no question text). All of it is lost when
-the replica stops. The process's stdout goes to Log Analytics and holds only
+process and never logged), the day's spend and token counters, the result
+store (form posts and the page script's posts: the outcome and public passages
+under a random token, 10 minutes, at most 1,000 entries, no question text), the
+usage counts (four integers and a start time; at most 60 timestamps for the
+click limit; no text, no address, no key), and the warm-up's done flag. All of
+it is lost when the replica stops. Committed, read-only data in the image:
+`scorecard.toml` (recorded figures) and `suggestions.toml` (four questions). The process's stdout goes to Log Analytics and holds only
 the abuse line `{"t","ip","o"}` (a time, the first 16 hex characters of the
 hash, an outcome code) and the ops lines `startup_ok`, `startup_failed` with a
 fixed category, and `unhandled`. The two console and system log tables are set
@@ -366,11 +401,16 @@ Commands: `runs/public-ask-the-docs/11-infra-note.md` and the tech spec §7.
 - **Azure spend is not under the Anthropic cap** (S-A11); `maxReplicas` 1 and
   the log ingestion cap bound it.
 - **`/health` is public** and shows the day's aggregate counters (CR-8, owner
-  decision D3 after the gate).
+  decision D3 after the gate). The scorecard's usage counts are public too and
+  of the same kind; they also reset with the replica, so they are totals
+  "since the service last started", never lifetime figures.
+- **The scorecard's links point at a branch** of `gpatwa/aveto-support` and
+  ship only if the repository is confirmed public before the build.
 
 Cost per question, cold start, latency and the public gate's results are not
-stated here: none has been measured yet. They are measured at stage 18 and
-recorded in `runs/public-ask-the-docs/`.
+stated here; they are recorded in `runs/public-ask-the-docs/18-gate/RESULT.md`
+and later run records, and the scorecard shows them with their dates and
+methods.
 
 ## Model adapter boundaries
 
@@ -522,5 +562,13 @@ score is printed on the `eval` step's stdout, and CI gates on the **exit code**.
   bars met once (stage 5 and stage 7). Acceptance is the owner's.*
 - [ADR 0009](adr/0009-public-ask-service-on-azure-container-apps.md): a public
   ask-the-docs service on Azure Container Apps, judging through the Anthropic
-  API. *Proposed; built on branch `claude/public-ask-the-docs`, not yet
-  deployed.*
+  API. *Proposed (per its status line); deployed.*
+- [ADR 0010](adr/0010-server-rendered-results-one-renderer.md): results are
+  rendered once, on the server; the page script swaps in the server's HTML.
+  *Proposed.*
+- [ADR 0011](adr/0011-content-free-counts-and-recorded-figures-scorecard.md):
+  content-free usage counts in memory; a scorecard of recorded figures from a
+  committed file. *Proposed.*
+- [ADR 0012](adr/0012-service-not-framed-aveto-dev-links-to-it.md): the
+  service is not framed by aveto.dev; the site links to it. *Accepted (the
+  owner, 2026-10-26).*

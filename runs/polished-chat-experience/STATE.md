@@ -19,7 +19,8 @@
 | Charter | Human | approved | runs/polished-chat-experience/CHARTER.md | approval by hash |
 | 1 Scope review | Engineering Manager | done, with a STOP-FLAG (S1: refusal card "nearest passages" contradicts INV-4(b); needs owner decision before stage 2) | runs/polished-chat-experience/01-scope.md | n/a |
 | 2 UX spec | UI Designer | done (ready for architecture; 10 open items for stage 3, section 11) | runs/polished-chat-experience/03-ux-spec.md | n/a |
-| 3 to 14 | see plan | pending | — | — |
+| 3 Tech spec | Software Architect | done (no STOP-FLAG; two readings for the Orchestrator to rule, 05-tech-spec.md section 15; offline retrieval of the suggestions not run by me, handed to stage 4 step 2) | runs/polished-chat-experience/05-tech-spec.md; docs/ARCHITECTURE.md; docs/adr/0010, 0011, 0012 | n/a |
+| 4 to 14 | see plan | pending | — | — |
 
 ## Approvals
 
@@ -52,4 +53,4 @@
 
 ## Next action
 
-Stage 2 done: read 03-ux-spec.md (section 6.1 gives the axe cause and fix; section 11 lists the open items). Then spawn stage 3 (Software Architect) with 03-ux-spec.md, 01-scope.md and DECISIONS.md.
+Stage 3 done: read 05-tech-spec.md section 15 and rule on its two readings (C1.6 and the data strings; service-own measurements), and on the figures-fill re-spawn (section 3.7). Then spawn stage 4 (Backend Architect) with 05-tech-spec.md sections 3 to 14, 03-ux-spec.md sections 1, 8, 9, and DECISIONS.md; stage 4 ends at the checkpoint in section 14.1 (committed before stage 5).
