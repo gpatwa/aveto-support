@@ -1,0 +1,31 @@
+# Four suggested questions, copied word for word from a spent eval set
+# (evals/ is not in the image). Chosen in runs/polished-chat-experience/05-tech-spec.md section 9.
+schema = 1
+
+[[suggestion]]
+slot = "A1"
+set = "evals/retrieval-heldout-5.toml"
+id = "g01"
+expect = "answer"
+text = "Does saying \"looks good\" to an agent count as approving something?"
+
+[[suggestion]]
+slot = "A2"
+set = "evals/retrieval-heldout-5.toml"
+id = "g03"
+expect = "answer"
+text = "Can I keep a long-lived feature branch going while the agents work on it?"
+
+[[suggestion]]
+slot = "A3"
+set = "evals/retrieval-heldout-5.toml"
+id = "g04"
+expect = "answer"
+text = "If a deploy of the Aveto website goes wrong, how do I undo it?"
+
+[[suggestion]]
+slot = "R1"
+set = "evals/retrieval-heldout-5.toml"
+id = "gu18"
+expect = "no_confident_match"
+text = "Does it support right-to-left languages?"
