@@ -37,8 +37,8 @@
 ## Budget
 
 - **Budget:** 1000k tokens  ·  **Depth:** standard
-- **Spent:** 0k (0%)  ·  **Remaining:** 1000k
-- **Next stage:** 1 Scope review (ai-agent-product) est. 40k → **PROCEED**
+- **Spent:** 1,350k (135%)  ·  **Remaining:** 650k to the hard cap (the plan total of 1,000k and the ceiling of 1,300k are passed)
+- **Next stage:** 11 Release Gate tier 3 (release-manager) est. 70k → **PROCEED** (over the ceiling: notice sent; hard cap 2,000k, projection about 1,600k)
 
 ## Failure budget
 

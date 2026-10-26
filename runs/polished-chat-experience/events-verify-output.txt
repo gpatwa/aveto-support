@@ -1,0 +1,13 @@
+/Users/gopalpatwa/opt/aveto-support/.claude/events/1dbb5af3-2658-4b6f-ab7a-5c8d7e249de5.jsonl: chain intact; 1043 lines; head f3bbe0216a037a92
+  backend-architect: 80 calls, 2 failed
+  engineering-manager: 34 calls, 0 failed
+  frontend-developer: 36 calls, 1 failed
+  main: 124 calls, 3 failed
+  qa-evidence: 47 calls, 0 failed
+  security-privacy: 34 calls, 0 failed
+  software-architect: 102 calls, 0 failed
+  tech-writer: 41 calls, 0 failed
+  ui-designer: 24 calls, 0 failed
+  ! seq 1043: main attempted Bash P/Users/gopalpatwa/opt/agentic-sdlc-play #ff64a039eee1 with no outcome recorded (denied, blocked or interrupted)
+
+(Run with the Charter's write prefixes given as worktree-relative paths: the log records paths relative to the main checkout, the session's project dir. A first run with bare prefixes flagged every worktree write as outside them.)
