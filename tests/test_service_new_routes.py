@@ -72,14 +72,19 @@ def test_warm_never_reaches_the_judge_or_spends(capfd: pytest.CaptureFixture[str
     assert e1.queries == e2.queries == e3.queries == 0
 
 
-def test_warm_reports_not_ready_when_the_search_fails() -> None:
-    class Broken(CountingEmbedder):
-        def embed_query(self, question: str) -> bytes:
-            raise RuntimeError("model missing")
+def test_warm_retries_after_a_failed_search() -> None:
+    class Flaky(CountingEmbedder):
+        failed = False
 
-    c, fake = _client(embedder=Broken())
+        def embed_query(self, question: str) -> bytes:
+            if not self.failed:
+                self.failed = True
+                raise RuntimeError("model missing")
+            return super().embed_query(question)
+
+    c, fake = _client(embedder=Flaky())
     assert c.post("/warm").content == b'{"ready":false}'
-    assert c.post("/warm").content == b'{"ready":false}'  # remembered, not retried
+    assert c.post("/warm").content == b'{"ready":true}'  # failure was not cached
     assert fake.calls == []
 
 

@@ -1,0 +1,15 @@
+                return super().embed_query(question)
+    
+        c, fake = _client(embedder=Flaky())
+        assert c.post("/warm").content == b'{"ready":false}'
+>       assert c.post("/warm").content == b'{"ready":true}'  # failure was not cached
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert b'{"ready":false}' == b'{"ready":true}'
+E         
+E         At index 9 diff: b'f' != b't'
+E         Use -v to get more diff
+
+tests/test_service_new_routes.py:87: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_service_new_routes.py::test_warm_retries_after_a_failed_search
+1 failed, 5 deselected in 0.41s

@@ -328,17 +328,17 @@ class AskService:
             return (today and s.closed) or ((s.spent if today else 0) + self._floor > s.cap)
 
     def warm(self) -> bool:
-        """Run one fixed search, once per process, so the first visitor's search is not the
-        first one. Remembers the outcome; later calls do no work."""
+        """Run one fixed search so the first visitor's search is not the first one.
+        Remembers only success; a failure answers not-ready and the next call retries."""
         with self._warm_lock:
-            if self._warm_result is None:
+            if not self._warm_result:
                 try:
                     with self._retrieval_lock:
                         _search_once(self._runtime.searcher, WARM_QUESTION)
                     self._warm_result = True
                 except Exception:  # noqa: BLE001 - not ready is the whole answer
-                    self._warm_result = False
-            return self._warm_result
+                    return False
+            return True
 
     # --- health ----------------------------------------------------------------
 
