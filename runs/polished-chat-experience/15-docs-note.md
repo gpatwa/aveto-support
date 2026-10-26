@@ -10,7 +10,7 @@ Files changed: `README.md`, `docs/runbooks/public-ask.md`, `.agentic/CURRENT_MVP
 ## Record behind each figure
 | Figure | Record |
 |---|---|
-| 730 passed, 0 failed; 668 at start | `13-qa-evidence.md` (730); `00-slice-plan.md` (668) |
+| 731 passed, 0 failed; 668 at start | `10-test-count.txt` (731); `00-slice-plan.md` (668) |
 | axe-core 4.10.2, no serious or critical on 5 views; no sideways scroll at 375 px | `08-browser-checks.md` |
 | no P0/P1, two P2; S1, S2, A1, A2 | `14-security-review.md` |
 | 30.8 s, 1.66 s, 5.09 s, $0.00785, earlier release | `runs/public-ask-the-docs/18-gate/RESULT.md` (via `scorecard.toml`, existing text) |

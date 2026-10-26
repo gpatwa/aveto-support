@@ -170,8 +170,8 @@
   totals since the last restart, unauthenticated and inflatable (Security S2).
   Judge-error results are stored at zero spend, limited per address, same as
   before (Security S1). Scorecard figures live in `aveto_service/scorecard.toml`
-  behind a strict reader; each row names a record file. Recorded: 730 tests
-  passed, 0 failed (`runs/polished-chat-experience/13-qa-evidence.md`); axe-core
+  behind a strict reader; each row names a record file. Recorded: 731 tests
+  passed, 0 failed (`runs/polished-chat-experience/10-test-count.txt`); axe-core
   4.10.2 no serious or critical issue on 5 local views, no sideways scrolling at
   375 px (`08-browser-checks.md`, stand-in judge, local); Security review no P0
   or P1, two P2 (`14-security-review.md`). The answer and refusal copy behave as

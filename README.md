@@ -204,7 +204,7 @@ service):
 
 | Figure | Record |
 |---|---|
-| 730 tests passed, 0 failed (668 at the starting commit); mypy and ruff clean | `runs/polished-chat-experience/13-qa-evidence.md` |
+| 731 tests passed, 0 failed (668 at the starting commit); mypy and ruff clean | `runs/polished-chat-experience/10-test-count.txt` |
 | axe-core 4.10.2: no serious or critical issue on 5 local views; no sideways scrolling at 375 px; keyboard flow tried (local run, stand-in judge, no touch or real-device test) | `runs/polished-chat-experience/08-browser-checks.md` |
 | Security review: no P0 or P1, two P2 (S1, S2 below) | `runs/polished-chat-experience/14-security-review.md` |
 
