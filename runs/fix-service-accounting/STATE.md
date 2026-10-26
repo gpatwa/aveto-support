@@ -4,7 +4,7 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
 - **Current stage:** 11 Close-out (pull request open, awaiting the owner's merge)
-- **Status:** in-progress
+- **Status:** done (pull request 9 merged 2026-10-24)
 - **Least-privilege:** enforced — role subagents and teammates from this repo's `.claude/agents/`
 - **Telemetry:** self-reported
 - **Charter:** runs/fix-service-accounting/CHARTER.md, sha256 afc984d16f941f514dcf9da5b4f7efbe530e554ea828fecaa0f3a039269aefe4, approved in APPROVAL_RECORD-1 (2026-10-23T07:18Z)
