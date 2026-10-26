@@ -55,6 +55,7 @@ _ADMITTED = frozenset({Outcome.ANSWER, Outcome.NO_CONFIDENT_MATCH, Outcome.JUDGE
 NO_CONFIDENT_MATCH_TEXT = "no confident match"
 JUDGE_ERROR_TEXT = "judge error"
 TOP_OF_FILE = "(top of file)"
+WARM_QUESTION = "How do I get started?"  # fixed and internal: never a visitor's text
 
 
 @dataclass(frozen=True)
@@ -162,6 +163,11 @@ def _utcnow() -> datetime:
     return datetime.now(UTC)
 
 
+def _search_once(searcher: Searcher, question: str) -> None:
+    """One retrieval, result discarded: loads the index and the embedding model's first run."""
+    judge.retrieve_for_judge(searcher, question)
+
+
 class AskService:
     def __init__(
         self,
@@ -188,6 +194,8 @@ class AskService:
         )
         self._lock = threading.Lock()  # admission and counters
         self._retrieval_lock = threading.Lock()  # the ONNX session: one thread at a time
+        self._warm_lock = threading.Lock()
+        self._warm_result: bool | None = None
         self._system_bytes = len(runtime.system_prompt.encode("utf-8"))
         self._floor = MAX_ATTEMPTS * self._spend.reservation_amount(self._system_bytes, 0)
 
@@ -306,6 +314,31 @@ class AskService:
             files=_files_out(found),
             signal=signal,
         )
+
+    # --- resting and warm-up (no model call, no spend, no limiter, no log line) -------
+
+    def resting(self) -> bool:
+        """True when settled spend already leaves no room for the smallest request today.
+
+        A pure read: it rolls nothing and reserves nothing, so it changes no counter."""
+        with self._lock:
+            day = utc_day(self._clock())
+            s = self._spend
+            today = s.day == day
+            return (today and s.closed) or ((s.spent if today else 0) + self._floor > s.cap)
+
+    def warm(self) -> bool:
+        """Run one fixed search, once per process, so the first visitor's search is not the
+        first one. Remembers the outcome; later calls do no work."""
+        with self._warm_lock:
+            if self._warm_result is None:
+                try:
+                    with self._retrieval_lock:
+                        _search_once(self._runtime.searcher, WARM_QUESTION)
+                    self._warm_result = True
+                except Exception:  # noqa: BLE001 - not ready is the whole answer
+                    self._warm_result = False
+            return self._warm_result
 
     # --- health ----------------------------------------------------------------
 

@@ -123,7 +123,7 @@ def test_get_root_at_the_cap_passes_paused_without_spending() -> None:
     off = TestClient(
         make_app(FakeJudgeClient(), html=off_html, settings=make_settings(kill_switch="on"))
     )
-    off.app.state.service._spend.cap = 0  # type: ignore[attr-defined]
+    off.app.state.service._spend.cap = 0
     off.get("/")
     assert off_html.pages[-1] is Outcome.SERVICE_OFF
 

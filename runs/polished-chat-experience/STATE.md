@@ -20,7 +20,8 @@
 | 1 Scope review | Engineering Manager | done, with a STOP-FLAG (S1: refusal card "nearest passages" contradicts INV-4(b); needs owner decision before stage 2) | runs/polished-chat-experience/01-scope.md | n/a |
 | 2 UX spec | UI Designer | done (ready for architecture; 10 open items for stage 3, section 11) | runs/polished-chat-experience/03-ux-spec.md | n/a |
 | 3 Tech spec | Software Architect | done (no STOP-FLAG; two readings for the Orchestrator to rule, 05-tech-spec.md section 15; offline retrieval of the suggestions not run by me, handed to stage 4 step 2) | runs/polished-chat-experience/05-tech-spec.md; docs/ARCHITECTURE.md; docs/adr/0010, 0011, 0012 | n/a |
-| 4 to 14 | see plan | pending | — | — |
+| 4 Backend | Backend Architect | done at the checkpoint (commit 1 tests first cd4d4b1; commit 2 checkpoint: mypy and ruff clean, 714 passed, 6 failed = the stage 5 contract in tests/test_page_cards.py, as 14.1 step 4 requires); suggestions pass offline retrieval, no reserve needed | runs/polished-chat-experience/04-implementation.md; 04-failfirst-32e54a6.txt; 04-checkpoint.txt; 04-retrieval-check.json | n/a |
+| 5 to 14 | see plan | pending | — | — |
 
 ## Approvals
 
@@ -53,4 +54,4 @@
 
 ## Next action
 
-Stage 3 done: read 05-tech-spec.md section 15 and rule on its two readings (C1.6 and the data strings; service-own measurements), and on the figures-fill re-spawn (section 3.7). Then spawn stage 4 (Backend Architect) with 05-tech-spec.md sections 3 to 14, 03-ux-spec.md sections 1, 8, 9, and DECISIONS.md; stage 4 ends at the checkpoint in section 14.1 (committed before stage 5).
+Stage 4 done at the checkpoint (commit 2). Spawn stage 5 (Frontend Developer): make the 6 failing tests in tests/test_page_cards.py pass (file frozen; read 04-implementation.md "Notes for stage 5" first), write suggestions.toml and T-Q, update test_service_pages.py line 67. Rule on the deviations listed in 04-implementation.md (none is a stop in the Backend Architect's reading).

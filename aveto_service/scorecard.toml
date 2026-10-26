@@ -1,0 +1,56 @@
+# Recorded figures only. Every row names the repository file that records it.
+# A row with no record is not written here, so it is not shown.
+# No [links] and no source_base yet: whether the repository is public is checked before the
+# build (runs/polished-chat-experience/05-tech-spec.md section 12.0), and links ship only if it is.
+schema = 1
+
+[[figure]]
+section = "speed"
+label = "Cold start"
+value = "30.8 s"
+basis = "Measured 2026-10-22 on an earlier release (revision 0000006): time to the first answer from /health after more than an hour with no replica running, from one client."
+record = "runs/public-ask-the-docs/18-gate/RESULT.md"
+
+[[figure]]
+section = "speed"
+label = "Warm response time"
+value = "1.66 s median, 5.09 s slowest"
+basis = "Measured 2026-10-22 on an earlier release (revision 0000006): 20 questions sent one after another from one client, network included."
+record = "runs/public-ask-the-docs/18-gate/RESULT.md"
+
+[[figure]]
+section = "speed"
+label = "Cost per question"
+value = "$0.00785"
+basis = "Measured 2026-10-22 on an earlier release: 20 questions, token counts reported by the API, priced at the published $2 per million input and $10 per million output tokens (read 2026-10-23)."
+record = "runs/public-ask-the-docs/18-gate/RESULT.md"
+
+[[decision]]
+who = "The owner"
+when = "2026-10-26"
+what = "Kept the service on its own address; aveto.dev links to it instead of showing it inside the site."
+record = "runs/polished-chat-experience/intent.md"
+
+[[decision]]
+who = "The owner"
+when = "2026-10-26"
+what = "Made a rehearsed rollback a release gate: roll back to the previous version, check it, time it, roll forward."
+record = "runs/polished-chat-experience/intent.md"
+
+[[decision]]
+who = "The owner"
+when = "2026-10-26"
+what = "Approved the Charter for this build: its scope, budget, models and the actions the run may take."
+record = "runs/polished-chat-experience/APPROVAL_RECORD-1.md"
+
+[[decision]]
+who = "The Orchestrator"
+when = "2026-10-26"
+what = "The refusal card shows no passages, because the service shows passages only when the docs answer."
+record = "runs/polished-chat-experience/DECISIONS.md"
+
+[[decision]]
+who = "The Orchestrator"
+when = "2026-10-26"
+what = "The receipts show the outcome, the docs version and the listed passages, and no internal decision line."
+record = "runs/polished-chat-experience/DECISIONS.md"

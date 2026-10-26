@@ -10,6 +10,11 @@ import re
 from pathlib import Path
 
 import pytest
+from fastapi.testclient import TestClient
+from service_fakes import FakeClock, FakeJudgeClient, make_runtime, make_settings
+
+from aveto_service.app import create_app
+from aveto_service.pages import SECURITY_HEADERS, HtmlPages
 from aveto_service.scorecard import (
     FIGURES_PATH,
     FiguresError,
@@ -17,11 +22,6 @@ from aveto_service.scorecard import (
     build_links,
     load_figures,
 )
-from fastapi.testclient import TestClient
-from service_fakes import FakeClock, FakeJudgeClient, make_runtime, make_settings
-
-from aveto_service.app import create_app
-from aveto_service.pages import SECURITY_HEADERS, HtmlPages
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 GITHUB = "https://github.com/gpatwa/aveto-support/"
