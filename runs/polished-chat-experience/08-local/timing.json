@@ -1,0 +1,43 @@
+{
+ "date_utc": "2026-10-26T22:48:29Z",
+ "method": "Local run of this release with a stand-in for the model, 10 questions one after another from one client, each timed from send to full body; the service's own work without the model call. Warm-up: two POST /warm calls on a fresh process.",
+ "warm_calls": [
+  {
+   "status": 200,
+   "body": "{\"ready\":true}",
+   "seconds": 0.0488
+  },
+  {
+   "status": 200,
+   "body": "{\"ready\":true}",
+   "seconds": 0.0008
+  }
+ ],
+ "n": 10,
+ "outcomes": [
+  "200:answer",
+  "200:answer",
+  "200:answer",
+  "200:no_confident_match",
+  "200:no_confident_match",
+  "200:answer",
+  "200:answer",
+  "200:answer",
+  "200:no_confident_match",
+  "200:no_confident_match"
+ ],
+ "seconds": [
+  0.0155,
+  0.0161,
+  0.0157,
+  0.0104,
+  0.0111,
+  0.0164,
+  0.015,
+  0.0135,
+  0.0118,
+  0.0112
+ ],
+ "median_seconds": 0.0143,
+ "slowest_seconds": 0.0164
+}
