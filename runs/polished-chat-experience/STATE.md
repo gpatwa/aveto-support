@@ -18,7 +18,8 @@
 | Intake | Orchestrator | done | runs/polished-chat-experience/00-slice-plan.md | n/a |
 | Charter | Human | approved | runs/polished-chat-experience/CHARTER.md | approval by hash |
 | 1 Scope review | Engineering Manager | done, with a STOP-FLAG (S1: refusal card "nearest passages" contradicts INV-4(b); needs owner decision before stage 2) | runs/polished-chat-experience/01-scope.md | n/a |
-| 2 to 14 | see plan | pending | — | — |
+| 2 UX spec | UI Designer | done (ready for architecture; 10 open items for stage 3, section 11) | runs/polished-chat-experience/03-ux-spec.md | n/a |
+| 3 to 14 | see plan | pending | — | — |
 
 ## Approvals
 
@@ -51,4 +52,4 @@
 
 ## Next action
 
-Read 01-scope.md. Put S1 to the owner (option A: refusal card without nearest passages, recommended; option B: amend INV-4(b) and the Charter, new hash). Confirm the S3 reading and accept or overrule the recorded oversize deviation. Then spawn stage 2 (UI Designer).
+Stage 2 done: read 03-ux-spec.md (section 6.1 gives the axe cause and fix; section 11 lists the open items). Then spawn stage 3 (Software Architect) with 03-ux-spec.md, 01-scope.md and DECISIONS.md.
