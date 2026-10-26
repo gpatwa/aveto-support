@@ -24,7 +24,8 @@
 | 5 Frontend | Frontend Developer | done (730 passed, 0 failed; mypy, ruff clean; the 6 frozen page-card tests pass; no browser preview possible for the role, left to stage 8; one test assertion widened, see 05-frontend.md) | runs/polished-chat-experience/05-frontend.md; 05-failfirst-base.txt | n/a |
 | 6 Code review | Orchestrator | done (round 1 and 2, 0 open; F2 fixed f5c139c) | runs/polished-chat-experience/code-review.md | n/a |
 | 7 QA evidence | QA Evidence | done, offline (GO WITH CONDITIONS; no P0/P1; 6 P2; 730 passed, mypy and ruff clean; C1.4.1 golden re-derived byte-identical; 4 intent tests fail first and fail under mutation; a11y, 375 px, keyboard, timings, live checks not verifiable here) | runs/polished-chat-experience/13-qa-evidence.md | n/a |
-| 8 to 14 | see plan | pending | — | — |
+| 9 Security review | Security & Privacy | done, standard (PASS WITH CONDITIONS; no P0/P1; 2 P2: S1 result-store bound in F1 does not hold for zero-spend JUDGE_ERROR, pre-existing on main; S2 counts unauthenticated and inflatable; 4 advisories; 92 passed in touched tests; conditions: S1/S2 to END_REVIEW, re-run test_service_scorecard and check links after the D8 fill) | runs/polished-chat-experience/14-security-review.md | n/a |
+| 8, 10 to 14 | see plan | 8: see 08-browser-checks.md (Orchestrator records); 10 to 14 pending | — | — |
 
 ## Approvals
 
@@ -57,4 +58,4 @@
 
 ## Next action
 
-Stage 7 done (13-qa-evidence.md, GO WITH CONDITIONS, no P0/P1). Next: stage 8 browser checks (axe, 375 px, keyboard, local timings), then stage 9 Security Review (read QA section 9 Q1 first). Per D8 re-run the full suite and the C1.4.1 and C1.4.7 commands on the final tree after the figures fill and the docs stage.
+Stage 9 done (14-security-review.md, PASS WITH CONDITIONS, no P0/P1, GO). Next: D8 figures fill, then the docs stage; per D8 re-run the full suite, C1.4.1, C1.4.7 and tests/test_service_scorecard.py on the final tree, confirm any scorecard links are https://github.com/ to a repository confirmed public (D9), and carry S1, S2 (and A1 to A4 as notes) into END_REVIEW.md before the Release Gate.
