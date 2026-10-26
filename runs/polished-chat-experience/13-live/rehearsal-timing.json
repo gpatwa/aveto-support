@@ -1,0 +1,25 @@
+{
+ "rollback": {
+  "watcher_start_utc": "2026-10-26T23:34:30Z",
+  "create_issued_utc": "2026-10-26T23:34:52Z",
+  "watcher_first_of_three_s": 87.2,
+  "command_to_first_of_three_s": 65.2,
+  "command_to_confirmed_s": 70.3,
+  "limit_s": 600,
+  "passed": true
+ },
+ "roll_forward": {
+  "watcher_start_utc": "2026-10-26T23:36:20Z",
+  "create_issued_utc": "2026-10-26T23:36:42Z",
+  "watcher_first_of_three_s": 86.5,
+  "command_to_first_of_three_s": 64.5,
+  "command_to_confirmed_s": 69.5,
+  "limit_s": 600,
+  "passed": true
+ },
+ "deployment_durations_s": {
+  "d1_new_image": 40.7,
+  "d2_rollback": 40.1,
+  "d3_forward": 40.4
+ }
+}
