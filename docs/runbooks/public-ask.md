@@ -83,6 +83,13 @@ Each rollback is one command from the same list. No portal step.
   commit, tags are never overwritten, so the previous image stays in the
   registry. With `activeRevisionsMode: 'Single'` this starts a revision of the
   previous image.
+- **Rollback is a Bicep deployment with the previous `imageTag`**, as above
+  (`runs/polished-chat-experience/05-tech-spec.md` section 12.7 holds the
+  rehearsal steps). For slice `polished-chat-experience` the rehearsal is a
+  **release gate** (`intent.md`): after the deploy, roll back to the previous
+  image, check that the previous page serves and `/health` answers, time it, roll
+  forward, check the new revision. If the rehearsal fails the release fails.
+  **Not yet recorded:** the rehearsal, its timing, and the deploy itself.
 - Before command 3 nothing is public. A failed command 1 or 2 is re-run; there
   is nothing to undo.
 
@@ -133,6 +140,50 @@ starts at zero. A `judged_today` of 0 after a quiet period is normal.
 
 The container's readiness and liveness probes call `/health`. Do not make
 `/health` slower or heavier.
+
+## New routes (slice `polished-chat-experience`)
+
+Built and tested on the slice branch; **deploy not yet recorded**. Source: tech
+spec `runs/polished-chat-experience/05-tech-spec.md` sections 3 and 5, Security
+review `14-security-review.md`. None of the three reaches the judge, none calls a
+model, and none writes a log line (the abuse line and the three ops codes are
+unchanged). They exist only when the page is served.
+
+| Route | What it does |
+|---|---|
+| `GET /scorecard` | The quality scorecard page: rows from `aveto_service/scorecard.toml`, the decisions list, build links, and the counts below. Public, same headers as `GET /` (including `frame-ancestors 'none'`). If the figures file cannot be read it answers 503 with a fixed card. |
+| `POST /warm` | Runs one retrieval of a fixed internal question, once per process, so the first visitor's search is not the first search. Answers `{"ready":true}` or `{"ready":false}` (200). Not done with the kill switch on, for a cross-site request, or while the day is used up. It does not warm the container start. It has no rate limit; while the search keeps failing every call retries it (advisory A1, only when the service is already broken). |
+| `POST /count/docs-click` | Counts one click on a "Read the docs on GitHub" link. Same-origin only, empty body only, not counted with the kill switch on, at most 60 counted an hour for the whole service. Always answers 204 with no body. |
+
+**The counts** (visits, questions answered, questions refused, docs clicks) are
+four integers and a start time in memory: no question text, no address, no
+identifier. They are **raw totals since the service last started**: every
+restart, scale to zero, kill-switch change or deploy resets them. They are
+**unauthenticated and can be inflated** (Security finding S2): every `GET /`
+counts a visit without limit, a script can add up to 60 docs clicks an hour and
+crowd out real ones, and JSON callers of `/ask` count as questions. Do not quote
+them as visitors or as lifetime totals. Anyone can poll `/scorecard` and see when
+questions are asked, and the start time (advisory A2).
+
+**The result store (Security finding S1).** A page result is kept for 10 minutes,
+at most 1,000, holding no question text. A `judge error` result is stored at zero
+spend, limited only by the per-address hourly limits, so about 100 addresses can
+fill the store and evict older result links. This is the same on the starting
+commit; no fix is in this slice. It affects only reloading an old result link.
+
+**The scorecard figures.** The file is read once at startup by a strict reader
+(`aveto_service/scorecard.py`); any rule broken makes the whole file unreadable.
+To add a figure: write the measurement into a record file in the repository
+first, then add a `[[figure]]` row (`value`, a `basis` starting "Measured " or
+"Recorded ", and the `record` path). A figure that exists only after the image is
+built, such as this release's live timings, reaches the page only by a later
+change (`DECISIONS.md` D7, D13).
+
+**Not yet recorded for this release:** live cold-start and warm timings, rollback
+timing, and the deploy status. The values on the scorecard for cold start (30.8 s),
+warm response time (1.66 s median, 5.09 s slowest) and cost per question
+($0.00785) are labelled on the page as measured on an earlier release (revision
+`ca-aveto-ask--0000006`, `runs/public-ask-the-docs/18-gate/RESULT.md`).
 
 ## 5. The daily share and the UTC reset
 

@@ -1,11 +1,14 @@
 # Current MVP Status
 
-## What exists (retrieval from docs-retrieval-core; judge step merged in pull request #4; public service deployed from branch `claude/public-ask-the-docs`, gate scored once)
+## What exists (retrieval from docs-retrieval-core; judge step merged in pull request #4; public service deployed (built on branch `claude/public-ask-the-docs`, now in `main`), gate scored once)
 
 - **Public service (slice `public-ask-the-docs`): deployed on Azure Container
   Apps (East US 2) and answering at
   `https://ca-aveto-ask.salmonsmoke-fa1fa863.eastus2.azurecontainerapps.io`; gate
-  scored once. The branch is not merged. The address is recorded here and in the
+  scored once. The service code is in the tree of `main` at `32e54a6`
+  (`runs/polished-chat-experience/00-slice-plan.md`: branch level with `main`
+  at that commit, and `aveto_service/` is in that tree; the pull request
+  number is unconfirmed, no file in the repo names it). The address is recorded here and in the
   runbook only; it is not linked from aveto.dev (a separate later change, on the
   owner's word). The release verdict is the Release Manager's and is not stated
   here.** Package `aveto_service` (FastAPI): `POST /ask`, `GET /health`
@@ -50,8 +53,9 @@
     had estimated $0.008; response time median 1.66 s, 90th percentile 4.14 s,
     slowest 5.09 s (n = 20, from one client, a Mac, to East US 2); cold start 30.8 s
     to the first `/health` answer from zero replicas after more than an hour idle.
-  - **Spend accounting (slice `fix-service-accounting`, issues #6, #7, #8; on
-    its branch, not merged; deployed 2026-10-24 as revision
+  - **Spend accounting (slice `fix-service-accounting`, issues #6, #7, #8; its
+    668 tests are the baseline count of the `32e54a6` tree, so it is in `main`
+    (`runs/polished-chat-experience/00-slice-plan.md`); deployed 2026-10-24 as revision
     `ca-aveto-ask--0000008`, image `aveto-ask:d067b9a95ac6`):** the code makes the counter default
     to $2 and $10 per million tokens (2000 and 10000 nano-dollars per token;
     source and date 2026-10-23 in a code comment), reserves both possible
@@ -157,7 +161,30 @@
   operator's own session; see above.)
 - Runtime dependencies: `onnxruntime` and `numpy` only.
 
+- **Slice `polished-chat-experience` (the page around the unchanged answering;
+  built and tested, no deploy, merge or release verdict recorded).** Adds the
+  answer card, refusal card (no passages), four suggested questions, honest
+  waiting with a once-per-process `POST /warm`, a resting state, a receipts
+  drawer, `GET /scorecard` and content-free counts (`POST /count/docs-click`).
+  None of the three new routes reaches the judge or logs. The counts are raw
+  totals since the last restart, unauthenticated and inflatable (Security S2).
+  Judge-error results are stored at zero spend, limited per address, same as
+  before (Security S1). Scorecard figures live in `aveto_service/scorecard.toml`
+  behind a strict reader; each row names a record file. Recorded: 730 tests
+  passed, 0 failed (`runs/polished-chat-experience/13-qa-evidence.md`); axe-core
+  4.10.2 no serious or critical issue on 5 local views, no sideways scrolling at
+  375 px (`08-browser-checks.md`, stand-in judge, local); Security review no P0
+  or P1, two P2 (`14-security-review.md`). The answer and refusal copy behave as
+  labelled for the four suggestions: retrieval checked offline only, **judge
+  verdict unconfirmed** (QA Q5). Rollback is a Bicep deployment with the previous
+  `imageTag`; its rehearsal is a release gate.
+
 ## Not yet done
+
+- **Slice `polished-chat-experience`: not yet recorded** are live cold-start and
+  warm timings for this release, the rollback rehearsal and its timing, the
+  deploy and revision health, the Codex review, and the release verdict. The
+  cold start (30.8 s) and response times above are from an earlier release.
 
 - **Public service (slice `public-ask-the-docs`):** the release verdict is the
   Release Manager's and is not stated here. **Not measured:** the monthly Azure
@@ -206,7 +233,7 @@
   on branch `claude/public-ask-the-docs`, makes one verdict-only model call per
   admitted question; that is the service, not the program, and it is deployed.) Generated answers and drafting are not built anywhere.
 - A database, accounts or sign-in for visitors, multi-turn chat, a custom domain.
-  (The HTTP surface exists as `aveto_service`; it is deployed from the branch
-  above and is not on `main`.)
+  (The HTTP surface exists as `aveto_service`; it is in the tree of `main` at
+  `32e54a6`, see above.)
 - CI: arrives with `docs-retrieval-ci`.
 - Anything that posts to GitHub.
