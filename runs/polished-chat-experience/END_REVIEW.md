@@ -1,6 +1,6 @@
 # End review — polished-chat-experience
 
-Written 2026-10-26 by the Orchestrator. Charter `runs/polished-chat-experience/CHARTER.md`, sha256 `a24c3c56e430aed399ea88d4adaee8838694e5fd1950c776c5c49a1564b10312`, approved by Gopal Patwa 2026-10-26T20:08:31Z (`APPROVAL_RECORD-1.md`). Pull request: opened after this file (C8.2); never merged by the run.
+Written 2026-10-26 by the Orchestrator. Charter `runs/polished-chat-experience/CHARTER.md`, sha256 `a24c3c56e430aed399ea88d4adaee8838694e5fd1950c776c5c49a1564b10312`, approved by Gopal Patwa 2026-10-26T20:08:31Z (`APPROVAL_RECORD-1.md`). Pull request: https://github.com/gpatwa/aveto-support/pull/11 (opened after this file, C8.2; never merged by the run; no CI checks are configured on it).
 
 ## Blocked on me (the owner)
 1. **Run the Codex review on the pull request** (manual, blind, new chat) and record it as a trial review. Until then the scorecard shows no Codex row, by design.
@@ -55,7 +55,7 @@ Notices were sent as chat messages and recorded in `DECISIONS.md`; the push noti
 `events-verify-output-final.txt`: chain intact, 1,331 lines, **head `f1bff79a5c65a1dd`** (recorded as this file was written; the log keeps growing with the closing commands). Calls by role: Backend 80 (2 failed), Engineering Manager 34, Frontend 36 (1 failed), Orchestrator 170 (3 failed), Post-Launch 14, Production Verification 30, QA 47, Release Manager 54 (1 failed), Security 34, Software Architect 102, Tech Writer 41, UI Designer 24. One attempt with no outcome: the verifier's own in-flight call. No write outside the Charter's paths (the log records worktree paths relative to the main checkout, so the prefixes were given in that form). Release-stage copies: `events-verify-output.txt`, `EVENTS.jsonl`.
 
 ## Housekeeping
-`.claude/settings.local.json` (main checkout) held the C6.P rules during the run; deleted after the pull request opened and the three read rules it held before restored from the scratchpad copy.
+`.claude/settings.local.json` (main checkout) held the C6.P rules during the run; after the pull request opened it was replaced by the three read rules it held before (restored from the scratchpad copy); the restore was done with a plain `cp`, which is not a C6.P rule, and no prompt was reported to the session.
 
 ## Next
 Review and merge the pull request (your call), run the Codex review, decide D1, read the copy deck, and say what to do about the aveto.dev section.
