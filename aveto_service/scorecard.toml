@@ -1,8 +1,12 @@
 # Recorded figures only. Every row names the repository file that records it.
 # A row with no record is not written here, so it is not shown.
-# No [links] and no source_base yet: whether the repository is public is checked before the
-# build (runs/polished-chat-experience/05-tech-spec.md section 12.0), and links ship only if it is.
+# Links ship: the repository is confirmed public (DECISIONS D13), so source_base and [links] are set.
 schema = 1
+source_base = "https://github.com/gpatwa/aveto-support/blob/f74a040cde9f8fc478162994906458584a14c7ee/"
+
+[links]
+charter = "https://github.com/gpatwa/aveto-support/blob/f74a040cde9f8fc478162994906458584a14c7ee/runs/polished-chat-experience/CHARTER.md"
+run_record = "https://github.com/gpatwa/aveto-support/tree/f74a040cde9f8fc478162994906458584a14c7ee/runs/polished-chat-experience"
 
 [[figure]]
 section = "speed"
@@ -15,7 +19,7 @@ record = "runs/public-ask-the-docs/18-gate/RESULT.md"
 section = "speed"
 label = "Warm response time"
 value = "1.66 s median, 5.09 s slowest"
-basis = "Measured 2026-10-22 on an earlier release (revision 0000006): 20 questions sent one after another from one client, network included."
+basis = "Measured 2026-10-22 on an earlier release (revision 0000006): 20 questions from one client, network included."
 record = "runs/public-ask-the-docs/18-gate/RESULT.md"
 
 [[figure]]
@@ -24,6 +28,34 @@ label = "Cost per question"
 value = "$0.00785"
 basis = "Measured 2026-10-22 on an earlier release: 20 questions, token counts reported by the API, priced at the published $2 per million input and $10 per million output tokens (read 2026-10-23)."
 record = "runs/public-ask-the-docs/18-gate/RESULT.md"
+
+[[figure]]
+section = "checks"
+label = "Tests"
+value = "731 passed, 0 failed (668 before this build)"
+basis = "Measured 2026-10-26 with `uv run pytest` on the tree before the release; the 668 is the count on the starting point."
+record = "runs/polished-chat-experience/13-qa-evidence.md"
+
+[[figure]]
+section = "checks"
+label = "Accessibility checks"
+value = "No serious or critical issues on 5 views"
+basis = "Measured 2026-10-26 with axe-core 4.10.2 (WCAG 2.0 to 2.2, levels A and AA) on a local run of this release: the ask page, an answer, a refusal, the resting state and this scorecard. Colour contrast was also measured by hand where the tool could not decide."
+record = "runs/polished-chat-experience/08-browser-checks.md"
+
+[[figure]]
+section = "checks"
+label = "Mobile checks (375 px)"
+value = "No sideways scrolling; the whole flow works from the keyboard"
+basis = "Measured 2026-10-26 in a browser set to 375 px wide on a local run of this release; keyboard flow tried with real key presses. Touch gestures and real devices were not tested."
+record = "runs/polished-chat-experience/08-browser-checks.md"
+
+[[figure]]
+section = "checks"
+label = "Open findings"
+value = "None at P0 or P1; two at P2"
+basis = "Recorded 2026-10-26 by the independent Security Review (no P0 or P1; two P2 findings, described in its report) and by the QA review (no P0 or P1)."
+record = "runs/polished-chat-experience/14-security-review.md"
 
 [[decision]]
 who = "The owner"
