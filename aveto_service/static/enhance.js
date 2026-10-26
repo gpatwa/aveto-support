@@ -19,8 +19,8 @@
   var ticker = null;
 
   var WAITING = [
-    ["Looking through the docs", "Your question has been sent. This usually takes a few seconds."],
-    ["Still working", "This is taking longer than usual. It can take up to a minute. Please keep this page open."],
+    ["Looking through the docs", "Your question has been sent."],
+    ["Still working", "This is taking longer than usual. Please keep this page open."],
     ["Still waiting", "This is taking more than a minute. You can keep waiting. If nothing changes, reload the page and ask again."]
   ];
 
@@ -153,6 +153,9 @@
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     if (busy) { return; }
+    var n = chars(q.value.trim());
+    if (n === 0) { fieldError("Enter a question before you press Ask."); q.focus(); return; }
+    if (n > LIMIT) { fieldError("Shorten your question to 500 characters or fewer."); q.focus(); return; }
     busy = true;
     button.setAttribute("aria-disabled", "true");
     button.textContent = "Asking...";

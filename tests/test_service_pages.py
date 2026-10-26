@@ -490,3 +490,15 @@ def test_script_reaches_only_same_origin_paths_and_never_sends_json() -> None:
     assert "Waiting: " in js and "Ready to search the docs." in js
     assert "sendBeacon" in js and "clipboard" in js
     assert "pulse" not in js and "The service may be waking up" not in js
+
+
+def test_script_checks_question_length_before_sending() -> None:
+    client, _, _ = make_client()
+    js = client.get("/static/enhance.js").text
+    guard = js.split('form.addEventListener("submit"', 1)[1].split("fetch(", 1)[0]
+    assert "q.value.trim()" in guard and "chars(" in guard and "> LIMIT" in guard
+    assert "Enter a question before you press Ask." in guard
+    assert "Shorten your question to 500 characters or fewer." in guard
+    assert "q.focus()" in guard and guard.count("return;") >= 3
+    assert "It can take up to a minute" not in js
+    assert "This is taking longer than usual. Please keep this page open." in js
