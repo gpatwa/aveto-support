@@ -2,11 +2,11 @@
 # A row with no record is not written here, so it is not shown.
 # Links ship: the repository is confirmed public (DECISIONS D13), so source_base and [links] are set.
 schema = 1
-source_base = "https://github.com/gpatwa/aveto-support/blob/f74a040cde9f8fc478162994906458584a14c7ee/"
+source_base = "https://github.com/gpatwa/aveto-support/blob/8667d80028a73311d74efd09619cdf39bf685859/"
 
 [links]
-charter = "https://github.com/gpatwa/aveto-support/blob/f74a040cde9f8fc478162994906458584a14c7ee/runs/polished-chat-experience/CHARTER.md"
-run_record = "https://github.com/gpatwa/aveto-support/tree/f74a040cde9f8fc478162994906458584a14c7ee/runs/polished-chat-experience"
+charter = "https://github.com/gpatwa/aveto-support/blob/8667d80028a73311d74efd09619cdf39bf685859/runs/polished-chat-experience/CHARTER.md"
+run_record = "https://github.com/gpatwa/aveto-support/tree/8667d80028a73311d74efd09619cdf39bf685859/runs/polished-chat-experience"
 
 [[figure]]
 section = "speed"
@@ -33,8 +33,8 @@ record = "runs/public-ask-the-docs/18-gate/RESULT.md"
 section = "checks"
 label = "Tests"
 value = "731 passed, 0 failed (668 before this build)"
-basis = "Measured 2026-10-26 with `uv run pytest` on the tree before the release; the 668 is the count on the starting point."
-record = "runs/polished-chat-experience/13-qa-evidence.md"
+basis = "Measured 2026-10-26 with `uv run pytest` on the final tree of this release; the 668 is the count on the starting point."
+record = "runs/polished-chat-experience/10-test-count.txt"
 
 [[figure]]
 section = "checks"
