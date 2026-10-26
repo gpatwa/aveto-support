@@ -1,0 +1,61 @@
+# End review — polished-chat-experience
+
+Written 2026-10-26 by the Orchestrator. Charter `runs/polished-chat-experience/CHARTER.md`, sha256 `a24c3c56e430aed399ea88d4adaee8838694e5fd1950c776c5c49a1564b10312`, approved by Gopal Patwa 2026-10-26T20:08:31Z (`APPROVAL_RECORD-1.md`). Pull request: opened after this file (C8.2); never merged by the run.
+
+## Blocked on me (the owner)
+1. **Run the Codex review on the pull request** (manual, blind, new chat) and record it as a trial review. Until then the scorecard shows no Codex row, by design.
+2. **Read the copy deck.** Charter C1.6 put the wording after the deploy; the new page is **already live** (revision `ca-aveto-ask--0000011`, image `ffc2e2e5f39a`). Whole deck: `03-ux-spec.md` section 8. The ones nearest the C1.6 line: "Your question has been sent" (waiting); the counts note (totals reset on restart; the page shows no question or answer); "Counted only when the page's script is running"; "Quoted from the docs, word for word"; "Three are answered in the docs and one is not". The four suggested questions (from the spent set `retrieval-heldout-5.toml`, drafted by Claude in the support session and committed by you): *Does saying "looks good" to an agent count as approving something?* · *Can I keep a long-lived feature branch going while the agents work on it?* · *If a deploy of the Aveto website goes wrong, how do I undo it?* · *Does it support right-to-left languages?* New in the fix round: the client-side field errors "Enter a question before you press Ask." and "Shorten your question to 500 characters or fewer." If you dislike any string, the remedy is a rollback (deploy sheet 12.7) or the kill switch. The page intro still says "Nothing on this page is written by an AI model" (pre-existing, unchanged).
+3. **Decision D1 (refusal card shows no passages).** The intent asked for "the nearest passages" on the refusal screen. INV-4(b) says a refusal returns "no passage, path or reason", a test pins it and Charter C1.3/C5.0 forbid changing it, so the run took Option A (message, rephrasing hint, issue and docs links, suggested questions). If you want passages on the refusal, that is Option B: amend INV-4(b), a new Charter hash and a rule-4 approval, in a later slice.
+4. **Merge decision** (the run never merges). Merging does not redeploy: the live service already runs this code. The scorecard links point at commit `8667d80` (pushed with this branch) and 404 until the push.
+5. **The aveto.dev change** (a short section and the link) is not done: a separate playbook commit with wording you approve first, and the site deploy approved in GitHub's production environment.
+6. `runs/fix-service-accounting/STATE.md` carries the support session's uncommitted one-line status fix in this worktree. It is not in any commit of this slice. Commit it separately on your word.
+
+## Changed
+- **Page (`aveto_service/`):** answer card with source chip and copy-link; refusal card (no passages); four suggested questions (three answered, one not); honest waiting (seconds counter, wording at 0/8/60 s, no progress bar); resting state on page load; receipts drawer ("How this answer was made": outcome, docs commit, listed passages, Charter and run-record links; no signal line); skip link; one server-side renderer (the script swaps in the server's HTML). `render.py`, `pages.py`, `static/enhance.js`, `static/style.css`, `suggestions.toml`.
+- **New routes:** `GET /scorecard`, `POST /warm` (one fixed search, never the judge), `POST /count/docs-click`. `app.py`, `pipeline.py` (`resting()`, `warm()`), `counts.py`, `scorecard.py`, `scorecard.toml` (recorded figures; every row names a record file; a row with no record is not shown).
+- **Tests:** 668 → 731 passed (63 new items; 57 of the 62 counted at QA fail on the base, 5 are guards); a 39-case golden file pins `/ask` JSON byte for byte.
+- **Docs:** README, `docs/runbooks/public-ask.md`, `.agentic/CURRENT_MVP_STATUS.md` (recorded figures only; "not merged" corrected to "in the tree of main"); `docs/ARCHITECTURE.md`; ADRs 0010 to 0012.
+- **Not changed:** `aveto_support/`, `prompts/`, `.claude/`, `infra/`, `Dockerfile`, `pyproject.toml`, `uv.lock`, `.agentic/SAFETY_INVARIANTS.md`, PROJECT_CONTEXT, LOCAL_COMMANDS; the response headers (including `frame-ancestors 'none'`) and the privacy and Article 50 wording. No safety text changed.
+- **Deployed (C8.3):** one image `aveto-ask:ffc2e2e5f39a`; three Bicep deployments (new image → rollback rehearsal to `d067b9a95ac6` → roll forward); kill switch never touched.
+
+## Found
+**Quality bars (Charter C1.4)**
+| Bar | Result |
+|---|---|
+| 1 answering byte-identical | PASS: diff empty for `aveto_support`, `prompts`, `.claude`, the three `.agentic` files, `infra`, `Dockerfile`, deps; golden file byte-equal to one regenerated from `main`; live answers byte-equal to local `retrieve` |
+| 2 answer card holds only listed text; refusal card no model text | PASS (tests; mutation-checked by QA) |
+| 3 axe, zero serious/critical on five views | PASS (axe-core 4.10.2, local; baseline `aria-prohibited-attr` fixed); colour contrast measured by hand where axe could not decide (min 5.85) |
+| 4 375 px and keyboard | PASS locally (no sideways scroll; whole flow by keyboard; Enter on a source link followed). Not tested: touch, real devices, the live page in a browser. Seen: the privacy list fills the first screen at 375 px |
+| 5 timings as measured | warm (live, 6 requests): median 1.36 s, slowest 1.59 s; first 1.56 s. Cold start: **25.8 s** (replica idle about 7.3 min; the earlier 30.8 s was after more than an hour idle). Local with a stand-in judge: median 0.0143 s. Single samples |
+| 6 no open P0/P1 | PASS (code review, QA, Security) |
+| 7 tests | PASS: 731 passed, mypy and ruff clean; the four intent tests fail on `main` 32e54a6 first |
+| 8 nothing about answering moves | PASS |
+**Rollback gate:** previous page served and `/health` answered on revision 0000010 about 65 s after the command (limit 600 s); roll forward about 65 s; env unchanged. Cost per question as measured: $0.0086 (7 live questions, $0.0600).
+**Live checks:** 7 questions as expected (5 answers, 2 refusals), 7 abuse-table rows, no question text in any log table. **Not tested live:** the kill switch (offline tests only).
+**Gates:** scope review (INV-4(b) conflict, D1; oversize accepted, D4), code review tier High unscored: 7 findings (1 Important F2 fixed `f5c139c`; F1/F3/F4/F5 intentional with reasons; 2 cleanup rejected), QA GO WITH CONDITIONS (Q1, Q2 fixed `6c32de1`; Q3 fixed in the scorecard fill; Q4 to Q6 carried), Security PASS WITH CONDITIONS, Release Gate GO WITH CONDITIONS (preconditions P1 to P5 done), Production verification HEALTHY WITH WATCH ITEMS.
+**Security conditions carried (D12):** S1: judge-error results are stored in the shared 1000-entry result store at zero spend and are limited per address only (same on `main`; my code-review F1 had argued a spend bound that does not hold for them). S2: the counts are raw totals since the last restart and anyone can inflate them (every `GET /` counts as a visit; docs clicks share a global 60 an hour); they are not verified visitors. Advisories A1 (`/warm` has no rate limit; costs a search only while search is failing), A2 (the public scorecard shows live counts and process start), A3 (the swap's safety rests on server escaping and CSP; not tested in a browser), A4.
+**QA P2s carried:** Q4 (two assertions loosened, D11), Q5 (suggested questions confirmed live: 4 of 4 behaved as labelled on the real judge in the 7 live questions), Q6 (no JS test runner; `enhance.js` covered by string checks and the stage 8 browser run; the waiting state, copy-link button and docs-click beacon end to end were not exercised).
+**Unconfirmed claims:** the intent's "first load about 26 seconds" had no record (D5); the measured live cold start was 25.8 s at 7 minutes idle and 30.8 s earlier after more than an hour. "PR #9" has no file record in the repo (marked unconfirmed in the status file).
+**Scorecard on day one:** shows Cold start, Warm response time and Cost per question as the **earlier** release's recorded figures (labelled so), four `checks` rows and five decisions; only the Charter and run-record links ship (D13). The live figures of this release, the pull request, this end review, the event-log summary, cost and time, and the Codex review are not on the scorecard yet (a row with no record is not shown); they need a later change, after the pull request exists. "The build is shown ... linked from the scorecard" is therefore **partly met**.
+**Process notes:** a re-run overwrote the first live `check new` record (corrected, `13-live/README.md`); Python could not verify the platform certificate chain (`curl` could), so the unedited `live.py` ran through a wrapper that only sets `SSL_CERT_FILE` (`13-live/tls-wrapper.py`); `usage.mjs` tool-call failures: Backend 2, Frontend 1, Release Manager 1, Orchestrator 3 (causes not inspected).
+
+## Under each Charter line
+C1.4/C1.5/C1.6 as above (axe-core 4.10.2 only in the session scratchpad; nothing added to the repo or image). C2: plan 1,000k, ceiling 1,300k (passed at stage 10, notices 1 to 5 in `DECISIONS.md`), hard cap 2,000k (not reached). C3: models as listed (Opus 5.5 for the Architect and Security, Sonnet 5.5 elsewhere, the live judge unchanged). C4.0: no new processor. C5.0: none used. C7: Security standard, Release Gate tier 3. C8.1: not triggered. C8.2: branch pushed and pull request opened, not merged. C8.3: used as written (one build, three deployments). C8.5: live questions went through the real limits.
+
+## Spend against estimates (peak context summed per spawn; `usage.mjs`)
+Scope 84k (est. 40k) · UX 106k (90k) · Tech spec 352k (90k) · Backend 220k + 14k + 12k + 14k fixes (110k) · Frontend 150k + 23k fix (140k) · Review: Orchestrator (50k, not metered) · QA 128k (70k) · Browser checks: Orchestrator (40k) · Security 120k (70k) · Docs 106k + 16k (50k) · Release Gate 126k (70k) · Deploy: Orchestrator, Cloud Deployment not spawned (60k) · Production verification 40k (70k) · Post-launch 61k (50k). **Total about 1,570k** against plan 1,000k; the Orchestrator's own context is not in this figure. The tech spec alone ran at nearly four times its estimate.
+
+## Questions asked of the human after the Charter: 0
+Notices were sent as chat messages and recorded in `DECISIONS.md`; the push notifier reported "Remote Control inactive" for the one it was tried on.
+
+## Permission prompts that actually appeared
+**None that the session was told of.** No tool result in this session reported a permission prompt, denial or approval request, and no Charter C6.P rule needed a prompt, including the first uses of `az acr build`, `az deployment group create` (three times) and the browser tools. The session cannot see the desktop app's own UI, so the owner's screen is the authority: if you saw any prompt, it is a Charter miss to add here. One failed browser navigation during setup was a local server not yet up, not a prompt. Agent spawns: 15, all covered by `Agent(<role>)` rules (the first use of the pack v29 rule); `Agent(cloud-deployment)` stayed unused (D14).
+
+## Event log (EVENT_LOG.md)
+`events-verify-output-final.txt`: chain intact, 1,331 lines, **head `f1bff79a5c65a1dd`** (recorded as this file was written; the log keeps growing with the closing commands). Calls by role: Backend 80 (2 failed), Engineering Manager 34, Frontend 36 (1 failed), Orchestrator 170 (3 failed), Post-Launch 14, Production Verification 30, QA 47, Release Manager 54 (1 failed), Security 34, Software Architect 102, Tech Writer 41, UI Designer 24. One attempt with no outcome: the verifier's own in-flight call. No write outside the Charter's paths (the log records worktree paths relative to the main checkout, so the prefixes were given in that form). Release-stage copies: `events-verify-output.txt`, `EVENTS.jsonl`.
+
+## Housekeeping
+`.claude/settings.local.json` (main checkout) held the C6.P rules during the run; deleted after the pull request opened and the three read rules it held before restored from the scratchpad copy.
+
+## Next
+Review and merge the pull request (your call), run the Codex review, decide D1, read the copy deck, and say what to do about the aveto.dev section.

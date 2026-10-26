@@ -3,7 +3,7 @@
 - **Ask:** intents/polished-chat-experience.md — one polished reference product, the ask-the-docs chat, built, released and shown in public
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 1 Scope review
+- **Current stage:** 14 Close-out (pull request open, awaiting the owner's review and merge)
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents from this repo's `.claude/agents/`
 - **Telemetry:** self-reported
@@ -29,7 +29,8 @@
 | 8 Browser checks | Orchestrator | done (see 08-browser-checks.md) | runs/polished-chat-experience/08-browser-checks.md | n/a |
 | 11 Release Gate | Release Manager | done: GO WITH CONDITIONS (tier 3 confirmed; C1.4 bars 1, 2, 3, 6, 7, 8 PASS, 4 PASS bar one unexecuted clause, 5 partial by design; no P0/P1; 5 pre-deploy preconditions P1 to P5 before `az acr build`) | runs/polished-chat-experience/16-release-checklist-tier3.md | go with conditions |
 | 13 Production verification | Production Verification | done: HEALTHY WITH WATCH ITEMS (all pre-registered rules in tech spec 12.4 to 12.8 pass; W1 check-new.json is the post-forward run, not revision 0000009; W2 log-search.txt empty and query time unrecorded; W3 cold idle/replica count only in README; W4 minor record flaws; W5 TLS wrapper unseen) | runs/polished-chat-experience/18-production-verification.md | go |
-| 12, 14 | see plan | 12 done per 12-deploy/; 14 pending | — | — |
+| 12 | Orchestrator | done per 12-deploy/ | runs/polished-chat-experience/12-deploy/ | n/a |
+| 14 Post-launch learning | Post-Launch Learning | done (analytics not refreshed: no trace.json, no shell; 5 follow-ups proposed) | runs/polished-chat-experience/19-post-launch-learning.md | n/a |
 
 ## Approvals
 
@@ -40,8 +41,8 @@
 ## Budget
 
 - **Budget:** 1000k tokens  ·  **Depth:** standard
-- **Spent:** 1,350k (135%)  ·  **Remaining:** 650k to the hard cap (the plan total of 1,000k and the ceiling of 1,300k are passed)
-- **Next stage:** 11 Release Gate tier 3 (release-manager) est. 70k → **PROCEED** (over the ceiling: notice sent; hard cap 2,000k, projection about 1,600k)
+- **Spent:** 1,570k (157%)  ·  **Remaining:** 430k to the hard cap (plan 1,000k and ceiling 1,300k passed; notices sent)
+- **Next stage:** none (owner reviews and merges) → **STOP**
 
 ## Failure budget
 
@@ -61,6 +62,8 @@
 | **Total** | | | | | | 0 | 0 | |
 
 ## Next action
+
+Stage 14 done (19-post-launch-learning.md). Orchestrator: write trace.json, run `node <playbook>/execution/analyze.mjs .`, fold the lessons, follow-ups and W1 to W5 into END_REVIEW.md, re-run events-verify at close-out. Earlier note follows.
 
 Stage 13 done: HEALTHY WITH WATCH ITEMS (18-production-verification.md). Orchestrator corrects the README row for check-new.json (W1), notes W2 to W5, then hands to SRE and carries the watch items and the not-checked-live list into END_REVIEW.md. Earlier note follows.
 

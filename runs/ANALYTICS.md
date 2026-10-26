@@ -1,13 +1,13 @@
 # Pipeline Analytics — generated
 
-_Generated 2026-10-24T07:04:22Z. **Do not edit by hand** — regenerate with `node <playbook>/execution/analyze.mjs .` from the repo root._
+_Generated 2026-10-26T23:51:53Z. **Do not edit by hand** — regenerate with `node <playbook>/execution/analyze.mjs .` from the repo root._
 
 ## Fleet
 
-- Runs traced: **11**
-- Stages: **120** · Tokens: **34,307,192** · Tool calls: **2,649**
-- **Untraced stages: 11** across 6 run(s) — executed by the Orchestrator rather than spawned, so they carry no tokens or tool calls
-- Envelope breaches: **5/11** · Stage outliers: **42**
+- Runs traced: **12**
+- Stages: **136** · Tokens: **35,879,192** · Tool calls: **3,047**
+- **Untraced stages: 16** across 7 run(s) — executed by the Orchestrator rather than spawned, so they carry no tokens or tool calls
+- Envelope breaches: **5/12** · Stage outliers: **44**
 
 ## Per run
 
@@ -24,6 +24,7 @@ _Generated 2026-10-24T07:04:22Z. **Do not edit by hand** — regenerate with `no
 | land-answerability | 3 | 11 | 651,000 | 0 | 900,000 | ✅ pass |
 | public-ask-the-docs | 3 | 30 | 2,496,347 | 482 | 3,000,000 | ✅ pass |
 | fix-service-accounting | 3 | 13 | 919,000 | 285 | 1,000,000 | ✅ pass |
+| polished-chat-experience | 3 | 21 | 1,572,000 | 398 | 1,600,000 | ✅ pass |
 
 ## Pipeline completeness
 
@@ -46,6 +47,7 @@ this table) can say whether a given skip was earned.
 | land-answerability | ⚠ Intake, Scope Review, Implementation | Market Research, Discovery, UX Research, UI Design, Post-Launch | S5 fix, Rollback rehearsal, Vendor risk, Records and docs, Setup phase, Code review layer (/code-review high) |
 | public-ask-the-docs | ⚠ Intake | Market Research, UI Design | Stage 5 tech spec (software-architect), Stage 8 backend service (backend-architect), Stage 9 Anthropic judge adapter (ai-engineer), Stage 10 public page (frontend-developer), Stage 11 infra and image (cloud-deployment), Amend tech spec work split (software-architect), Stage 11c Dockerfile and Azure checks (backend-architect), Review round 1 fixes (Backend) (backend-architect), S-A4, S-A6, S-A8 service hardening (Backend) (backend-architect), Stage 15b README, status, runbook (tech-writer), Apply curable safety-text rewordings (software-architect), Runbook processor record and monitoring section (tech-writer), INV-5 reading notes N1 and N4 (software-architect), Stage 18 production verification (from saved evidence) (production-verification), Docs: record the measured figures (README, status, runbook) (tech-writer) |
 | fix-service-accounting | ⚠ Implementation | Market Research, Discovery, UX Research, UI Design, Architecture | Stage 2 tech spec (software-architect), Stage 3 fixes, fail-first tests, smoke script (backend-architect, two passes), Stage 4 review layer (/code-review high), Stage 7 docs (tech-writer), Stage 9 deploy D1/D2, Stage 10 live smoke (orchestrator) and verdict (production-verification), Stage 11 docs addendum (tech-writer) |
+| polished-chat-experience | ⚠ Implementation | Market Research, Discovery, UI Design, Architecture | 3 Tech spec, 4 Backend, 5 Frontend, 6 Review fix F2 (Backend), 7b Fix Q1 Q2 (Frontend), 9b Scorecard fill (Backend), 10 Docs, 10b Docs correction, 10b Scorecard correction (Backend), 13 Production verification, 6 Code review (/code-review high, unscored), 8 Browser checks, 12 Deploy (Charter C8.3; Cloud Deployment not spawned, D14), 13 Live checks, rollback rehearsal, roll forward, cold start |
 
 ## DORA
 
@@ -56,7 +58,7 @@ Per `PIPELINE_SLOS.md` § DORA mapping. **Only metrics the traces ground are rep
 | Lead time (median) | — | intake → landed, 0/0 slices dated |
 | Deployment frequency | — | 0 landed over the traced span |
 | Change failure rate | — | 0 post-landing fixes + 0 reverts ÷ 0 landed |
-| Rework rate | — | 3 stage retries + 0 post-landing fixes ÷ 0 landed |
+| Rework rate | — | 7 stage retries + 0 post-landing fixes ÷ 0 landed |
 | Failed-deployment recovery time | **not captured** | needs `detectedAt`/`resolvedAt` on a `gateCatches` entry; no run has recorded them |
 
 ## Density by archetype
@@ -65,7 +67,7 @@ Tokens per tool call, measured against each archetype's own cap.
 
 | Archetype | What it does | Cap | Observed (n) | Range | Avg |
 |-----------|--------------|-----|--------------|-------|-----|
-| **review** | read artefacts → verdict | 8,000 | 59 | 654–7,000 | 3,034 |
+| **review** | read artefacts → verdict | 8,000 | 65 | 654–7,000 | 3,060 |
 | **build** | heavy file / test I/O | 5,000 | 2 | 3,420–3,828 | 3,624 |
 
 ## Per stage
@@ -192,6 +194,22 @@ Tokens per tool call, measured against each archetype's own cap.
 | fix-service-accounting | Stage 10 live smoke (orchestrator) and verdict (production-verification) | review | sonnet-5-5 | medium | 46,000 | 21 | 2,190 | 27% | — |
 | fix-service-accounting | Stage 11 docs addendum (tech-writer) | review | sonnet-5-5 | medium | 30,000 | 19 | 1,579 | 20% | — |
 | fix-service-accounting | Stage 11 post-launch learning (post-launch-learning) | review | sonnet-5-5 | medium | 52,000 | 9 | 5,778 | 72% | — |
+| polished-chat-experience | 1 Scope review | review | sonnet-5-5 | medium | 84,000 | 34 | 2,471 | 31% | — |
+| polished-chat-experience | 2 UX spec | review | sonnet-5-5 | medium | 106,000 | 24 | 4,417 | 55% | — |
+| polished-chat-experience | 3 Tech spec | review | opus-5-5 | high | 352,000 | 102 | 3,451 | 43% | ⚠ over cap |
+| polished-chat-experience | 4 Backend | review | sonnet-5-5 | medium | 220,000 | 80 | 2,750 | 34% | ⚠ over cap |
+| polished-chat-experience | 5 Frontend | review | sonnet-5-5 | medium | 150,000 | 36 | 4,167 | 52% | — |
+| polished-chat-experience | 6 Review fix F2 (Backend) | review | sonnet-5-5 | medium | 14,000 | 0 | — | — | — |
+| polished-chat-experience | 7 QA evidence | review | sonnet-5-5 | high | 128,000 | 47 | 2,723 | 34% | — |
+| polished-chat-experience | 7b Fix Q1 Q2 (Frontend) | review | sonnet-5-5 | medium | 23,000 | 0 | — | — | — |
+| polished-chat-experience | 9 Security Review | review | opus-5-5 | high | 120,000 | 34 | 3,529 | 44% | — |
+| polished-chat-experience | 9b Scorecard fill (Backend) | review | sonnet-5-5 | medium | 14,000 | 0 | — | — | — |
+| polished-chat-experience | 10 Docs | review | sonnet-5-5 | medium | 106,000 | 41 | 2,585 | 32% | — |
+| polished-chat-experience | 10b Docs correction | review | sonnet-5-5 | medium | 16,000 | 0 | — | — | — |
+| polished-chat-experience | 10b Scorecard correction (Backend) | review | sonnet-5-5 | medium | 12,000 | 0 | — | — | — |
+| polished-chat-experience | 11 Release Gate | review | sonnet-5-5 | high | 126,000 | 0 | — | — | — |
+| polished-chat-experience | 13 Production verification | review | sonnet-5-5 | medium | 40,000 | 0 | — | — | — |
+| polished-chat-experience | 14 Post-launch learning | review | sonnet-5-5 | medium | 61,000 | 0 | — | — | — |
 
 ## Untraced stages
 
@@ -212,13 +230,18 @@ excludes them** — treat slice costs as a floor, not a total.
 | fix-service-accounting | Intake, setup, Charter | `executor` (trace@2) |
 | fix-service-accounting | Stage 4 review layer (/code-review high) | `executor` (trace@2) |
 | fix-service-accounting | Stage 9 deploy D1/D2 | `executor` (trace@2) |
+| polished-chat-experience | 0 Intake, Charter, setup | `executor` (trace@2) |
+| polished-chat-experience | 6 Code review (/code-review high, unscored) | `executor` (trace@2) |
+| polished-chat-experience | 8 Browser checks | `executor` (trace@2) |
+| polished-chat-experience | 12 Deploy (Charter C8.3; Cloud Deployment not spawned, D14) | `executor` (trace@2) |
+| polished-chat-experience | 13 Live checks, rollback rehearsal, roll forward, cold start | `executor` (trace@2) |
 
 ## Gate catches
 
 Defects the gates caught before they shipped — the pipeline earning its keep.
 **A floor, not a total:** 5 run(s) predate the `gateCatches` field (docs-retrieval, docs-retrieval-2, docs-retrieval-2-proof, docs-retrieval-3, docs-retrieval-3-proof) and recorded catches only in prose, so a real block — e.g. Security stopping the http-layer bind — is not counted here.
 
-**Structured catches: 29**
+**Structured catches: 36**
 
 | Run | Gate | Verdict | Severity | Finding | Recovery |
 |-----|------|---------|----------|--------|----------|
@@ -251,6 +274,13 @@ Defects the gates caught before they shipped — the pipeline earning its keep.
 | fix-service-accounting | Security | pass | advisory | A1: connection error then success now charges usage only (a dropped read may hide a billed attempt); A2: 429 not billed is unconfirmed; owner decisions | — |
 | fix-service-accounting | Release Manager | pass | required-fix | GO WITH CONDITIONS: P2 re-run of nothing-else-moves on the final tree, P4 smoke.py unreviewed until read, P5 budget notice | — |
 | fix-service-accounting | Live smoke tooling | fail | advisory | watch on failed TLS verification on every poll (local python.org CA bundle), D1 toggle time not measured; smoke ask needed PYTHONPATH | — |
+| polished-chat-experience | Scope review | fail | required-fix | Refusal card 'nearest passages' contradicts INV-4(b); run took the in-Charter path (no passages), D1 | — |
+| polished-chat-experience | Code review | fail | required-fix | F2: warm() cached a failed warm-up for the life of the process; fixed f5c139c | — |
+| polished-chat-experience | QA | fail | required-fix | Q1: client-side empty/over-limit guard dropped while copy still said 'Nothing was sent'; fixed 6c32de1 | — |
+| polished-chat-experience | QA | fail | required-fix | Q2/Q3: waiting copy and a scorecard basis claimed things with no record; reworded | — |
+| polished-chat-experience | Security | pass | advisory | S1 result-store bound corrects code-review F1 (judge-error results stored at zero spend); S2 counts can be inflated; no P0/P1 | — |
+| polished-chat-experience | Release Gate | pass | advisory | GO WITH CONDITIONS: live.py had never been run; dry-run against the local server before the build | — |
+| polished-chat-experience | Production verification | pass | advisory | Record gaps: first check-new overwritten, empty search output, idle time claim; corrected in 13-live/README.md | — |
 
 
 ## Outliers
@@ -297,6 +327,8 @@ Defects the gates caught before they shipped — the pipeline earning its keep.
 - **Stage 15c words check (re-spawn) (compliance-reviewer)** (public-ask-the-docs, review): 180,118 tok / 44 calls — 1.2× the 150k per-stage token cap
 - **Stage 16 Release Gate tier 3 (release-manager)** (public-ask-the-docs, review): 197,438 tok / null calls — 1.3× the 150k per-stage token cap
 - **Stage 2 tech spec (software-architect)** (fix-service-accounting, review): 236,000 tok / 72 calls — 1.6× the 150k per-stage token cap
+- **3 Tech spec** (polished-chat-experience, review): 352,000 tok / 102 calls — 2.3× the 150k per-stage token cap
+- **4 Backend** (polished-chat-experience, review): 220,000 tok / 80 calls — 1.5× the 150k per-stage token cap
 
 ## Baselines
 
