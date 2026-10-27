@@ -179,7 +179,22 @@
   verdict unconfirmed** (QA Q5). Rollback is a Bicep deployment with the previous
   `imageTag`; its rehearsal is a release gate.
 
+- **Slice `result-page-clarity` (the result comes first after a question is
+  asked; built and tested locally, not deployed or merged).** On a result page
+  the question box and the result precede "What to expect" and the suggestions;
+  the script scrolls to the result and focuses it. Answering is unchanged.
+  Recorded, local, stand-in judge, no model called
+  (`runs/result-page-clarity/08-browser-checks.md`): result heading top, before
+  to after, at 1280x800 answered -2,820.9 to 16.1 px, refused 292.1 to 16.1 px;
+  at 375x667 answered -4,182.9 to 15.6 px, refused -2.9 to 15.6 px. axe-core
+  4.10.2: zero serious or critical on the five local views. QA
+  (`13-qa-evidence.md`): 738 tests passed, 0 failed; verdict GO.
+
 ## Not yet done
+
+- **Slice `result-page-clarity`: not yet done** are the live measurements of
+  the heading position, the deploy, the rollback rehearsal, the Codex review, the
+  release verdict, and the aveto.dev screenshots.
 
 - **Slice `polished-chat-experience`: not yet recorded** are live cold-start and
   warm timings for this release, the rollback rehearsal and its timing, the

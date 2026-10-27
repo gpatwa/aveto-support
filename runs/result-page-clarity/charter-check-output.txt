@@ -1,0 +1,2 @@
+charter complete: runs/result-page-clarity/CHARTER.md
+sha256 8eacc407803700bece84af1a3344f02b871b02da10fe10a3ec620099cbd099bc

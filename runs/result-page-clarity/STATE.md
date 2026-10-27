@@ -3,7 +3,7 @@
 - **Ask:** intents/result-page-clarity.md — after a visitor asks, the result is the first thing they see
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 5 QA evidence
+- **Current stage:** 8 Release Gate
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents from this repo's `.claude/agents/` (session project dir is the main checkout; work is in the worktree)
 - **Telemetry:** self-reported
@@ -22,7 +22,9 @@
 | 2 Build | Frontend Developer | done (738 passed; 6 of 7 new tests failed first; C1.7 fixed) | runs/result-page-clarity/06-implementation.md | n/a |
 | 3 Code review | Orchestrator | done (0 Important, 2 Nits, round 1) | runs/result-page-clarity/code-review.md | n/a |
 | 4 Browser checks | Orchestrator | done (heading 16 px at both sizes, axe 0, keyboard ok) | runs/result-page-clarity/08-browser-checks.md | n/a |
-| 5 QA evidence | QA Evidence | in-progress | runs/result-page-clarity/13-qa-evidence.md | n/a |
+| 5 QA evidence | QA Evidence | done (GO; 738 passed; 6 of 7 new tests fail first, 12 mutations, 2 equivalent survivors; no P0-P2) | runs/result-page-clarity/13-qa-evidence.md | n/a |
+| 6 Security review (smoke) | Security & Privacy | done (PASS; no P0-P2; 3 P3 advisories; README.md uncommitted change not reviewed) | runs/result-page-clarity/14-security-review.md | n/a |
+| 7 Docs | Tech Writer | done (README, public-ask runbook, CURRENT_MVP_STATUS; recorded figures only, live values marked NOT YET MEASURED) | runs/result-page-clarity/15-docs-note.md | n/a |
 
 ## Approvals
 
@@ -36,8 +38,8 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 400k tokens  ·  **Depth:** standard
 - **Hard cap:** 800k
-- **Spent:** 148k (37%)  ·  **Remaining:** 252k
-- **Next stage:** 5 QA evidence (ai-agent-product) est. 40k → **PROCEED**
+- **Spent:** 323k (81%)  ·  **Remaining:** 77k
+- **Next stage:** 8 Release Gate (ai-agent-product) est. 40k → **PROCEED**
 
 Ceiling 720k (about 90% of the hard cap). Plan total 400k. Notice 1 when the projection first passes 720k; notice 2 only when spent passes 720k (90% of the hard cap). Both figures go in `END_REVIEW.md`.
 
@@ -67,3 +69,5 @@ Stage 2 (Frontend Developer) per 05-tech-spec.md "Hand off": goldens on 6ab5548,
 ## Notes
 
 - **Charter miss (model):** Charter C3.3 lists `claude-sonnet-5-5` for the Software Architect and Security & Privacy, but their agent files default to `opus`. The Architect ran on `opus-5-5` (usage.mjs), not covered by C3. Recorded in `END_REVIEW.md`; the remaining spawns pass a `sonnet` override so they match C3. Stage 1 estimate 40k, peak 79k.
+
+- **Spend note (323k after stage 7):** the plan total is 400k and the remaining stages (8 to 11) estimate 150k, so the projection is about 473k: above the plan total, below the 720k ceiling and the 800k hard cap. No budget notice is due yet (C2.3).
