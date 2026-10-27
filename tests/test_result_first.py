@@ -78,7 +78,7 @@ def _text(r: object) -> str:
 
 
 def home_pages() -> dict[str, str]:
-    client, service = _client()
+    client, _ = _client()
     out = {"home": client.get("/").text}
     unknown = client.get("/result/unknown-token")
     assert unknown.status_code == 200
@@ -304,7 +304,7 @@ def test_script_scrolls_the_heading_to_the_top_without_motion() -> None:
     assert 'getElementById("result-title")' in land
     assert "TOP_GAP" in land and "var TOP_GAP" in js
     assert "smooth" not in js and "smooth" not in css
-    rule = re.search(r"#result\s*\{[^}]*\}", css)
+    rule = re.search(r"^#result\s*\{[^}]*\}", css, re.MULTILINE)
     assert rule and "scroll-margin-top" in rule.group(0)
 
 
@@ -314,7 +314,7 @@ def test_script_puts_result_first_once_after_ask() -> None:
     assert "moved" in moved and "compareDocumentPosition" in moved
     assert "resultFirst()" in _function_body(js, "land")
     assert "land()" in _function_body(js, "settle")
-    assert re.search(r'location\.hash === "#result"[^;]*\{?\s*land\(\)', js, re.S)
+    assert re.search(r'location\.hash === "#result"[^;]*\{?\s*land\(\)', js, re.DOTALL)
 
 
 if __name__ == "__main__":

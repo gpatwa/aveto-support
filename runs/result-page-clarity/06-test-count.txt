@@ -1,0 +1,4 @@
+Final tree (commit 2), run by the Frontend Developer:
+uv run mypy            Success: no issues found in 54 source files
+uv run ruff check      All checks passed!
+uv run pytest -q       738 passed, 12 deselected, 0 failed   (731 baseline-green + 7 new in tests/test_result_first.py)

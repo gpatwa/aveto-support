@@ -17,6 +17,8 @@
   var busy = false;
   var band = "ok";
   var ticker = null;
+  var moved = false;
+  var TOP_GAP = 16; // px between the viewport top and the result heading
 
   var WAITING = [
     ["Looking through the docs", "Your question has been sent."],
@@ -61,6 +63,21 @@
   function stopTicker() {
     if (ticker) { clearInterval(ticker); ticker = null; }
   }
+  function resultFirst() { // the order the server gives a result page; runs at most once
+    if (moved || region.compareDocumentPosition(form) & Node.DOCUMENT_POSITION_FOLLOWING) { return; }
+    var main = form.parentNode;
+    var n = main.querySelector("h1").nextElementSibling.nextElementSibling;
+    var take = [];
+    while (n && n !== form) { take.push(n); n = n.nextElementSibling; }
+    take.forEach(function (e) { main.appendChild(e); });
+    moved = true;
+  }
+  function land() {
+    resultFirst();
+    region.focus({ preventScroll: true });
+    var t = document.getElementById("result-title") || region;
+    window.scrollTo(0, Math.max(0, t.getBoundingClientRect().top + window.pageYOffset - TOP_GAP));
+  }
   function settle(field) {
     busy = false;
     stopTicker();
@@ -69,7 +86,7 @@
     if (field) {
       q.focus();
     } else {
-      region.focus();
+      land();
     }
   }
   function showNetworkError() {
@@ -212,6 +229,7 @@
 
   revealCopy();
   update();
+  if (location.hash === "#result" && document.getElementById("result-title")) { land(); }
 
   if (ready && !button.disabled) {
     fetch("/warm", { method: "POST", credentials: "omit", cache: "no-store", referrerPolicy: "no-referrer" })
