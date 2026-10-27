@@ -1,0 +1,11 @@
+# 2026-10-27T07:00:49Z re-run; the first run's output was empty and its query was not saved
+QUERY1: search "looks good" or "right-to-left" or "RTL" | where TimeGenerated > datetime(2026-10-27T06:36:00Z) | summarize hits=count() by $table
+[]
+
+QUERY2 (control, must return rows): ContainerAppConsoleLogs_CL | where TimeGenerated > datetime(2026-10-27T06:36:00Z) | summarize rows=count()
+[
+  {
+    "TableName": "PrimaryResult",
+    "rows": "10"
+  }
+]

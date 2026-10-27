@@ -3,8 +3,8 @@
 - **Ask:** intents/result-page-clarity.md — after a visitor asks, the result is the first thing they see
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 10 Production verification
-- **Status:** in-progress
+- **Current stage:** 11 Close-out (pull request open, awaiting the owner's review and merge)
+- **Status:** done (pull request opened 2026-10-27; live on revision ca-aveto-ask--0000014; owner reviews and merges)
 - **Least-privilege:** enforced — role subagents from this repo's `.claude/agents/` (session project dir is the main checkout; work is in the worktree)
 - **Telemetry:** self-reported
 - **Charter:** runs/result-page-clarity/CHARTER.md, sha256 8eacc407803700bece84af1a3344f02b871b02da10fe10a3ec620099cbd099bc, approved in APPROVAL_RECORD-1 (2026-10-27T06:13Z)
@@ -26,6 +26,8 @@
 | 6 Security review (smoke) | Security & Privacy | done (PASS; no P0-P2; 3 P3 advisories; README.md uncommitted change not reviewed) | runs/result-page-clarity/14-security-review.md | n/a |
 | 7 Docs | Tech Writer | done (README, public-ask runbook, CURRENT_MVP_STATUS; recorded figures only, live values marked NOT YET MEASURED) | runs/result-page-clarity/15-docs-note.md | n/a |
 | 8 Release Gate (tier 3) | Release Manager | done: GO TO DEPLOY (no FAIL, no pre-deploy OPEN); rollback rehearsal and live heading position are OPEN-REQUIRED-AFTER-DEPLOY (R1-R7); slice not landed | runs/result-page-clarity/16-release-checklist-tier3.md | Charter C1.4 bars 1-9, C8.1, C8.3 |
+| 10 Production verification | Production Verification | done: HEALTHY WITH GAPS (no C8.1 failure observed; R6 rollback time and kill switch NOT MEASURED; live 375 px is the load path; empty log-search.txt) | runs/result-page-clarity/18-production-verification.md | Charter C8.1, C8.3; R1-R7 |
+| 11 Post-launch learning | Post-Launch Learning | done: goal met, HEALTHY WITH GAPS; 6 unmeasured items listed; carry-forward, playbook suggestions and lessons written; analytics NOT refreshed (no shell; no trace.json found) | runs/result-page-clarity/19-post-launch-learning.md | n/a |
 
 ## Approvals
 
@@ -39,8 +41,8 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 400k tokens  ·  **Depth:** standard
 - **Hard cap:** 800k
-- **Spent:** 463k (58% of the hard cap; 116% of the plan)  ·  **Remaining:** 337k
-- **Next stage:** 10 Production verification (ai-agent-product) est. 45k → **PROCEED**
+- **Spent:** 581k (73% of the hard cap; 145% of the plan)  ·  **Remaining:** 219k
+- **Next stage:** none (owner reviews and merges) → **STOP**
 
 Ceiling 720k (about 90% of the hard cap). Plan total 400k. Notice 1 when the projection first passes 720k; notice 2 only when spent passes 720k (90% of the hard cap). Both figures go in `END_REVIEW.md`.
 
