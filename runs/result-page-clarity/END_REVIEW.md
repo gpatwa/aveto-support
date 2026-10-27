@@ -51,3 +51,6 @@ The intent's 616 px of 800 was for a short real answer on the live revision; the
 
 ## Nothing else moved
 No change under `aveto_support/`, `prompts/`, `.claude/`, or `.agentic/` except `CURRENT_MVP_STATUS.md`. No new route, input, header, dependency or processor. aveto.dev screenshots are retaken in a separate playbook commit with wording the owner approves.
+
+## Owner ruling on the open items (typed in the driving session, 2026-10-27)
+Gopal Patwa: "Accept the unmeasured rollback timing as a recorded gap; I will run the Codex review and merge." Open item 1 (rollback command-to-healthy time) is accepted as a recorded gap; it is not measured and no rollback time is to be stated anywhere. The ruling does not cover open items 2 and 3 (kill switch, live byte comparison), which stay recorded as not measured. The pull request is the owner's to review and merge.
