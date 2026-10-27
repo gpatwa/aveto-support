@@ -1,6 +1,6 @@
 # Intent: after a visitor asks, the result is the first thing they see
 
-> **DRAFT 2026-10-27, not confirmed.** Drafted by Claude in the playbook session from the owner's note that the
+> **Confirmed by the owner 2026-10-27 ("intent confirmed"), with every default below accepted.** Drafted by Claude in the playbook session from the owner's note that the
 > live app is not clear and easy to understand, then checked in a real browser (below). Confirming the intent is not
 > approving the Charter: the Charter is approved by its hash when the run drafts it. Process v2, the first run under
 > **pack v30** (installed on main, `a0af0f8`). The owner asked for as few questions as possible: every open choice
