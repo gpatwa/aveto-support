@@ -4,7 +4,7 @@
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
 - **Current stage:** 14 Close-out (pull request open, awaiting the owner's review and merge)
-- **Status:** in-progress
+- **Status:** done (pull request 11 merged 2026-10-27; live on revision ca-aveto-ask--0000011)
 - **Least-privilege:** enforced — role subagents from this repo's `.claude/agents/`
 - **Telemetry:** self-reported
 - **Charter:** runs/polished-chat-experience/CHARTER.md, sha256 a24c3c56e430aed399ea88d4adaee8838694e5fd1950c776c5c49a1564b10312, approved in APPROVAL_RECORD-1 (2026-10-26T20:08:31Z)
