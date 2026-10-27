@@ -1,0 +1,88 @@
+# Recorded figures only. Every row names the repository file that records it.
+# A row with no record is not written here, so it is not shown.
+# Links ship: the repository is confirmed public (DECISIONS D13), so source_base and [links] are set.
+schema = 1
+source_base = "https://github.com/gpatwa/aveto-support/blob/8667d80028a73311d74efd09619cdf39bf685859/"
+
+[links]
+charter = "https://github.com/gpatwa/aveto-support/blob/8667d80028a73311d74efd09619cdf39bf685859/runs/polished-chat-experience/CHARTER.md"
+run_record = "https://github.com/gpatwa/aveto-support/tree/8667d80028a73311d74efd09619cdf39bf685859/runs/polished-chat-experience"
+
+[[figure]]
+section = "speed"
+label = "Cold start"
+value = "30.8 s"
+basis = "Measured 2026-10-22 on an earlier release (revision 0000006): time to the first answer from /health after more than an hour with no replica running, from one client."
+record = "runs/public-ask-the-docs/18-gate/RESULT.md"
+
+[[figure]]
+section = "speed"
+label = "Warm response time"
+value = "1.66 s median, 5.09 s slowest"
+basis = "Measured 2026-10-22 on an earlier release (revision 0000006): 20 questions from one client, network included."
+record = "runs/public-ask-the-docs/18-gate/RESULT.md"
+
+[[figure]]
+section = "speed"
+label = "Cost per question"
+value = "$0.00785"
+basis = "Measured 2026-10-22 on an earlier release: 20 questions, token counts reported by the API, priced at the published $2 per million input and $10 per million output tokens (read 2026-10-23)."
+record = "runs/public-ask-the-docs/18-gate/RESULT.md"
+
+[[figure]]
+section = "checks"
+label = "Tests"
+value = "731 passed, 0 failed (668 before this build)"
+basis = "Measured 2026-10-26 with `uv run pytest` on the final tree of this release; the 668 is the count on the starting point."
+record = "runs/polished-chat-experience/10-test-count.txt"
+
+[[figure]]
+section = "checks"
+label = "Accessibility checks"
+value = "No serious or critical issues on 5 views"
+basis = "Measured 2026-10-26 with axe-core 4.10.2 (WCAG 2.0 to 2.2, levels A and AA) on a local run of this release: the ask page, an answer, a refusal, the resting state and this scorecard. Colour contrast was also measured by hand where the tool could not decide."
+record = "runs/polished-chat-experience/08-browser-checks.md"
+
+[[figure]]
+section = "checks"
+label = "Mobile checks (375 px)"
+value = "No sideways scrolling; the whole flow works from the keyboard"
+basis = "Measured 2026-10-26 in a browser set to 375 px wide on a local run of this release; keyboard flow tried with real key presses. Touch gestures and real devices were not tested."
+record = "runs/polished-chat-experience/08-browser-checks.md"
+
+[[figure]]
+section = "checks"
+label = "Open findings"
+value = "None at P0 or P1; two at P2"
+basis = "Recorded 2026-10-26 by the independent Security Review (no P0 or P1; two P2 findings, described in its report) and by the QA review (no P0 or P1)."
+record = "runs/polished-chat-experience/14-security-review.md"
+
+[[decision]]
+who = "The owner"
+when = "2026-10-26"
+what = "Kept the service on its own address; aveto.dev links to it instead of showing it inside the site."
+record = "runs/polished-chat-experience/intent.md"
+
+[[decision]]
+who = "The owner"
+when = "2026-10-26"
+what = "Made a rehearsed rollback a release gate: roll back to the previous version, check it, time it, roll forward."
+record = "runs/polished-chat-experience/intent.md"
+
+[[decision]]
+who = "The owner"
+when = "2026-10-26"
+what = "Approved the Charter for this build: its scope, budget, models and the actions the run may take."
+record = "runs/polished-chat-experience/APPROVAL_RECORD-1.md"
+
+[[decision]]
+who = "The Orchestrator"
+when = "2026-10-26"
+what = "The refusal card shows no passages, because the service shows passages only when the docs answer."
+record = "runs/polished-chat-experience/DECISIONS.md"
+
+[[decision]]
+who = "The Orchestrator"
+when = "2026-10-26"
+what = "The receipts show the outcome, the docs version and the listed passages, and no internal decision line."
+record = "runs/polished-chat-experience/DECISIONS.md"

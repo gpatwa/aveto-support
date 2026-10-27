@@ -1,0 +1,10 @@
+base tree: git rev-parse HEAD = 6a1e5eb44e551b56766960b84553bd149a6918cf; product files untouched
+FAILED tests/test_service_pages.py::test_initial_page_has_empty_region_and_form
+FAILED tests/test_service_pages.py::test_suggestions_are_separate_forms_with_one_question_field_each
+FAILED tests/test_service_pages.py::test_page_has_skip_link_scorecard_link_and_docs_click_marker
+FAILED tests/test_service_pages.py::test_paused_card_adds_the_midnight_line_and_keeps_the_form_and_suggestions
+FAILED tests/test_service_pages.py::test_copy_button_is_hidden_until_the_script_runs_and_chip_is_the_fallback
+FAILED tests/test_service_pages.py::test_css_has_no_fake_progress_and_no_unused_amber
+FAILED tests/test_service_pages.py::test_script_reaches_only_same_origin_paths_and_never_sends_json
+ERROR tests/test_service_suggestions.py
+7 failed, 26 passed, 1 error in 0.54s

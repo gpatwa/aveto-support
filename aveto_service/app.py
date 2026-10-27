@@ -6,9 +6,11 @@ exception themselves so no traceback (which could hold request bytes) reaches a 
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
 import os
+import time
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
@@ -20,10 +22,12 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import JSONResponse, Response
 
 from aveto_service.abuse_log import Outcome, configure_logging, emit_ops
+from aveto_service.counts import UsageCounts
 from aveto_service.html_port import HtmlRenderer
 from aveto_service.judge_port import JudgeClient
 from aveto_service.limits import MAX_BODY_BYTES, resolve_client_ip
-from aveto_service.pipeline import AskResult, AskService, Runtime
+from aveto_service.pipeline import AskResult, AskService, Runtime, _utcnow
+from aveto_service.scorecard import ScorecardPage
 from aveto_service.settings import Settings
 from aveto_support import judge
 from aveto_support.embed import OnnxEmbedder
@@ -93,6 +97,14 @@ def _cross_site(request: Request) -> bool:
     return urlsplit(origin).netloc.lower() != host or not host
 
 
+async def _any_body(request: Request) -> bool:
+    """True if the request carries any body byte (reading stops at the first one)."""
+    async for chunk in request.stream():
+        if chunk:
+            return True
+    return False
+
+
 def _question_of(body: bytes, kind: str) -> str | None:
     """The `question` field, or None if the body is not exactly one string field."""
     try:
@@ -122,6 +134,7 @@ def create_app(
     *,
     clock: Callable[[], datetime] | None = None,
     monotonic: Callable[[], float] | None = None,
+    scorecard: ScorecardPage | None = None,
 ) -> FastAPI:
     app = FastAPI(
         docs_url=None,
@@ -135,6 +148,8 @@ def create_app(
         extra["clock"] = clock
     service = AskService(runtime, judge_client, settings, monotonic=monotonic, **extra)  # type: ignore[arg-type]
     app.state.service = service
+    counts = UsageCounts(clock() if clock is not None else _utcnow(), monotonic or time.monotonic)
+    app.state.counts = counts
 
     def failure(kind: str) -> Response:
         """The fixed error: the error page for a form post when a renderer is present."""
@@ -166,6 +181,7 @@ def create_app(
             if raw is None or (kind == _FORM and html is None):
                 return respond(service.refuse(Outcome.BAD_REQUEST, ip), kind, "")
             result = await run_in_threadpool(service.ask, raw, ip)
+            counts.record(result.outcome)
             return respond(result, kind, raw)
         except Exception:  # noqa: BLE001 - fail closed: any failure is a refusal
             emit_ops("unhandled")
@@ -189,10 +205,17 @@ def create_app(
 
     if html is not None:
         pages = html
+        card = scorecard or ScorecardPage(runtime)
 
         @app.get("/")
         def index_page() -> Response:
-            return pages.page(Outcome.SERVICE_OFF if settings.kill_switch != "off" else None)
+            state = (
+                Outcome.SERVICE_OFF
+                if settings.kill_switch != "off"
+                else (Outcome.PAUSED if service.resting() else None)
+            )
+            counts.visit()
+            return pages.page(state)
 
         @app.get("/result/{token}")
         def result_page(token: str) -> Response:
@@ -201,5 +224,34 @@ def create_app(
         @app.get("/static/{name}")
         def static_file(name: str) -> Response:
             return pages.static(name)
+
+        @app.get("/scorecard")
+        def scorecard_page() -> Response:
+            return card.response(counts.snapshot())
+
+        @app.post("/warm")
+        async def warm(request: Request) -> Response:
+            """Ready only once the search has run in this process; never reaches the judge."""
+            ready = False
+            try:
+                if (
+                    settings.kill_switch == "off"
+                    and not _cross_site(request)
+                    and not service.resting()
+                ):
+                    ready = await run_in_threadpool(service.warm)
+            except Exception:  # noqa: BLE001 - not ready is the whole answer
+                ready = False
+            return JSONResponse({"ready": ready}, headers=_JSON_HEADERS)
+
+        @app.post("/count/docs-click")
+        async def docs_click(request: Request) -> Response:
+            """Count one click on the docs link. Empty same-origin posts only; always 204."""
+            with contextlib.suppress(Exception):  # never reveals whether a click was counted
+                if settings.kill_switch == "off" and not _cross_site(request):
+                    declared = request.headers.get("content-length", "0").strip()
+                    if declared == "0" and not await _any_body(request):
+                        counts.docs_click()
+            return Response(status_code=204, headers=_JSON_HEADERS)
 
     return app

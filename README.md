@@ -27,8 +27,11 @@
 > pre-registered 20-question gate it scored Bar 1 10/10 and Bar 2 8/10, exactly at
 > the bar: the margin is zero, the set is small, and 2 of the 10 answerable
 > questions got no answer. That is a measurement, not a capability claim. Figures
-> and caveats: [Public service](#public-service-ask-the-docs) below. This branch
-> is not merged.
+> and caveats: [Public service](#public-service-ask-the-docs) below. The
+> service code is in the tree of `main` at `32e54a6`, the commit the slice
+> `polished-chat-experience` started from
+> (`runs/polished-chat-experience/00-slice-plan.md`). The page changes of that slice
+> (see "The page" below) have no recorded deploy or merge yet.
 
 A support agent for [Aveto](https://aveto.dev) — built **by Aveto, in public**.
 
@@ -146,7 +149,80 @@ where `judge-apply` prints `retrieve`'s three-line excerpts and scores.
 no network call.
 
 **Routes.** `GET /` (the page), `POST /ask` (JSON `{"question": "..."}` or the
-page's form), `GET /health` (counters and the kill-switch state).
+page's form), `GET /health` (counters and the kill-switch state). Added by slice
+`polished-chat-experience` (built and tested; **deploy not yet recorded**):
+`GET /scorecard`, `POST /warm`, `POST /count/docs-click`. Only `POST /ask`
+reaches the judge; none of the three new routes does, and none writes a log
+line (`runs/polished-chat-experience/05-tech-spec.md` section 5; Security review
+`14-security-review.md`). What each does is in the
+[runbook](docs/runbooks/public-ask.md#new-routes-slice-polished-chat-experience).
+The `/ask` JSON bodies and the response headers (including `frame-ancestors 'none'`)
+are unchanged; a test compares the bodies with those of the starting commit
+(`13-qa-evidence.md`).
+
+**The page (slice `polished-chat-experience`).** Answering is unchanged. The page
+around it has:
+
+- an **answer card**: the quoted passage, a source chip linking to the file in the
+  repository at that line, and a copy-link control; nothing on it is written by a
+  model;
+- a **refusal card**: "The docs do not answer this", a rephrasing hint, the issue
+  link and the docs link, and the suggested questions. It shows **no passages**:
+  the service shows passages only when the docs answer (`DECISIONS.md` D1);
+- four **suggested questions** (three the docs answer, one they do not), copied
+  from the spent set `evals/retrieval-heldout-5.toml` into
+  `aveto_service/suggestions.toml`. That the docs answer or refuse them is checked
+  offline for retrieval only; no judge verdict was recorded for them in this
+  slice (`13-qa-evidence.md` Q5, unconfirmed until a live check);
+- **honest waiting**: a plain message while a question is judged, no progress bar,
+  and a one-time `POST /warm` when the page loads. It cannot shorten a cold start
+  of the container, which happens before the page is served;
+- a **resting state** when the day's allowance is used: the page says it is back
+  after midnight UTC, shows the docs link and does not look like an error;
+- a **receipts drawer** ("How this answer was made"): the outcome, the docs commit
+  and the files and lines this request already held, plus links to the Charter and
+  run record. It shows no deciding-signal line and stores nothing new;
+- a **scorecard page** (`GET /scorecard`) built only from recorded figures;
+- **counts without content**: visits, questions answered, questions refused and
+  docs clicks, as four integers in memory. **They are raw totals since the service
+  last started, they reset on every restart, scale to zero or new revision, and
+  they are unauthenticated and can be inflated** (Security finding S2). They are
+  not verified visitors.
+
+**The scorecard's figures.** They live in `aveto_service/scorecard.toml`, which is
+read once at startup by a strict reader (`aveto_service/scorecard.py`). Any
+unknown key, unlisted label, basis that does not start "Measured " or "Recorded ",
+non-GitHub link or missing record path makes the whole file unreadable and the
+page shows a fixed card instead. **To add a figure**, first put the number in a
+record file in this repository (a run artefact under `runs/`), then add a
+`[[figure]]` row with its `value`, a `basis` that says how and when it was
+measured, and the `record` path; a test checks that every `record` path exists.
+A line with no record is not shown.
+
+**Recorded for this slice** (each from the file named; none is from the live
+service):
+
+| Figure | Record |
+|---|---|
+| 731 tests passed, 0 failed (668 at the starting commit); mypy and ruff clean | `runs/polished-chat-experience/10-test-count.txt` |
+| axe-core 4.10.2: no serious or critical issue on 5 local views; no sideways scrolling at 375 px; keyboard flow tried (local run, stand-in judge, no touch or real-device test) | `runs/polished-chat-experience/08-browser-checks.md` |
+| Security review: no P0 or P1, two P2 (S1, S2 below) | `runs/polished-chat-experience/14-security-review.md` |
+
+**Not yet recorded for this release:** live cold-start and warm response times,
+the rollback rehearsal and its timing, the deploy and whether the new revision
+is healthy, the Codex review, and any release verdict. The cold start (30.8 s)
+and response times in the table below are from an earlier release (revision
+`ca-aveto-ask--0000006`).
+
+**Result store (Security S1).** A page result is kept in memory for 10 minutes
+(at most 1,000, no question text). A result that ends in `judge error` is stored
+at zero spend, limited only by the per-address hourly limits; this is the same on
+the starting commit and is a P2 finding with no fix in this slice.
+
+**Rollback.** Deploy the Bicep again with the previous `imageTag`
+([runbook](docs/runbooks/public-ask.md#2-rollback), section 2). For this release
+the rehearsal (roll back, check the previous page and `/health`, time it, roll
+forward) is a release gate (`intent.md`); its result is not yet recorded.
 
 **Limits** (enforced by the service; each refusal happens before any model call):
 

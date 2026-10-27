@@ -1,0 +1,9 @@
+# Final-tree regression, run by the Orchestrator 2026-10-26
+Tree: 3be0620 plus the stage 10 documentation edits (no product file changed since 3be0620).
+$ uv run pytest -q
+...........                                                              [100%]
+731 passed, 12 deselected in 16.43s
+$ uv run mypy
+Success: no issues found in 53 source files
+$ uv run ruff check
+All checks passed!

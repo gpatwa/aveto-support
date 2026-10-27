@@ -1,0 +1,902 @@
+{
+ "base": "32e54a6",
+ "cases": [
+  {
+   "id": "g01-answer",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "2030"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"answer\",\"docs\":{\"repo\":\"acme/docs\",\"commit\":\"cccccccccccccccccccccccccccccccccccccccc\"},\"files\":[{\"rank\":1,\"path\":\"guide/install.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md\",\"passages\":[{\"heading\":\"Install\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L1-L3\",\"text\":\"# Install\\n\\nRun the installer to set up the tool.\"},{\"heading\":\"Install > Upgrade\",\"line_start\":5,\"line_end\":7,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L5-L7\",\"text\":\"## Upgrade\\n\\nUpgrade by re-running the installer.\"}]},{\"rank\":2,\"path\":\"README.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md\",\"passages\":[{\"heading\":\"Docs\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md?plain=1#L1-L3\",\"text\":\"# Docs\\n\\nWelcome to the docs about install, billing and passwords.\"}]},{\"rank\":3,\"path\":\"guide/billing.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md\",\"passages\":[{\"heading\":\"Billing\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md?plain=1#L1-L3\",\"text\":\"# Billing\\n\\nInvoices are issued monthly. Refunds take five days.\"}]},{\"rank\":4,\"path\":\"notes/faq.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md\",\"passages\":[{\"heading\":\"FAQ\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md?plain=1#L1-L3\",\"text\":\"# FAQ\\n\\nHow do I reset my password? Use the reset link on the sign in page.\"}]}],\"signal\":\"Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "g01-refusal",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "236"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"no_confident_match\",\"text\":\"no confident match\",\"signal\":\"Deciding signal: answerability judge verdict NOT_ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "g03-answer",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "2030"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"answer\",\"docs\":{\"repo\":\"acme/docs\",\"commit\":\"cccccccccccccccccccccccccccccccccccccccc\"},\"files\":[{\"rank\":1,\"path\":\"notes/faq.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md\",\"passages\":[{\"heading\":\"FAQ\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md?plain=1#L1-L3\",\"text\":\"# FAQ\\n\\nHow do I reset my password? Use the reset link on the sign in page.\"}]},{\"rank\":2,\"path\":\"guide/install.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md\",\"passages\":[{\"heading\":\"Install\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L1-L3\",\"text\":\"# Install\\n\\nRun the installer to set up the tool.\"},{\"heading\":\"Install > Upgrade\",\"line_start\":5,\"line_end\":7,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L5-L7\",\"text\":\"## Upgrade\\n\\nUpgrade by re-running the installer.\"}]},{\"rank\":3,\"path\":\"README.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md\",\"passages\":[{\"heading\":\"Docs\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md?plain=1#L1-L3\",\"text\":\"# Docs\\n\\nWelcome to the docs about install, billing and passwords.\"}]},{\"rank\":4,\"path\":\"guide/billing.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md\",\"passages\":[{\"heading\":\"Billing\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md?plain=1#L1-L3\",\"text\":\"# Billing\\n\\nInvoices are issued monthly. Refunds take five days.\"}]}],\"signal\":\"Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "g03-refusal",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "236"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"no_confident_match\",\"text\":\"no confident match\",\"signal\":\"Deciding signal: answerability judge verdict NOT_ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "g04-answer",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "2030"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"answer\",\"docs\":{\"repo\":\"acme/docs\",\"commit\":\"cccccccccccccccccccccccccccccccccccccccc\"},\"files\":[{\"rank\":1,\"path\":\"notes/faq.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md\",\"passages\":[{\"heading\":\"FAQ\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md?plain=1#L1-L3\",\"text\":\"# FAQ\\n\\nHow do I reset my password? Use the reset link on the sign in page.\"}]},{\"rank\":2,\"path\":\"guide/install.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md\",\"passages\":[{\"heading\":\"Install\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L1-L3\",\"text\":\"# Install\\n\\nRun the installer to set up the tool.\"},{\"heading\":\"Install > Upgrade\",\"line_start\":5,\"line_end\":7,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L5-L7\",\"text\":\"## Upgrade\\n\\nUpgrade by re-running the installer.\"}]},{\"rank\":3,\"path\":\"README.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md\",\"passages\":[{\"heading\":\"Docs\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md?plain=1#L1-L3\",\"text\":\"# Docs\\n\\nWelcome to the docs about install, billing and passwords.\"}]},{\"rank\":4,\"path\":\"guide/billing.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md\",\"passages\":[{\"heading\":\"Billing\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md?plain=1#L1-L3\",\"text\":\"# Billing\\n\\nInvoices are issued monthly. Refunds take five days.\"}]}],\"signal\":\"Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "g04-refusal",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "236"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"no_confident_match\",\"text\":\"no confident match\",\"signal\":\"Deciding signal: answerability judge verdict NOT_ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "gu15-answer",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "2030"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"answer\",\"docs\":{\"repo\":\"acme/docs\",\"commit\":\"cccccccccccccccccccccccccccccccccccccccc\"},\"files\":[{\"rank\":1,\"path\":\"README.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md\",\"passages\":[{\"heading\":\"Docs\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md?plain=1#L1-L3\",\"text\":\"# Docs\\n\\nWelcome to the docs about install, billing and passwords.\"}]},{\"rank\":2,\"path\":\"guide/billing.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md\",\"passages\":[{\"heading\":\"Billing\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md?plain=1#L1-L3\",\"text\":\"# Billing\\n\\nInvoices are issued monthly. Refunds take five days.\"}]},{\"rank\":3,\"path\":\"guide/install.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md\",\"passages\":[{\"heading\":\"Install\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L1-L3\",\"text\":\"# Install\\n\\nRun the installer to set up the tool.\"},{\"heading\":\"Install > Upgrade\",\"line_start\":5,\"line_end\":7,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L5-L7\",\"text\":\"## Upgrade\\n\\nUpgrade by re-running the installer.\"}]},{\"rank\":4,\"path\":\"notes/faq.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md\",\"passages\":[{\"heading\":\"FAQ\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md?plain=1#L1-L3\",\"text\":\"# FAQ\\n\\nHow do I reset my password? Use the reset link on the sign in page.\"}]}],\"signal\":\"Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "gu15-refusal",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "236"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"no_confident_match\",\"text\":\"no confident match\",\"signal\":\"Deciding signal: answerability judge verdict NOT_ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "gu18-answer",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "2030"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"answer\",\"docs\":{\"repo\":\"acme/docs\",\"commit\":\"cccccccccccccccccccccccccccccccccccccccc\"},\"files\":[{\"rank\":1,\"path\":\"guide/install.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md\",\"passages\":[{\"heading\":\"Install\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L1-L3\",\"text\":\"# Install\\n\\nRun the installer to set up the tool.\"},{\"heading\":\"Install > Upgrade\",\"line_start\":5,\"line_end\":7,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L5-L7\",\"text\":\"## Upgrade\\n\\nUpgrade by re-running the installer.\"}]},{\"rank\":2,\"path\":\"README.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md\",\"passages\":[{\"heading\":\"Docs\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md?plain=1#L1-L3\",\"text\":\"# Docs\\n\\nWelcome to the docs about install, billing and passwords.\"}]},{\"rank\":3,\"path\":\"notes/faq.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md\",\"passages\":[{\"heading\":\"FAQ\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md?plain=1#L1-L3\",\"text\":\"# FAQ\\n\\nHow do I reset my password? Use the reset link on the sign in page.\"}]},{\"rank\":4,\"path\":\"guide/billing.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md\",\"passages\":[{\"heading\":\"Billing\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md?plain=1#L1-L3\",\"text\":\"# Billing\\n\\nInvoices are issued monthly. Refunds take five days.\"}]}],\"signal\":\"Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "gu18-refusal",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "236"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"no_confident_match\",\"text\":\"no confident match\",\"signal\":\"Deciding signal: answerability judge verdict NOT_ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "p01-answer",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "2030"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"answer\",\"docs\":{\"repo\":\"acme/docs\",\"commit\":\"cccccccccccccccccccccccccccccccccccccccc\"},\"files\":[{\"rank\":1,\"path\":\"notes/faq.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md\",\"passages\":[{\"heading\":\"FAQ\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md?plain=1#L1-L3\",\"text\":\"# FAQ\\n\\nHow do I reset my password? Use the reset link on the sign in page.\"}]},{\"rank\":2,\"path\":\"guide/install.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md\",\"passages\":[{\"heading\":\"Install > Upgrade\",\"line_start\":5,\"line_end\":7,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L5-L7\",\"text\":\"## Upgrade\\n\\nUpgrade by re-running the installer.\"},{\"heading\":\"Install\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L1-L3\",\"text\":\"# Install\\n\\nRun the installer to set up the tool.\"}]},{\"rank\":3,\"path\":\"README.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md\",\"passages\":[{\"heading\":\"Docs\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md?plain=1#L1-L3\",\"text\":\"# Docs\\n\\nWelcome to the docs about install, billing and passwords.\"}]},{\"rank\":4,\"path\":\"guide/billing.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md\",\"passages\":[{\"heading\":\"Billing\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md?plain=1#L1-L3\",\"text\":\"# Billing\\n\\nInvoices are issued monthly. Refunds take five days.\"}]}],\"signal\":\"Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "p01-refusal",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "236"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"no_confident_match\",\"text\":\"no confident match\",\"signal\":\"Deciding signal: answerability judge verdict NOT_ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "p05-answer",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "2030"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"answer\",\"docs\":{\"repo\":\"acme/docs\",\"commit\":\"cccccccccccccccccccccccccccccccccccccccc\"},\"files\":[{\"rank\":1,\"path\":\"README.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md\",\"passages\":[{\"heading\":\"Docs\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md?plain=1#L1-L3\",\"text\":\"# Docs\\n\\nWelcome to the docs about install, billing and passwords.\"}]},{\"rank\":2,\"path\":\"guide/billing.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md\",\"passages\":[{\"heading\":\"Billing\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md?plain=1#L1-L3\",\"text\":\"# Billing\\n\\nInvoices are issued monthly. Refunds take five days.\"}]},{\"rank\":3,\"path\":\"guide/install.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md\",\"passages\":[{\"heading\":\"Install\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L1-L3\",\"text\":\"# Install\\n\\nRun the installer to set up the tool.\"},{\"heading\":\"Install > Upgrade\",\"line_start\":5,\"line_end\":7,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L5-L7\",\"text\":\"## Upgrade\\n\\nUpgrade by re-running the installer.\"}]},{\"rank\":4,\"path\":\"notes/faq.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md\",\"passages\":[{\"heading\":\"FAQ\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md?plain=1#L1-L3\",\"text\":\"# FAQ\\n\\nHow do I reset my password? Use the reset link on the sign in page.\"}]}],\"signal\":\"Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "p05-refusal",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "236"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"no_confident_match\",\"text\":\"no confident match\",\"signal\":\"Deciding signal: answerability judge verdict NOT_ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "p06-answer",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "2030"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"answer\",\"docs\":{\"repo\":\"acme/docs\",\"commit\":\"cccccccccccccccccccccccccccccccccccccccc\"},\"files\":[{\"rank\":1,\"path\":\"guide/install.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md\",\"passages\":[{\"heading\":\"Install\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L1-L3\",\"text\":\"# Install\\n\\nRun the installer to set up the tool.\"},{\"heading\":\"Install > Upgrade\",\"line_start\":5,\"line_end\":7,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L5-L7\",\"text\":\"## Upgrade\\n\\nUpgrade by re-running the installer.\"}]},{\"rank\":2,\"path\":\"README.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md\",\"passages\":[{\"heading\":\"Docs\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md?plain=1#L1-L3\",\"text\":\"# Docs\\n\\nWelcome to the docs about install, billing and passwords.\"}]},{\"rank\":3,\"path\":\"guide/billing.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md\",\"passages\":[{\"heading\":\"Billing\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md?plain=1#L1-L3\",\"text\":\"# Billing\\n\\nInvoices are issued monthly. Refunds take five days.\"}]},{\"rank\":4,\"path\":\"notes/faq.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md\",\"passages\":[{\"heading\":\"FAQ\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md?plain=1#L1-L3\",\"text\":\"# FAQ\\n\\nHow do I reset my password? Use the reset link on the sign in page.\"}]}],\"signal\":\"Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "p06-refusal",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "236"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"no_confident_match\",\"text\":\"no confident match\",\"signal\":\"Deciding signal: answerability judge verdict NOT_ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "p11-answer",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "2030"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"answer\",\"docs\":{\"repo\":\"acme/docs\",\"commit\":\"cccccccccccccccccccccccccccccccccccccccc\"},\"files\":[{\"rank\":1,\"path\":\"guide/install.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md\",\"passages\":[{\"heading\":\"Install\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L1-L3\",\"text\":\"# Install\\n\\nRun the installer to set up the tool.\"},{\"heading\":\"Install > Upgrade\",\"line_start\":5,\"line_end\":7,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L5-L7\",\"text\":\"## Upgrade\\n\\nUpgrade by re-running the installer.\"}]},{\"rank\":2,\"path\":\"notes/faq.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md\",\"passages\":[{\"heading\":\"FAQ\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md?plain=1#L1-L3\",\"text\":\"# FAQ\\n\\nHow do I reset my password? Use the reset link on the sign in page.\"}]},{\"rank\":3,\"path\":\"README.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md\",\"passages\":[{\"heading\":\"Docs\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md?plain=1#L1-L3\",\"text\":\"# Docs\\n\\nWelcome to the docs about install, billing and passwords.\"}]},{\"rank\":4,\"path\":\"guide/billing.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md\",\"passages\":[{\"heading\":\"Billing\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md?plain=1#L1-L3\",\"text\":\"# Billing\\n\\nInvoices are issued monthly. Refunds take five days.\"}]}],\"signal\":\"Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "p11-refusal",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "236"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"no_confident_match\",\"text\":\"no confident match\",\"signal\":\"Deciding signal: answerability judge verdict NOT_ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "p12-answer",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "2030"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"answer\",\"docs\":{\"repo\":\"acme/docs\",\"commit\":\"cccccccccccccccccccccccccccccccccccccccc\"},\"files\":[{\"rank\":1,\"path\":\"notes/faq.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md\",\"passages\":[{\"heading\":\"FAQ\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md?plain=1#L1-L3\",\"text\":\"# FAQ\\n\\nHow do I reset my password? Use the reset link on the sign in page.\"}]},{\"rank\":2,\"path\":\"README.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md\",\"passages\":[{\"heading\":\"Docs\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md?plain=1#L1-L3\",\"text\":\"# Docs\\n\\nWelcome to the docs about install, billing and passwords.\"}]},{\"rank\":3,\"path\":\"guide/billing.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md\",\"passages\":[{\"heading\":\"Billing\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md?plain=1#L1-L3\",\"text\":\"# Billing\\n\\nInvoices are issued monthly. Refunds take five days.\"}]},{\"rank\":4,\"path\":\"guide/install.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md\",\"passages\":[{\"heading\":\"Install\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L1-L3\",\"text\":\"# Install\\n\\nRun the installer to set up the tool.\"},{\"heading\":\"Install > Upgrade\",\"line_start\":5,\"line_end\":7,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L5-L7\",\"text\":\"## Upgrade\\n\\nUpgrade by re-running the installer.\"}]}],\"signal\":\"Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "p12-refusal",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "236"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"no_confident_match\",\"text\":\"no confident match\",\"signal\":\"Deciding signal: answerability judge verdict NOT_ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "p17-answer",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "2030"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"answer\",\"docs\":{\"repo\":\"acme/docs\",\"commit\":\"cccccccccccccccccccccccccccccccccccccccc\"},\"files\":[{\"rank\":1,\"path\":\"README.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md\",\"passages\":[{\"heading\":\"Docs\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md?plain=1#L1-L3\",\"text\":\"# Docs\\n\\nWelcome to the docs about install, billing and passwords.\"}]},{\"rank\":2,\"path\":\"guide/install.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md\",\"passages\":[{\"heading\":\"Install\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L1-L3\",\"text\":\"# Install\\n\\nRun the installer to set up the tool.\"},{\"heading\":\"Install > Upgrade\",\"line_start\":5,\"line_end\":7,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L5-L7\",\"text\":\"## Upgrade\\n\\nUpgrade by re-running the installer.\"}]},{\"rank\":3,\"path\":\"notes/faq.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md\",\"passages\":[{\"heading\":\"FAQ\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md?plain=1#L1-L3\",\"text\":\"# FAQ\\n\\nHow do I reset my password? Use the reset link on the sign in page.\"}]},{\"rank\":4,\"path\":\"guide/billing.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md\",\"passages\":[{\"heading\":\"Billing\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md?plain=1#L1-L3\",\"text\":\"# Billing\\n\\nInvoices are issued monthly. Refunds take five days.\"}]}],\"signal\":\"Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "p17-refusal",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "236"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"no_confident_match\",\"text\":\"no confident match\",\"signal\":\"Deciding signal: answerability judge verdict NOT_ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "p20-answer",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "2030"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"answer\",\"docs\":{\"repo\":\"acme/docs\",\"commit\":\"cccccccccccccccccccccccccccccccccccccccc\"},\"files\":[{\"rank\":1,\"path\":\"notes/faq.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md\",\"passages\":[{\"heading\":\"FAQ\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/notes/faq.md?plain=1#L1-L3\",\"text\":\"# FAQ\\n\\nHow do I reset my password? Use the reset link on the sign in page.\"}]},{\"rank\":2,\"path\":\"README.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md\",\"passages\":[{\"heading\":\"Docs\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/README.md?plain=1#L1-L3\",\"text\":\"# Docs\\n\\nWelcome to the docs about install, billing and passwords.\"}]},{\"rank\":3,\"path\":\"guide/install.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md\",\"passages\":[{\"heading\":\"Install\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L1-L3\",\"text\":\"# Install\\n\\nRun the installer to set up the tool.\"},{\"heading\":\"Install > Upgrade\",\"line_start\":5,\"line_end\":7,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/install.md?plain=1#L5-L7\",\"text\":\"## Upgrade\\n\\nUpgrade by re-running the installer.\"}]},{\"rank\":4,\"path\":\"guide/billing.md\",\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md\",\"passages\":[{\"heading\":\"Billing\",\"line_start\":1,\"line_end\":3,\"url\":\"https://github.com/acme/docs/blob/cccccccccccccccccccccccccccccccccccccccc/guide/billing.md?plain=1#L1-L3\",\"text\":\"# Billing\\n\\nInvoices are issued monthly. Refunds take five days.\"}]}],\"signal\":\"Deciding signal: answerability judge verdict ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "p20-refusal",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "236"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"no_confident_match\",\"text\":\"no confident match\",\"signal\":\"Deciding signal: answerability judge verdict NOT_ANSWERABLE (prompt answerability-judge-v1, sha256 24b244d230c465505b92fdf6c4be90be8e967897ad3d0aa8aeaf23bf5a159427)\"}"
+  },
+  {
+   "id": "empty",
+   "status": 400,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "28"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"empty_question\"}"
+  },
+  {
+   "id": "blank",
+   "status": 400,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "28"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"empty_question\"}"
+  },
+  {
+   "id": "over-500",
+   "status": 400,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "47"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"too_long\",\"length\":501,\"limit\":500}"
+  },
+  {
+   "id": "unusable",
+   "status": 400,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "31"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"unusable_question\"}"
+  },
+  {
+   "id": "extra-field",
+   "status": 400,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "25"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"bad_request\"}"
+  },
+  {
+   "id": "not-a-string",
+   "status": 400,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "25"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"bad_request\"}"
+  },
+  {
+   "id": "not-an-object",
+   "status": 400,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "25"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"bad_request\"}"
+  },
+  {
+   "id": "huge-body",
+   "status": 413,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "28"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"body_too_large\"}"
+  },
+  {
+   "id": "judge-error-garbage",
+   "status": 502,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "46"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"judge_error\",\"text\":\"judge error\"}"
+  },
+  {
+   "id": "judge-error-long-reply",
+   "status": 502,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "46"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"judge_error\",\"text\":\"judge error\"}"
+  },
+  {
+   "id": "rate-limited-11th",
+   "status": 429,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "26"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"rate_limited\"}"
+  },
+  {
+   "id": "paused",
+   "status": 503,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "20"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"paused\"}"
+  },
+  {
+   "id": "service-off",
+   "status": 503,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "25"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"service_off\"}"
+  },
+  {
+   "id": "cross-site-origin",
+   "status": 400,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "25"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"outcome\":\"bad_request\"}"
+  },
+  {
+   "id": "health-after-one-answer",
+   "status": 200,
+   "headers": [
+    [
+     "cache-control",
+     "no-store"
+    ],
+    [
+     "x-content-type-options",
+     "nosniff"
+    ],
+    [
+     "content-length",
+     "178"
+    ],
+    [
+     "content-type",
+     "application/json"
+    ]
+   ],
+   "body": "{\"status\":\"ok\",\"kill_switch\":\"off\",\"day\":\"2026-10-21\",\"judged_today\":1,\"input_tokens_today\":2400,\"output_tokens_today\":20,\"spend_today_usd\":\"0.005000\",\"daily_cap_usd\":\"0.322580\"}"
+  }
+ ]
+}

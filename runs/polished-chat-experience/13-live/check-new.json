@@ -1,0 +1,17 @@
+{
+  "checks": {
+    "enhance_js_200": true,
+    "health_200_kill_switch_off": true,
+    "root_200": true,
+    "root_has_four_suggestions": true,
+    "root_has_skip_link": true,
+    "scorecard_200": true,
+    "security_headers_on_root": true,
+    "security_headers_on_scorecard": true,
+    "warm_ready_true": true
+  },
+  "end_utc": "2026-10-26T23:37:50Z",
+  "mode": "check new",
+  "ok": true,
+  "start_utc": "2026-10-26T23:37:49Z"
+}

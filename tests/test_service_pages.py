@@ -64,7 +64,8 @@ def test_initial_page_has_empty_region_and_form() -> None:
     text = visible(client.get("/").text)
     assert '<form id="ask-form" method="post" action="/ask#result">' in text
     assert 'id="result-title"' not in text
-    assert '<section id="result" tabindex="-1" aria-labelledby="result-title">' in text
+    # UX 6.1: the label may name only an element that exists, so the empty region carries none.
+    assert '<section id="result" tabindex="-1">' in text
     assert "<title>Ask the Aveto docs</title>" in text
     assert '<html lang="en">' in text
 
@@ -370,7 +371,8 @@ def test_no_external_origin_in_page_or_static() -> None:
     for page in pages:
         for m in re.finditer(r'(?:src|href|action)="([^"]*)"', page):
             url = m.group(1)
-            assert url.startswith(("/", "https://github.com/")), url
+            # a bare fragment (the skip link, UX 1) stays on this page, so it names no origin
+            assert url.startswith(("/", "#", "https://github.com/")), url
         assert "<link" not in page.replace('<link rel="stylesheet" href="/static/style.css">', "")
         assert "<script" not in page.replace('<script src="/static/enhance.js" defer></script>', "")
         assert "<style" not in page and " style=" not in page and " onclick=" not in page
@@ -415,3 +417,88 @@ def test_main_module_composes_the_app(monkeypatch: pytest.MonkeyPatch) -> None:
     ).read_text()
     assert "create_app(runtime, _judge(), settings, html=HtmlPages(runtime))" in source
     assert "PlaceholderJudgeClient()" in source
+
+
+# --- polished chat experience: page markup (UX sections 1, 2, 4, 5, 6) ----------------------------
+
+
+def test_answer_page_names_its_region_by_the_heading_it_holds() -> None:
+    client, _, _ = make_client()
+    raw = client.get(post_form(client, QUESTION).headers["location"].split("#")[0]).text  # type: ignore[attr-defined]
+    assert '<section id="result" tabindex="-1" aria-labelledby="result-title">' in raw
+    assert 'id="result-title"' in raw
+
+
+def test_suggestions_are_separate_forms_with_one_question_field_each() -> None:
+    client, _, _ = make_client()
+    raw = client.get("/").text
+    forms = re.findall(r'<form class="suggest" method="post" action="/ask#result">(.*?)</form>', raw)
+    assert len(forms) == 4
+    for f in forms:
+        assert f.count('name="question"') == 1 and f.count("<button type=\"submit\" class=\"chip\">") == 1
+    assert raw.index("Try a question") < raw.index('<form id="ask-form"')
+    # the form that asks is not nested in, and does not share a field with, a suggestion
+    assert raw.count('name="question"') == 5  # four hidden inputs and the textarea
+
+
+def test_page_has_skip_link_scorecard_link_and_docs_click_marker() -> None:
+    client, _, _ = make_client()
+    raw = client.get("/").text
+    assert raw.index('<a class="skip" href="#q">Skip to the question box</a>') < raw.index("<h1>")
+    assert '<a href="/scorecard">See the quality scorecard</a>' in raw
+    assert 'id="link-docs"' in raw and raw.count('data-count="docs"') == 1
+    assert 'id="ready"' in raw
+
+
+def test_script_tag_and_head_are_unchanged_by_the_new_blocks() -> None:
+    client, _, _ = make_client()
+    raw = client.get("/").text
+    assert raw.count("<script") == 1 and raw.count("<link") == 1
+    assert " style=" not in raw and "<style" not in raw
+
+
+def test_paused_card_adds_the_midnight_line_and_keeps_the_form_and_suggestions() -> None:
+    client, _, _ = make_client()
+    service: AskService = client.app.state.service  # type: ignore[attr-defined]
+    service._spend.cap = service._floor + 1000
+    raw = post_form(client, QUESTION).text  # type: ignore[attr-defined]
+    text = visible(raw)
+    assert "Ask the Docs is back after midnight UTC." in text
+    assert "<textarea" in raw and "disabled" not in raw.split("<textarea")[1].split(">")[0]
+    assert "Try a question" in text
+
+
+def test_copy_button_is_hidden_until_the_script_runs_and_chip_is_the_fallback() -> None:
+    client, _, _ = make_client()
+    raw = client.get(post_form(client, QUESTION).headers["location"].split("#")[0]).text  # type: ignore[attr-defined]
+    assert '<button type="button" class="secondary copy" hidden>Copy link' in raw
+    assert 'class="chip" href="' in raw
+
+
+def test_css_has_no_fake_progress_and_no_unused_amber() -> None:
+    client, _, _ = make_client()
+    css = client.get("/static/style.css").text
+    for gone in ("@keyframes", ".dots", ".dot ", "--note-fg", "--note-bg"):
+        assert gone not in css
+    assert ".skip" in css and "details.receipts" in css and ".chip" in css
+    assert "prefers-reduced-motion" in css and "forced-colors" in css
+
+
+def test_script_reaches_only_same_origin_paths_and_never_sends_json() -> None:
+    client, _, _ = make_client()
+    js = client.get("/static/enhance.js").text
+    assert "Waiting: " in js and "Ready to search the docs." in js
+    assert "sendBeacon" in js and "clipboard" in js
+    assert "pulse" not in js and "The service may be waking up" not in js
+
+
+def test_script_checks_question_length_before_sending() -> None:
+    client, _, _ = make_client()
+    js = client.get("/static/enhance.js").text
+    guard = js.split('form.addEventListener("submit"', 1)[1].split("fetch(", 1)[0]
+    assert "q.value.trim()" in guard and "chars(" in guard and "> LIMIT" in guard
+    assert "Enter a question before you press Ask." in guard
+    assert "Shorten your question to 500 characters or fewer." in guard
+    assert "q.focus()" in guard and guard.count("return;") >= 3
+    assert "It can take up to a minute" not in js
+    assert "This is taking longer than usual. Please keep this page open." in js

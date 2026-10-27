@@ -1,0 +1,8 @@
+{
+  "date_utc": "2026-10-26T23:45:12Z",
+  "health_seconds": 25.8,
+  "health_status": 200,
+  "method": "One GET /health with a 180 s timeout after the replica had scaled to zero with no request sent, timed from send to the 200 (the method of the 30.8 s record), then one GET / timed.",
+  "root_seconds": 0.31,
+  "root_status": 200
+}

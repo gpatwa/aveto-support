@@ -1,0 +1,132 @@
+{
+ "index_sha256": "f36ef5d4fbf4b3f5542f59381867d992fe6619a6450cbbb19526f8493804a756",
+ "index_commit": "3a83b669a8b53dfdff869a1bbe361bdb156e3a13",
+ "index_path": "/Users/gopalpatwa/opt/aveto-support/index/docs-index.json",
+ "ranking": "default (file-rrf-v1)",
+ "rows": [
+  {
+   "slot": "A1",
+   "set": "retrieval-heldout-5",
+   "id": "g01",
+   "top5": [
+    "execution/pack/protocols/APPROVAL_PROTOCOL.md",
+    "docs/HUMAN_APPROVAL_RULES.md",
+    "agents/qa-evidence.md",
+    "agents/release-manager.md",
+    "agents/market-researcher.md"
+   ],
+   "labelled": [
+    "docs/HUMAN_APPROVAL_RULES.md",
+    "execution/pack/protocols/APPROVAL_PROTOCOL.md"
+   ],
+   "labelled_in_top5": true
+  },
+  {
+   "slot": "A2",
+   "set": "retrieval-heldout-5",
+   "id": "g03",
+   "top5": [
+    "docs/OPERATING_MODEL.md",
+    "agents/on-call-engineer.md",
+    "docs/VALIDATION_MATRIX.md",
+    "agents/production-verification.md",
+    "agents/sre.md"
+   ],
+   "labelled": [
+    "docs/OPERATING_MODEL.md"
+   ],
+   "labelled_in_top5": true
+  },
+  {
+   "slot": "A3",
+   "set": "retrieval-heldout-5",
+   "id": "g04",
+   "top5": [
+    "docs/DEPLOYMENT.md",
+    "README.md",
+    "execution/pack/commands/agentic-slice.md",
+    "agents/cloud-deployment.md",
+    "docs/AGENTIC_SDLC.md"
+   ],
+   "labelled": [
+    "docs/DEPLOYMENT.md"
+   ],
+   "labelled_in_top5": true
+  },
+  {
+   "slot": "R1",
+   "set": "retrieval-heldout-5",
+   "id": "gu18",
+   "top5": [
+    "templates/DOC_DELTA_TEMPLATE.md",
+    "agents/market-researcher.md",
+    "templates/PRD_TEMPLATE.md",
+    "agents/data-analyst.md",
+    "docs/AGENT_ROLES.md"
+   ],
+   "labelled": null,
+   "labelled_in_top5": null
+  },
+  {
+   "slot": "reserve-answer",
+   "set": "public-gate-1",
+   "id": "p05",
+   "top5": [
+    "docs/HUMAN_APPROVAL_RULES.md",
+    "docs/VALIDATION_MATRIX.md",
+    "agents/on-call-engineer.md",
+    "docs/RELEASE_GATES.md",
+    "docs/OPERATING_MODEL.md"
+   ],
+   "labelled": [
+    "docs/HUMAN_APPROVAL_RULES.md",
+    "docs/OPERATING_MODEL.md"
+   ],
+   "labelled_in_top5": true
+  },
+  {
+   "slot": "reserve-answer",
+   "set": "public-gate-1",
+   "id": "p01",
+   "top5": [
+    "project-packs/enterprise-saas-future.md",
+    "agents/customer-success.md",
+    "agents/customer-support.md",
+    "agents/sre.md",
+    "examples/saved-items-bulk-delete/README.md"
+   ],
+   "labelled": [
+    "project-packs/enterprise-saas-future.md"
+   ],
+   "labelled_in_top5": true
+  },
+  {
+   "slot": "reserve-refusal",
+   "set": "retrieval-heldout-5",
+   "id": "gu15",
+   "top5": [
+    "docs/DEPLOYMENT.md",
+    "execution/pack/AGENTS.md",
+    "execution/pack/commands/agentic-slice.md",
+    "execution/pack/commands/agentic-status.md",
+    "README.md"
+   ],
+   "labelled": null,
+   "labelled_in_top5": null
+  },
+  {
+   "slot": "reserve-refusal",
+   "set": "public-gate-1",
+   "id": "p12",
+   "top5": [
+    "README.md",
+    "docs/DEPLOYMENT.md",
+    "execution/pack/AGENTS.md",
+    "execution/pack/commands/agentic-slice.md",
+    "execution/pack/commands/agentic-resume.md"
+   ],
+   "labelled": null,
+   "labelled_in_top5": null
+  }
+ ]
+}

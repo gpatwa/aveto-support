@@ -1,0 +1,41 @@
+# Stage 4 checkpoint (commit 2): 2026-10-26T22:10:31Z
+$ git rev-parse HEAD (parent of this commit)
+cd4d4b1430c193b3f956bb418e9a1b387525ead2
+$ uv sync --locked
+Resolved 39 packages in 3ms
+Audited 36 packages in 0.72ms
+[exit 0]
+$ uv run mypy
+Success: no issues found in 52 source files
+[exit 0]
+$ uv run ruff check
+All checks passed!
+[exit 0]
+$ uv run pytest -q -rf
+            "Found ",
+            "Section: ",
+            "No confident match",
+        ):
+>           assert s not in js
+E           assert 'The docs answer this' not in '(function (...();\n})();\n'
+E             
+E             'The docs answer this' is contained here:
+E               answer", "The docs answer this", false);
+E                   r.heading.appendChild(el("span", "found", n === 1 ? "Found 1 passage." : "Found " + n + " passages."));
+E                   var ol = el("ol", "passages");
+E                   items.forEach(function (it, i) {
+E                     var path = it[0], p = it[1];...
+E             
+E             ...Full output truncated (114 lines hidden), use '-vv' to show
+
+tests/test_page_cards.py:509: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_page_cards.py::test_refusal_card_shows_no_model_written_text
+FAILED tests/test_page_cards.py::test_resting_state_at_the_cap - assert ('Pau...
+FAILED tests/test_page_cards.py::test_receipts_drawer_shows_only_what_the_service_held
+FAILED tests/test_page_cards.py::test_answer_card_holds_only_text_from_a_listed_passage
+FAILED tests/test_page_cards.py::test_every_aria_reference_resolves - Asserti...
+FAILED tests/test_page_cards.py::test_page_script_builds_no_result_card - ass...
+6 failed, 714 passed, 12 deselected in 15.92s
+[exit ]
+[pytest exit 1: expected. 6 failed = every test in tests/test_page_cards.py except test_disclosure_block_byte_identical (T-COPY), each on an AssertionError; 714 passed; 12 deselected (network/model markers). Baseline was 668 passed.]
