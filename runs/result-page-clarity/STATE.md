@@ -3,7 +3,7 @@
 - **Ask:** intents/result-page-clarity.md — after a visitor asks, the result is the first thing they see
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 8 Release Gate
+- **Current stage:** 10 Production verification
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents from this repo's `.claude/agents/` (session project dir is the main checkout; work is in the worktree)
 - **Telemetry:** self-reported
@@ -39,8 +39,8 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 400k tokens  ·  **Depth:** standard
 - **Hard cap:** 800k
-- **Spent:** 323k (81%)  ·  **Remaining:** 77k
-- **Next stage:** 8 Release Gate (ai-agent-product) est. 40k → **PROCEED**
+- **Spent:** 463k (58% of the hard cap; 116% of the plan)  ·  **Remaining:** 337k
+- **Next stage:** 10 Production verification (ai-agent-product) est. 45k → **PROCEED**
 
 Ceiling 720k (about 90% of the hard cap). Plan total 400k. Notice 1 when the projection first passes 720k; notice 2 only when spent passes 720k (90% of the hard cap). Both figures go in `END_REVIEW.md`.
 
@@ -72,3 +72,4 @@ Stage 2 (Frontend Developer) per 05-tech-spec.md "Hand off": goldens on 6ab5548,
 - **Charter miss (model):** Charter C3.3 lists `claude-sonnet-5-5` for the Software Architect and Security & Privacy, but their agent files default to `opus`. The Architect ran on `opus-5-5` (usage.mjs), not covered by C3. Recorded in `END_REVIEW.md`; the remaining spawns pass a `sonnet` override so they match C3. Stage 1 estimate 40k, peak 79k.
 
 - **Spend note (323k after stage 7):** the plan total is 400k and the remaining stages (8 to 11) estimate 150k, so the projection is about 473k: above the plan total, below the 720k ceiling and the 800k hard cap. No budget notice is due yet (C2.3).
+- **Stages 8 and 9 done:** Release Manager GO TO DEPLOY (139k peak, over its 40k estimate). Orchestrator ran the deploy sheet (Cloud Deployment not spawned, as in the last slice: it has no shell). Three deployments used: new image (revision 0000012), rollback rehearsal (0000013, image ffc2e2e5f39a), roll forward (0000014, image 16f9bda31836). Live record `runs/result-page-clarity/13-live/README.md`. Spend 463k of the 400k plan: above the plan total, below the 720k ceiling; no budget notice due.
