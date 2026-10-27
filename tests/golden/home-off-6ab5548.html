@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ask the Aveto docs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/enhance.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#q">Skip to the question box</a>
+<main>
+<h1>Ask the Aveto docs</h1>
+<p>Verbatim passages from Aveto's docs; an AI model decides only whether they answer. Nothing on this page is written by an AI model.</p>
+<h2 class="plain">What to expect</h2>
+<ul>
+<li>You get passages copied word for word from the docs, with the file and line numbers, or a plain note that the docs don't answer your question.</li>
+<li>Limits: 10 questions an hour and 500 characters a question. The service pauses for the day when the day's allowance is used.</li>
+<li>Please don't put personal or confidential information in your question.</li>
+<li>This service does not store or log your question. To decide whether the passages answer, your question and the passages found are sent to Anthropic, the company that makes the AI model. Anthropic handles them under its own terms, which this page does not control.</li>
+<li>To apply the limits we read your address, then keep only a scrambled form of it, the time and the outcome for 7 days. The service runs in the United States (Azure, East US 2).</li>
+<li>The docs are in English. One question at a time; nothing is remembered between questions.</li>
+</ul>
+<h2 class="plain">Try a question</h2>
+<p id="sugg-hint">Choose one to ask it straight away. Three are answered in the docs and one is not, so you can see both outcomes.</p>
+<div id="suggestions"><form class="suggest" method="post" action="/ask#result"><input type="hidden" name="question" value="Does saying &quot;looks good&quot; to an agent count as approving something?"><button type="submit" class="chip">Does saying &quot;looks good&quot; to an agent count as approving something?</button></form><form class="suggest" method="post" action="/ask#result"><input type="hidden" name="question" value="Can I keep a long-lived feature branch going while the agents work on it?"><button type="submit" class="chip">Can I keep a long-lived feature branch going while the agents work on it?</button></form><form class="suggest" method="post" action="/ask#result"><input type="hidden" name="question" value="If a deploy of the Aveto website goes wrong, how do I undo it?"><button type="submit" class="chip">If a deploy of the Aveto website goes wrong, how do I undo it?</button></form><form class="suggest" method="post" action="/ask#result"><input type="hidden" name="question" value="Does it support right-to-left languages?"><button type="submit" class="chip">Does it support right-to-left languages?</button></form></div>
+<form id="ask-form" method="post" action="/ask#result">
+<label for="q">Your question about Aveto</label>
+<textarea id="q" name="question" rows="4" autocomplete="off" spellcheck="true" aria-describedby="q-hint q-count q-error"></textarea>
+<p id="q-hint">Up to 500 characters.</p>
+<p id="q-count">0 of 500 characters</p>
+<p id="q-status" class="visually-hidden" role="status"></p>
+<p id="q-error" class="error"></p>
+<button type="submit" id="ask-button">Ask</button>
+</form>
+<p id="ready" class="ready"></p>
+<section id="result" tabindex="-1" aria-labelledby="result-title"><div id="result-live" aria-live="polite" aria-atomic="true"><div class="state state-note"><span class="icon" aria-hidden="true"></span><h2 id="result-title" role="alert">The service is off</h2><p>Ask the Docs is switched off right now. You can read the docs on GitHub or open an issue.</p><p class="links"><a href="https://github.com/acme/docs/issues/new?title=Docs+question+not+answered" rel="noopener noreferrer">Open a GitHub issue</a> <a href="https://github.com/acme/docs/tree/cccccccccccccccccccccccccccccccccccccccc" rel="noopener noreferrer" data-count="docs">Read the docs on GitHub</a></p></div></div><div id="result-extra"></div></section>
+</main>
+<footer>
+<p><a id="link-issue" href="https://github.com/acme/docs/issues/new?title=Docs+question+not+answered" rel="noopener noreferrer">Open a GitHub issue</a>. Add your question to the issue yourself if you wish.</p>
+<p><a id="link-docs" href="https://github.com/acme/docs/tree/cccccccccccccccccccccccccccccccccccccccc" rel="noopener noreferrer" data-count="docs">Read the docs on GitHub</a></p>
+<p><a href="/scorecard">See the quality scorecard</a></p>
+</footer>
+</body>
+</html>

@@ -177,7 +177,7 @@ def test_question_is_not_in_the_result() -> None:
 
 CORE_SHA256 = {
     ".claude/agents/aveto-answerability-judge.md": "c06d59f9d5733845d09cd53541eeca5bf9fa46c97b47e872d90f29a5ad477d72",
-    ".claude/hooks/budget-guard.mjs": "798c12faafaa2b4f99c2f958a073e7ddfb72c62e2e3771b2e515d5ea69369922",
+    ".claude/hooks/budget-guard.mjs": "222f39708d03770a33d09ba7579ee178fb78154ae60c1779239eab2cbf4a9b8e",
     ".claude/hooks/write-scope-guard.mjs": "8ff2fdcf4eef774fd5a4a949deb98f691f0cda6feb18df68b1892e2293fb3a31",
     ".claude/skills/aveto-judge-seen/SKILL.md": "f7ec300df026973a04271e6a1e86ad6f28779405a8d4e5726c7bd6fa641d9fcc",
     ".claude/skills/aveto-judge-seen/seen_payload.py": "13926842657e2708ab2e29d0df76429935ac213ddec7ce27cd5b34dd02834179",

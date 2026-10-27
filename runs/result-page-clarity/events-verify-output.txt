@@ -1,0 +1,8 @@
+/Users/gopalpatwa/opt/aveto-support/.claude/events/88d804ad-ae70-4566-ac4b-186dbe5721e8.jsonl: chain intact; 387 lines; head 4b025df05af28d8d
+  frontend-developer: 20 calls, 0 failed
+  main: 96 calls, 4 failed
+  qa-evidence: 23 calls, 0 failed
+  security-privacy: 10 calls, 0 failed
+  software-architect: 32 calls, 0 failed
+  tech-writer: 13 calls, 0 failed
+  ! seq 387: main attempted Bash P/Users/gopalpatwa/opt/agentic-sdlc-play #9630f3455466 with no outcome recorded (denied, blocked or interrupted)

@@ -185,6 +185,31 @@ warm response time (1.66 s median, 5.09 s slowest) and cost per question
 ($0.00785) are labelled on the page as measured on an earlier release (revision
 `ca-aveto-ask--0000006`, `runs/public-ask-the-docs/18-gate/RESULT.md`).
 
+## Result-first page (slice `result-page-clarity`)
+
+Built and tested locally; **not deployed, no live revision or date recorded**.
+Source: `runs/result-page-clarity/08-browser-checks.md` and `13-qa-evidence.md`.
+
+**What changed.** Only the page: on a result page the question box and the result
+come before "What to expect" and the suggested questions, and after a question is
+sent the script scrolls to the result and focuses it. The home page is unchanged.
+No visitor-facing string, route, header, limit or model call changed.
+
+**What to check after a deploy** (the stage 10 live check fills this in):
+
+| Check | Local figure (stand-in judge) | Live revision |
+|---|---|---|
+| Result heading top, 1280x800, answered and refused | 16.1 px | NOT YET MEASURED live |
+| Result heading top, 375x667, answered and refused | 15.6 px | NOT YET MEASURED live |
+| Focus after a question | `#result` | NOT YET MEASURED live |
+
+The bar is a heading top between 0 and 25% of the viewport. The local figures use
+the stand-in judge, not the live service, so they do not stand in for the live
+numbers.
+
+**Rollback.** As in section 2: a Bicep deployment (command 5) with the previous
+`imageTag`. Not rehearsed for this release.
+
 ## 5. The daily share and the UTC reset
 
 - The service allows a day's share of the monthly cap, `10 / 31` dollars

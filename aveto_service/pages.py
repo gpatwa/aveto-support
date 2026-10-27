@@ -70,7 +70,13 @@ class HtmlPages:
         self._static = {name: (STATIC_DIR / name).read_bytes() for name in STATIC_TYPES}
 
     def _html(
-        self, result: AskResult | None, raw: str, status: int = 200, *, at_load: bool = False
+        self,
+        result: AskResult | None,
+        raw: str,
+        status: int = 200,
+        *,
+        at_load: bool = False,
+        result_first: bool = False,
     ) -> Response:
         body = page_html(
             result,
@@ -81,6 +87,7 @@ class HtmlPages:
             commit=self._commit,
             links=self._links,
             at_load=at_load,
+            result_first=result_first,
         )
         return Response(
             body, status_code=status, media_type="text/html", headers=dict(SECURITY_HEADERS)
@@ -97,11 +104,11 @@ class HtmlPages:
             headers = dict(SECURITY_HEADERS)
             headers["Location"] = f"/result/{token}#result"
             return Response(status_code=303, headers=headers)
-        return self._html(result, raw, result.status)
+        return self._html(result, raw, result.status, result_first=True)
 
     def result_page(self, token: str) -> Response:
         result = self._store.get(token)
-        return self._html(result, "")
+        return self._html(result, "", result_first=True)
 
     def static(self, name: str) -> Response:
         data = self._static.get(name)

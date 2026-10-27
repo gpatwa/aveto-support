@@ -246,6 +246,19 @@ def result_region(
     )
 
 
+EXPECT = (
+    '<h2 class="plain">What to expect</h2>\n'
+    '<ul>\n'
+    "<li>You get passages copied word for word from the docs, with the file and line numbers, or a plain note that the docs don't answer your question.</li>\n"
+    "<li>Limits: 10 questions an hour and 500 characters a question. The service pauses for the day when the day's allowance is used.</li>\n"
+    "<li>Please don't put personal or confidential information in your question.</li>\n"
+    '<li>This service does not store or log your question. To decide whether the passages answer, your question and the passages found are sent to Anthropic, the company that makes the AI model. Anthropic handles them under its own terms, which this page does not control.</li>\n'
+    '<li>To apply the limits we read your address, then keep only a scrambled form of it, the time and the outcome for 7 days. The service runs in the United States (Azure, East US 2).</li>\n'
+    '<li>The docs are in English. One question at a time; nothing is remembered between questions.</li>\n'
+    '</ul>\n'
+)
+
+
 def page_html(
     result: AskResult | None,
     raw: str,
@@ -256,8 +269,11 @@ def page_html(
     commit: str = "",
     links: Mapping[str, str] | None = None,
     at_load: bool = False,
+    result_first: bool = False,
 ) -> str:
-    """`at_load` is the resting page: the card above a disabled form, no suggestions, no skip link."""
+    """`at_load` is the resting page: the card above a disabled form, no suggestions, no skip link.
+
+    `result_first` is the page that answers a question: the box, then the result, then the notes."""
     c = copy_for(result) if result is not None else None
     in_field = c is not None and c.field
     q_error = (
@@ -287,6 +303,8 @@ def page_html(
     off = " disabled" if at_load else ""
     hint = RESTING_HINT if at_load else "Up to 500 characters."
     above, below = (region, "") if at_load else ("", region)
+    first = result_first and result is not None and not at_load
+    lead, tail = ("", EXPECT + try_block) if first else (EXPECT + above + try_block, "")
     ready = "" if at_load else '<p id="ready" class="ready"></p>\n'
     return f"""<!doctype html>
 <html lang="en">
@@ -302,16 +320,7 @@ def page_html(
 {skip}<main>
 <h1>Ask the Aveto docs</h1>
 <p>Verbatim passages from Aveto's docs; an AI model decides only whether they answer. Nothing on this page is written by an AI model.</p>
-<h2 class="plain">What to expect</h2>
-<ul>
-<li>You get passages copied word for word from the docs, with the file and line numbers, or a plain note that the docs don't answer your question.</li>
-<li>Limits: 10 questions an hour and 500 characters a question. The service pauses for the day when the day's allowance is used.</li>
-<li>Please don't put personal or confidential information in your question.</li>
-<li>This service does not store or log your question. To decide whether the passages answer, your question and the passages found are sent to Anthropic, the company that makes the AI model. Anthropic handles them under its own terms, which this page does not control.</li>
-<li>To apply the limits we read your address, then keep only a scrambled form of it, the time and the outcome for 7 days. The service runs in the United States (Azure, East US 2).</li>
-<li>The docs are in English. One question at a time; nothing is remembered between questions.</li>
-</ul>
-{above}{try_block}<form id="ask-form" method="post" action="/ask#result">
+{lead}<form id="ask-form" method="post" action="/ask#result">
 <label for="q">Your question about Aveto</label>
 <textarea id="q" name="question" rows="4" autocomplete="off" spellcheck="true" aria-describedby="q-hint q-count q-error"{invalid}{off}>{escape(raw)}</textarea>
 <p id="q-hint">{hint}</p>
@@ -321,7 +330,7 @@ def page_html(
 <button type="submit" id="ask-button"{off}>Ask</button>
 </form>
 {ready}{below}
-</main>
+{tail}</main>
 <footer>
 <p><a id="link-issue" href="{escape(issue_url)}" rel="noopener noreferrer">Open a GitHub issue</a>. Add your question to the issue yourself if you wish.</p>
 <p><a id="link-docs" href="{escape(docs_url)}" rel="noopener noreferrer" data-count="docs">Read the docs on GitHub</a></p>

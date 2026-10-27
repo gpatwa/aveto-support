@@ -189,6 +189,14 @@ around it has:
   they are unauthenticated and can be inflated** (Security finding S2). They are
   not verified visitors.
 
+**Result first (slice `result-page-clarity`; built and tested locally, not deployed
+or merged).** On a result page (an answer, a refusal or an error after a question
+is asked) the question box and the result come before "What to expect" and the
+suggested questions; the home page keeps its order. After a question is sent the
+page scrolls to the result and moves keyboard focus to it. This is a reordering:
+no wording of the page changes, and answering, limits and response headers are
+unchanged (`runs/result-page-clarity/13-qa-evidence.md` sections 2 and 3).
+
 **The scorecard's figures.** They live in `aveto_service/scorecard.toml`, which is
 read once at startup by a strict reader (`aveto_service/scorecard.py`). Any
 unknown key, unlisted label, basis that does not start "Measured " or "Recorded ",

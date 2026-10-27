@@ -1,0 +1,57 @@
+# Fail-first run of tests/test_result_first.py on 6ab5548 (new tests + goldens only; no product file edited)
+# goldens written on 6ab5548 by: uv run python tests/test_result_first.py --write-goldens
+# sha256:
+1be146f4637ea025f254d54ca71a4b23ddd4dd344d62df8b36d93631c7e960be  tests/golden/home-6ab5548.html
+4b2bc7da059ed0c163380619287b3e58bc65b6f2e1d189977744ec55303e7290  tests/golden/home-off-6ab5548.html
+55b94af434bef8d83125fe747179245dd7ad6c423940ad698fce6ff8eefa3734  tests/golden/home-resting-6ab5548.html
+ee09482c45f9d961c905d67c75c9ceaf23af32a40f180ba0fba73f432e611ea2  tests/golden/result-strings-6ab5548.json
+# command: uv run pytest tests/test_result_first.py -q
+=================================== FAILURES ===================================
+_________ test_result_page_order_question_box_result_then_expectations _________
+E           AssertionError: answer: title, statement, box, result, expectations, suggestions
+E           assert [386, 417, 28...52, 1525, ...] == [386, 417, 55...45, 3351, ...]
+E             
+E             At index 2 diff: 2845 != 552
+E             Use -v to get more diff
+______________ test_reorder_applies_only_to_answers_of_a_question ______________
+E       assert 2845 < 570
+E        +  where 2845 = <built-in method index of str object at 0x12747ac00>('<form id="ask-form"')
+E        +    where <built-in method index of str object at 0x12747ac00> = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<title>Ask the Aveto docs</title>\n<meta name="vie...d the docs on GitHub</a></p>\n<p><a href="/scorecard">See the quality scorecard</a></p>\n</footer>\n</body>\n</html>\n'.index
+E        +  and   570 = <built-in method index of str object at 0x12747ac00>('What to expect')
+E        +    where <built-in method index of str object at 0x12747ac00> = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<title>Ask the Aveto docs</title>\n<meta name="vie...d the docs on GitHub</a></p>\n<p><a href="/scorecard">See the quality scorecard</a></p>\n</footer>\n</body>\n</html>\n'.index
+________________ test_result_pages_keep_every_string_only_moved ________________
+E           AssertionError: answer: strings out of order
+E           assert [417, 2915, 3558, 569, 1542] == [417, 569, 1542, 2915, 3558]
+E             
+E             At index 1 diff: 2915 != 569
+E             Use -v to get more diff
+_____________ test_focus_lands_on_the_result_without_scrolling_it ______________
+E       AssertionError: assert 'region.focus()' not in '(function (...  }\n})();\n'
+E         
+E         'region.focus()' is contained here:
+E           e {
+E                 region.focus();
+E               }
+E             }
+E             function showNetworkError() {...
+E         
+E         ...Full output truncated (147 lines hidden), use '-vv' to show
+__________ test_script_scrolls_the_heading_to_the_top_without_motion ___________
+E       ValueError: substring not found
+_________________ test_script_puts_result_first_once_after_ask _________________
+E       ValueError: substring not found
+=========================== short test summary info ============================
+FAILED tests/test_result_first.py::test_result_page_order_question_box_result_then_expectations
+FAILED tests/test_result_first.py::test_reorder_applies_only_to_answers_of_a_question
+FAILED tests/test_result_first.py::test_result_pages_keep_every_string_only_moved
+FAILED tests/test_result_first.py::test_focus_lands_on_the_result_without_scrolling_it
+FAILED tests/test_result_first.py::test_script_scrolls_the_heading_to_the_top_without_motion
+FAILED tests/test_result_first.py::test_script_puts_result_first_once_after_ask
+6 failed, 1 passed in 0.54s
+
+# Reading: 6 failed, 1 passed.
+# T1 FAIL (expectations precede the form). T2 FAIL via part (b); part (a), the home goldens, is a no-change pin and passed before reaching (b).
+# T3 FAIL via the ordered sequence; its multiset-of-strings part passed (no-change pin, by design).
+# T4 PASS on 6ab5548: cannot fail first, it pins script strings that already exist and must stay byte-identical.
+# T5 FAIL (bare region.focus() present, no land). T6 FAIL (no land/scrollTo). T7 FAIL (no resultFirst).
+# C1.7(a): tests/test_service_pipeline.py now 32 passed with the v30 hook hash. C1.7(b): ruff --fix changed import order only in tls-wrapper.py.

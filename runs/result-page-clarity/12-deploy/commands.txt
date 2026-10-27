@@ -1,0 +1,10 @@
+# Literal commands run in stage 9/10 (Orchestrator, 2026-10-27), from the worktree root. Times in d1/d2/d3-start/end.txt.
+az deployment group what-if -g rg-aveto-ask -f infra/main.bicep -p @infra/main.parameters.json -p deployApp=true imageTag=16f9bda31836 killSwitch=off configureLogRetention=true
+az acr build -r acravetoaskgp -t aveto-ask:16f9bda31836 --platform linux/amd64 -f Dockerfile .
+# deployment 1 (new image)
+az deployment group create -g rg-aveto-ask -f infra/main.bicep -p @infra/main.parameters.json -p deployApp=true imageTag=16f9bda31836 killSwitch=off configureLogRetention=true
+# deployment 2 (rollback rehearsal, previous image)
+az deployment group create -g rg-aveto-ask -f infra/main.bicep -p @infra/main.parameters.json -p deployApp=true imageTag=ffc2e2e5f39a killSwitch=off configureLogRetention=true
+# deployment 3 (roll forward)
+az deployment group create -g rg-aveto-ask -f infra/main.bicep -p @infra/main.parameters.json -p deployApp=true imageTag=16f9bda31836 killSwitch=off configureLogRetention=true
+# Note: configureLogRetention=true is the runbook section 1 step 5 form and sets the 7-day retention the service already had; the what-if showed no retention change. C8.3 does not name it; it is reported in END_REVIEW.md.

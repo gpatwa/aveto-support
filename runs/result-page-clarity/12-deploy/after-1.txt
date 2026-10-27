@@ -1,0 +1,9 @@
+ca-aveto-ask--0000011	0	Healthy
+ca-aveto-ask--0000012	100	None
+acravetoaskgp.azurecr.io/aveto-ask:16f9bda31836
+ANTHROPIC_API_KEY	None	anthropic-api-key
+ASK_KILL_SWITCH	off	None
+ASK_CLIENT_KEY	xff_last	None
+ASK_PRICE_IN_NANO_PER_TOKEN	2000	None
+ASK_PRICE_OUT_NANO_PER_TOKEN	10000	None
+ASK_MONTHLY_CAP_USD	10	None
