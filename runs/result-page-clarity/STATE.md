@@ -25,6 +25,7 @@
 | 5 QA evidence | QA Evidence | done (GO; 738 passed; 6 of 7 new tests fail first, 12 mutations, 2 equivalent survivors; no P0-P2) | runs/result-page-clarity/13-qa-evidence.md | n/a |
 | 6 Security review (smoke) | Security & Privacy | done (PASS; no P0-P2; 3 P3 advisories; README.md uncommitted change not reviewed) | runs/result-page-clarity/14-security-review.md | n/a |
 | 7 Docs | Tech Writer | done (README, public-ask runbook, CURRENT_MVP_STATUS; recorded figures only, live values marked NOT YET MEASURED) | runs/result-page-clarity/15-docs-note.md | n/a |
+| 8 Release Gate (tier 3) | Release Manager | done: GO TO DEPLOY (no FAIL, no pre-deploy OPEN); rollback rehearsal and live heading position are OPEN-REQUIRED-AFTER-DEPLOY (R1-R7); slice not landed | runs/result-page-clarity/16-release-checklist-tier3.md | Charter C1.4 bars 1-9, C8.1, C8.3 |
 
 ## Approvals
 
