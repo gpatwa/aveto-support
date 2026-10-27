@@ -3,7 +3,7 @@
 - **Ask:** intents/result-page-clarity.md — after a visitor asks, the result is the first thing they see
 - **Project pack:** ai-agent-product
 - **Release tier:** 3
-- **Current stage:** 2 Build
+- **Current stage:** 5 QA evidence
 - **Status:** in-progress
 - **Least-privilege:** enforced — role subagents from this repo's `.claude/agents/` (session project dir is the main checkout; work is in the worktree)
 - **Telemetry:** self-reported
@@ -19,7 +19,10 @@
 | Charter | Human | approved | runs/result-page-clarity/CHARTER.md | approval by hash |
 | Setup phase | Orchestrator | done (C6.P rules written; dry runs and before figures recorded) | runs/result-page-clarity/00-setup-dryruns.md | n/a |
 | 1 Tech spec | Software Architect | done (no STOP-FLAG; 7 tests T1-T7; ran on opus-5-5, see Charter-miss note) | runs/result-page-clarity/05-tech-spec.md; docs/ARCHITECTURE.md (page row) | n/a |
-| 2 Build | Frontend Developer | done (2 commits; 738 passed, mypy and ruff clean; 6 of 7 new tests failed first, T4 is a pin; browser checks left to stage 4) | runs/result-page-clarity/06-implementation.md | n/a |
+| 2 Build | Frontend Developer | done (738 passed; 6 of 7 new tests failed first; C1.7 fixed) | runs/result-page-clarity/06-implementation.md | n/a |
+| 3 Code review | Orchestrator | done (0 Important, 2 Nits, round 1) | runs/result-page-clarity/code-review.md | n/a |
+| 4 Browser checks | Orchestrator | done (heading 16 px at both sizes, axe 0, keyboard ok) | runs/result-page-clarity/08-browser-checks.md | n/a |
+| 5 QA evidence | QA Evidence | in-progress | runs/result-page-clarity/13-qa-evidence.md | n/a |
 
 ## Approvals
 
@@ -33,8 +36,8 @@ Per `RUN_ECONOMICS.md`. Checked **before every spawn** — never reconciled afte
 
 - **Budget:** 400k tokens  ·  **Depth:** standard
 - **Hard cap:** 800k
-- **Spent:** 79k (20%)  ·  **Remaining:** 321k
-- **Next stage:** 2 Build (ai-agent-product) est. 50k → **PROCEED**
+- **Spent:** 148k (37%)  ·  **Remaining:** 252k
+- **Next stage:** 5 QA evidence (ai-agent-product) est. 40k → **PROCEED**
 
 Ceiling 720k (about 90% of the hard cap). Plan total 400k. Notice 1 when the projection first passes 720k; notice 2 only when spent passes 720k (90% of the hard cap). Both figures go in `END_REVIEW.md`.
 
@@ -54,7 +57,8 @@ Ceiling 720k (about 90% of the hard cap). Plan total 400k. Notice 1 when the pro
 | Stage | Model | Effort | Start (UTC) | End (UTC) | Wall | Tokens | Tool calls | Retry # |
 |-------|-------|--------|-------------|-----------|------|--------|------------|---------|
 | 1 Tech spec | opus-5-5 (usage.mjs) | high (declared) | 06:20 | 06:25 | 5:06 | 79k | 32 | 0 |
-| **Total** | | | | | | 79k | 32 | |
+| 2 Build | sonnet-5-5 (usage.mjs) | medium (declared) | 06:30 | 06:34 | 3:09 | 69k | 20 | 0 |
+| **Total** | | | | | | 148k | 52 | |
 
 ## Next action
 
