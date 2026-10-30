@@ -1,0 +1,238 @@
+{
+  "schema": "aveto/usage@1",
+  "source": "harness-log",
+  "note": "Subagent stages only; the Orchestrator's own turns are not attributed. peakContext is the last request's context size; processed is the sum over every request.",
+  "weights": {
+    "input": 1,
+    "cacheRead": 0.1,
+    "cacheWrite5m": 1.25,
+    "cacheWrite1h": 2,
+    "output": 5
+  },
+  "generatedAt": "2026-10-30T06:25:06.838Z",
+  "totals": {
+    "spawns": 8,
+    "measuredSpawns": 8,
+    "unmeasuredSpawns": 0,
+    "requests": 113,
+    "input": 230,
+    "cacheRead": 5836028,
+    "cacheWrite5m": 678364,
+    "cacheWrite1h": 0,
+    "output": 148681,
+    "processed": 6663303,
+    "inputEquivalents": 2175193,
+    "peakContextSum": 580521,
+    "cacheHitRate": 0.8958
+  },
+  "spawns": [
+    {
+      "slice": "result-page-clarity",
+      "agentId": "aeaa283758ab470bf",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Stage 1 tech spec",
+      "finishedAt": "2026-10-27T06:15:53.671Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 23,
+        "input": 46,
+        "cacheRead": 1159349,
+        "cacheWrite5m": 79264,
+        "cacheWrite1h": 0,
+        "output": 29460,
+        "peakContext": 79266,
+        "processed": 1268119,
+        "inputEquivalents": 362361,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 79266,
+      "firstPassContext": null
+    },
+    {
+      "slice": "result-page-clarity",
+      "agentId": "aaaf59b7e1f7c87ac",
+      "role": "frontend-developer",
+      "generic": false,
+      "description": "Stage 2 build",
+      "finishedAt": "2026-10-27T06:21:33.097Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 19,
+        "input": 38,
+        "cacheRead": 922998,
+        "cacheWrite5m": 69018,
+        "cacheWrite1h": 0,
+        "output": 17055,
+        "peakContext": 69020,
+        "processed": 1009109,
+        "inputEquivalents": 263885,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 69020,
+      "firstPassContext": null
+    },
+    {
+      "slice": "result-page-clarity",
+      "agentId": "a04d6e433460d3853",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "Stage 5 QA evidence",
+      "finishedAt": "2026-10-27T06:28:51.984Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 21,
+        "input": 42,
+        "cacheRead": 967150,
+        "cacheWrite5m": 70606,
+        "cacheWrite1h": 0,
+        "output": 19703,
+        "peakContext": 73360,
+        "processed": 1057501,
+        "inputEquivalents": 283530,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 73360,
+      "firstPassContext": null
+    },
+    {
+      "slice": "result-page-clarity",
+      "agentId": "a646daa217d35493e",
+      "role": "security-privacy",
+      "generic": false,
+      "description": "Stage 6 security smoke",
+      "finishedAt": "2026-10-27T06:32:43.650Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 7,
+        "input": 14,
+        "cacheRead": 235958,
+        "cacheWrite5m": 51470,
+        "cacheWrite1h": 0,
+        "output": 8315,
+        "peakContext": 54224,
+        "processed": 295757,
+        "inputEquivalents": 129522,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 54224,
+      "firstPassContext": null
+    },
+    {
+      "slice": "result-page-clarity",
+      "agentId": "a855071c74977de7e",
+      "role": "tech-writer",
+      "generic": false,
+      "description": "Stage 7 docs",
+      "finishedAt": "2026-10-27T06:32:49.543Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 5,
+        "input": 10,
+        "cacheRead": 139846,
+        "cacheWrite5m": 47363,
+        "cacheWrite1h": 0,
+        "output": 4646,
+        "peakContext": 47365,
+        "processed": 191865,
+        "inputEquivalents": 96428,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 47365,
+      "firstPassContext": null
+    },
+    {
+      "slice": "result-page-clarity",
+      "agentId": "a3474316669e0982b",
+      "role": "release-manager",
+      "generic": false,
+      "description": "Stage 8 release gate",
+      "finishedAt": "2026-10-27T06:34:51.562Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 26,
+        "input": 52,
+        "cacheRead": 2142721,
+        "cacheWrite5m": 136103,
+        "cacheWrite1h": 0,
+        "output": 44656,
+        "peakContext": 139302,
+        "processed": 2323532,
+        "inputEquivalents": 607733,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 139302,
+      "firstPassContext": null
+    },
+    {
+      "slice": "result-page-clarity",
+      "agentId": "a69751745baa9e2c6",
+      "role": "production-verification",
+      "generic": false,
+      "description": "Stage 10 production verification",
+      "finishedAt": "2026-10-27T06:58:24.945Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 5,
+        "input": 10,
+        "cacheRead": 138835,
+        "cacheWrite5m": 57574,
+        "cacheWrite1h": 0,
+        "output": 15938,
+        "peakContext": 57576,
+        "processed": 212357,
+        "inputEquivalents": 165551,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 57576,
+      "firstPassContext": null
+    },
+    {
+      "slice": "result-page-clarity",
+      "agentId": "a07f2835fc26ad93f",
+      "role": "post-launch-learning",
+      "generic": false,
+      "description": "Stage 11 post-launch learning",
+      "finishedAt": "2026-10-27T07:06:39.814Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 7,
+        "input": 18,
+        "cacheRead": 129171,
+        "cacheWrite5m": 166966,
+        "cacheWrite1h": 0,
+        "output": 8908,
+        "peakContext": 60408,
+        "processed": 305063,
+        "inputEquivalents": 266183,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 60408,
+      "firstPassContext": null
+    }
+  ]
+}

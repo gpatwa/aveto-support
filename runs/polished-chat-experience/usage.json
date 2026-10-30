@@ -1,0 +1,446 @@
+{
+  "schema": "aveto/usage@1",
+  "source": "harness-log",
+  "note": "Subagent stages only; the Orchestrator's own turns are not attributed. peakContext is the last request's context size; processed is the sum over every request.",
+  "weights": {
+    "input": 1,
+    "cacheRead": 0.1,
+    "cacheWrite5m": 1.25,
+    "cacheWrite1h": 2,
+    "output": 5
+  },
+  "generatedAt": "2026-10-30T06:25:06.837Z",
+  "totals": {
+    "spawns": 16,
+    "measuredSpawns": 16,
+    "unmeasuredSpawns": 0,
+    "requests": 323,
+    "input": 650,
+    "cacheRead": 33656860,
+    "cacheWrite5m": 1552853,
+    "cacheWrite1h": 0,
+    "output": 522897,
+    "processed": 35733260,
+    "inputEquivalents": 7921887,
+    "peakContextSum": 1572655,
+    "cacheHitRate": 0.9559
+  },
+  "spawns": [
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "a261a067c4e328ed5",
+      "role": "engineering-manager",
+      "generic": false,
+      "description": "Stage 1 scope review",
+      "finishedAt": "2026-10-26T20:10:32.548Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 9,
+        "input": 18,
+        "cacheRead": 410011,
+        "cacheWrite5m": 83505,
+        "cacheWrite1h": 0,
+        "output": 18926,
+        "peakContext": 83507,
+        "processed": 512460,
+        "inputEquivalents": 240030,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 83507,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "ab853084001b927d4",
+      "role": "ui-designer",
+      "generic": false,
+      "description": "Stage 2 UX spec",
+      "finishedAt": "2026-10-26T21:02:34.562Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 9,
+        "input": 18,
+        "cacheRead": 533356,
+        "cacheWrite5m": 106216,
+        "cacheWrite1h": 0,
+        "output": 42731,
+        "peakContext": 106218,
+        "processed": 682321,
+        "inputEquivalents": 399779,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 106218,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "a2e18021a8d2cb2f8",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Stage 3 tech spec",
+      "finishedAt": "2026-10-26T21:12:12.641Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 67,
+        "input": 136,
+        "cacheRead": 12591789,
+        "cacheWrite5m": 351876,
+        "cacheWrite1h": 0,
+        "output": 170387,
+        "peakContext": 351878,
+        "processed": 13114188,
+        "inputEquivalents": 2551095,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 351878,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "ae21cc24fc654b842",
+      "role": "backend-architect",
+      "generic": false,
+      "description": "Stage 4 backend build",
+      "finishedAt": "2026-10-26T21:58:13.600Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 63,
+        "input": 126,
+        "cacheRead": 8580965,
+        "cacheWrite5m": 219823,
+        "cacheWrite1h": 0,
+        "output": 100300,
+        "peakContext": 219825,
+        "processed": 8901214,
+        "inputEquivalents": 1634501,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 219825,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "a46beac0ba9bc1846",
+      "role": "frontend-developer",
+      "generic": false,
+      "description": "Stage 5 frontend build",
+      "finishedAt": "2026-10-26T22:14:20.070Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 22,
+        "input": 44,
+        "cacheRead": 2138284,
+        "cacheWrite5m": 147438,
+        "cacheWrite1h": 0,
+        "output": 38633,
+        "peakContext": 150192,
+        "processed": 2324399,
+        "inputEquivalents": 591335,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 150192,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "ac02ba7b3a75a7a62",
+      "role": "backend-architect",
+      "generic": false,
+      "description": "Fix review finding F2 (warm)",
+      "finishedAt": "2026-10-26T22:30:07.323Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 8,
+        "input": 16,
+        "cacheRead": 85722,
+        "cacheWrite5m": 14087,
+        "cacheWrite1h": 0,
+        "output": 2120,
+        "peakContext": 14089,
+        "processed": 101945,
+        "inputEquivalents": 36797,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 14089,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "ad765c1095e1b08c6",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "Stage 7 QA evidence",
+      "finishedAt": "2026-10-26T22:31:29.658Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 44,
+        "input": 88,
+        "cacheRead": 3384490,
+        "cacheWrite5m": 125521,
+        "cacheWrite1h": 0,
+        "output": 38957,
+        "peakContext": 128275,
+        "processed": 3549056,
+        "inputEquivalents": 690223,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 128275,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "ad47828a835bd3593",
+      "role": "frontend-developer",
+      "generic": false,
+      "description": "Fix QA findings Q1 and Q2",
+      "finishedAt": "2026-10-26T22:43:49.360Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 9,
+        "input": 20,
+        "cacheRead": 143317,
+        "cacheWrite5m": 23006,
+        "cacheWrite1h": 0,
+        "output": 3633,
+        "peakContext": 23008,
+        "processed": 169976,
+        "inputEquivalents": 61274,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 23008,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "a615fd3936b863690",
+      "role": "security-privacy",
+      "generic": false,
+      "description": "Stage 9 security review",
+      "finishedAt": "2026-10-26T22:48:59.382Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 29,
+        "input": 58,
+        "cacheRead": 2360303,
+        "cacheWrite5m": 120370,
+        "cacheWrite1h": 0,
+        "output": 33546,
+        "peakContext": 120372,
+        "processed": 2514277,
+        "inputEquivalents": 554281,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 120372,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "a8fdbb43194179aef",
+      "role": "backend-architect",
+      "generic": false,
+      "description": "Stage 9b scorecard figures fill",
+      "finishedAt": "2026-10-26T22:55:56.061Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 4,
+        "input": 8,
+        "cacheRead": 36951,
+        "cacheWrite5m": 14469,
+        "cacheWrite1h": 0,
+        "output": 1857,
+        "peakContext": 14471,
+        "processed": 53285,
+        "inputEquivalents": 31074,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 14471,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "a4a8e4c2222c0d4e7",
+      "role": "tech-writer",
+      "generic": false,
+      "description": "Stage 10 docs",
+      "finishedAt": "2026-10-26T22:57:04.147Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 13,
+        "input": 26,
+        "cacheRead": 1000198,
+        "cacheWrite5m": 106170,
+        "cacheWrite1h": 0,
+        "output": 14970,
+        "peakContext": 106172,
+        "processed": 1121364,
+        "inputEquivalents": 307608,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 106172,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "a9fc5669bfd7c2565",
+      "role": "tech-writer",
+      "generic": false,
+      "description": "Docs figure fix 730 to 731",
+      "finishedAt": "2026-10-26T22:59:33.882Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 5,
+        "input": 10,
+        "cacheRead": 55899,
+        "cacheWrite5m": 9678,
+        "cacheWrite1h": 0,
+        "output": 1842,
+        "peakContext": 15566,
+        "processed": 67429,
+        "inputEquivalents": 26907,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 15566,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "a1a7658b5b46bf992",
+      "role": "backend-architect",
+      "generic": false,
+      "description": "Scorecard record and sha update",
+      "finishedAt": "2026-10-26T22:59:37.661Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 4,
+        "input": 8,
+        "cacheRead": 37351,
+        "cacheWrite5m": 6556,
+        "cacheWrite1h": 0,
+        "output": 934,
+        "peakContext": 11741,
+        "processed": 44849,
+        "inputEquivalents": 16608,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 11741,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "a7a6906c44de5bf52",
+      "role": "release-manager",
+      "generic": false,
+      "description": "Stage 11 release gate tier 3",
+      "finishedAt": "2026-10-26T23:16:47.639Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 25,
+        "input": 50,
+        "cacheRead": 1991900,
+        "cacheWrite5m": 126255,
+        "cacheWrite1h": 0,
+        "output": 36255,
+        "peakContext": 126257,
+        "processed": 2154460,
+        "inputEquivalents": 538334,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 126257,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "abefc649d30fa0ccb",
+      "role": "production-verification",
+      "generic": false,
+      "description": "Stage 13 production verification",
+      "finishedAt": "2026-10-26T23:47:44.141Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 7,
+        "input": 14,
+        "cacheRead": 147155,
+        "cacheWrite5m": 40228,
+        "cacheWrite1h": 0,
+        "output": 9928,
+        "peakContext": 40230,
+        "processed": 197325,
+        "inputEquivalents": 114655,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 40230,
+      "firstPassContext": null
+    },
+    {
+      "slice": "polished-chat-experience",
+      "agentId": "a73cd9482cc6e3f54",
+      "role": "post-launch-learning",
+      "generic": false,
+      "description": "Stage 14 post-launch learning",
+      "finishedAt": "2026-10-26T23:50:33.151Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 5,
+        "input": 10,
+        "cacheRead": 159169,
+        "cacheWrite5m": 57655,
+        "cacheWrite1h": 0,
+        "output": 7878,
+        "peakContext": 60854,
+        "processed": 224712,
+        "inputEquivalents": 127386,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 60854,
+      "firstPassContext": null
+    }
+  ]
+}

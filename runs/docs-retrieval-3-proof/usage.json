@@ -1,0 +1,82 @@
+{
+  "schema": "aveto/usage@1",
+  "source": "harness-log",
+  "note": "Subagent stages only; the Orchestrator's own turns are not attributed. peakContext is the last request's context size; processed is the sum over every request.",
+  "weights": {
+    "input": 1,
+    "cacheRead": 0.1,
+    "cacheWrite5m": 1.25,
+    "cacheWrite1h": 2,
+    "output": 5
+  },
+  "generatedAt": "2026-10-30T06:25:06.833Z",
+  "totals": {
+    "spawns": 2,
+    "measuredSpawns": 2,
+    "unmeasuredSpawns": 0,
+    "requests": 43,
+    "input": 86,
+    "cacheRead": 2192772,
+    "cacheWrite5m": 139940,
+    "cacheWrite1h": 0,
+    "output": 9847,
+    "processed": 2342645,
+    "inputEquivalents": 443523,
+    "peakContextSum": 142737,
+    "cacheHitRate": 0.94
+  },
+  "spawns": [
+    {
+      "slice": "docs-retrieval-3-proof",
+      "agentId": "a839e99e418317c6f",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "Label review of draft set 4",
+      "finishedAt": "2026-10-01T06:41:22.755Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 33,
+        "input": 66,
+        "cacheRead": 1960809,
+        "cacheWrite5m": 101797,
+        "cacheWrite1h": 0,
+        "output": 4886,
+        "peakContext": 104592,
+        "processed": 2067558,
+        "inputEquivalents": 347823,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 104592,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-retrieval-3-proof",
+      "agentId": "ae6cf2ac87e5862d2",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "Score fourth held-out set once",
+      "finishedAt": "2026-10-01T19:05:44.701Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 10,
+        "input": 20,
+        "cacheRead": 231963,
+        "cacheWrite5m": 38143,
+        "cacheWrite1h": 0,
+        "output": 4961,
+        "peakContext": 38145,
+        "processed": 275087,
+        "inputEquivalents": 95700,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 38145,
+      "firstPassContext": null
+    }
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "schema": "aveto/usage@1",
+  "source": "harness-log",
+  "note": "Subagent stages only; the Orchestrator's own turns are not attributed. peakContext is the last request's context size; processed is the sum over every request.",
+  "weights": {
+    "input": 1,
+    "cacheRead": 0.1,
+    "cacheWrite5m": 1.25,
+    "cacheWrite1h": 2,
+    "output": 5
+  },
+  "generatedAt": "2026-10-30T06:25:06.831Z",
+  "totals": {
+    "spawns": 6,
+    "measuredSpawns": 6,
+    "unmeasuredSpawns": 0,
+    "requests": 241,
+    "input": 500,
+    "cacheRead": 28615221,
+    "cacheWrite5m": 2052892,
+    "cacheWrite1h": 0,
+    "output": 236055,
+    "processed": 30904668,
+    "inputEquivalents": 6608411,
+    "peakContextSum": 849116,
+    "cacheHitRate": 0.933
+  },
+  "spawns": [
+    {
+      "slice": "docs-retrieval",
+      "agentId": "a4872d924a925eecb",
+      "role": "engineering-manager",
+      "generic": false,
+      "description": "Scope Review for docs-retrieval",
+      "finishedAt": "2026-09-27T21:03:54.762Z",
+      "durationMs": 248257,
+      "toolCalls": 18,
+      "measured": {
+        "requests": 12,
+        "input": 24,
+        "cacheRead": 446838,
+        "cacheWrite5m": 55114,
+        "cacheWrite1h": 0,
+        "output": 1482,
+        "peakContext": 55116,
+        "processed": 503458,
+        "inputEquivalents": 121010,
+        "models": [
+          "claude-sonnet-5"
+        ]
+      },
+      "peakContext": 55116,
+      "firstPassContext": 55125
+    },
+    {
+      "slice": "docs-retrieval",
+      "agentId": "ad71c8524f37457c5",
+      "role": "engineering-manager",
+      "generic": false,
+      "description": "Amend scope: ≥80% bar into core",
+      "finishedAt": "2026-09-29T00:03:34.608Z",
+      "durationMs": 36695,
+      "toolCalls": 13,
+      "measured": {
+        "requests": 19,
+        "input": 42,
+        "cacheRead": 604852,
+        "cacheWrite5m": 131926,
+        "cacheWrite1h": 0,
+        "output": 21849,
+        "peakContext": 71345,
+        "processed": 758669,
+        "inputEquivalents": 334680,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 71345,
+      "firstPassContext": 27268
+    },
+    {
+      "slice": "docs-retrieval",
+      "agentId": "a6a2caca2f94f7b71",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Architecture for docs-retrieval-core",
+      "finishedAt": "2026-09-29T00:17:40.101Z",
+      "durationMs": 816314,
+      "toolCalls": 38,
+      "measured": {
+        "requests": 84,
+        "input": 178,
+        "cacheRead": 14255032,
+        "cacheWrite5m": 1151684,
+        "cacheWrite1h": 0,
+        "output": 193310,
+        "peakContext": 291573,
+        "processed": 15600204,
+        "inputEquivalents": 3831836,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 291573,
+      "firstPassContext": 128494
+    },
+    {
+      "slice": "docs-retrieval",
+      "agentId": "a1f8d315843d2afa5",
+      "role": "backend-architect",
+      "generic": false,
+      "description": "Implement docs-retrieval-core",
+      "finishedAt": "2026-09-29T00:26:40.696Z",
+      "durationMs": 375882,
+      "toolCalls": 28,
+      "measured": {
+        "requests": 68,
+        "input": 136,
+        "cacheRead": 10175968,
+        "cacheWrite5m": 367242,
+        "cacheWrite1h": 0,
+        "output": 3385,
+        "peakContext": 260889,
+        "processed": 10546731,
+        "inputEquivalents": 1493710,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 260889,
+      "firstPassContext": 107180
+    },
+    {
+      "slice": "docs-retrieval",
+      "agentId": "a010173dc1ee9ca5a",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "QA: write frozen off-topic calibration list",
+      "finishedAt": "2026-09-29T05:31:40.823Z",
+      "durationMs": 149996,
+      "toolCalls": 15,
+      "measured": {
+        "requests": 50,
+        "input": 104,
+        "cacheRead": 2812162,
+        "cacheWrite5m": 278132,
+        "cacheWrite1h": 0,
+        "output": 1266,
+        "peakContext": 101397,
+        "processed": 3091664,
+        "inputEquivalents": 635315,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 101397,
+      "firstPassContext": 44781
+    },
+    {
+      "slice": "docs-retrieval",
+      "agentId": "af9d10cb6d1f2ec3b",
+      "role": "post-launch-learning",
+      "generic": false,
+      "description": "Close-out for docs-retrieval (gate failed)",
+      "finishedAt": "2026-09-29T16:21:21.739Z",
+      "durationMs": 107212,
+      "toolCalls": 27,
+      "measured": {
+        "requests": 8,
+        "input": 16,
+        "cacheRead": 320369,
+        "cacheWrite5m": 68794,
+        "cacheWrite1h": 0,
+        "output": 14763,
+        "peakContext": 68796,
+        "processed": 403942,
+        "inputEquivalents": 191860,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 68796,
+      "firstPassContext": 69266
+    }
+  ]
+}

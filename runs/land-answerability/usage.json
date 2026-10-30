@@ -1,0 +1,264 @@
+{
+  "schema": "aveto/usage@1",
+  "source": "harness-log",
+  "note": "Subagent stages only; the Orchestrator's own turns are not attributed. peakContext is the last request's context size; processed is the sum over every request.",
+  "weights": {
+    "input": 1,
+    "cacheRead": 0.1,
+    "cacheWrite5m": 1.25,
+    "cacheWrite1h": 2,
+    "output": 5
+  },
+  "generatedAt": "2026-10-30T06:25:06.837Z",
+  "totals": {
+    "spawns": 9,
+    "measuredSpawns": 9,
+    "unmeasuredSpawns": 0,
+    "requests": 151,
+    "input": 310,
+    "cacheRead": 8568441,
+    "cacheWrite5m": 787603,
+    "cacheWrite1h": 0,
+    "output": 165884,
+    "processed": 9522238,
+    "inputEquivalents": 2671078,
+    "peakContextSum": 649681,
+    "cacheHitRate": 0.9158
+  },
+  "spawns": [
+    {
+      "slice": "land-answerability",
+      "agentId": "a11df7c4e3e9bc9ab",
+      "role": "ai-engineer",
+      "generic": false,
+      "description": "S5 fix for judge-seen skill",
+      "finishedAt": "2026-10-17T22:38:03.603Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 13,
+        "input": 30,
+        "cacheRead": 277608,
+        "cacheWrite5m": 61634,
+        "cacheWrite1h": 0,
+        "output": 9839,
+        "peakContext": 32278,
+        "processed": 349111,
+        "inputEquivalents": 154028,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 32278,
+      "firstPassContext": null
+    },
+    {
+      "slice": "land-answerability",
+      "agentId": "acaa90d2cd87be19c",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "Rehearse rollback on scratch branch",
+      "finishedAt": "2026-10-17T22:39:41.339Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 11,
+        "input": 22,
+        "cacheRead": 244932,
+        "cacheWrite5m": 29619,
+        "cacheWrite1h": 0,
+        "output": 5795,
+        "peakContext": 32351,
+        "processed": 280368,
+        "inputEquivalents": 90514,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 32351,
+      "firstPassContext": null
+    },
+    {
+      "slice": "land-answerability",
+      "agentId": "add7b7508b9ec4b5a",
+      "role": "compliance-reviewer",
+      "generic": false,
+      "description": "Record vendor risk status",
+      "finishedAt": "2026-10-17T22:40:50.990Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 10,
+        "input": 20,
+        "cacheRead": 289524,
+        "cacheWrite5m": 44216,
+        "cacheWrite1h": 0,
+        "output": 12748,
+        "peakContext": 44218,
+        "processed": 346508,
+        "inputEquivalents": 147982,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 44218,
+      "firstPassContext": null
+    },
+    {
+      "slice": "land-answerability",
+      "agentId": "aad72b9f222ced518",
+      "role": "ai-governance",
+      "generic": false,
+      "description": "AI governance review of judge",
+      "finishedAt": "2026-10-17T22:40:56.255Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 12,
+        "input": 24,
+        "cacheRead": 681807,
+        "cacheWrite5m": 86816,
+        "cacheWrite1h": 0,
+        "output": 19951,
+        "peakContext": 90015,
+        "processed": 788598,
+        "inputEquivalents": 276480,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 90015,
+      "firstPassContext": null
+    },
+    {
+      "slice": "land-answerability",
+      "agentId": "a461e7022d23ff79f",
+      "role": "tech-writer",
+      "generic": false,
+      "description": "Records, runbook and docs updates",
+      "finishedAt": "2026-10-17T22:44:09.177Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 20,
+        "input": 42,
+        "cacheRead": 1433993,
+        "cacheWrite5m": 187789,
+        "cacheWrite1h": 0,
+        "output": 19939,
+        "peakContext": 97066,
+        "processed": 1641763,
+        "inputEquivalents": 477873,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 97066,
+      "firstPassContext": null
+    },
+    {
+      "slice": "land-answerability",
+      "agentId": "a63c86cdf6920f5ca",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Apply ARCHITECTURE.md edits",
+      "finishedAt": "2026-10-17T22:46:07.523Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 12,
+        "input": 26,
+        "cacheRead": 259636,
+        "cacheWrite5m": 64639,
+        "cacheWrite1h": 0,
+        "output": 4446,
+        "peakContext": 34930,
+        "processed": 328747,
+        "inputEquivalents": 129018,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 34930,
+      "firstPassContext": null
+    },
+    {
+      "slice": "land-answerability",
+      "agentId": "aa62ae0942d7cbf1d",
+      "role": "security-privacy",
+      "generic": false,
+      "description": "Security re-check at standard depth",
+      "finishedAt": "2026-10-17T22:47:13.308Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 38,
+        "input": 76,
+        "cacheRead": 2288813,
+        "cacheWrite5m": 93557,
+        "cacheWrite1h": 0,
+        "output": 31157,
+        "peakContext": 93559,
+        "processed": 2413603,
+        "inputEquivalents": 501689,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 93559,
+      "firstPassContext": null
+    },
+    {
+      "slice": "land-answerability",
+      "agentId": "a4df447ec07c6d4fc",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "Final-tree regression and freeze diff",
+      "finishedAt": "2026-10-17T22:53:17.547Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 11,
+        "input": 22,
+        "cacheRead": 297960,
+        "cacheWrite5m": 36769,
+        "cacheWrite1h": 0,
+        "output": 6392,
+        "peakContext": 39501,
+        "processed": 341143,
+        "inputEquivalents": 107739,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 39501,
+      "firstPassContext": null
+    },
+    {
+      "slice": "land-answerability",
+      "agentId": "ad9387eaedfef1b78",
+      "role": "release-manager",
+      "generic": false,
+      "description": "Tier 3 Release Gate verdict",
+      "finishedAt": "2026-10-17T22:56:04.808Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 24,
+        "input": 48,
+        "cacheRead": 2794168,
+        "cacheWrite5m": 182564,
+        "cacheWrite1h": 0,
+        "output": 55617,
+        "peakContext": 185763,
+        "processed": 3032397,
+        "inputEquivalents": 785755,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 185763,
+      "firstPassContext": null
+    }
+  ]
+}

@@ -1,0 +1,524 @@
+{
+  "schema": "aveto/usage@1",
+  "source": "harness-log",
+  "note": "Subagent stages only; the Orchestrator's own turns are not attributed. peakContext is the last request's context size; processed is the sum over every request.",
+  "weights": {
+    "input": 1,
+    "cacheRead": 0.1,
+    "cacheWrite5m": 1.25,
+    "cacheWrite1h": 2,
+    "output": 5
+  },
+  "generatedAt": "2026-10-30T06:25:06.837Z",
+  "totals": {
+    "spawns": 19,
+    "measuredSpawns": 19,
+    "unmeasuredSpawns": 0,
+    "requests": 516,
+    "input": 1032,
+    "cacheRead": 44116309,
+    "cacheWrite5m": 2366815,
+    "cacheWrite1h": 0,
+    "output": 661214,
+    "processed": 47145370,
+    "inputEquivalents": 10677251,
+    "peakContextSum": 1964242,
+    "cacheHitRate": 0.9491
+  },
+  "spawns": [
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "ae0247d80786b7069",
+      "role": "engineering-manager",
+      "generic": false,
+      "description": "Scope Review docs-answerability-2",
+      "finishedAt": "2026-10-13T00:59:44.351Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 19,
+        "input": 38,
+        "cacheRead": 1198813,
+        "cacheWrite5m": 106925,
+        "cacheWrite1h": 0,
+        "output": 35446,
+        "peakContext": 106927,
+        "processed": 1341222,
+        "inputEquivalents": 430806,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 106927,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "a1db6b5384f714343",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Architecture pass 1 spec",
+      "finishedAt": "2026-10-13T01:04:33.965Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 45,
+        "input": 90,
+        "cacheRead": 4315452,
+        "cacheWrite5m": 508168,
+        "cacheWrite1h": 0,
+        "output": 80085,
+        "peakContext": 177763,
+        "processed": 4903795,
+        "inputEquivalents": 1467270,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 177763,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "a5788c40a7d0abedc",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Architecture pass 2 INV words",
+      "finishedAt": "2026-10-13T01:48:50.174Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 37,
+        "input": 74,
+        "cacheRead": 3967594,
+        "cacheWrite5m": 158283,
+        "cacheWrite1h": 0,
+        "output": 61173,
+        "peakContext": 164515,
+        "processed": 4187124,
+        "inputEquivalents": 900552,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 164515,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "a1bc4054ad9c819c8",
+      "role": "ai-engineer",
+      "generic": false,
+      "description": "Stage 4 implementation",
+      "finishedAt": "2026-10-13T03:49:11.914Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 45,
+        "input": 90,
+        "cacheRead": 4612315,
+        "cacheWrite5m": 153510,
+        "cacheWrite1h": 0,
+        "output": 60383,
+        "peakContext": 153512,
+        "processed": 4826298,
+        "inputEquivalents": 955124,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 153512,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "aeff68ac77d2a6ab2",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "Score stage 5 sample check",
+      "finishedAt": "2026-10-13T22:45:34.223Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 9,
+        "input": 18,
+        "cacheRead": 242454,
+        "cacheWrite5m": 42403,
+        "cacheWrite1h": 0,
+        "output": 5842,
+        "peakContext": 42405,
+        "processed": 290717,
+        "inputEquivalents": 106477,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 42405,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "aade9745e1e1ff43d",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "Label review fifth set",
+      "finishedAt": "2026-10-14T03:07:58.797Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 106,
+        "input": 212,
+        "cacheRead": 12990474,
+        "cacheWrite5m": 225855,
+        "cacheWrite1h": 0,
+        "output": 89095,
+        "peakContext": 225857,
+        "processed": 13305636,
+        "inputEquivalents": 2027053,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 225857,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "ae320e29f5bd873c6",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "Score fifth set once",
+      "finishedAt": "2026-10-15T22:59:49.188Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 12,
+        "input": 24,
+        "cacheRead": 353147,
+        "cacheWrite5m": 46648,
+        "cacheWrite1h": 0,
+        "output": 8419,
+        "peakContext": 46650,
+        "processed": 408238,
+        "inputEquivalents": 135744,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 46650,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "a259ea16781acf523",
+      "role": "security-privacy",
+      "generic": false,
+      "description": "Security review adversarial",
+      "finishedAt": "2026-10-15T23:02:13.517Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 52,
+        "input": 104,
+        "cacheRead": 5217580,
+        "cacheWrite5m": 156605,
+        "cacheWrite1h": 0,
+        "output": 61391,
+        "peakContext": 156607,
+        "processed": 5435680,
+        "inputEquivalents": 1024573,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 156607,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "a659d1a37d67de882",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "Release gate QA run",
+      "finishedAt": "2026-10-15T23:13:27.359Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 32,
+        "input": 64,
+        "cacheRead": 1593022,
+        "cacheWrite5m": 82573,
+        "cacheWrite1h": 0,
+        "output": 26588,
+        "peakContext": 82575,
+        "processed": 1702247,
+        "inputEquivalents": 395522,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 82575,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "a8043c8cf6c274a7c",
+      "role": "release-manager",
+      "generic": false,
+      "description": "Release Manager verdict",
+      "finishedAt": "2026-10-15T23:19:13.905Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 19,
+        "input": 38,
+        "cacheRead": 1394590,
+        "cacheWrite5m": 104334,
+        "cacheWrite1h": 0,
+        "output": 34541,
+        "peakContext": 104336,
+        "processed": 1533503,
+        "inputEquivalents": 442620,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 104336,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "a1bcbdca5085213e2",
+      "role": "tech-writer",
+      "generic": false,
+      "description": "Docs after verdict",
+      "finishedAt": "2026-10-15T23:24:02.615Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 11,
+        "input": 22,
+        "cacheRead": 458510,
+        "cacheWrite5m": 61770,
+        "cacheWrite1h": 0,
+        "output": 17341,
+        "peakContext": 64969,
+        "processed": 537643,
+        "inputEquivalents": 209791,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 64969,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "a926b87bc499605fc",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Architecture and ADR doc edits",
+      "finishedAt": "2026-10-15T23:25:56.680Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 25,
+        "input": 50,
+        "cacheRead": 928692,
+        "cacheWrite5m": 151103,
+        "cacheWrite1h": 0,
+        "output": 19438,
+        "peakContext": 60350,
+        "processed": 1099283,
+        "inputEquivalents": 378988,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 60350,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "aaf1e124b5a9bf989",
+      "role": "sre",
+      "generic": false,
+      "description": "Post-launch monitoring plan",
+      "finishedAt": "2026-10-16T21:44:57.618Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 8,
+        "input": 16,
+        "cacheRead": 230900,
+        "cacheWrite5m": 57613,
+        "cacheWrite1h": 0,
+        "output": 16417,
+        "peakContext": 57615,
+        "processed": 304946,
+        "inputEquivalents": 177207,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 57615,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "a1764c0a3e85a6d18",
+      "role": "compliance-reviewer",
+      "generic": false,
+      "description": "Vendor risk, DPA, change request",
+      "finishedAt": "2026-10-16T21:45:07.546Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 11,
+        "input": 22,
+        "cacheRead": 534181,
+        "cacheWrite5m": 83141,
+        "cacheWrite1h": 0,
+        "output": 22648,
+        "peakContext": 83143,
+        "processed": 639992,
+        "inputEquivalents": 270606,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 83143,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "a35aa6135117ed0c7",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "Tier 3 dry run and audit coverage",
+      "finishedAt": "2026-10-16T21:47:30.139Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 42,
+        "input": 84,
+        "cacheRead": 2939593,
+        "cacheWrite5m": 118232,
+        "cacheWrite1h": 0,
+        "output": 43425,
+        "peakContext": 120964,
+        "processed": 3101334,
+        "inputEquivalents": 658958,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 120964,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "aa40bc1366b1c826f",
+      "role": "release-manager",
+      "generic": false,
+      "description": "Release verdict at tier 3",
+      "finishedAt": "2026-10-16T21:54:04.850Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 23,
+        "input": 46,
+        "cacheRead": 2367581,
+        "cacheWrite5m": 152144,
+        "cacheWrite1h": 0,
+        "output": 43954,
+        "peakContext": 152146,
+        "processed": 2563725,
+        "inputEquivalents": 646754,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 152146,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "ab63357ef7f1a2a7e",
+      "role": "tech-writer",
+      "generic": false,
+      "description": "README status tier 3 update",
+      "finishedAt": "2026-10-16T21:59:45.541Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 3,
+        "input": 6,
+        "cacheRead": 49608,
+        "cacheWrite5m": 36590,
+        "cacheWrite1h": 0,
+        "output": 4399,
+        "peakContext": 39789,
+        "processed": 90603,
+        "inputEquivalents": 72699,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 39789,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "a785992d031133d43",
+      "role": "post-launch-learning",
+      "generic": false,
+      "description": "Close-out docs-answerability-2",
+      "finishedAt": "2026-10-16T22:00:42.342Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 10,
+        "input": 20,
+        "cacheRead": 628071,
+        "cacheWrite5m": 101540,
+        "cacheWrite1h": 0,
+        "output": 26138,
+        "peakContext": 104739,
+        "processed": 755769,
+        "inputEquivalents": 320442,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 104739,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-answerability-2",
+      "agentId": "a0b2dbcafd18d54ce",
+      "role": "tech-writer",
+      "generic": false,
+      "description": "README status closure wording",
+      "finishedAt": "2026-10-16T23:06:07.882Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 7,
+        "input": 14,
+        "cacheRead": 93732,
+        "cacheWrite5m": 19378,
+        "cacheWrite1h": 0,
+        "output": 4491,
+        "peakContext": 19380,
+        "processed": 117615,
+        "inputEquivalents": 56065,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 19380,
+      "firstPassContext": null
+    }
+  ]
+}

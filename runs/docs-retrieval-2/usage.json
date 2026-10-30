@@ -1,0 +1,134 @@
+{
+  "schema": "aveto/usage@1",
+  "source": "harness-log",
+  "note": "Subagent stages only; the Orchestrator's own turns are not attributed. peakContext is the last request's context size; processed is the sum over every request.",
+  "weights": {
+    "input": 1,
+    "cacheRead": 0.1,
+    "cacheWrite5m": 1.25,
+    "cacheWrite1h": 2,
+    "output": 5
+  },
+  "generatedAt": "2026-10-30T06:25:06.833Z",
+  "totals": {
+    "spawns": 4,
+    "measuredSpawns": 4,
+    "unmeasuredSpawns": 0,
+    "requests": 83,
+    "input": 166,
+    "cacheRead": 5737763,
+    "cacheWrite5m": 431599,
+    "cacheWrite1h": 0,
+    "output": 73245,
+    "processed": 6242773,
+    "inputEquivalents": 1479666,
+    "peakContextSum": 309611,
+    "cacheHitRate": 0.93
+  },
+  "spawns": [
+    {
+      "slice": "docs-retrieval-2",
+      "agentId": "a788234aee7878fa4",
+      "role": "engineering-manager",
+      "generic": false,
+      "description": "Scope Review for docs-retrieval-2",
+      "finishedAt": "2026-09-29T16:57:32.656Z",
+      "durationMs": 151885,
+      "toolCalls": 21,
+      "measured": {
+        "requests": 7,
+        "input": 14,
+        "cacheRead": 185009,
+        "cacheWrite5m": 51801,
+        "cacheWrite1h": 0,
+        "output": 19615,
+        "peakContext": 51803,
+        "processed": 256439,
+        "inputEquivalents": 181341,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 51803,
+      "firstPassContext": 51899
+    },
+    {
+      "slice": "docs-retrieval-2",
+      "agentId": "a3a6fcad78c806e16",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Architecture for docs-retrieval-2 (slice A)",
+      "finishedAt": "2026-09-29T17:07:21.566Z",
+      "durationMs": 472576,
+      "toolCalls": 49,
+      "measured": {
+        "requests": 38,
+        "input": 76,
+        "cacheRead": 2910119,
+        "cacheWrite5m": 249178,
+        "cacheWrite1h": 0,
+        "output": 49566,
+        "peakContext": 127184,
+        "processed": 3208939,
+        "inputEquivalents": 850390,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 127184,
+      "firstPassContext": 122905
+    },
+    {
+      "slice": "docs-retrieval-2",
+      "agentId": "a79c73a24fea618b0",
+      "role": "backend-architect",
+      "generic": false,
+      "description": "Implement docs-retrieval-2 slice A (to the freeze)",
+      "finishedAt": "2026-09-29T17:17:32.015Z",
+      "durationMs": 551739,
+      "toolCalls": 34,
+      "measured": {
+        "requests": 33,
+        "input": 66,
+        "cacheRead": 2592445,
+        "cacheWrite5m": 115198,
+        "cacheWrite1h": 0,
+        "output": 2935,
+        "peakContext": 115200,
+        "processed": 2710644,
+        "inputEquivalents": 417983,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 115200,
+      "firstPassContext": 116263
+    },
+    {
+      "slice": "docs-retrieval-2",
+      "agentId": "a581744f629b8e9d6",
+      "role": "product-manager",
+      "generic": false,
+      "description": "Fix stale Stage paragraph in PROJECT_CONTEXT",
+      "finishedAt": "2026-09-29T17:18:56.813Z",
+      "durationMs": 12837,
+      "toolCalls": 6,
+      "measured": {
+        "requests": 5,
+        "input": 10,
+        "cacheRead": 50190,
+        "cacheWrite5m": 15422,
+        "cacheWrite1h": 0,
+        "output": 1129,
+        "peakContext": 15424,
+        "processed": 66751,
+        "inputEquivalents": 29952,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 15424,
+      "firstPassContext": 15429
+    }
+  ]
+}
