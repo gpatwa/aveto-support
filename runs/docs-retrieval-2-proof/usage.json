@@ -1,0 +1,82 @@
+{
+  "schema": "aveto/usage@1",
+  "source": "harness-log",
+  "note": "Subagent stages only; the Orchestrator's own turns are not attributed. peakContext is the last request's context size; processed is the sum over every request.",
+  "weights": {
+    "input": 1,
+    "cacheRead": 0.1,
+    "cacheWrite5m": 1.25,
+    "cacheWrite1h": 2,
+    "output": 5
+  },
+  "generatedAt": "2026-10-30T06:25:06.833Z",
+  "totals": {
+    "spawns": 2,
+    "measuredSpawns": 2,
+    "unmeasuredSpawns": 0,
+    "requests": 21,
+    "input": 46,
+    "cacheRead": 522720,
+    "cacheWrite5m": 74319,
+    "cacheWrite1h": 0,
+    "output": 9756,
+    "processed": 606841,
+    "inputEquivalents": 193997,
+    "peakContextSum": 74323,
+    "cacheHitRate": 0.8755
+  },
+  "spawns": [
+    {
+      "slice": "docs-retrieval-2-proof",
+      "agentId": "aa66f5b767c79b931",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "QA: score the third held-out set once (slice B)",
+      "finishedAt": "2026-09-29T21:00:47.853Z",
+      "durationMs": 90223,
+      "toolCalls": 11,
+      "measured": {
+        "requests": 10,
+        "input": 20,
+        "cacheRead": 174252,
+        "cacheWrite5m": 26856,
+        "cacheWrite1h": 0,
+        "output": 488,
+        "peakContext": 26858,
+        "processed": 201616,
+        "inputEquivalents": 53455,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 26858,
+      "firstPassContext": 26879
+    },
+    {
+      "slice": "docs-retrieval-2-proof",
+      "agentId": "a9d73c5a5cfa317eb",
+      "role": "post-launch-learning",
+      "generic": false,
+      "description": "Close-out for docs-retrieval-2 (gate failed)",
+      "finishedAt": "2026-09-30T01:33:06.475Z",
+      "durationMs": 39783,
+      "toolCalls": 13,
+      "measured": {
+        "requests": 11,
+        "input": 26,
+        "cacheRead": 348468,
+        "cacheWrite5m": 47463,
+        "cacheWrite1h": 0,
+        "output": 9268,
+        "peakContext": 47465,
+        "processed": 405225,
+        "inputEquivalents": 140542,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 47465,
+      "firstPassContext": 36256
+    }
+  ]
+}

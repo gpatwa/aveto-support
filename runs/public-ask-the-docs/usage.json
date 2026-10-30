@@ -1,0 +1,836 @@
+{
+  "schema": "aveto/usage@1",
+  "source": "harness-log",
+  "note": "Subagent stages only; the Orchestrator's own turns are not attributed. peakContext is the last request's context size; processed is the sum over every request.",
+  "weights": {
+    "input": 1,
+    "cacheRead": 0.1,
+    "cacheWrite5m": 1.25,
+    "cacheWrite1h": 2,
+    "output": 5
+  },
+  "generatedAt": "2026-10-30T06:25:06.837Z",
+  "totals": {
+    "spawns": 31,
+    "measuredSpawns": 31,
+    "unmeasuredSpawns": 0,
+    "requests": 518,
+    "input": 1044,
+    "cacheRead": 43256415,
+    "cacheWrite5m": 3028927,
+    "cacheWrite1h": 0,
+    "output": 756366,
+    "processed": 47042752,
+    "inputEquivalents": 11894677,
+    "peakContextSum": 2522821,
+    "cacheHitRate": 0.9345
+  },
+  "spawns": [
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a44d8e5b0ddf94220",
+      "role": "engineering-manager",
+      "generic": false,
+      "description": "Stage 1 scope review",
+      "finishedAt": "2026-10-21T06:44:03.802Z",
+      "durationMs": 92491,
+      "toolCalls": 16,
+      "measured": {
+        "requests": 6,
+        "input": 12,
+        "cacheRead": 162965,
+        "cacheWrite5m": 46777,
+        "cacheWrite1h": 0,
+        "output": 11351,
+        "peakContext": 46779,
+        "processed": 221105,
+        "inputEquivalents": 131535,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 46779,
+      "firstPassContext": 47596
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a420e2ba38e44d93b",
+      "role": "product-manager",
+      "generic": false,
+      "description": "Stage 2 PRD",
+      "finishedAt": "2026-10-21T06:45:15.471Z",
+      "durationMs": 45670,
+      "toolCalls": 9,
+      "measured": {
+        "requests": 3,
+        "input": 6,
+        "cacheRead": 43741,
+        "cacheWrite5m": 32724,
+        "cacheWrite1h": 0,
+        "output": 6117,
+        "peakContext": 35923,
+        "processed": 82588,
+        "inputEquivalents": 75870,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 35923,
+      "firstPassContext": 36435
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a1dcd0b5b7aba79bb",
+      "role": "ux-researcher",
+      "generic": false,
+      "description": "Stage 3 feature spec",
+      "finishedAt": "2026-10-21T06:46:36.313Z",
+      "durationMs": 69787,
+      "toolCalls": 7,
+      "measured": {
+        "requests": 3,
+        "input": 6,
+        "cacheRead": 38135,
+        "cacheWrite5m": 28785,
+        "cacheWrite1h": 0,
+        "output": 7311,
+        "peakContext": 31984,
+        "processed": 74237,
+        "inputEquivalents": 76356,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 31984,
+      "firstPassContext": 32358
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "aee7898a407f3f55b",
+      "role": "ui-designer",
+      "generic": false,
+      "description": "Stage 4 UX spec",
+      "finishedAt": "2026-10-21T06:48:01.266Z",
+      "durationMs": 73575,
+      "toolCalls": 9,
+      "measured": {
+        "requests": 4,
+        "input": 8,
+        "cacheRead": 50381,
+        "cacheWrite5m": 22881,
+        "cacheWrite1h": 0,
+        "output": 7667,
+        "peakContext": 26080,
+        "processed": 80937,
+        "inputEquivalents": 71982,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 26080,
+      "firstPassContext": 26507
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a840dd29ee2330428",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Stage 5 tech spec",
+      "finishedAt": "2026-10-21T08:10:02.863Z",
+      "durationMs": 3967832,
+      "toolCalls": 79,
+      "measured": {
+        "requests": 44,
+        "input": 88,
+        "cacheRead": 5483944,
+        "cacheWrite5m": 552894,
+        "cacheWrite1h": 0,
+        "output": 91878,
+        "peakContext": 214927,
+        "processed": 6128804,
+        "inputEquivalents": 1698990,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 214927,
+      "firstPassContext": 216335
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a299da2fe4806c31b",
+      "role": "ai-governance",
+      "generic": false,
+      "description": "Stage 6 AI governance (re-spawn)",
+      "finishedAt": "2026-10-21T16:17:35.483Z",
+      "durationMs": 32903,
+      "toolCalls": 7,
+      "measured": {
+        "requests": 3,
+        "input": 6,
+        "cacheRead": 66472,
+        "cacheWrite5m": 63070,
+        "cacheWrite1h": 0,
+        "output": 2523,
+        "peakContext": 63072,
+        "processed": 132071,
+        "inputEquivalents": 98106,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 63072,
+      "firstPassContext": 64709
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "aad2978b77b972212",
+      "role": "compliance-reviewer",
+      "generic": false,
+      "description": "Stage 7 compliance (re-spawn)",
+      "finishedAt": "2026-10-21T16:20:02.497Z",
+      "durationMs": 173988,
+      "toolCalls": 21,
+      "measured": {
+        "requests": 12,
+        "input": 24,
+        "cacheRead": 684950,
+        "cacheWrite5m": 80555,
+        "cacheWrite1h": 0,
+        "output": 19570,
+        "peakContext": 83754,
+        "processed": 785099,
+        "inputEquivalents": 267063,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 83754,
+      "firstPassContext": 84404
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "adef1d3e79433bb73",
+      "role": "ui-designer",
+      "generic": false,
+      "description": "Patch UX copy for disclosures",
+      "finishedAt": "2026-10-21T16:20:50.945Z",
+      "durationMs": 22620,
+      "toolCalls": 6,
+      "measured": {
+        "requests": 3,
+        "input": 6,
+        "cacheRead": 45107,
+        "cacheWrite5m": 31309,
+        "cacheWrite1h": 0,
+        "output": 604,
+        "peakContext": 34508,
+        "processed": 77026,
+        "inputEquivalents": 46673,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 34508,
+      "firstPassContext": 34784
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "af3df12da3f137372",
+      "role": "backend-architect",
+      "generic": false,
+      "description": "Stage 8 backend service",
+      "finishedAt": "2026-10-21T16:30:43.957Z",
+      "durationMs": 607307,
+      "toolCalls": 36,
+      "measured": {
+        "requests": 36,
+        "input": 72,
+        "cacheRead": 3485650,
+        "cacheWrite5m": 146109,
+        "cacheWrite1h": 0,
+        "output": 75183,
+        "peakContext": 146111,
+        "processed": 3707014,
+        "inputEquivalents": 907188,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 146111,
+      "firstPassContext": 147389
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a428ea9adec8a28e7",
+      "role": "ai-engineer",
+      "generic": false,
+      "description": "Stage 9 Anthropic judge adapter",
+      "finishedAt": "2026-10-21T16:33:52.212Z",
+      "durationMs": 149856,
+      "toolCalls": 16,
+      "measured": {
+        "requests": 17,
+        "input": 34,
+        "cacheRead": 534724,
+        "cacheWrite5m": 43585,
+        "cacheWrite1h": 0,
+        "output": 14369,
+        "peakContext": 46201,
+        "processed": 592712,
+        "inputEquivalents": 179833,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 46201,
+      "firstPassContext": 46828
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "ab84f97d13d6f66e7",
+      "role": "frontend-developer",
+      "generic": false,
+      "description": "Stage 10 public page",
+      "finishedAt": "2026-10-21T16:35:18.595Z",
+      "durationMs": 226742,
+      "toolCalls": 20,
+      "measured": {
+        "requests": 20,
+        "input": 40,
+        "cacheRead": 1053278,
+        "cacheWrite5m": 73028,
+        "cacheWrite1h": 0,
+        "output": 28673,
+        "peakContext": 75644,
+        "processed": 1155019,
+        "inputEquivalents": 340018,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 75644,
+      "firstPassContext": 76265
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a5e1e80d1aa6f54c4",
+      "role": "cloud-deployment",
+      "generic": false,
+      "description": "Stage 11 infra and image",
+      "finishedAt": "2026-10-21T16:37:55.381Z",
+      "durationMs": 113992,
+      "toolCalls": 25,
+      "measured": {
+        "requests": 17,
+        "input": 36,
+        "cacheRead": 827233,
+        "cacheWrite5m": 69023,
+        "cacheWrite1h": 0,
+        "output": 18627,
+        "peakContext": 69025,
+        "processed": 914919,
+        "inputEquivalents": 262173,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 69025,
+      "firstPassContext": 66171
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a984177bb311d58ec",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Amend tech spec work split",
+      "finishedAt": "2026-10-21T16:39:07.402Z",
+      "durationMs": 34863,
+      "toolCalls": 10,
+      "measured": {
+        "requests": 7,
+        "input": 14,
+        "cacheRead": 128262,
+        "cacheWrite5m": 28714,
+        "cacheWrite1h": 0,
+        "output": 3917,
+        "peakContext": 28716,
+        "processed": 160907,
+        "inputEquivalents": 68318,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 28716,
+      "firstPassContext": 29152
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a9fb71989cf625f36",
+      "role": "backend-architect",
+      "generic": false,
+      "description": "Stage 11c Dockerfile and Azure checks",
+      "finishedAt": "2026-10-21T16:42:06.893Z",
+      "durationMs": 168876,
+      "toolCalls": 16,
+      "measured": {
+        "requests": 16,
+        "input": 34,
+        "cacheRead": 511638,
+        "cacheWrite5m": 100567,
+        "cacheWrite1h": 0,
+        "output": 13395,
+        "peakContext": 53412,
+        "processed": 625634,
+        "inputEquivalents": 243882,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 53412,
+      "firstPassContext": 50744
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a39829f67cd2a8747",
+      "role": "backend-architect",
+      "generic": false,
+      "description": "Review round 1 fixes (Backend)",
+      "finishedAt": "2026-10-21T16:50:08.781Z",
+      "durationMs": 191215,
+      "toolCalls": 19,
+      "measured": {
+        "requests": 21,
+        "input": 44,
+        "cacheRead": 907189,
+        "cacheWrite5m": 119145,
+        "cacheWrite1h": 0,
+        "output": 21121,
+        "peakContext": 70008,
+        "processed": 1047499,
+        "inputEquivalents": 345299,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 70008,
+      "firstPassContext": 54918
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a33aec46bb2d7ba27",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "Stage 13 QA evidence",
+      "finishedAt": "2026-10-21T17:01:16.077Z",
+      "durationMs": 577655,
+      "toolCalls": 57,
+      "measured": {
+        "requests": 56,
+        "input": 112,
+        "cacheRead": 4797422,
+        "cacheWrite5m": 141538,
+        "cacheWrite1h": 0,
+        "output": 52121,
+        "peakContext": 144154,
+        "processed": 4991193,
+        "inputEquivalents": 917382,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 144154,
+      "firstPassContext": 145286
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a1fabfbb71235351c",
+      "role": "security-privacy",
+      "generic": false,
+      "description": "Stage 14 adversarial security review",
+      "finishedAt": "2026-10-21T17:23:41.174Z",
+      "durationMs": 1227171,
+      "toolCalls": 63,
+      "measured": {
+        "requests": 55,
+        "input": 110,
+        "cacheRead": 8009342,
+        "cacheWrite5m": 225647,
+        "cacheWrite1h": 0,
+        "output": 108187,
+        "peakContext": 225649,
+        "processed": 8343286,
+        "inputEquivalents": 1624038,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 225649,
+      "firstPassContext": 226838
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "adb3cf7ce7d0e18d1",
+      "role": "ai-engineer",
+      "generic": false,
+      "description": "S-A2 SDK egress pinning (AI Engineer)",
+      "finishedAt": "2026-10-21T17:26:04.651Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 9,
+        "input": 18,
+        "cacheRead": 186745,
+        "cacheWrite5m": 25898,
+        "cacheWrite1h": 0,
+        "output": 5140,
+        "peakContext": 28514,
+        "processed": 217801,
+        "inputEquivalents": 76765,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 28514,
+      "firstPassContext": null
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "aa417a7ab5c7c1b07",
+      "role": "backend-architect",
+      "generic": false,
+      "description": "S-A4, S-A6, S-A8 service hardening (Backend)",
+      "finishedAt": "2026-10-21T17:27:28.803Z",
+      "durationMs": 76709,
+      "toolCalls": 11,
+      "measured": {
+        "requests": 11,
+        "input": 22,
+        "cacheRead": 281084,
+        "cacheWrite5m": 31115,
+        "cacheWrite1h": 0,
+        "output": 6902,
+        "peakContext": 36185,
+        "processed": 319123,
+        "inputEquivalents": 101534,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 36185,
+      "firstPassContext": 36910
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a76931b4e86f9fbb2",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Stage 15a safety words and architecture doc",
+      "finishedAt": "2026-10-21T17:28:20.809Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 48,
+        "input": 96,
+        "cacheRead": 6688337,
+        "cacheWrite5m": 202514,
+        "cacheWrite1h": 0,
+        "output": 59632,
+        "peakContext": 202516,
+        "processed": 6950579,
+        "inputEquivalents": 1220232,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 202516,
+      "firstPassContext": null
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a782a2d85a67dcfe7",
+      "role": "tech-writer",
+      "generic": false,
+      "description": "Stage 15b README, status, runbook",
+      "finishedAt": "2026-10-21T17:28:30.824Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 19,
+        "input": 40,
+        "cacheRead": 1549686,
+        "cacheWrite5m": 228352,
+        "cacheWrite1h": 0,
+        "output": 21079,
+        "peakContext": 118548,
+        "processed": 1799157,
+        "inputEquivalents": 545844,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 118548,
+      "firstPassContext": null
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a9fd0d80051b3f745",
+      "role": "compliance-reviewer",
+      "generic": false,
+      "description": "Stage 15c words check (re-spawn)",
+      "finishedAt": "2026-10-21T18:55:48.531Z",
+      "durationMs": 507329,
+      "toolCalls": 44,
+      "measured": {
+        "requests": 22,
+        "input": 44,
+        "cacheRead": 2105781,
+        "cacheWrite5m": 180116,
+        "cacheWrite1h": 0,
+        "output": 62758,
+        "peakContext": 180118,
+        "processed": 2348699,
+        "inputEquivalents": 749557,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 180118,
+      "firstPassContext": 180933
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "af2bd8ad569a8c78d",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Apply curable safety-text rewordings",
+      "finishedAt": "2026-10-21T18:57:02.605Z",
+      "durationMs": 54743,
+      "toolCalls": 11,
+      "measured": {
+        "requests": 6,
+        "input": 12,
+        "cacheRead": 193537,
+        "cacheWrite5m": 52277,
+        "cacheWrite1h": 0,
+        "output": 5687,
+        "peakContext": 52279,
+        "processed": 251513,
+        "inputEquivalents": 113147,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 52279,
+      "firstPassContext": 52813
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "ae2398f713ff040d1",
+      "role": "release-manager",
+      "generic": false,
+      "description": "Stage 16 Release Gate tier 3",
+      "finishedAt": "2026-10-22T05:25:40.338Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 32,
+        "input": 64,
+        "cacheRead": 4175552,
+        "cacheWrite5m": 197436,
+        "cacheWrite1h": 0,
+        "output": 58520,
+        "peakContext": 197438,
+        "processed": 4431572,
+        "inputEquivalents": 957014,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 197438,
+      "firstPassContext": null
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a07ce41b06d0dcb9c",
+      "role": "tech-writer",
+      "generic": false,
+      "description": "Runbook processor record and monitoring section",
+      "finishedAt": "2026-10-22T05:34:30.167Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 5,
+        "input": 10,
+        "cacheRead": 141660,
+        "cacheWrite5m": 46406,
+        "cacheWrite1h": 0,
+        "output": 4880,
+        "peakContext": 49605,
+        "processed": 192956,
+        "inputEquivalents": 96584,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 49605,
+      "firstPassContext": null
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a40c5e079ccf07a7a",
+      "role": "software-architect",
+      "generic": false,
+      "description": "INV-5 reading notes N1 and N4",
+      "finishedAt": "2026-10-22T05:34:33.066Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 7,
+        "input": 14,
+        "cacheRead": 143192,
+        "cacheWrite5m": 38252,
+        "cacheWrite1h": 0,
+        "output": 2747,
+        "peakContext": 38254,
+        "processed": 184205,
+        "inputEquivalents": 75883,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 38254,
+      "firstPassContext": null
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a39c7024df57e551b",
+      "role": "release-manager",
+      "generic": false,
+      "description": "Release Manager smoke re-check, switch-on gate",
+      "finishedAt": "2026-10-22T07:20:46.735Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 12,
+        "input": 24,
+        "cacheRead": 312084,
+        "cacheWrite5m": 54022,
+        "cacheWrite1h": 0,
+        "output": 16684,
+        "peakContext": 54024,
+        "processed": 382814,
+        "inputEquivalents": 182180,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 54024,
+      "firstPassContext": null
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "aa447a94a57f18580",
+      "role": "production-verification",
+      "generic": false,
+      "description": "Stage 18 production verification (from saved evidence)",
+      "finishedAt": "2026-10-22T23:13:12.107Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 5,
+        "input": 10,
+        "cacheRead": 121280,
+        "cacheWrite5m": 48662,
+        "cacheWrite1h": 0,
+        "output": 6670,
+        "peakContext": 48664,
+        "processed": 176622,
+        "inputEquivalents": 106316,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 48664,
+      "firstPassContext": null
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a6406387a3cd5b1f6",
+      "role": "tech-writer",
+      "generic": false,
+      "description": "Docs: record the measured figures (README, status, runbook)",
+      "finishedAt": "2026-10-22T23:13:24.497Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 10,
+        "input": 20,
+        "cacheRead": 378752,
+        "cacheWrite5m": 51932,
+        "cacheWrite1h": 0,
+        "output": 11360,
+        "peakContext": 55131,
+        "processed": 442064,
+        "inputEquivalents": 159610,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 55131,
+      "firstPassContext": null
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "a823adfb80026bbdf",
+      "role": "post-launch-learning",
+      "generic": false,
+      "description": "Stage 19 post-launch learning",
+      "finishedAt": "2026-10-22T23:27:25.154Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 4,
+        "input": 8,
+        "cacheRead": 80105,
+        "cacheWrite5m": 39122,
+        "cacheWrite1h": 0,
+        "output": 5545,
+        "peakContext": 39124,
+        "processed": 124780,
+        "inputEquivalents": 84646,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 39124,
+      "firstPassContext": null
+    },
+    {
+      "slice": "public-ask-the-docs",
+      "agentId": "ab7876f0bf579eb23",
+      "role": "tech-writer",
+      "generic": false,
+      "description": "Docs: confirmed price and the budget alert",
+      "finishedAt": "2026-10-23T06:47:08.055Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 5,
+        "input": 10,
+        "cacheRead": 68187,
+        "cacheWrite5m": 26472,
+        "cacheWrite1h": 0,
+        "output": 6148,
+        "peakContext": 26474,
+        "processed": 100817,
+        "inputEquivalents": 70659,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 26474,
+      "firstPassContext": null
+    }
+  ]
+}

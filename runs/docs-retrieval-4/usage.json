@@ -1,0 +1,290 @@
+{
+  "schema": "aveto/usage@1",
+  "source": "harness-log",
+  "note": "Subagent stages only; the Orchestrator's own turns are not attributed. peakContext is the last request's context size; processed is the sum over every request.",
+  "weights": {
+    "input": 1,
+    "cacheRead": 0.1,
+    "cacheWrite5m": 1.25,
+    "cacheWrite1h": 2,
+    "output": 5
+  },
+  "generatedAt": "2026-10-30T06:25:06.833Z",
+  "totals": {
+    "spawns": 10,
+    "measuredSpawns": 10,
+    "unmeasuredSpawns": 0,
+    "requests": 167,
+    "input": 334,
+    "cacheRead": 8421763,
+    "cacheWrite5m": 1182443,
+    "cacheWrite1h": 0,
+    "output": 74479,
+    "processed": 9679019,
+    "inputEquivalents": 2692959,
+    "peakContextSum": 580765,
+    "cacheHitRate": 0.8769
+  },
+  "spawns": [
+    {
+      "slice": "docs-retrieval-4",
+      "agentId": "aac188c4e0be39eb1",
+      "role": "engineering-manager",
+      "generic": false,
+      "description": "Scope Review for slice 4",
+      "finishedAt": "2026-10-03T06:32:21.174Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 6,
+        "input": 12,
+        "cacheRead": 137634,
+        "cacheWrite5m": 46166,
+        "cacheWrite1h": 0,
+        "output": 10178,
+        "peakContext": 46168,
+        "processed": 193990,
+        "inputEquivalents": 122373,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 46168,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-retrieval-4",
+      "agentId": "aab7b68aeb9d91908",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Architecture for slice 4",
+      "finishedAt": "2026-10-03T06:34:36.454Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 17,
+        "input": 34,
+        "cacheRead": 726002,
+        "cacheWrite5m": 70035,
+        "cacheWrite1h": 0,
+        "output": 28967,
+        "peakContext": 70037,
+        "processed": 825038,
+        "inputEquivalents": 305013,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 70037,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-retrieval-4",
+      "agentId": "afbb893cad90ac819",
+      "role": "backend-architect",
+      "generic": false,
+      "description": "Implementation for slice 4",
+      "finishedAt": "2026-10-03T06:43:10.509Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 61,
+        "input": 122,
+        "cacheRead": 3602548,
+        "cacheWrite5m": 717258,
+        "cacheWrite1h": 0,
+        "output": 1315,
+        "peakContext": 112180,
+        "processed": 4321243,
+        "inputEquivalents": 1263524,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 112180,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-retrieval-4",
+      "agentId": "a288a91234ec2e57f",
+      "role": "security-privacy",
+      "generic": false,
+      "description": "Security Review for slice 4",
+      "finishedAt": "2026-10-03T15:01:21.442Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 33,
+        "input": 66,
+        "cacheRead": 2722029,
+        "cacheWrite5m": 129346,
+        "cacheWrite1h": 0,
+        "output": 3679,
+        "peakContext": 129348,
+        "processed": 2855120,
+        "inputEquivalents": 452346,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 129348,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-retrieval-4",
+      "agentId": "a640cdee47c8db8c1",
+      "role": "backend-architect",
+      "generic": false,
+      "description": "Fix R1 ADR 0006 wording",
+      "finishedAt": "2026-10-09T04:42:24.465Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 4,
+        "input": 8,
+        "cacheRead": 37159,
+        "cacheWrite5m": 15408,
+        "cacheWrite1h": 0,
+        "output": 65,
+        "peakContext": 15410,
+        "processed": 52640,
+        "inputEquivalents": 23309,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 15410,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-retrieval-4",
+      "agentId": "a67113267b5e1ceeb",
+      "role": "security-privacy",
+      "generic": false,
+      "description": "Security re-check limited to R1",
+      "finishedAt": "2026-10-09T04:43:02.246Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 9,
+        "input": 18,
+        "cacheRead": 200665,
+        "cacheWrite5m": 35529,
+        "cacheWrite1h": 0,
+        "output": 1374,
+        "peakContext": 35531,
+        "processed": 237586,
+        "inputEquivalents": 71366,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 35531,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-retrieval-4",
+      "agentId": "ac460fedc9042c3b9",
+      "role": "release-manager",
+      "generic": false,
+      "description": "Release Gate plan and bar",
+      "finishedAt": "2026-10-09T04:44:38.360Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 5,
+        "input": 10,
+        "cacheRead": 152913,
+        "cacheWrite5m": 58731,
+        "cacheWrite1h": 0,
+        "output": 11213,
+        "peakContext": 58733,
+        "processed": 222867,
+        "inputEquivalents": 144780,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 58733,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-retrieval-4",
+      "agentId": "a9244f8cc78c75e4c",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "QA fourth-set regression run",
+      "finishedAt": "2026-10-09T04:59:17.494Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 20,
+        "input": 40,
+        "cacheRead": 560612,
+        "cacheWrite5m": 40309,
+        "cacheWrite1h": 0,
+        "output": 2915,
+        "peakContext": 40311,
+        "processed": 603876,
+        "inputEquivalents": 121062,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 40311,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-retrieval-4",
+      "agentId": "ac5cb272dd57f3bad",
+      "role": "release-manager",
+      "generic": false,
+      "description": "Release Gate verdict",
+      "finishedAt": "2026-10-09T05:02:07.514Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 9,
+        "input": 18,
+        "cacheRead": 245189,
+        "cacheWrite5m": 47331,
+        "cacheWrite1h": 0,
+        "output": 12249,
+        "peakContext": 47333,
+        "processed": 304787,
+        "inputEquivalents": 144946,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 47333,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-retrieval-4",
+      "agentId": "a975be43a4bfd4730",
+      "role": "post-launch-learning",
+      "generic": false,
+      "description": "Close-out for slice 4",
+      "finishedAt": "2026-10-09T05:08:10.038Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 3,
+        "input": 6,
+        "cacheRead": 37012,
+        "cacheWrite5m": 22330,
+        "cacheWrite1h": 0,
+        "output": 2524,
+        "peakContext": 25714,
+        "processed": 61872,
+        "inputEquivalents": 44240,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 25714,
+      "firstPassContext": null
+    }
+  ]
+}

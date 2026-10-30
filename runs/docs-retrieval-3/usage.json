@@ -1,0 +1,108 @@
+{
+  "schema": "aveto/usage@1",
+  "source": "harness-log",
+  "note": "Subagent stages only; the Orchestrator's own turns are not attributed. peakContext is the last request's context size; processed is the sum over every request.",
+  "weights": {
+    "input": 1,
+    "cacheRead": 0.1,
+    "cacheWrite5m": 1.25,
+    "cacheWrite1h": 2,
+    "output": 5
+  },
+  "generatedAt": "2026-10-30T06:25:06.833Z",
+  "totals": {
+    "spawns": 3,
+    "measuredSpawns": 3,
+    "unmeasuredSpawns": 0,
+    "requests": 72,
+    "input": 144,
+    "cacheRead": 5393969,
+    "cacheWrite5m": 314687,
+    "cacheWrite1h": 0,
+    "output": 82695,
+    "processed": 5791495,
+    "inputEquivalents": 1346374,
+    "peakContextSum": 314693,
+    "cacheHitRate": 0.9449
+  },
+  "spawns": [
+    {
+      "slice": "docs-retrieval-3",
+      "agentId": "a404c2dbbbdbfefd6",
+      "role": "engineering-manager",
+      "generic": false,
+      "description": "Scope Review for slice 3",
+      "finishedAt": "2026-10-01T06:06:02.631Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 9,
+        "input": 18,
+        "cacheRead": 325756,
+        "cacheWrite5m": 60290,
+        "cacheWrite1h": 0,
+        "output": 16286,
+        "peakContext": 60292,
+        "processed": 402350,
+        "inputEquivalents": 189386,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 60292,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-retrieval-3",
+      "agentId": "a24e7c426052dafb3",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Architecture for slice 3",
+      "finishedAt": "2026-10-01T06:08:34.634Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 29,
+        "input": 58,
+        "cacheRead": 2481204,
+        "cacheWrite5m": 143400,
+        "cacheWrite1h": 0,
+        "output": 63362,
+        "peakContext": 143402,
+        "processed": 2688024,
+        "inputEquivalents": 744238,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 143402,
+      "firstPassContext": null
+    },
+    {
+      "slice": "docs-retrieval-3",
+      "agentId": "abd8f36a2715c6d51",
+      "role": "backend-architect",
+      "generic": false,
+      "description": "Implement reranker slice 3",
+      "finishedAt": "2026-10-01T06:32:19.798Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 34,
+        "input": 68,
+        "cacheRead": 2587009,
+        "cacheWrite5m": 110997,
+        "cacheWrite1h": 0,
+        "output": 3047,
+        "peakContext": 110999,
+        "processed": 2701121,
+        "inputEquivalents": 412750,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 110999,
+      "firstPassContext": null
+    }
+  ]
+}

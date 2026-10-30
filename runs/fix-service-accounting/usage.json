@@ -1,0 +1,290 @@
+{
+  "schema": "aveto/usage@1",
+  "source": "harness-log",
+  "note": "Subagent stages only; the Orchestrator's own turns are not attributed. peakContext is the last request's context size; processed is the sum over every request.",
+  "weights": {
+    "input": 1,
+    "cacheRead": 0.1,
+    "cacheWrite5m": 1.25,
+    "cacheWrite1h": 2,
+    "output": 5
+  },
+  "generatedAt": "2026-10-30T06:25:06.837Z",
+  "totals": {
+    "spawns": 10,
+    "measuredSpawns": 10,
+    "unmeasuredSpawns": 0,
+    "requests": 168,
+    "input": 336,
+    "cacheRead": 13736699,
+    "cacheWrite5m": 1177422,
+    "cacheWrite1h": 0,
+    "output": 237658,
+    "processed": 15152115,
+    "inputEquivalents": 4034072,
+    "peakContextSum": 919258,
+    "cacheHitRate": 0.921
+  },
+  "spawns": [
+    {
+      "slice": "fix-service-accounting",
+      "agentId": "ac46ac90b75106181",
+      "role": "engineering-manager",
+      "generic": false,
+      "description": "Stage 1 scope review",
+      "finishedAt": "2026-10-23T07:19:13.165Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 8,
+        "input": 16,
+        "cacheRead": 330453,
+        "cacheWrite5m": 64288,
+        "cacheWrite1h": 0,
+        "output": 10977,
+        "peakContext": 64290,
+        "processed": 405734,
+        "inputEquivalents": 168306,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 64290,
+      "firstPassContext": null
+    },
+    {
+      "slice": "fix-service-accounting",
+      "agentId": "a00262eeb5a753565",
+      "role": "software-architect",
+      "generic": false,
+      "description": "Stage 2 tech spec",
+      "finishedAt": "2026-10-23T07:21:10.650Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 47,
+        "input": 94,
+        "cacheRead": 6839177,
+        "cacheWrite5m": 236115,
+        "cacheWrite1h": 0,
+        "output": 91799,
+        "peakContext": 236117,
+        "processed": 7167185,
+        "inputEquivalents": 1438150,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 236117,
+      "firstPassContext": null
+    },
+    {
+      "slice": "fix-service-accounting",
+      "agentId": "aa1fa8ea8f47ba5ed",
+      "role": "backend-architect",
+      "generic": false,
+      "description": "Stage 3 fixes and tests",
+      "finishedAt": "2026-10-23T07:36:14.071Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 28,
+        "input": 56,
+        "cacheRead": 1618248,
+        "cacheWrite5m": 369982,
+        "cacheWrite1h": 0,
+        "output": 26554,
+        "peakContext": 102770,
+        "processed": 2014840,
+        "inputEquivalents": 757128,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 102770,
+      "firstPassContext": null
+    },
+    {
+      "slice": "fix-service-accounting",
+      "agentId": "ae465cb6cd556499f",
+      "role": "qa-evidence",
+      "generic": false,
+      "description": "Stage 5 QA evidence",
+      "finishedAt": "2026-10-23T17:09:10.796Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 20,
+        "input": 40,
+        "cacheRead": 802082,
+        "cacheWrite5m": 61993,
+        "cacheWrite1h": 0,
+        "output": 18891,
+        "peakContext": 64631,
+        "processed": 883006,
+        "inputEquivalents": 252194,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 64631,
+      "firstPassContext": null
+    },
+    {
+      "slice": "fix-service-accounting",
+      "agentId": "a936673a85ec00b5b",
+      "role": "security-privacy",
+      "generic": false,
+      "description": "Stage 6 security review",
+      "finishedAt": "2026-10-23T17:15:24.414Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 29,
+        "input": 58,
+        "cacheRead": 2484573,
+        "cacheWrite5m": 125036,
+        "cacheWrite1h": 0,
+        "output": 34222,
+        "peakContext": 125038,
+        "processed": 2643889,
+        "inputEquivalents": 575920,
+        "models": [
+          "claude-opus-5-5"
+        ]
+      },
+      "peakContext": 125038,
+      "firstPassContext": null
+    },
+    {
+      "slice": "fix-service-accounting",
+      "agentId": "a96212f2a545adde2",
+      "role": "tech-writer",
+      "generic": false,
+      "description": "Stage 7 docs update",
+      "finishedAt": "2026-10-23T17:15:33.463Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 9,
+        "input": 18,
+        "cacheRead": 495427,
+        "cacheWrite5m": 81462,
+        "cacheWrite1h": 0,
+        "output": 11520,
+        "peakContext": 81464,
+        "processed": 588427,
+        "inputEquivalents": 208988,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 81464,
+      "firstPassContext": null
+    },
+    {
+      "slice": "fix-service-accounting",
+      "agentId": "a76af9bf656fa492c",
+      "role": "release-manager",
+      "generic": false,
+      "description": "Stage 8 release gate",
+      "finishedAt": "2026-10-24T06:28:22.545Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 11,
+        "input": 22,
+        "cacheRead": 770225,
+        "cacheWrite5m": 116697,
+        "cacheWrite1h": 0,
+        "output": 23901,
+        "peakContext": 116699,
+        "processed": 910845,
+        "inputEquivalents": 342421,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 116699,
+      "firstPassContext": null
+    },
+    {
+      "slice": "fix-service-accounting",
+      "agentId": "a3ac77c63d838bf30",
+      "role": "production-verification",
+      "generic": false,
+      "description": "Stage 10 production verification",
+      "finishedAt": "2026-10-24T07:01:09.046Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 7,
+        "input": 14,
+        "cacheRead": 204090,
+        "cacheWrite5m": 46299,
+        "cacheWrite1h": 0,
+        "output": 7462,
+        "peakContext": 46301,
+        "processed": 257865,
+        "inputEquivalents": 115607,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 46301,
+      "firstPassContext": null
+    },
+    {
+      "slice": "fix-service-accounting",
+      "agentId": "abc84e1e9d02911eb",
+      "role": "tech-writer",
+      "generic": false,
+      "description": "Docs addendum with live figures",
+      "finishedAt": "2026-10-24T07:02:19.246Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 5,
+        "input": 10,
+        "cacheRead": 84596,
+        "cacheWrite5m": 26722,
+        "cacheWrite1h": 0,
+        "output": 6486,
+        "peakContext": 29921,
+        "processed": 117814,
+        "inputEquivalents": 74302,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 29921,
+      "firstPassContext": null
+    },
+    {
+      "slice": "fix-service-accounting",
+      "agentId": "af93ac06ca602edee",
+      "role": "post-launch-learning",
+      "generic": false,
+      "description": "Post-launch learning",
+      "finishedAt": "2026-10-24T07:02:20.540Z",
+      "durationMs": null,
+      "toolCalls": null,
+      "measured": {
+        "requests": 4,
+        "input": 8,
+        "cacheRead": 107828,
+        "cacheWrite5m": 48828,
+        "cacheWrite1h": 0,
+        "output": 5846,
+        "peakContext": 52027,
+        "processed": 162510,
+        "inputEquivalents": 101056,
+        "models": [
+          "claude-sonnet-5-5"
+        ]
+      },
+      "peakContext": 52027,
+      "firstPassContext": null
+    }
+  ]
+}
